@@ -1,6 +1,6 @@
 import { FC } from "react";
 import logo1 from "../assets/logo/logoWhite.png";
-import pub from "../assets/login/pub.jpg";
+// import pub from "../assets/login/pub.jpg";
 import Image from "next/image";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";

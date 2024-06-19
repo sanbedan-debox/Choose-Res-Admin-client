@@ -5,11 +5,13 @@ const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   return (
-    <div className="flex">
+    <div className="flex h-screen overflow-hidden">
       <Sidebar />
-      <div className="flex-1 bg-black ">
+      <div className="flex-1 flex flex-col bg-black navbar">
         <Navbar />
-        <div className="flex p-6 bg-black">{children}</div>
+        <div className="flex-1 overflow-y-auto p-6 mt-16 children">
+          {children}
+        </div>
       </div>
     </div>
   );

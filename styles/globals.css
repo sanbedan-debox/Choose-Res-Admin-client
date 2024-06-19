@@ -56,3 +56,6 @@ body {
     transform: rotate(360deg);
   }
 }
+.navbar {
+  width: calc(100% - 16rem);
+}
