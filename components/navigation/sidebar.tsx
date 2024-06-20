@@ -10,7 +10,7 @@ import {
   FaListUl,
   FaUsers,
   FaTable,
-} from "react-icons/fa"; // Updated icons
+} from "react-icons/fa";
 import Image from "next/image";
 import { modules } from "./common/accessConfig";
 
@@ -24,7 +24,6 @@ const Sidebar: React.FC = () => {
   const router = useRouter();
 
   const userRole = "admin";
-  const userName = "Roop";
   const hasAccess = (moduleRoles: string[]) => moduleRoles.includes(userRole);
 
   const getIconComponent = (iconName: string) => {
@@ -62,23 +61,16 @@ const Sidebar: React.FC = () => {
         isSidebarExpanded ? "w-64" : "w-20"
       } overflow-y-auto scrollbar-hide`}
     >
-      <div className="flex flex-col items-center mb-10">
-        <div
-          style={{
-            background: "rgb(4,7,29)",
-            backgroundColor:
-              "linear-gradient(90deg, rgba(4,7,29,1) 0%, rgba(12,14,35,1) 100%)",
-          }}
-          className={`flex items-center ${
-            isSidebarExpanded ? "justify-between py-4" : "justify-center py-6"
-          } w-full px-4 `}
-        >
-          {isSidebarExpanded && (
-            <div className="relative z-10 flex items-center gap-16 justify-center">
-              <Image className="mb-4" src={logo1} alt="Logo" width={200} />
-            </div>
-          )}
-        </div>
+      <div
+        className={`flex flex-col items-center mb-10 ${
+          isSidebarExpanded ? "" : "my-4"
+        } `}
+      >
+        {isSidebarExpanded && (
+          <div className="relative z-10 flex items-center  justify-center my-4">
+            <Image className="mb-4" src={logo1} alt="Logo" width={170} />
+          </div>
+        )}
         <hr className="border-gray-600 " />
         <ul className="mx-1">
           {modules.map((module) =>
@@ -87,7 +79,7 @@ const Sidebar: React.FC = () => {
                 key={module.name}
                 className={`cursor-pointer mb-1 transition-colors ${
                   router.pathname === module.route
-                    ? "bg-gray-700 rounded-lg"
+                    ? "bg-gray-700  rounded-lg"
                     : ""
                 }`}
               >

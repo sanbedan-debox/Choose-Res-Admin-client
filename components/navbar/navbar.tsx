@@ -33,8 +33,8 @@ const Navbar: React.FC = () => {
   };
 
   const restaurants: any[] = [
-    // { name: "Rasoi Indian Cuisine", id: 1 },
-    // { name: "Spice Hub", id: 2 },
+    { name: "Rasoi Indian Cuisine", id: 1 },
+    { name: "Spice Hub", id: 2 },
   ];
 
   return (
@@ -58,9 +58,9 @@ const Navbar: React.FC = () => {
             className="text-gray-400 hover:text-white flex items-center justify-center"
           >
             {isSidebarExpanded ? (
-              <FaCompressArrowsAlt className="h-5 w-5 mr-1" />
+              <FaCompressArrowsAlt className="h-4 w-4 mr-1" />
             ) : (
-              <FaExpandArrowsAlt className="h-5 w-5 mr-1" />
+              <FaExpandArrowsAlt className="h-4 w-4 mr-1" />
             )}
           </button>
           <div className="relative">
@@ -68,7 +68,7 @@ const Navbar: React.FC = () => {
               onClick={toggleRestaurantDropdown}
               className="flex items-center space-x-2  hover:bg-gray-700 px-2 py-2 rounded"
             >
-              <FaMapMarkerAlt className="h-5 w-5  text-gray-400" />
+              <FaMapMarkerAlt className="h-4 w-4 text-gray-400" />
               <span className="text-sm">Rasoi Indian Cuisine</span>
             </button>
             {isRestaurantDropdownOpen && (
@@ -78,13 +78,13 @@ const Navbar: React.FC = () => {
                   backgroundColor:
                     "linear-gradient(90deg, rgba(4,7,29,1) 0%, rgba(12,14,35,1) 100%)",
                 }}
-                className="absolute mt-2 w-64 rounded-md shadow-lg py-2 text-gray-700 z-50"
+                className="absolute mt-2 w-64 rounded-md shadow-lg py-2  text-white z-50"
               >
                 {restaurants.length > 1 ? (
                   restaurants.map((restaurant) => (
                     <div
                       key={restaurant.id}
-                      className="block px-4 py-2 text-sm hover:bg-gray-200"
+                      className="block px-4 py-2 text-sm hover:bg-primary"
                     >
                       {restaurant.name}
                     </div>
@@ -111,26 +111,26 @@ const Navbar: React.FC = () => {
             )}
           </div>
         </div>
-        <div className="flex items-center space-x-4 relative">
+        <div className="flex items-center space-x-1 relative">
           <Link
             href="/shop"
             className="hover:bg-gray-700 px-3 py-2 rounded flex items-center"
           >
-            <FaStore className="h-5 w-5 mr-1 text-gray-400" />
+            <FaStore className="h-4 w-4 mr-1 text-gray-400" />
             <span className="text-sm">Shop</span>
           </Link>
           <Link
             href="/unpublished-changes"
             className="hover:bg-gray-700 px-3 py-2 rounded flex items-center"
           >
-            <FaBell className="h-5 w-5 mr-1 text-gray-400" />
+            <FaBell className="h-4 w-4 mr-1 text-gray-400" />
             <span className="text-sm">Unpublished changes</span>
           </Link>
           <Link
             href="/search"
             className="hover:bg-gray-700 px-3 py-2 rounded flex items-center"
           >
-            <FaSearch className="h-5 w-5 mr-1 text-gray-400" />
+            <FaSearch className="h-4 w-4 mr-1 text-gray-400" />
             <span className="text-sm">Search</span>
           </Link>
           <div className="relative">
@@ -138,7 +138,7 @@ const Navbar: React.FC = () => {
               onClick={toggleProfileDropdown}
               className="hover:bg-gray-700 px-3 py-2 rounded flex items-center focus:outline-none"
             >
-              <FaUser className="h-5 w-5 mr-1 text-gray-400" />
+              <FaUser className="h-4 w-4 mr-1 text-gray-400" />
               <span className="text-sm">{User}</span>
             </button>
             {isProfileDropdownOpen && (
@@ -188,14 +188,14 @@ const Navbar: React.FC = () => {
             href="/setup"
             className="hover:bg-gray-700 px-3 py-2 rounded flex items-center"
           >
-            <FaCog className="h-5 w-5 mr-1 text-gray-400" />
+            <FaCog className="h-4 w-4 mr-1 text-gray-400" />
             <span className="text-sm">Setup</span>
           </Link>
           <Link
             href="/help"
             className="hover:bg-gray-700 px-3 py-2 rounded flex items-center"
           >
-            <FaQuestionCircle className="h-5 w-5 mr-1 text-gray-400" />
+            <FaQuestionCircle className="h-4 w-4 mr-1 text-gray-400" />
             <span className="text-sm">Help</span>
           </Link>
         </div>
