@@ -1,6 +1,5 @@
 import MainLayout from "@/components/layout";
 import Loader from "@/components/loader";
-import useGlobalStore from "@/store/store";
 import React, { useEffect, useState } from "react";
 
 type Todo = {
@@ -14,13 +13,11 @@ type NextPageWithLayout = React.FC & {
   getLayout?: (page: React.ReactNode) => React.ReactNode;
 };
 
-const Dashboard: NextPageWithLayout = () => {
-  const { setSelectedMenu } = useGlobalStore();
+const Profile: NextPageWithLayout = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setSelectedMenu("dashboard");
     fetch("https://jsonplaceholder.typicode.com/todos/")
       .then((response) => response.json())
       .then((data) => {
@@ -31,7 +28,7 @@ const Dashboard: NextPageWithLayout = () => {
         console.error("Error fetching data:", error);
         setLoading(false);
       });
-  }, [setSelectedMenu]);
+  });
 
   if (loading) {
     return <Loader />;
@@ -39,7 +36,7 @@ const Dashboard: NextPageWithLayout = () => {
 
   return (
     <div>
-      <h1>Dashboard</h1>
+      <h1>Profile</h1>
       <ul>
         {todos.map((todo) => (
           <li key={todo.id}>
@@ -51,8 +48,8 @@ const Dashboard: NextPageWithLayout = () => {
   );
 };
 
-Dashboard.getLayout = function getLayout(page: React.ReactNode) {
+Profile.getLayout = function getLayout(page: React.ReactNode) {
   return <MainLayout>{page}</MainLayout>;
 };
 
-export default Dashboard;
+export default Profile;

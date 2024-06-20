@@ -8,7 +8,7 @@ type NextPageWithLayout = React.FC & {
 const Hello: NextPageWithLayout = () => {
   return (
     <div>
-      <h1>Hello</h1>
+      <h1>CHOOSE</h1>
     </div>
   );
 };

@@ -14,13 +14,11 @@ type NextPageWithLayout = React.FC & {
   getLayout?: (page: React.ReactNode) => React.ReactNode;
 };
 
-const Dashboard: NextPageWithLayout = () => {
-  const { setSelectedMenu } = useGlobalStore();
+const Banquet: NextPageWithLayout = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setSelectedMenu("dashboard");
     fetch("https://jsonplaceholder.typicode.com/todos/")
       .then((response) => response.json())
       .then((data) => {
@@ -31,7 +29,7 @@ const Dashboard: NextPageWithLayout = () => {
         console.error("Error fetching data:", error);
         setLoading(false);
       });
-  }, [setSelectedMenu]);
+  });
 
   if (loading) {
     return <Loader />;
@@ -39,7 +37,7 @@ const Dashboard: NextPageWithLayout = () => {
 
   return (
     <div>
-      <h1>Dashboard</h1>
+      <h1>Banquet</h1>
       <ul>
         {todos.map((todo) => (
           <li key={todo.id}>
@@ -51,8 +49,8 @@ const Dashboard: NextPageWithLayout = () => {
   );
 };
 
-Dashboard.getLayout = function getLayout(page: React.ReactNode) {
+Banquet.getLayout = function getLayout(page: React.ReactNode) {
   return <MainLayout>{page}</MainLayout>;
 };
 
-export default Dashboard;
+export default Banquet;

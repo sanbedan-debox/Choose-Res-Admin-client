@@ -1,4 +1,4 @@
-import DashboardLayout from "@/components/layout";
+import MainLayout from "@/components/layout";
 import Loader from "@/components/loader";
 import useGlobalStore from "@/store/store";
 import React, { useEffect, useState } from "react";
@@ -52,7 +52,7 @@ const Menu: NextPageWithLayout = () => {
 };
 
 Menu.getLayout = function getLayout(page: React.ReactNode) {
-  return <DashboardLayout>{page}</DashboardLayout>;
+  return <MainLayout>{page}</MainLayout>;
 };
 
 export default Menu;
