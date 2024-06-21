@@ -11,7 +11,7 @@ import {
   FaMapMarkerAlt,
 } from "react-icons/fa";
 import { useState } from "react";
-import useGlobalStore from "@/store/store";
+import useGlobalStore from "@/store/global";
 
 const Navbar: React.FC = () => {
   const User = "Roop37";

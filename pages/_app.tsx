@@ -6,6 +6,8 @@ import { NextPage } from "next";
 import "../styles/globals.css";
 import localFont from "@next/font/local";
 import { DefaultSeo } from "next-seo";
+import useGlobalStore from "@/store/global";
+import Toast from "@/components/common/toast/toast";
 
 const geologica = localFont({ src: "../public/fonts/geologica.ttf" });
 
@@ -45,6 +47,7 @@ type AppPropsWithLayout = AppProps & {
 
 function MyApp({ Component, pageProps }: AppPropsWithLayout) {
   const getLayout = Component.getLayout || ((page: ReactNode) => page);
+  const { toastData } = useGlobalStore();
 
   return (
     <div className={geologica.className}>
@@ -59,6 +62,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
       </Head>
       <DefaultSeo {...seo} />
       {getLayout(<Component {...pageProps} />)}
+      {toastData && <Toast message={toastData.message} type={toastData.type} />}
     </div>
   );
 }

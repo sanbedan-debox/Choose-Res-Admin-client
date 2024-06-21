@@ -1,0 +1,40 @@
+# Queries
+
+# Query to log in a restaurant user
+query Login($email: String!, $password: String!) {
+  login(email: $email, password: $password)
+}
+
+# Query to log out the currently logged-in user
+query Logout {
+  logout
+}
+
+# Mutations
+
+# Mutation to create a new restaurant user
+mutation CreateRestaurantUser($input: AddRestaurantUserInput!) {
+  createRestaurantUser(input: $input)
+}
+
+# Mutation to update the restaurant user's profile
+mutation UpdateRestaurantUserProfile($input: UpdateUserProfileInput!) {
+  updateRestaurantUserProfile(input: $input)
+}
+
+# Inputs
+
+# Input for adding a new restaurant user
+input AddRestaurantUserInput {
+  name: String!
+  email: String!
+  phone: String!
+  communication: CommunicationPreference[]
+}
+
+# Input for updating user profile
+input UpdateUserProfileInput {
+  name: String
+  email: String
+  # Add other fields as necessary
+}

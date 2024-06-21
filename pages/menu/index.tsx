@@ -1,7 +1,7 @@
 import MenuSection from "@/components/common/menuSection/menuSection";
 import MainLayout from "@/components/layout";
 import Loader from "@/components/loader";
-import useGlobalStore from "@/store/store";
+import useGlobalStore from "@/store/global";
 import React, { useEffect, useState } from "react";
 import { menuContents } from "./menuContent";
 

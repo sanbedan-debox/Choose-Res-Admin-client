@@ -1,4 +1,4 @@
-import useGlobalStore from "@/store/store";
+import useGlobalStore from "@/store/global";
 import { FC, useEffect } from "react";
 import { createPortal } from "react-dom";
 
@@ -69,7 +69,7 @@ export const Toast: FC<ToastProps> = ({ message, type }) => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setToastData(null); // Clear the toast after 3000 milliseconds (3 seconds)
+      setToastData(null);
     }, 3000);
 
     return () => clearTimeout(timer);

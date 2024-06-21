@@ -6,6 +6,8 @@ import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useRouter } from "next/router";
+import { sdk } from "@/utils/graphqlClient";
+import useGlobalStore from "@/store/global";
 
 interface IFormInput {
   email: string;
@@ -15,16 +17,34 @@ interface IFormInput {
 
 const Login: FC = () => {
   const router = useRouter();
+  const { setToastData } = useGlobalStore();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<IFormInput>();
+
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
     const { email, password } = data;
-    router.replace("/");
-  };
 
+    try {
+      const response = await sdk.Login({
+        email: email,
+        password: password,
+      });
+
+      if (response) {
+        console.log("Login successful:", response);
+        setToastData({ message: "Login Successful", type: "success" });
+
+        router.replace("/");
+      }
+    } catch (error) {
+      console.error("Login failed:", error);
+      setToastData({ message: "Login Failed", type: "error" });
+    }
+  };
   return (
     <div
       style={{
@@ -119,7 +139,7 @@ const Login: FC = () => {
                       </p>
                     )}
                   </div>
-                  <div className="flex ">
+                  <div className="flex justify-end">
                     <CButton type={ButtonType.Primary}>Sign In</CButton>
                   </div>
                 </form>
@@ -127,7 +147,7 @@ const Login: FC = () => {
                 <p className="mt-6 text-sm text-center text-gray-400">
                   Don&#x27;t have an account yet?{" "}
                   <a
-                    href="#"
+                    href="/signup"
                     className="text-blue-500 focus:outline-none focus:underline hover:underline"
                   >
                     Sign up

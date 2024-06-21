@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import useGlobalStore from "@/store/store";
+import useGlobalStore from "@/store/global";
 import logo1 from "../../assets/logo/logoWhite.png";
 import {
   FaHome,
