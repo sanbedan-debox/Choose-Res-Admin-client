@@ -13,9 +13,24 @@ const OnboardingPage = () => {
     case "welcome":
       childComponent = <Intro />;
       break;
-    case "hello":
+    case "info":
       childComponent = <Next />;
       break;
+    // case "location":
+    // childComponent = <Locations />;
+    // break;
+    // case "integrations":
+    // childComponent = <Integrations />;
+    // break;
+    // case "status":
+    //   childComponent = <StatusRes />;
+    //   break;
+    // case "menu":
+    //   childComponent = <MenuIntegration />;
+    //   break;
+    // case "link":
+    //   childComponent = <RestaurantLink />;
+    //   break;
     default:
       childComponent = <Intro />;
       break;
