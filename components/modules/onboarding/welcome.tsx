@@ -1,12 +1,10 @@
-import { useRouter } from "next/router";
-
 import { motion } from "framer-motion";
-
 import { STAGGER_CHILD_VARIANTS } from "@/lib/constants";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
+import { useRouter } from "next/router";
 
-export default function Intro() {
+const Intro = () => {
   const router = useRouter();
 
   return (
@@ -16,13 +14,7 @@ export default function Intro() {
       transition={{ duration: 0.3, type: "spring" }}
     >
       <motion.div
-        variants={{
-          show: {
-            transition: {
-              staggerChildren: 0.2,
-            },
-          },
-        }}
+        variants={{ show: { transition: { staggerChildren: 0.2 } } }}
         initial="hidden"
         animate="show"
         className="mx-5 flex flex-col items-center space-y-10 text-center sm:mx-auto"
@@ -40,21 +32,11 @@ export default function Intro() {
           Built along with Restaurant Owners, Marketers, Technology Experts to
           revolutionise the Restaurant space.
         </motion.p>
-        <motion.div
-          variants={STAGGER_CHILD_VARIANTS}
-          // className="rounded  px-10 py-2 font-medium transition-colors text-gray-900 bg-gray-100 hover:text-gray-100 hover:bg-gray-500"
-        >
+        <motion.div variants={STAGGER_CHILD_VARIANTS}>
           <CButton
             type={ButtonType.Primary}
             className="px-10 text-base font-medium"
-            onClick={() =>
-              router.push({
-                pathname: "/onboarding",
-                query: {
-                  type: "next",
-                },
-              })
-            }
+            onClick={() => router.push("/onboarding/hello")}
           >
             Get Started
           </CButton>
@@ -62,4 +44,6 @@ export default function Intro() {
       </motion.div>
     </motion.div>
   );
-}
+};
+
+export default Intro;

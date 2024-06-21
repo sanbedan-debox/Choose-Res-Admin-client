@@ -1,17 +1,127 @@
-import { useRouter } from "next/router";
-import logo1 from "../../../assets/logo/logoWhite.png";
+// import { useRouter } from "next/router";
+// import logo1 from "../../../assets/logo/logoWhite.png";
 
+// import { motion } from "framer-motion";
+// import {
+//   File as DocumentIcon,
+//   Presentation as PresentationChartBarIcon,
+// } from "lucide-react";
+
+// import { STAGGER_CHILD_VARIANTS } from "@/lib/constants";
+// import Image from "next/image";
+
+// export default function Next() {
+//   const router = useRouter();
+//   return (
+//     <motion.div
+//       className="z-10 mx-5 flex flex-col items-center space-y-10 text-center sm:mx-auto"
+//       variants={{
+//         hidden: { opacity: 0, scale: 0.95 },
+//         show: {
+//           opacity: 1,
+//           scale: 1,
+//           transition: {
+//             staggerChildren: 0.2,
+//           },
+//         },
+//       }}
+//       initial="hidden"
+//       animate="show"
+//       exit="hidden"
+//       transition={{ duration: 0.3, type: "spring" }}
+//     >
+//       <motion.div
+//         variants={STAGGER_CHILD_VARIANTS}
+//         className="flex flex-col items-center space-y-10 text-center"
+//       >
+//         <div className="relative z-10 flex items-center  justify-center my-4">
+//           <Image className="mb-4" src={logo1} alt="Logo" width={200} />
+//         </div>
+//         <h1 className="font-display max-w-md text-3xl font-semibold transition-colors sm:text-4xl">
+//           Which document do you want to share today?
+//         </h1>
+//       </motion.div>
+//       <motion.div
+//         variants={STAGGER_CHILD_VARIANTS}
+//         className="grid w-full grid-cols-1 divide-y divide-border rounded-md border border-border text-foreground md:grid-cols-3 md:divide-x"
+//       >
+//         <button
+//           onClick={() =>
+//             router.push({
+//               pathname: "/welcome",
+//               query: {
+//                 type: "pitchdeck",
+//               },
+//             })
+//           }
+//           className="flex min-h-[200px] flex-col items-center justify-center space-y-5 overflow-hidden p-5 transition-colors hover:bg-gray-200 hover:dark:bg-gray-800 md:p-10"
+//         >
+//           <PresentationChartBarIcon className="pointer-events-none h-auto w-12 sm:w-12" />
+//           <p>Pitchdeck</p>
+//         </button>
+//         <button
+//           onClick={() =>
+//             router.push({
+//               pathname: "/welcome",
+//               query: {
+//                 type: "document",
+//               },
+//             })
+//           }
+//           className="flex min-h-[200px] flex-col items-center justify-center space-y-5 overflow-hidden p-5 transition-colors hover:bg-gray-200 hover:dark:bg-gray-800 md:p-10"
+//         >
+//           <DocumentIcon className="pointer-events-none h-auto w-12 sm:w-12" />
+//           <p>Another document</p>
+//         </button>
+//         <button
+//           onClick={() =>
+//             router.push({
+//               pathname: "/welcome",
+//               query: {
+//                 type: "notion",
+//               },
+//             })
+//           }
+//           className="flex min-h-[200px] flex-col items-center justify-center space-y-5 overflow-hidden p-5 transition-colors hover:bg-gray-200 hover:dark:bg-gray-800 md:p-10"
+//         >
+//           {/* <NotionIcon className="pointer-events-none h-auto w-12 sm:w-12" /> */}
+//           <p>Notion Page</p>
+//         </button>
+//       </motion.div>
+
+//       <motion.div variants={STAGGER_CHILD_VARIANTS} className="text-center">
+//         <button
+//           className="text-center text-sm text-muted-foreground underline-offset-4 transition-all hover:text-gray-800 hover:underline hover:dark:text-muted-foreground/80"
+//           onClick={() =>
+//             router.replace({
+//               pathname: "/onboarding",
+//               query: {
+//                 type: "datanextnexroom",
+//               },
+//             })
+//           }
+//         >
+//           Looking to create and share a full dataroom?
+//         </button>
+//       </motion.div>
+//     </motion.div>
+//   );
+// }
+
+// components/modules/onboarding/next/Next.js
 import { motion } from "framer-motion";
+import { STAGGER_CHILD_VARIANTS } from "@/lib/constants";
+import Image from "next/image";
+import logo1 from "../../../assets/logo/logoWhite.png";
+import { useRouter } from "next/router";
 import {
   File as DocumentIcon,
   Presentation as PresentationChartBarIcon,
 } from "lucide-react";
 
-import { STAGGER_CHILD_VARIANTS } from "@/lib/constants";
-import Image from "next/image";
-
-export default function Next() {
+const Next = () => {
   const router = useRouter();
+
   return (
     <motion.div
       className="z-10 mx-5 flex flex-col items-center space-y-10 text-center sm:mx-auto"
@@ -20,9 +130,7 @@ export default function Next() {
         show: {
           opacity: 1,
           scale: 1,
-          transition: {
-            staggerChildren: 0.2,
-          },
+          transition: { staggerChildren: 0.2 },
         },
       }}
       initial="hidden"
@@ -34,7 +142,7 @@ export default function Next() {
         variants={STAGGER_CHILD_VARIANTS}
         className="flex flex-col items-center space-y-10 text-center"
       >
-        <div className="relative z-10 flex items-center  justify-center my-4">
+        <div className="relative z-10 flex items-center justify-center my-4">
           <Image className="mb-4" src={logo1} alt="Logo" width={200} />
         </div>
         <h1 className="font-display max-w-md text-3xl font-semibold transition-colors sm:text-4xl">
@@ -46,45 +154,23 @@ export default function Next() {
         className="grid w-full grid-cols-1 divide-y divide-border rounded-md border border-border text-foreground md:grid-cols-3 md:divide-x"
       >
         <button
-          onClick={() =>
-            router.push({
-              pathname: "/welcome",
-              query: {
-                type: "pitchdeck",
-              },
-            })
-          }
+          onClick={() => router.push("/onboarding/welcome?type=pitchdeck")}
           className="flex min-h-[200px] flex-col items-center justify-center space-y-5 overflow-hidden p-5 transition-colors hover:bg-gray-200 hover:dark:bg-gray-800 md:p-10"
         >
           <PresentationChartBarIcon className="pointer-events-none h-auto w-12 sm:w-12" />
           <p>Pitchdeck</p>
         </button>
         <button
-          onClick={() =>
-            router.push({
-              pathname: "/welcome",
-              query: {
-                type: "document",
-              },
-            })
-          }
+          onClick={() => router.push("/onboarding/welcome?type=document")}
           className="flex min-h-[200px] flex-col items-center justify-center space-y-5 overflow-hidden p-5 transition-colors hover:bg-gray-200 hover:dark:bg-gray-800 md:p-10"
         >
           <DocumentIcon className="pointer-events-none h-auto w-12 sm:w-12" />
           <p>Another document</p>
         </button>
         <button
-          onClick={() =>
-            router.push({
-              pathname: "/welcome",
-              query: {
-                type: "notion",
-              },
-            })
-          }
+          onClick={() => router.push("/onboarding/welcome?type=notion")}
           className="flex min-h-[200px] flex-col items-center justify-center space-y-5 overflow-hidden p-5 transition-colors hover:bg-gray-200 hover:dark:bg-gray-800 md:p-10"
         >
-          {/* <NotionIcon className="pointer-events-none h-auto w-12 sm:w-12" /> */}
           <p>Notion Page</p>
         </button>
       </motion.div>
@@ -92,18 +178,13 @@ export default function Next() {
       <motion.div variants={STAGGER_CHILD_VARIANTS} className="text-center">
         <button
           className="text-center text-sm text-muted-foreground underline-offset-4 transition-all hover:text-gray-800 hover:underline hover:dark:text-muted-foreground/80"
-          onClick={() =>
-            router.replace({
-              pathname: "/onboarding",
-              query: {
-                type: "datanextnexroom",
-              },
-            })
-          }
+          onClick={() => router.replace("/onboarding/complete")}
         >
           Looking to create and share a full dataroom?
         </button>
       </motion.div>
     </motion.div>
   );
-}
+};
+
+export default Next;

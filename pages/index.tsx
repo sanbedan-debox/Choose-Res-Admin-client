@@ -1,4 +1,4 @@
-import DashboardLayout from "@/components/layout";
+import MainLayout from "@/components/layouts/MainLayout";
 import React from "react";
 
 type NextPageWithLayout = React.FC & {
@@ -14,7 +14,7 @@ const Hello: NextPageWithLayout = () => {
 };
 
 Hello.getLayout = function getLayout(page: React.ReactNode) {
-  return <DashboardLayout>{page}</DashboardLayout>;
+  return <MainLayout>{page}</MainLayout>;
 };
 
 export default Hello;

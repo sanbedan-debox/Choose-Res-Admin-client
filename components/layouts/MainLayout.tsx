@@ -1,5 +1,5 @@
-import Navbar from "./navbar/navbar";
-import Sidebar from "./navigation/sidebar";
+import Navbar from "../navbar/navbar";
+import Sidebar from "../navigation/sidebar";
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
