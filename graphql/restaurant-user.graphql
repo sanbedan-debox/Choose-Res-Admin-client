@@ -1,20 +1,33 @@
-# Queries
-
-# Query to log in a restaurant user
-query Login($email: String!, $password: String!) {
-  login(email: $email, password: $password)
-}
+# # Queries
 
 # Query to log out the currently logged-in user
 query Logout {
   logout
 }
 
+# Query to generate OTP for login
+query GenerateOtpForLogin($input: String!) {
+  generateOtpForLogin(input: $input)
+}
+
+# Query to verify OTP for login
+query VerifyOtpForLogin($key: String!, $input: String!, $otp: String!) {
+  verifyOtpForLogin(key: $key, input: $input, otp: $otp)
+}
+
 # Mutations
 
 # Mutation to create a new restaurant user
-mutation CreateRestaurantUser($input: AddRestaurantUserInput!) {
-  createRestaurantUser(input: $input)
+mutation addRestaurantUser($input: AddRestaurantUserInput!) {
+  addRestaurantUser(input: $input) {
+    emailOtpVerifyKey
+    numberOtpVerifyKey
+  }
+}
+
+# Mutation to verify restaurant user details
+mutation VerifyRestaurantUserDetails($input: VerifyRestaurantUserDetails!) {
+  verifyRestaurantUserDetails(input: $input)
 }
 
 # Mutation to update the restaurant user's profile
@@ -29,12 +42,44 @@ input AddRestaurantUserInput {
   name: String!
   email: String!
   phone: String!
-  communication: CommunicationPreference[]
+  communication: CommunicationPreferenceInput!
+}
+
+# Input for verifying restaurant user details
+input VerifyRestaurantUserDetails {
+  email: String!
+  phone: String!
+  emailOtp: String!
+  numberOtp: String!
+  emailOtpVerifyKey: String!
+  numberOtpVerifyKey: String!
+  name: String!
+  communication: CommunicationPreferenceInput!
 }
 
 # Input for updating user profile
 input UpdateUserProfileInput {
   name: String
-  email: String
-  # Add other fields as necessary
+  communication: [CommunicationPreferenceInput]
+  restaurantIds: [String]
+}
+
+# Input for communication preferences
+input CommunicationPreferenceInput {
+  whatsApp: Boolean!
+  email: Boolean!
+}
+
+# Object types
+
+# Response for adding a restaurant user
+type AddRestaurantUser {
+  emailOtpVerifyKey: String!
+  numberOtpVerifyKey: String!
+}
+
+type Mutation {
+  createRestaurantUser(input: AddRestaurantUserInput!): AddRestaurantUser
+  verifyRestaurantUserDetails(input: VerifyRestaurantUserDetails!): Boolean
+  updateRestaurantUserProfile(input: UpdateUserProfileInput!): Boolean
 }

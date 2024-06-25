@@ -7,7 +7,16 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import { sdk } from "@/utils/graphqlClient";
 import useGlobalStore from "@/store/global";
-import { CommunicationType } from "@/generated/graphql";
+
+enum CommunicationType {
+  Email = "email",
+  WhatsApp = "whatsApp",
+}
+
+enum CommunicationPreference {
+  EMAIL = "email",
+  WHATSAPP = "whatsApp",
+}
 
 interface IFormInput {
   name: string;
@@ -26,20 +35,32 @@ const Signup: FC = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<IFormInput>();
-
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
-    const { email, name, phone, commPref } = data;
+    const { email, name, phone, password, commPref } = data;
 
     try {
+      const communicationPreferences = commPref
+        .map((pref) => {
+          if (pref === CommunicationType.Email) {
+            return CommunicationPreference.EMAIL;
+          } else if (pref === CommunicationType.WhatsApp) {
+            return CommunicationPreference.WHATSAPP;
+          }
+          return null;
+        })
+        .filter((pref) => pref !== null);
+
       const input = {
         name,
         email,
         phone,
-        communication: commPref.map((pref) => ({ type: pref, resp: true })),
+        password,
+        communication: communicationPreferences,
       };
-      const response = await sdk.CreateRestaurantUser({ input });
 
-      if (response.createRestaurantUser) {
+      const response = await sdk.addRestaurantUser({ input });
+
+      if (response.addRestaurantUser) {
         console.log("Signup successful:", response);
         setToastData({ message: "Signup Successful", type: "success" });
         router.replace("/");
@@ -85,7 +106,7 @@ const Signup: FC = () => {
                       Name
                     </label>
                     <input
-                      type="name"
+                      type="text"
                       {...register("name", {
                         required: "Name is required",
                       })}
@@ -125,7 +146,7 @@ const Signup: FC = () => {
                       </p>
                     )}
                   </div>
-                  {/* <div className="col-span-2">
+                  <div className="col-span-2">
                     <label
                       htmlFor="password"
                       className="block mb-2 text-sm font-medium text-white"
@@ -146,7 +167,7 @@ const Signup: FC = () => {
                         {errors.password.message}
                       </p>
                     )}
-                  </div> */}
+                  </div>
                   <div className="col-span-2">
                     <label
                       htmlFor="phone"
@@ -198,10 +219,11 @@ const Signup: FC = () => {
                     </div>
                   </div>
                   <div className="flex justify-end">
-                    <CButton type={ButtonType.Primary}>Sign Up</CButton>
+                    <CButton type={ButtonType.Primary} htmlType="submit">
+                      Sign Up
+                    </CButton>
                   </div>
                 </form>
-
                 <p className="mt-6 text-sm text-center text-gray-400">
                   Already have an account?{" "}
                   <a

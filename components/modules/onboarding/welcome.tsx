@@ -36,7 +36,7 @@ const Intro = () => {
           <CButton
             type={ButtonType.Primary}
             className="px-10 text-base font-medium"
-            onClick={() => router.push("/onboarding/hello")}
+            onClick={() => router.push("/onboarding/info")}
           >
             Get Started
           </CButton>
