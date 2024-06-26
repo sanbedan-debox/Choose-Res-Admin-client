@@ -18,21 +18,27 @@ query VerifyOtpForLogin($key: String!, $input: String!, $otp: String!) {
 # Mutations
 
 # Mutation to create a new restaurant user
-mutation addRestaurantUser($input: AddRestaurantUserInput!) {
-  addRestaurantUser(input: $input) {
+# mutation addRestaurantUser($input: AddRestaurantUserInput!) {
+#   addRestaurantUser(input: $input) {
+#     emailOtpVerifyKey
+#     numberOtpVerifyKey
+#   }
+# }
+
+mutation addUser($input: addUserInput!) {
+  addUser(input: $input) {
     emailOtpVerifyKey
     numberOtpVerifyKey
   }
 }
-
 # Mutation to verify restaurant user details
-mutation VerifyRestaurantUserDetails($input: VerifyRestaurantUserDetails!) {
-  verifyRestaurantUserDetails(input: $input)
+mutation verifyUserDetails($input: VerifyUserDetails!) {
+  verifyUserDetails(input: $input)
 }
 
 # Mutation to update the restaurant user's profile
 mutation UpdateRestaurantUserProfile($input: UpdateUserProfileInput!) {
-  updateRestaurantUserProfile(input: $input)
+  updateUserProfile(input: $input)
 }
 
 # Inputs

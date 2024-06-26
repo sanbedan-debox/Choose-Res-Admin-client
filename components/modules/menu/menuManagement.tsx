@@ -2,9 +2,9 @@ import React from "react";
 
 const MenuManagement: React.FC = () => {
   return (
-    <div>
+    <div className="">
       <h3 className="text-xl font-semibold mb-2">
-        Menu builder <span className="text-blue-500">NEW</span>
+        Menu builder <span className="text-black">NEW</span>
       </h3>
       <p>
         Our newest tool for creating and managing menus with improved workflows

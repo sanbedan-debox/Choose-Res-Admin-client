@@ -47,16 +47,7 @@ const OnboardingLayout = ({ children }: Props) => {
           <ArrowLeftIcon className="h-8 w-8 text-gray-500 group-hover:text-white group-active:scale-90" />
         </button>
       )}
-      {/* Conditional rendering of skip button */}
-      {/* {pathname === "/onboarding/welcome" && (
-        <CButton
-          type={ButtonType.Primary}
-          onClick={handleSkipClick}
-          className="absolute right-2 top-10 z-40 p-2 text-muted-foreground sm:right-10"
-        >
-          Skip to dashboard
-        </CButton>
-      )} */}
+
       <AnimatePresence mode="wait">{children}</AnimatePresence>
     </div>
   );

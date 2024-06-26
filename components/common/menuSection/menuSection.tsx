@@ -42,7 +42,7 @@ const MenuSection: React.FC<MenuSectionProps> = ({ contentList }) => {
   };
 
   return (
-    <div className="flex text-gray-100">
+    <div className="flex text-black">
       <aside className="w-1/4 h-screen sticky top-0 p-4">
         <nav>
           <ul>
@@ -50,8 +50,10 @@ const MenuSection: React.FC<MenuSectionProps> = ({ contentList }) => {
               <li className="mb-1" key={content.id}>
                 <a
                   href={`#${content.id}`}
-                  className={`block p-2 hover:bg-gray-700 text-sm rounded ${
-                    activeId === content.id ? "bg-gray-700 font-bold" : ""
+                  className={`block p-2 hover:bg-primary hover:text-white text-black text-sm rounded ${
+                    activeId === content.id
+                      ? "bg-primary font-bold text-white"
+                      : ""
                   }`}
                   onClick={() => handleNavLinkClick(content.id)}
                 >
@@ -70,11 +72,6 @@ const MenuSection: React.FC<MenuSectionProps> = ({ contentList }) => {
             className="mb-16 p-4 rounded shadow"
             ref={(el) => {
               if (el) sectionRefs.current.push(el);
-            }}
-            style={{
-              background: "rgb(4,7,29)",
-              backgroundColor:
-                "linear-gradient(90deg, rgba(4,7,29,1) 0%, rgba(12,14,35,1) 100%)",
             }}
           >
             <h2 className="text-2xl font-bold mb-4">{content.title}</h2>
