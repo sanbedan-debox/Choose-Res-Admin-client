@@ -52,12 +52,7 @@ const Sidebar: React.FC = () => {
 
   return (
     <div
-      style={{
-        background: "rgb(4,7,29)",
-        backgroundColor:
-          "linear-gradient(90deg, rgba(4,7,29,1) 0%, rgba(12,14,35,1) 100%)",
-      }}
-      className={`h-screen flex flex-col text-white transition-all duration-300 ${
+      className={`h-screen flex flex-col text-black bg-sidebar transition-all duration-300 ${
         isSidebarExpanded ? "w-64" : "w-20"
       } overflow-y-auto scrollbar-hide`}
     >
@@ -86,12 +81,12 @@ const Sidebar: React.FC = () => {
                 <Link legacyBehavior href={module.route}>
                   <div
                     onClick={() => setSelectedMenu(module.name)}
-                    className={`flex items-center p-2 rounded-lg text-white group ${
+                    className={`flex items-center p-2 rounded-lg text-black group ${
                       router.pathname === module.route ||
                       selectedMenu === module.name
-                        ? "bg-gray-700"
+                        ? "bg-primary text-white"
                         : ""
-                    } hover:bg-gray-700`}
+                    } hover:bg-primary hover:text-white`}
                   >
                     {getIconComponent(module.icon)}
                     {isSidebarExpanded && (

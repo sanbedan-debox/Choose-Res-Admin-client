@@ -37,6 +37,8 @@ const OnboardingPage = () => {
     // case "link":
     //   childComponent = <RestaurantLink />;
     //   break;
+
+    //TODO:404 page
     default:
       childComponent = <Intro />;
       break;

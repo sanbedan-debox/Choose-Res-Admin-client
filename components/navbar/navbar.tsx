@@ -39,14 +39,11 @@ const Navbar: React.FC = () => {
 
   return (
     <nav
-      className={` text-white p-4 fixed top-0 z-10 transition-all duration-300 ${
+      className={` text-black p-4 fixed top-0 z-10 transition-all duration-300 ${
         isSidebarExpanded ? "left-64" : "left-20"
       }`}
       style={{
         width: `calc(100% - ${isSidebarExpanded ? "16rem" : "5rem"})`,
-        background: "rgb(4,7,29)",
-        backgroundColor:
-          "linear-gradient(90deg, rgba(4,7,29,1) 0%, rgba(12,14,35,1) 100%)",
       }}
     >
       <div className="container flex justify-between items-center">
@@ -55,7 +52,7 @@ const Navbar: React.FC = () => {
             type="button"
             title={isSidebarExpanded ? "Collapse Sidebar" : "Expand Sidebar"}
             onClick={toggleSidebar}
-            className="text-gray-400 hover:text-white flex items-center justify-center"
+            className="text-black hover:text-primary flex items-center justify-center"
           >
             {isSidebarExpanded ? (
               <FaCompressArrowsAlt className="h-4 w-4 mr-1" />
@@ -66,9 +63,9 @@ const Navbar: React.FC = () => {
           <div className="relative">
             <button
               onClick={toggleRestaurantDropdown}
-              className="flex items-center space-x-2  hover:bg-gray-700 px-2 py-2 rounded"
+              className="flex items-center space-x-2  hover:bg-primary hover:text-white px-2 py-2 rounded group"
             >
-              <FaMapMarkerAlt className="h-4 w-4 text-gray-400" />
+              <FaMapMarkerAlt className="h-4 w-4 text-black group-hover:text-white" />
               <span className="text-sm">Rasoi Indian Cuisine</span>
             </button>
             {isRestaurantDropdownOpen && (
@@ -114,31 +111,31 @@ const Navbar: React.FC = () => {
         <div className="flex items-center space-x-1 relative">
           <Link
             href="/shop"
-            className="hover:bg-gray-700 px-3 py-2 rounded flex items-center"
+            className="hover:bg-primary hover:text-white px-3 py-2 rounded flex items-center group"
           >
-            <FaStore className="h-4 w-4 mr-1 text-gray-400" />
+            <FaStore className="h-4 w-4 mr-1 text-black group-hover:text-white" />
             <span className="text-sm">Shop</span>
           </Link>
           <Link
             href="/unpublished-changes"
-            className="hover:bg-gray-700 px-3 py-2 rounded flex items-center"
+            className="hover:bg-primary hover:text-white px-3 py-2 rounded flex items-center group"
           >
-            <FaBell className="h-4 w-4 mr-1 text-gray-400" />
+            <FaBell className="h-4 w-4 mr-1 text-black group-hover:text-white" />
             <span className="text-sm">Unpublished changes</span>
           </Link>
           <Link
             href="/search"
-            className="hover:bg-gray-700 px-3 py-2 rounded flex items-center"
+            className="hover:bg-primary hover:text-white px-3 py-2 rounded flex items-center group"
           >
-            <FaSearch className="h-4 w-4 mr-1 text-gray-400" />
+            <FaSearch className="h-4 w-4 mr-1 text-black group-hover:text-white" />
             <span className="text-sm">Search</span>
           </Link>
           <div className="relative">
             <button
               onClick={toggleProfileDropdown}
-              className="hover:bg-gray-700 px-3 py-2 rounded flex items-center focus:outline-none"
+              className="hover:bg-primary hover:text-white px-3 py-2 rounded flex items-center group focus:outline-none"
             >
-              <FaUser className="h-4 w-4 mr-1 text-gray-400" />
+              <FaUser className="h-4 w-4 mr-1 text-black group-hover:text-white" />
               <span className="text-sm">{User}</span>
             </button>
             {isProfileDropdownOpen && (
@@ -186,16 +183,16 @@ const Navbar: React.FC = () => {
           <div className="border-r border-gray-400 h-6"></div>{" "}
           <Link
             href="/setup"
-            className="hover:bg-gray-700 px-3 py-2 rounded flex items-center"
+            className="hover:bg-primary hover:text-white px-3 py-2 rounded flex items-center group"
           >
-            <FaCog className="h-4 w-4 mr-1 text-gray-400" />
+            <FaCog className="h-4 w-4 mr-1 text-black group-hover:text-white" />
             <span className="text-sm">Setup</span>
           </Link>
           <Link
             href="/help"
-            className="hover:bg-gray-700 px-3 py-2 rounded flex items-center"
+            className="hover:bg-primary hover:text-white px-3 py-2 rounded flex items-center group"
           >
-            <FaQuestionCircle className="h-4 w-4 mr-1 text-gray-400" />
+            <FaQuestionCircle className="h-4 w-4 mr-1 text-black group-hover:text-white" />
             <span className="text-sm">Help</span>
           </Link>
         </div>
