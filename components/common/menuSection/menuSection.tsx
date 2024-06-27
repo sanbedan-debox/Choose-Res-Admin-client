@@ -50,10 +50,8 @@ const MenuSection: React.FC<MenuSectionProps> = ({ contentList }) => {
               <li className="mb-1" key={content.id}>
                 <a
                   href={`#${content.id}`}
-                  className={`block p-2 hover:bg-primary hover:text-white text-black text-sm rounded ${
-                    activeId === content.id
-                      ? "bg-primary font-bold text-white"
-                      : ""
+                  className={`block p-2 text-black text-sm rounded border border-transparent hover:border-primary hover:text-black hover:bg-transparent ${
+                    activeId === content.id ? "border-primary text-primary" : ""
                   }`}
                   onClick={() => handleNavLinkClick(content.id)}
                 >
