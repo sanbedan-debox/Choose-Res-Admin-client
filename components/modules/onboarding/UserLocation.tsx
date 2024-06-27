@@ -57,7 +57,7 @@ const UserLocation = () => {
             {...register("addressLine1", {
               required: "Address Line 1 is required",
             })}
-            className="mt-1 border bg-input text-sm rounded-lg w-full focus:outline-none block p-2.5 border-gray-500 placeholder-gray-400 text-black"
+            className=" input input-primary"
             placeholder="Address Line 1"
           />
           {errors.addressLine1 && (
@@ -74,7 +74,7 @@ const UserLocation = () => {
           <input
             type="text"
             {...register("addressLine2")}
-            className="mt-1 border bg-input text-sm rounded-lg w-full focus:outline-none block p-2.5 border-gray-500 placeholder-gray-400 text-black"
+            className=" input input-primary"
             placeholder="Address Line 2"
           />
         </div>
@@ -88,7 +88,7 @@ const UserLocation = () => {
             {...register("city", {
               required: "City is required",
             })}
-            className="mt-1 border bg-input text-sm rounded-lg w-full focus:outline-none block p-2.5 border-gray-500 placeholder-gray-400 text-black"
+            className=" input input-primary"
             placeholder="City"
           />
           {errors.city && (
@@ -105,7 +105,7 @@ const UserLocation = () => {
             {...register("state", {
               required: "State is required",
             })}
-            className="mt-1 border bg-input text-sm rounded-lg w-full focus:outline-none block p-2.5 border-gray-500 placeholder-gray-400 text-black"
+            className=" input input-primary"
             placeholder="State"
           />
           {errors.state && (
@@ -122,7 +122,7 @@ const UserLocation = () => {
             {...register("postcode", {
               required: "Postcode is required",
             })}
-            className="mt-1 border bg-input text-sm rounded-lg w-full focus:outline-none block p-2.5 border-gray-500 placeholder-gray-400 text-black"
+            className=" input input-primary"
             placeholder="Postcode"
           />
           {errors.postcode && (
@@ -137,7 +137,7 @@ const UserLocation = () => {
           <input
             type="text"
             {...register("latitude")}
-            className="mt-1 border bg-input text-sm rounded-lg w-full focus:outline-none block p-2.5 border-gray-500 placeholder-gray-400 text-black"
+            className=" input input-primary"
             placeholder="Latitude"
           />
         </div>
@@ -149,13 +149,13 @@ const UserLocation = () => {
           <input
             type="text"
             {...register("longitude")}
-            className="mt-1 border bg-input text-sm rounded-lg w-full focus:outline-none block p-2.5 border-gray-500 placeholder-gray-400 text-black"
+            className=" input input-primary"
             placeholder="Longitude"
           />
         </div>
 
         <button
-          onClick={() => router.push("/onboarding/location")}
+          onClick={() => router.push("/onboarding/user-verification")}
           type="submit"
           className="inline-flex btn btn-primary items-center justify-center w-full mt-8"
         >

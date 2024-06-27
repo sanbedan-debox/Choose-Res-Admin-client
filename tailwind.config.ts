@@ -119,14 +119,70 @@ const config: Config = {
         },
       };
 
+
+      // const inputs = {
+      //   '.input': {
+      //     padding: '.4rem 1rem',
+      //     borderRadius: '.375rem',
+      //     border: '1px solid #D1D5DB', // border-gray-300
+      //     backgroundColor: colors.input, // assuming colors.input is the intended bg color
+      //     fontSize: '.875rem', // text-sm
+      //     width: '100%', // w-full
+      //     outline: 'none', // focus:outline-none
+      //     display: 'block', // block
+      //     padding: '0.625rem', // p-2.5
+      //     color: colors.black, // text-black
+      //     '&::placeholder': {
+      //       color: '#9CA3AF', // placeholder-gray-400
+      //       opacity: '1', // ensured opacity is full
+      //       transition: 'color 0.3s ease', // added transition for focus
+      //     },
+      //     '&:focus::placeholder': {
+      //       color: colors.black, // black on focus
+      //     },
+      //     '&:focus': {
+      //       outline: 'none', // removed default outline
+      //       borderColor: colors.input, // assuming colors.input is the intended focus border color
+      //     },
+      //     '&.input-primary': {
+      //       backgroundColor: `${colors.input}`, // low opacity primary color
+      //       '&:focus': {
+      //         backgroundColor: `${colors.input}`, // slightly higher opacity on focus
+      //       },
+      //       '&::placeholder': {
+      //         color: colors.black, // placeholder color
+      //         opacity: '0.5', // ensured opacity is full
+      //         transition: 'color 0.3s ease', // added transition for focus
+      //       },
+      //     },
+      //     '&.input-secondary': {
+      //       backgroundColor: `${colors.secondary}1A`,
+      //       '&:focus': {
+      //         backgroundColor: `${colors.secondary}33`,
+      //       },
+      //     },
+      //     '&.input-warning': {
+      //       backgroundColor: `${colors.warning}1A`,
+      //       '&:focus': {
+      //         backgroundColor: `${colors.warning}33`,
+      //       },
+      //     },
+      //   },
+      // };
+
       const inputs = {
         '.input': {
           padding: '.4rem 1rem',
           borderRadius: '.375rem',
-          border: 'none', // removed border
-          color: colors.black, // text color
+          border: '1px solid #D1D5DB',
+          backgroundColor: colors.input,
+          fontSize: '.875rem',
+          width: '100%',
+          outline: 'none', // focus:outline-none
+          display: 'block', // block
+          color: colors.black, // text-black
           '&::placeholder': {
-            color: colors.inputColor, // placeholder color
+            color: '#9CA3AF', // placeholder-gray-400
             opacity: '1', // ensured opacity is full
             transition: 'color 0.3s ease', // added transition for focus
           },
@@ -135,11 +191,14 @@ const config: Config = {
           },
           '&:focus': {
             outline: 'none', // removed default outline
+            borderColor: colors.input, // ensure primary color border on focus
           },
           '&.input-primary': {
-            backgroundColor: `${colors.inputColor}`, // low opacity primary color
+            backgroundColor: `${colors.input}`, // low opacity primary color
+            borderColor: '#D1D5DB', // ensure primary color border by default
             '&:focus': {
-              backgroundColor: `${colors.inputColor}`, // slightly higher opacity on focus
+              backgroundColor: `${colors.input}`, // slightly higher opacity on focus
+              borderColor: "#D1D5DB",
             },
             '&::placeholder': {
               color: colors.black, // placeholder color
@@ -147,18 +206,18 @@ const config: Config = {
               transition: 'color 0.3s ease', // added transition for focus
             },
           },
-
-
           '&.input-secondary': {
             backgroundColor: `${colors.secondary}1A`,
             '&:focus': {
               backgroundColor: `${colors.secondary}33`,
+              borderColor: `${colors.secondary}`, // ensure secondary color border on focus
             },
           },
           '&.input-warning': {
             backgroundColor: `${colors.warning}1A`,
             '&:focus': {
               backgroundColor: `${colors.warning}33`,
+              borderColor: `${colors.warning}`, // ensure warning color border on focus
             },
           },
         },

@@ -45,7 +45,7 @@ const RestaurantLocation = () => {
         className="flex flex-col items-center space-y-5 text-center"
       >
         <h1 className="font-display max-w-md text-2xl font-semibold transition-colors">
-          Location Details
+          Restaurant Location Details
         </h1>
       </motion.div>
 
@@ -62,7 +62,7 @@ const RestaurantLocation = () => {
             {...register("businessName", {
               required: "Business name is required",
             })}
-            className="mt-1 border bg-input text-sm rounded-lg w-full focus:outline-none block p-2.5 border-gray-500 placeholder-gray-400 text-black"
+            className=" input input-primary"
             placeholder="Name"
           />
           {errors.businessName && (
@@ -81,7 +81,7 @@ const RestaurantLocation = () => {
             {...register("locationNickname", {
               required: "Location nickname is required",
             })}
-            className="mt-1 border bg-input text-sm rounded-lg w-full focus:outline-none block p-2.5 border-gray-500 placeholder-gray-400 text-black"
+            className=" input input-primary"
             placeholder="Location nickname"
           />
           {errors.locationNickname && (
@@ -99,7 +99,7 @@ const RestaurantLocation = () => {
             {...register("businessDescription", {
               required: "Business description is required",
             })}
-            className="mt-1 border bg-input text-sm rounded-lg w-full focus:outline-none block p-2.5 border-gray-500 placeholder-gray-400 text-black"
+            className=" input input-primary"
             placeholder="Business description"
             rows="4"
           />
@@ -120,7 +120,7 @@ const RestaurantLocation = () => {
             })}
             //Hello
             options={locationTypeOptions}
-            className="mt-1 text-sm rounded-lg w-full focus:outline-none"
+            className="mt-1 text-sm rounded-lg w-full focus:outline-none text-start"
             classNamePrefix="react-select"
             placeholder="Select location type"
           />
@@ -140,7 +140,7 @@ const RestaurantLocation = () => {
             {...register("addressLine1", {
               required: "Address Line 1 is required",
             })}
-            className="mt-1 border bg-input text-sm rounded-lg w-full focus:outline-none block p-2.5 border-gray-500 placeholder-gray-400 text-black"
+            className=" input input-primary"
             placeholder="Address Line 1"
           />
           {errors.addressLine1 && (
@@ -159,7 +159,7 @@ const RestaurantLocation = () => {
             {...register("city", {
               required: "City is required",
             })}
-            className="mt-1 border bg-input text-sm rounded-lg w-full focus:outline-none block p-2.5 border-gray-500 placeholder-gray-400 text-black"
+            className=" input input-primary"
             placeholder="City"
           />
           {errors.city && (
@@ -176,7 +176,7 @@ const RestaurantLocation = () => {
             {...register("state", {
               required: "State is required",
             })}
-            className="mt-1 border bg-input text-sm rounded-lg w-full focus:outline-none block p-2.5 border-gray-500 placeholder-gray-400 text-black"
+            className=" input input-primary"
             placeholder="State"
           />
           {errors.state && (
@@ -193,7 +193,7 @@ const RestaurantLocation = () => {
             {...register("postcode", {
               required: "Postcode is required",
             })}
-            className="mt-1 border bg-input text-sm rounded-lg w-full focus:outline-none block p-2.5 border-gray-500 placeholder-gray-400 text-black"
+            className=" input input-primary"
             placeholder="Postcode"
           />
           {errors.postcode && (
@@ -210,7 +210,7 @@ const RestaurantLocation = () => {
             {...register("email", {
               required: "Email is required",
             })}
-            className="mt-1 border bg-input text-sm rounded-lg w-full focus:outline-none block p-2.5 border-gray-500 placeholder-gray-400 text-black"
+            className=" input input-primary"
             placeholder="Email"
           />
           {errors.email && (
@@ -227,7 +227,7 @@ const RestaurantLocation = () => {
             {...register("phone", {
               required: "Phone is required",
             })}
-            className="mt-1 border bg-input text-sm rounded-lg w-full focus:outline-none block p-2.5 border-gray-500 placeholder-gray-400 text-black"
+            className=" input input-primary"
             placeholder="Phone"
           />
           {errors.phone && (
@@ -242,36 +242,11 @@ const RestaurantLocation = () => {
           <input
             type="text"
             {...register("website")}
-            className="mt-1 border bg-input text-sm rounded-lg w-full focus:outline-none block p-2.5 border-gray-500 placeholder-gray-400 text-black"
+            className=" input input-primary"
             placeholder="Website"
           />
         </div>
 
-        {/* <div className="col-span-2">
-          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-            Branding
-          </label>
-          <div className="mb-4">
-            <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-              Logo
-            </label>
-            <input
-              type="file"
-              {...register("logo")}
-              className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none"
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-              Point-of-sale checkout background
-            </label>
-            <input
-              type="file"
-              {...register("checkoutBackground")}
-              className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none"
-            />
-          </div>
-        </div> */}
         <div className="col-span-2">
           <label className="block mb-2 text-sm font-medium text-left text-gray-700">
             Branding
@@ -366,7 +341,7 @@ const RestaurantLocation = () => {
               })}
               // Hello
               options={timeZoneOptions}
-              className="mt-1 text-sm rounded-lg w-full focus:outline-none"
+              className="mt-1 text-sm rounded-lg w-full focus:outline-none text-start"
               classNamePrefix="react-select"
               placeholder="Select time zone"
             />
@@ -375,7 +350,7 @@ const RestaurantLocation = () => {
             )}
           </div>
 
-          <div className="mb-4">
+          {/* <div className="mb-4">
             <label className="block mb-2 text-sm font-medium text-left text-gray-700">
               Regular hours
             </label>
@@ -406,6 +381,42 @@ const RestaurantLocation = () => {
                     className="mt-1 border bg-input text-sm rounded-lg w-24 focus:outline-none block p-2.5 border-gray-500 placeholder-gray-400 text-black"
                     placeholder="To"
                   />
+                </div>
+              ))}
+            </div>
+          </div> */}
+          <div className="mb-4">
+            <label className="block mb-2 text-sm font-medium text-left text-gray-700">
+              Regular hours
+            </label>
+            <div className="space-y-2">
+              {[
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday",
+              ].map((day) => (
+                <div key={day} className="flex flex-col">
+                  <label className="block text-sm font-medium text-start text-gray-700">
+                    {day}
+                  </label>
+                  <div className="flex space-x-2 mt-1">
+                    <input
+                      type="text"
+                      {...register(`hours.${day}.from`)}
+                      className=" input input-primary"
+                      placeholder="From"
+                    />
+                    <input
+                      type="text"
+                      {...register(`hours.${day}.to`)}
+                      className="input input-primary"
+                      placeholder="To"
+                    />
+                  </div>
                 </div>
               ))}
             </div>

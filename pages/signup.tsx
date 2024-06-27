@@ -94,7 +94,7 @@ const Signup: FC = () => {
                       required: "First Name is required",
                     })}
                     id="firstName"
-                    className="bg-secondary bg-opacity-30 text-sm rounded-lg focus:ring-primary-600 focus:outline-none block w-full p-2.5 border-gray-500 placeholder-gray-400 text-black focus:ring-primary-500 focus:border-transparent"
+                    className=" input input-primary"
                     placeholder="Enter your First Name"
                   />
                   {errors.firstName && (
@@ -116,7 +116,7 @@ const Signup: FC = () => {
                       required: "Last Name is required",
                     })}
                     id="lastName"
-                    className="bg-secondary bg-opacity-30 text-sm rounded-lg focus:ring-primary-600 focus:outline-none block w-full p-2.5 border-gray-500 placeholder-gray-400 text-black focus:ring-primary-500 focus:border-transparent"
+                    className=" input input-primary"
                     placeholder="Enter your Last Name"
                   />
                   {errors.lastName && (
@@ -142,7 +142,7 @@ const Signup: FC = () => {
                       },
                     })}
                     id="email"
-                    className="bg-secondary bg-opacity-30 text-sm rounded-lg focus:ring-primary-600 focus:outline-none block w-full p-2.5 border-gray-500 placeholder-gray-400 text-black focus:ring-primary-500 focus:border-transparent"
+                    className=" input input-primary"
                     placeholder="Enter your Email Address"
                   />
                   {errors.email && (
@@ -164,7 +164,7 @@ const Signup: FC = () => {
                       required: "Password is required",
                     })}
                     id="password"
-                    className="bg-secondary bg-opacity-30 text-sm rounded-lg focus:ring-primary-600 focus:outline-none block w-full p-2.5 border-gray-500 placeholder-gray-400 text-black focus:ring-primary-500 focus:border-transparent"
+                    className=" input input-primary"
                     placeholder="Enter your Password"
                   />
                   {errors.password && (
@@ -186,7 +186,7 @@ const Signup: FC = () => {
                       required: "Phone number is required",
                     })}
                     id="phone"
-                    className="bg-secondary bg-opacity-30 text-sm rounded-lg focus:ring-primary-600 focus:outline-none block w-full p-2.5 border-gray-500 placeholder-gray-400 text-black focus:ring-primary-500 focus:border-transparent"
+                    className=" input input-primary"
                     placeholder="Enter your Phone Number"
                   />
                   {errors.phone && (

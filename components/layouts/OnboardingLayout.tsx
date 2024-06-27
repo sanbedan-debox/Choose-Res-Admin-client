@@ -14,6 +14,7 @@ const steps = [
   "intro",
   "user-info",
   "user-location",
+  "user-verification",
   "location",
   "availibility",
 ];

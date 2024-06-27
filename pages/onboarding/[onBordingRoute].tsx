@@ -5,6 +5,7 @@ import Integrations from "@/components/modules/onboarding/Integrations";
 import RestaurantLocation from "@/components/modules/onboarding/RestaurantLocation";
 import UserInfo from "@/components/modules/onboarding/userInfo";
 import UserLocation from "@/components/modules/onboarding/UserLocation";
+import UserVerification from "@/components/modules/onboarding/UserVerification";
 import Intro from "@/components/modules/onboarding/welcome";
 import { useRouter } from "next/router";
 
@@ -23,6 +24,9 @@ const OnboardingPage = () => {
       break;
     case "user-location":
       childComponent = <UserLocation />;
+      break;
+    case "user-verification":
+      childComponent = <UserVerification />;
       break;
     case "location":
       childComponent = <RestaurantLocation />;

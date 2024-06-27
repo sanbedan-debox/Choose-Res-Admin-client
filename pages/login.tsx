@@ -163,7 +163,7 @@ const Login: FC = () => {
                         },
                       })}
                       id="email"
-                      className="bg-inputColor text-sm rounded-lg focus:ring-primary-600 focus:outline-none block w-full p-2.5 border-gray-500 placeholder-gray-400 text-black focus:ring-primary-500 focus:border-transparent"
+                      className=" input input-primary"
                       placeholder="Enter your Email Address"
                     />
                     {errors.email && (

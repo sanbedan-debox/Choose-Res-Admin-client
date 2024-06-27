@@ -112,7 +112,7 @@ const UserInfo = () => {
             })}
             id="businessType"
             options={roleOptions}
-            className="mt-1 text-sm rounded-lg w-full focus:outline-none"
+            className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
             classNamePrefix="react-select"
             placeholder="Select business type"
           />
@@ -136,7 +136,7 @@ const UserInfo = () => {
               required: "Business name is required",
             })}
             id="businessName"
-            className="mt-1 border bg-input text-sm rounded-lg w-full focus:outline-none block p-2.5 border-gray-500 placeholder-gray-400 text-black"
+            className="input input-primary"
             placeholder="Enter your business name"
           />
           {errors.businessName && (
@@ -196,7 +196,7 @@ const UserInfo = () => {
             })}
             id="employees"
             options={employeeOptions}
-            className="mt-1 text-sm rounded-lg w-full focus:outline-none"
+            className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
             classNamePrefix="react-select"
             placeholder="Select number of employees"
           />
@@ -218,7 +218,7 @@ const UserInfo = () => {
             })}
             id="revenue"
             options={revenueOptions}
-            className="mt-1 text-sm rounded-lg w-full focus:outline-none"
+            className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
             classNamePrefix="react-select"
             placeholder="Select estimated annual revenue"
           />
