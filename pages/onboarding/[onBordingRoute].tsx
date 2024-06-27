@@ -2,8 +2,9 @@ import NotFound from "@/components/common/notFound/notFound";
 import OnboardingLayout from "@/components/layouts/OnboardingLayout";
 import Availability from "@/components/modules/onboarding/Availibility";
 import Integrations from "@/components/modules/onboarding/Integrations";
-import Locations from "@/components/modules/onboarding/Location";
-import Next from "@/components/modules/onboarding/next";
+import RestaurantLocation from "@/components/modules/onboarding/RestaurantLocation";
+import UserInfo from "@/components/modules/onboarding/userInfo";
+import UserLocation from "@/components/modules/onboarding/UserLocation";
 import Intro from "@/components/modules/onboarding/welcome";
 import { useRouter } from "next/router";
 
@@ -17,11 +18,14 @@ const OnboardingPage = () => {
     case "intro":
       childComponent = <Intro />;
       break;
-    case "info":
-      childComponent = <Next />;
+    case "user-info":
+      childComponent = <UserInfo />;
+      break;
+    case "user-location":
+      childComponent = <UserLocation />;
       break;
     case "location":
-      childComponent = <Locations />;
+      childComponent = <RestaurantLocation />;
       break;
     case "integrations":
       childComponent = <Integrations />;

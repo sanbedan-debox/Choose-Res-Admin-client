@@ -27,7 +27,7 @@ const config: Config = {
         background: "#F3F3F3",
         sidebar: "#FFFFFF",
         foreground: "#000000",
-        input: "#F1F1F1",
+        input: "#FFFFFF",
         dropdown: "#FFFFFF",
         switch: "#E5E7EB",
         toggle: "#D1D5DB",
@@ -47,7 +47,7 @@ const config: Config = {
 
       const buttons = {
         '.btn': {
-          padding: '.5rem 1rem',
+          padding: '.8rem 1rem',
           borderRadius: '.375rem',
           fontWeight: '600',
           fontSize: '0.855rem', // reduced text size
@@ -121,7 +121,7 @@ const config: Config = {
 
       const inputs = {
         '.input': {
-          padding: '.5rem 1rem',
+          padding: '.4rem 1rem',
           borderRadius: '.375rem',
           border: 'none', // removed border
           color: colors.black, // text color

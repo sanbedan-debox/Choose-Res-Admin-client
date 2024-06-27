@@ -20,7 +20,7 @@ interface IFormInput {
   zip: string;
 }
 
-const Next = () => {
+const UserInfo = () => {
   const { setToastData } = useGlobalStore();
   const router = useRouter();
   const {
@@ -52,12 +52,12 @@ const Next = () => {
     { value: "1000001+", label: "$1,000,001+" },
   ];
 
-  const stateOptions = [
-    { value: "NY", label: "New York" },
-    { value: "CA", label: "California" },
-    { value: "TX", label: "Texas" },
-    // Add more states as needed
-  ];
+  // const stateOptions = [
+  //   { value: "NY", label: "New York" },
+  //   { value: "CA", label: "California" },
+  //   { value: "TX", label: "Texas" },
+  //   // Add more states as needed
+  // ];
 
   const onSubmit = (data: IFormInput) => {
     // handle form submission
@@ -146,7 +146,7 @@ const Next = () => {
           )}
         </div>
 
-        <div className="col-span-2">
+        {/* <div className="col-span-2">
           <label
             htmlFor="phoneNumber"
             className="block mb-2 text-sm font-medium text-left text-gray-700"
@@ -181,7 +181,7 @@ const Next = () => {
             className="mt-1 border bg-input text-sm rounded-lg w-full focus:outline-none block p-2.5 border-gray-500 placeholder-gray-400 text-black"
             placeholder="Enter your EIN"
           />
-        </div>
+        </div> */}
 
         <div className="col-span-2">
           <label
@@ -227,7 +227,7 @@ const Next = () => {
           )}
         </div>
 
-        <div className="col-span-2">
+        {/* <div className="col-span-2">
           <label
             htmlFor="mobileBusiness"
             className="flex items-center mb-2 text-sm font-medium text-left text-gray-700"
@@ -341,11 +341,11 @@ const Next = () => {
           {errors.zip && (
             <p className="text-red-500 text-sm">{errors.zip.message}</p>
           )}
-        </div>
+        </div> */}
 
         <div className="col-span-2">
           <button
-            onClick={() => router.push("/onboarding/location")}
+            onClick={() => router.push("/onboarding/user-location")}
             type="submit"
             className="inline-flex btn btn-primary items-center justify-center w-full mt-8"
           >
@@ -357,4 +357,4 @@ const Next = () => {
   );
 };
 
-export default Next;
+export default UserInfo;

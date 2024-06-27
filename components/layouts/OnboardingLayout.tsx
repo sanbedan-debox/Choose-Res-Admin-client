@@ -10,7 +10,13 @@ type Props = {
   children: ReactNode;
 };
 
-const steps = ["welcome", "info", "location", "integrations", "availibility"];
+const steps = [
+  "intro",
+  "user-info",
+  "user-location",
+  "location",
+  "availibility",
+];
 
 const OnboardingLayout = ({ children }: Props) => {
   const router = useRouter();
