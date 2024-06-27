@@ -45,18 +45,13 @@ const ReusableModal: React.FC<ModalProps> = ({
   return ReactDOM.createPortal(
     <div className="modal-overlay fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
       <div
-        style={{
-          background: "rgb(4,7,29)",
-          backgroundColor:
-            "linear-gradient(90deg, rgba(4,7,29,1) 0%, rgba(12,14,35,1) 100%)",
-        }}
-        className={`rounded shadow-lg ${widthClasses[width]} z-10`}
+        className={`rounded shadow-lg bg-white text-black ${widthClasses[width]} z-10`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="bg-dot-white/[0.12] md:bg-dot-white/[0.15] py-5 px-6">
           <div className="flex items-start justify-between py-2 mb-4 rounded-t dark:border-gray-600">
             <div className="flex items-center space-x-4">
-              <h2 className="text-2xl font-bold text-white">{title}</h2>
+              <h2 className="text-2xl font-bold text-black">{title}</h2>
             </div>
             <button
               type="button"

@@ -270,20 +270,21 @@ const config: Config = {
               backgroundColor: colors.primary,
             },
           },
-          '&.checkbox-secondary': {
-            borderColor: colors.secondary,
-            '&:checked': {
-              backgroundColor: colors.secondary,
-            },
-          },
           '&.checkbox-warning': {
             borderColor: colors.warning,
             '&:checked': {
               backgroundColor: colors.warning,
             },
           },
+          '&.checkbox-confirmation': {
+            borderColor: colors.confirmation,
+            '&:checked': {
+              backgroundColor: colors.confirmation,
+            },
+          },
         },
       };
+
 
       addComponents(buttons);
       addComponents(inputs);

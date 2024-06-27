@@ -5,8 +5,6 @@ import { useRouter } from "next/router";
 import useGlobalStore from "@/store/global";
 import ReusableModal from "@/components/common/modal/modal";
 import { sdk } from "@/utils/graphqlClient";
-import CButton from "@/components/common/button/button";
-import { ButtonType } from "@/components/common/button/interface";
 import logo1 from "../assets/logo/logoWhite.png";
 
 interface IFormInput {
@@ -177,7 +175,7 @@ const Login: FC = () => {
                       type="checkbox"
                       {...register("acknowledge", { required: true })}
                       id="acknowledge"
-                      className="mr-2"
+                      className="mr-2 checkbox checkbox-primary"
                       onChange={handleCheckboxChange}
                     />
                     <label
@@ -195,9 +193,12 @@ const Login: FC = () => {
                     </label>
                   </div>
                   <div className="flex justify-end">
-                    <CButton type={ButtonType.Primary} disabled={!acknowledge}>
+                    {/* <CButton type={ButtonType.Primary} disabled={!acknowledge}>
                       Get OTP
-                    </CButton>
+                    </CButton> */}
+                    <button className="btn btn-primary" disabled={!acknowledge}>
+                      Log in
+                    </button>
                   </div>
                 </form>
 
@@ -228,7 +229,7 @@ const Login: FC = () => {
               type="text"
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
-              className="p-2 border text-black border-gray-300 rounded-md"
+              className="input input-primary"
               placeholder="Enter OTP"
             />
             {otpError && <p className="text-red-500">{otpError}</p>}
@@ -243,12 +244,8 @@ const Login: FC = () => {
               </button>
               {timer > 0 && <p>Time remaining: {timer} seconds</p>}
             </div>
-            <CButton
-              type={ButtonType.Primary}
-              className="px-6 py-3 bg-blue-500 rounded-md text-white font-medium hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
-            >
-              Submit
-            </CButton>
+
+            <button className="btn btn-primary">Submit</button>
           </div>
         </form>
       </ReusableModal>

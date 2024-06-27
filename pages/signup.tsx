@@ -224,9 +224,9 @@ const Signup: FC = () => {
                   </div>
                 </div>
                 <div className="flex justify-end">
-                  <CButton type={ButtonType.Primary} htmlType="submit">
+                  <button className="btn btn-primary" type="submit">
                     Sign Up
-                  </CButton>
+                  </button>
                 </div>
               </form>
               <p className="mt-6 text-sm text-center text-gray-400">
