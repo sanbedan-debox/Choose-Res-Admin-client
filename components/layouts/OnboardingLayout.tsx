@@ -43,7 +43,6 @@ const OnboardingLayout = ({ children }: Props) => {
           <Image src={logo1} alt="Logo" width={100} height={100} />
         </div>
       </div>
-      {/* Progress bar */}
       <div className="relative h-2 bg-gray-200">
         <div
           className="absolute top-0 left-0 h-full bg-primary"
