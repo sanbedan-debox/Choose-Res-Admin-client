@@ -9,7 +9,7 @@ const Intro = () => {
 
   return (
     <motion.div
-      className="z-10 "
+      className="w-full max-w-lg"
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.3, type: "spring" }}
     >
@@ -17,7 +17,7 @@ const Intro = () => {
         variants={{ show: { transition: { staggerChildren: 0.2 } } }}
         initial="hidden"
         animate="show"
-        className="mx-5 flex flex-col items-center space-y-10 text-center sm:mx-auto"
+        className="flex flex-col items-center space-y-10 text-center"
       >
         <motion.h1
           className="font-display text-4xl font-bold text-foreground transition-colors sm:text-5xl"

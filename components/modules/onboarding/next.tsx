@@ -1,206 +1,23 @@
-// import { motion } from "framer-motion";
-// import { STAGGER_CHILD_VARIANTS } from "@/lib/constants";
-// import Image from "next/image";
-// import logo1 from "../../../assets/logo/logoWhite.png";
-// import { useRouter } from "next/router";
-// import {
-//   File as DocumentIcon,
-//   Presentation as PresentationChartBarIcon,
-// } from "lucide-react";
-// import CButton from "@/components/common/button/button";
-// import { ButtonType } from "@/components/common/button/interface";
-// import { CommunicationType } from "@/generated/graphql";
-// import { SubmitHandler, useForm } from "react-hook-form";
-// import { sdk } from "@/utils/graphqlClient";
-// import useGlobalStore from "@/store/global";
-
-// interface IFormInput {
-//   name: string;
-//   address: string;
-//   state: string;
-//   city: string;
-// }
-
-// const Next = () => {
-//   const { setToastData } = useGlobalStore();
-
-//   const {
-//     register,
-//     handleSubmit,
-//     formState: { errors },
-//   } = useForm<IFormInput>();
-//   const router = useRouter();
-//   // const onSubmit: SubmitHandler<IFormInput> = async (data) => {
-//   //   const { address, name, state, city } = data;
-
-//   //   try {
-//   //     const input = {
-//   //       name,
-//   //       address,
-//   //       state,
-//   //       city,
-//   //     };
-//   //     const response = await sdk.CreateRestaurantUser({ input });
-
-//   //     if (response.createRestaurantUser) {
-//   //       console.log("Signup successful:", response);
-//   //       setToastData({ message: "Signup Successful", type: "success" });
-//   //       router.replace("/");
-//   //     }
-//   //   } catch (error) {
-//   //     console.error("Signup failed:", error);
-//   //     setToastData({ message: "Signup Failed", type: "error" });
-//   //   }
-//   // };
-
-//   return (
-//     <motion.div
-//       className="z-10 flex flex-col items-center space-y-5 text-center "
-//       variants={{
-//         hidden: { opacity: 0, scale: 0.95 },
-//         show: {
-//           opacity: 1,
-//           scale: 1,
-//           transition: { staggerChildren: 0.2 },
-//         },
-//       }}
-//       initial="hidden"
-//       animate="show"
-//       exit="hidden"
-//       transition={{ duration: 0.3, type: "spring" }}
-//     >
-//       <motion.div
-//         variants={STAGGER_CHILD_VARIANTS}
-//         className="flex flex-col items-center space-y-5 text-center"
-//       >
-//         <div className="relative z-10 flex items-center justify-center my-4">
-//           <Image className="mb-4" src={logo1} alt="Logo" width={200} />
-//         </div>
-//         <h1 className="font-display max-w-2xl text-3xl font-semibold transition-colors sm:text-4xl">
-//           Okay Lets start with Basic Restaurant Information!!!
-//         </h1>
-//       </motion.div>
-
-// <form
-//   className="space-y-4 md:space-y-3 w-full max-w-2xl"
-//   // onSubmit={handleSubmit(onSubmit)}
-// >
-//   <div className="col-span-2">
-//     <label
-//       htmlFor="name"
-//       className="block mb-2 text-sm font-medium text-left text-white"
-//     >
-//       Restaurant Name
-//     </label>
-//     <input
-//       type="name"
-//       {...register("name", {
-//         required: "Restaurant name is required",
-//       })}
-//       id="name"
-//       className="bg-secondary bg-opacity-30 text-sm rounded-lg focus:ring-primary-600 focus:outline-none block w-full p-2.5 border-gray-500 placeholder-gray-400 text-white focus:ring-primary-500 focus:border-transparent"
-//       placeholder="Enter your Restaurant Name"
-//     />
-//     {errors.name && (
-//       <p className="text-red-500 text-sm">{errors.name.message}</p>
-//     )}
-//   </div>
-//   <div className="col-span-2">
-//     <label
-//       htmlFor="address"
-//       className="block mb-2 text-sm font-medium text-left text-white"
-//     >
-//       Address
-//     </label>
-//     <input
-//       type="address"
-//       {...register("address", {
-//         required: "Address is required",
-//       })}
-//       id="email"
-//       className="bg-secondary bg-opacity-30 text-sm rounded-lg focus:ring-primary-600 focus:outline-none block w-full p-2.5 border-gray-500 placeholder-gray-400 text-white focus:ring-primary-500 focus:border-transparent"
-//       placeholder="Enter your Email"
-//     />
-//     {errors.address && (
-//       <p className="text-red-500 text-sm">{errors.address.message}</p>
-//     )}
-//   </div>
-
-//   <div className="col-span-2">
-//     <label
-//       htmlFor="phone"
-//       className="block mb-2 text-sm font-medium text-left text-white"
-//     >
-//       State
-//     </label>
-//     <input
-//       type="text"
-//       {...register("state", {
-//         required: "Phone number is required",
-//       })}
-//       id="phone"
-//       className="bg-secondary bg-opacity-30 text-sm rounded-lg focus:ring-primary-600 focus:outline-none block w-full p-2.5 border-gray-500 placeholder-gray-400 text-white focus:ring-primary-500 focus:border-transparent"
-//       placeholder="Enter your State"
-//     />
-//     {errors.state && (
-//       <p className="text-red-500 text-sm">{errors.state.message}</p>
-//     )}
-//   </div>
-//   <div className="col-span-2">
-//     <label
-//       htmlFor="city"
-//       className="block mb-2 text-sm font-medium text-left text-white"
-//     >
-//       City
-//     </label>
-//     <input
-//       type="text"
-//       {...register("city", {
-//         required: "Phone number is required",
-//       })}
-//       id="city"
-//       className="bg-secondary bg-opacity-30 text-sm rounded-lg focus:ring-primary-600 focus:outline-none block w-full p-2.5 border-gray-500 placeholder-gray-400 text-white focus:ring-primary-500 focus:border-transparent"
-//       placeholder="Enter your City"
-//     />
-//     {errors.city && (
-//       <p className="text-red-500 text-sm">{errors.city.message}</p>
-//     )}
-//   </div>
-
-//   <div className="flex justify-center">
-//     <CButton
-//       onClick={() => router.push("/onboarding/location")}
-//       type={ButtonType.Primary}
-//     >
-//       Continue
-//     </CButton>
-//   </div>
-// </form>
-
-//       <motion.div variants={STAGGER_CHILD_VARIANTS} className="text-center">
-//         <h1>There are just few steps to go..... :)</h1>
-//       </motion.div>
-//     </motion.div>
-//   );
-// };
-
-// export default Next;
-
 import { motion } from "framer-motion";
 import { STAGGER_CHILD_VARIANTS } from "@/lib/constants";
-import Image from "next/image";
-import logo1 from "../../../assets/logo/logoWhite.png";
 import { useRouter } from "next/router";
-import CButton from "@/components/common/button/button";
-import { ButtonType } from "@/components/common/button/interface";
 import useGlobalStore from "@/store/global";
 import { useForm } from "react-hook-form";
+import Select from "react-select";
 
 interface IFormInput {
-  name: string;
+  businessType: string;
+  businessName: string;
+  phoneNumber: string;
+  ein?: string;
+  employees: string;
+  revenue: string;
+  mobileBusiness: boolean;
   address: string;
-  state: string;
+  apartment?: string;
   city: string;
+  state: string;
+  zip: string;
 }
 
 const Next = () => {
@@ -211,9 +28,46 @@ const Next = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<IFormInput>();
+
+  const roleOptions = [
+    { value: "LLC", label: "Limited Liability Company (LLC)" },
+    { value: "Corporation", label: "Corporation" },
+    { value: "Sole Proprietorship", label: "Sole Proprietorship" },
+    { value: "Partnership", label: "Partnership" },
+  ];
+
+  const employeeOptions = [
+    { value: "1", label: "Just me" },
+    { value: "2-10", label: "2-10" },
+    { value: "11-50", label: "11-50" },
+    { value: "51-200", label: "51-200" },
+    { value: "200+", label: "200+" },
+  ];
+
+  const revenueOptions = [
+    { value: "0-50000", label: "$0 - $50,000" },
+    { value: "50001-200000", label: "$50,001 - $200,000" },
+    { value: "200001-500000", label: "$200,001 - $500,000" },
+    { value: "500001-1000000", label: "$500,001 - $1,000,000" },
+    { value: "1000001+", label: "$1,000,001+" },
+  ];
+
+  const stateOptions = [
+    { value: "NY", label: "New York" },
+    { value: "CA", label: "California" },
+    { value: "TX", label: "Texas" },
+    // Add more states as needed
+  ];
+
+  const onSubmit = (data: IFormInput) => {
+    // handle form submission
+    console.log(data);
+    router.push("/onboarding/location");
+  };
+
   return (
     <motion.div
-      className="z-10 flex flex-col items-center space-y-5 text-center"
+      className="z-10 w-full max-w-md flex flex-col items-center space-y-5 text-center"
       variants={{
         hidden: { opacity: 0, scale: 0.95 },
         show: {
@@ -231,53 +85,178 @@ const Next = () => {
         variants={STAGGER_CHILD_VARIANTS}
         className="flex flex-col items-center space-y-5 text-center"
       >
-        <div className="relative z-10 flex items-center justify-center my-4">
-          <Image className="mb-4" src={logo1} alt="Logo" width={200} />
-        </div>
-        <h1 className="font-display max-w-2xl text-3xl font-semibold transition-colors sm:text-4xl">
-          Okay, Let's start with Basic Restaurant Information!!!
+        <h1 className="font-display max-w-2xl font-semibold transition-colors text-2xl">
+          Tell us about your business
         </h1>
+        <p className="max-w-md text-accent-foreground/80 transition-colors text-sm">
+          Every business is unique. We want to hear about yours. If you
+          registered your business with the IRS, make sure the information you
+          submit matches what is on your IRS documents.
+        </p>
       </motion.div>
 
       <form
         className="space-y-4 md:space-y-3 w-full max-w-2xl"
-        // onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit(onSubmit)}
       >
         <div className="col-span-2">
           <label
-            htmlFor="name"
-            className="block mb-2 text-sm font-medium text-left text-white"
+            htmlFor="businessType"
+            className="block mb-2 text-sm font-medium text-left text-gray-700"
           >
-            Restaurant Name
+            What kind of business are you?
           </label>
-          <input
-            type="name"
-            {...register("name", {
-              required: "Restaurant name is required",
+          <Select
+            {...register("businessType", {
+              required: "Business type is required",
             })}
-            id="name"
-            className="bg-secondary bg-opacity-30 text-sm rounded-lg focus:ring-primary-600 focus:outline-none block w-full p-2.5 border-gray-500 placeholder-gray-400 text-white focus:ring-primary-500 focus:border-transparent"
-            placeholder="Enter your Restaurant Name"
+            id="businessType"
+            options={roleOptions}
+            className="mt-1 text-sm rounded-lg w-full focus:outline-none"
+            classNamePrefix="react-select"
+            placeholder="Select business type"
           />
-          {errors.name && (
-            <p className="text-red-500 text-sm">{errors.name.message}</p>
+          {errors.businessType && (
+            <p className="text-red-500 text-sm">
+              {errors.businessType.message}
+            </p>
           )}
         </div>
+
+        <div className="col-span-2">
+          <label
+            htmlFor="businessName"
+            className="block mb-2 text-sm font-medium text-left text-gray-700"
+          >
+            What is your business name?
+          </label>
+          <input
+            type="text"
+            {...register("businessName", {
+              required: "Business name is required",
+            })}
+            id="businessName"
+            className="mt-1 border bg-input text-sm rounded-lg w-full focus:outline-none block p-2.5 border-gray-500 placeholder-gray-400 text-black"
+            placeholder="Enter your business name"
+          />
+          {errors.businessName && (
+            <p className="text-red-500 text-sm">
+              {errors.businessName.message}
+            </p>
+          )}
+        </div>
+
+        <div className="col-span-2">
+          <label
+            htmlFor="phoneNumber"
+            className="block mb-2 text-sm font-medium text-left text-gray-700"
+          >
+            Preferred phone number
+          </label>
+          <input
+            type="text"
+            {...register("phoneNumber", {
+              required: "Phone number is required",
+            })}
+            id="phoneNumber"
+            className="mt-1 border bg-input text-sm rounded-lg w-full focus:outline-none block p-2.5 border-gray-500 placeholder-gray-400 text-black"
+            placeholder="Enter your phone number"
+          />
+          {errors.phoneNumber && (
+            <p className="text-red-500 text-sm">{errors.phoneNumber.message}</p>
+          )}
+        </div>
+
+        <div className="col-span-2">
+          <label
+            htmlFor="ein"
+            className="block mb-2 text-sm font-medium text-left text-gray-700"
+          >
+            Employer Identification Number (Optional)
+          </label>
+          <input
+            type="text"
+            {...register("ein")}
+            id="ein"
+            className="mt-1 border bg-input text-sm rounded-lg w-full focus:outline-none block p-2.5 border-gray-500 placeholder-gray-400 text-black"
+            placeholder="Enter your EIN"
+          />
+        </div>
+
+        <div className="col-span-2">
+          <label
+            htmlFor="employees"
+            className="block mb-2 text-sm font-medium text-left text-gray-700"
+          >
+            How many employees
+          </label>
+          <Select
+            {...register("employees", {
+              required: "Number of employees is required",
+            })}
+            id="employees"
+            options={employeeOptions}
+            className="mt-1 text-sm rounded-lg w-full focus:outline-none"
+            classNamePrefix="react-select"
+            placeholder="Select number of employees"
+          />
+          {errors.employees && (
+            <p className="text-red-500 text-sm">{errors.employees.message}</p>
+          )}
+        </div>
+
+        <div className="col-span-2">
+          <label
+            htmlFor="revenue"
+            className="block mb-2 text-sm font-medium text-left text-gray-700"
+          >
+            Estimated annual revenue
+          </label>
+          <Select
+            {...register("revenue", {
+              required: "Estimated annual revenue is required",
+            })}
+            id="revenue"
+            options={revenueOptions}
+            className="mt-1 text-sm rounded-lg w-full focus:outline-none"
+            classNamePrefix="react-select"
+            placeholder="Select estimated annual revenue"
+          />
+          {errors.revenue && (
+            <p className="text-red-500 text-sm">{errors.revenue.message}</p>
+          )}
+        </div>
+
+        <div className="col-span-2">
+          <label
+            htmlFor="mobileBusiness"
+            className="flex items-center mb-2 text-sm font-medium text-left text-gray-700"
+          >
+            <input
+              type="checkbox"
+              {...register("mobileBusiness")}
+              id="mobileBusiness"
+              className="mr-2"
+            />
+            I have a mobile business
+          </label>
+        </div>
+
         <div className="col-span-2">
           <label
             htmlFor="address"
-            className="block mb-2 text-sm font-medium text-left text-white"
+            className="block mb-2 text-sm font-medium text-left text-gray-700"
           >
             Address
           </label>
           <input
-            type="address"
+            type="text"
             {...register("address", {
               required: "Address is required",
             })}
-            id="email"
-            className="bg-secondary bg-opacity-30 text-sm rounded-lg focus:ring-primary-600 focus:outline-none block w-full p-2.5 border-gray-500 placeholder-gray-400 text-white focus:ring-primary-500 focus:border-transparent"
-            placeholder="Enter your Email"
+            id="address"
+            className="mt-1 border bg-input text-sm rounded-lg w-full focus:outline-none block p-2.5 border-gray-500 placeholder-gray-400 text-black"
+            placeholder="Enter your address"
           />
           {errors.address && (
             <p className="text-red-500 text-sm">{errors.address.message}</p>
@@ -286,67 +265,94 @@ const Next = () => {
 
         <div className="col-span-2">
           <label
-            htmlFor="phone"
-            className="block mb-2 text-sm font-medium text-left text-white"
+            htmlFor="apartment"
+            className="block mb-2 text-sm font-medium text-left text-gray-700"
           >
-            State
+            Apartment, suite, unit, etc. (Optional)
           </label>
           <input
             type="text"
-            {...register("state", {
-              required: "Phone number is required",
-            })}
-            id="phone"
-            className="bg-secondary bg-opacity-30 text-sm rounded-lg focus:ring-primary-600 focus:outline-none block w-full p-2.5 border-gray-500 placeholder-gray-400 text-white focus:ring-primary-500 focus:border-transparent"
-            placeholder="Enter your State"
+            {...register("apartment")}
+            id="apartment"
+            className="mt-1 border bg-input text-sm rounded-lg w-full focus:outline-none block p-2.5 border-gray-500 placeholder-gray-400 text-black"
+            placeholder="Enter apartment, suite, etc."
           />
-          {errors.state && (
-            <p className="text-red-500 text-sm">{errors.state.message}</p>
-          )}
         </div>
+
         <div className="col-span-2">
           <label
             htmlFor="city"
-            className="block mb-2 text-sm font-medium text-left text-white"
+            className="block mb-2 text-sm font-medium text-left text-gray-700"
           >
             City
           </label>
           <input
             type="text"
             {...register("city", {
-              required: "Phone number is required",
+              required: "City is required",
             })}
             id="city"
-            className="bg-secondary bg-opacity-30 text-sm rounded-lg focus:ring-primary-600 focus:outline-none block w-full p-2.5 border-gray-500 placeholder-gray-400 text-white focus:ring-primary-500 focus:border-transparent"
-            placeholder="Enter your City"
+            className="mt-1 border bg-input text-sm rounded-lg w-full focus:outline-none block p-2.5 border-gray-500 placeholder-gray-400 text-black"
+            placeholder="Enter your city"
           />
           {errors.city && (
             <p className="text-red-500 text-sm">{errors.city.message}</p>
           )}
         </div>
-        {/* 
-        <div className="flex justify-center">
-          <CButton
+
+        <div className="col-span-2">
+          <label
+            htmlFor="state"
+            className="block mb-2 text-sm font-medium text-left text-gray-700"
+          >
+            State
+          </label>
+          <Select
+            {...register("state", {
+              required: "State is required",
+            })}
+            id="state"
+            options={stateOptions}
+            className="mt-1 text-sm rounded-lg w-full focus:outline-none"
+            classNamePrefix="react-select"
+            placeholder="Select state"
+          />
+          {errors.state && (
+            <p className="text-red-500 text-sm">{errors.state.message}</p>
+          )}
+        </div>
+
+        <div className="col-span-2">
+          <label
+            htmlFor="zip"
+            className="block mb-2 text-sm font-medium text-left text-gray-700"
+          >
+            ZIP code
+          </label>
+          <input
+            type="text"
+            {...register("zip", {
+              required: "ZIP code is required",
+            })}
+            id="zip"
+            className="mt-1 border bg-input text-sm rounded-lg w-full focus:outline-none block p-2.5 border-gray-500 placeholder-gray-400 text-black"
+            placeholder="Enter your ZIP code"
+          />
+          {errors.zip && (
+            <p className="text-red-500 text-sm">{errors.zip.message}</p>
+          )}
+        </div>
+
+        <div className="col-span-2">
+          <button
             onClick={() => router.push("/onboarding/location")}
-            type={ButtonType.Primary}
+            type="submit"
+            className="inline-flex btn btn-primary items-center justify-center w-full mt-8"
           >
             Continue
-          </CButton>
-        </div> */}
+          </button>
+        </div>
       </form>
-
-      <div className="flex justify-center mt-4">
-        <CButton
-          onClick={() => router.push("/onboarding/location")}
-          type={ButtonType.Primary}
-        >
-          Continue
-        </CButton>
-      </div>
-
-      <motion.div variants={STAGGER_CHILD_VARIANTS} className="text-center">
-        <h1>There are just a few steps to go..... :)</h1>
-      </motion.div>
     </motion.div>
   );
 };

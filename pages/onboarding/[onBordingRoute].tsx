@@ -28,17 +28,6 @@ const OnboardingPage = () => {
     case "availibility":
       childComponent = <Availability />;
       break;
-    // case "status":
-    //   childComponent = <StatusRes />;
-    //   break;
-    // case "menu":
-    //   childComponent = <MenuIntegration />;
-    //   break;
-    // case "link":
-    //   childComponent = <RestaurantLink />;
-    //   break;
-
-    //TODO:404 page
     default:
       childComponent = <Intro />;
       break;
