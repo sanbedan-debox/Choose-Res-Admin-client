@@ -69,19 +69,12 @@ const Navbar: React.FC = () => {
               <span className="text-sm">Rasoi Indian Cuisine</span>
             </button>
             {isRestaurantDropdownOpen && (
-              <div
-                style={{
-                  background: "rgb(4,7,29)",
-                  backgroundColor:
-                    "linear-gradient(90deg, rgba(4,7,29,1) 0%, rgba(12,14,35,1) 100%)",
-                }}
-                className="absolute mt-2 w-64 rounded-md shadow-lg py-2  text-white z-50"
-              >
+              <div className=" bg-white absolute mt-2 w-64 rounded-md shadow-lg py-2  text-black z-50">
                 {restaurants.length > 1 ? (
                   restaurants.map((restaurant) => (
                     <div
                       key={restaurant.id}
-                      className="block px-4 py-2 text-sm hover:bg-primary"
+                      className="block px-4 py-2 text-sm hover:bg-primary hover:text-white"
                     >
                       {restaurant.name}
                     </div>
@@ -139,41 +132,34 @@ const Navbar: React.FC = () => {
               <span className="text-sm">{User}</span>
             </button>
             {isProfileDropdownOpen && (
-              <div
-                style={{
-                  background: "rgb(4,7,29)",
-                  backgroundColor:
-                    "linear-gradient(90deg, rgba(4,7,29,1) 0%, rgba(12,14,35,1) 100%)",
-                }}
-                className="absolute right-0 mt-4 w-48  rounded-md shadow-lg py-1 text-gray-700 z-50"
-              >
+              <div className=" bg-white  absolute right-0 mt-4 w-48  rounded-md shadow-lg py-1 text-black z-50">
                 <Link
                   href="/profile"
-                  className="block px-4 py-2 text-sm text-white hover:bg-primary"
+                  className="block px-4 py-2 text-sm text-black hover:text-white hover:bg-primary"
                 >
                   My account
                 </Link>
                 <Link
                   href="/toast-community"
-                  className="block px-4 py-2 text-sm text-white hover:bg-primary"
+                  className="block px-4 py-2 text-sm text-black hover:text-white hover:bg-primary"
                 >
                   Choose Community
                 </Link>
                 <Link
                   href="/referral-program"
-                  className="block px-4 py-2 text-sm text-white hover:bg-primary"
+                  className="block px-4 py-2 text-sm text-black hover:text-white hover:bg-primary"
                 >
                   Referral Program
                 </Link>
                 <Link
                   href="/share-your-screen"
-                  className="block px-4 py-2 text-sm text-white hover:bg-primary"
+                  className="block px-4 py-2 text-sm text-black hover:text-white hover:bg-primary"
                 >
                   Share your screen
                 </Link>
                 <Link
                   href="/logout"
-                  className="block px-4 py-2 text-sm text-white hover:bg-primary"
+                  className="block px-4 py-2 text-sm text-black hover:text-white hover:bg-primary"
                 >
                   Logout
                 </Link>
