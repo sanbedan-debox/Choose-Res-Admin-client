@@ -1,3 +1,4 @@
+import NotFound from "@/components/common/notFound/notFound";
 import OnboardingLayout from "@/components/layouts/OnboardingLayout";
 import Availability from "@/components/modules/onboarding/Availibility";
 import Integrations from "@/components/modules/onboarding/Integrations";
@@ -13,7 +14,7 @@ const OnboardingPage = () => {
   let childComponent;
 
   switch (onBordingRoute) {
-    case "welcome":
+    case "intro":
       childComponent = <Intro />;
       break;
     case "info":
@@ -29,7 +30,7 @@ const OnboardingPage = () => {
       childComponent = <Availability />;
       break;
     default:
-      childComponent = <Intro />;
+      childComponent = <NotFound />;
       break;
   }
 

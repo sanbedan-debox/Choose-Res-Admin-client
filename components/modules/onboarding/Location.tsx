@@ -876,14 +876,14 @@ const Locations = () => {
             )}
           </div>
         </div>
-
         <div className="col-span-2">
-          <CButton
-            type={ButtonType.SUBMIT}
-            className="w-full py-2 px-4 bg-primary text-white rounded-lg"
+          <button
+            onClick={() => router.push("/onboarding/location")}
+            type="submit"
+            className="inline-flex btn btn-primary items-center justify-center w-full mt-8"
           >
-            Save
-          </CButton>
+            Continue
+          </button>
         </div>
       </form>
     </motion.div>
