@@ -68,6 +68,14 @@ export type AddRestaurantInput = {
   name: MasterCommonInput;
 };
 
+export type AddUserInput = {
+  accountPreferences: AccountPreferenceInput;
+  email: Scalars['String']['input'];
+  firstName: Scalars['String']['input'];
+  lastName: Scalars['String']['input'];
+  phone: Scalars['String']['input'];
+};
+
 export type AddUserKeys = {
   __typename?: 'AddUserKeys';
   emailOtpVerifyKey: Scalars['String']['output'];
@@ -108,14 +116,14 @@ export type Admin = {
   blockedBy: Admin;
   createdAt: Scalars['DateTimeISO']['output'];
   createdBy: Admin;
-  devices: Array<AccessHistory>;
+  devices: Array<Device>;
   email: Scalars['String']['output'];
   lastLoggedIn?: Maybe<Scalars['DateTimeISO']['output']>;
   lastLoggedOut?: Maybe<Scalars['DateTimeISO']['output']>;
   name: Scalars['String']['output'];
   numberOfResetPassword: Scalars['Float']['output'];
   role: AdminRole;
-  status: PlantFormStatus;
+  status: PlatformStatus;
   unBlockedBy: Admin;
   updatedAt: Scalars['DateTimeISO']['output'];
   updatedBy: Admin;
@@ -128,26 +136,48 @@ export enum AdminRole {
   Normal = 'normal'
 }
 
-export type AvailabilityDate = {
-  __typename?: 'AvailabilityDate';
+export type Availability = {
+  __typename?: 'Availability';
   _id: Scalars['ID']['output'];
+  active: Scalars['Boolean']['output'];
   day: Scalars['String']['output'];
   end: Scalars['DateTimeISO']['output'];
   start: Scalars['DateTimeISO']['output'];
-  status?: Maybe<RestaurantStatus>;
 };
 
-export type AvailabilityDateInput = {
+export type AvailabilityInput = {
+  active: Scalars['Boolean']['input'];
   day: Day;
   end: Scalars['DateTimeISO']['input'];
   start: Scalars['DateTimeISO']['input'];
-  status?: InputMaybe<RestaurantStatus>;
 };
 
 /** Business type enum  */
 export enum BusinessTypeEnum {
   Llc = 'LLC',
   PrivateLimited = 'PrivateLimited'
+}
+
+export type Category = {
+  __typename?: 'Category';
+  _id: Scalars['ID']['output'];
+  availability?: Maybe<Array<Availability>>;
+  createdAt: Scalars['DateTimeISO']['output'];
+  desc: MasterCommon;
+  items?: Maybe<Array<Item>>;
+  name: MasterCommon;
+  status: StatusEnum;
+  upSellCategories?: Maybe<Array<Category>>;
+  updatedAt: Scalars['DateTimeISO']['output'];
+  visibility?: Maybe<Array<Visibility>>;
+};
+
+/** ConnectionStatusEnum enum type  */
+export enum ConnectionStatusEnum {
+  Connected = 'Connected',
+  Error = 'Error',
+  Expired = 'Expired',
+  NotConnected = 'NotConnected'
 }
 
 /** The day */
@@ -160,6 +190,15 @@ export enum Day {
   Tuesday = 'Tuesday',
   Wednesday = 'Wednesday'
 }
+
+export type Device = {
+  __typename?: 'Device';
+  _id: Scalars['ID']['output'];
+  createdAt: Scalars['DateTimeISO']['output'];
+  lastLoggedIn: Scalars['DateTimeISO']['output'];
+  lastLoggedOut: Scalars['DateTimeISO']['output'];
+  userAgent: Scalars['String']['output'];
+};
 
 export type DeviceInfo = {
   __typename?: 'DeviceInfo';
@@ -247,15 +286,58 @@ export type EmailTemplatesObject = {
   updatedBy: Admin;
 };
 
+export type Integration = {
+  __typename?: 'Integration';
+  _id: Scalars['ID']['output'];
+  connectionStatus: ConnectionStatusEnum;
+  createdAt: Scalars['DateTimeISO']['output'];
+  credentials: IntegrationCredentials;
+  platform: IntegrationPlatformEnum;
+  status: StatusEnum;
+  updatedAt: Scalars['DateTimeISO']['output'];
+};
+
+export type IntegrationCredentials = {
+  __typename?: 'IntegrationCredentials';
+  _id: Scalars['ID']['output'];
+  accessToke: Scalars['String']['output'];
+  refreshToken: Scalars['String']['output'];
+  storeId: Scalars['String']['output'];
+};
+
+/** Integration enum type  */
+export enum IntegrationPlatformEnum {
+  Clover = 'Clover',
+  DoorDash = 'DoorDash',
+  GrubHub = 'GrubHub',
+  UberEats = 'UberEats'
+}
+
+export type Item = {
+  __typename?: 'Item';
+  _id: Scalars['ID']['output'];
+  applySalesTax: Scalars['Boolean']['output'];
+  availability?: Maybe<Array<Availability>>;
+  createdAt: Scalars['DateTimeISO']['output'];
+  desc: MasterCommon;
+  image: MasterCommon;
+  modifierGroup?: Maybe<Array<ModifierGroup>>;
+  name: MasterCommon;
+  popularItem: Scalars['Boolean']['output'];
+  price: MasterCommonNumber;
+  upSellItem: Scalars['Boolean']['output'];
+  updatedAt: Scalars['DateTimeISO']['output'];
+  visibility?: Maybe<Array<Visibility>>;
+};
+
 export type LocationCommon = {
   __typename?: 'LocationCommon';
   coordinates: Array<Scalars['Float']['output']>;
-  type: Scalars['String']['output'];
+  type?: Maybe<Scalars['String']['output']>;
 };
 
 export type LocationCommonInput = {
   coordinates: Array<Scalars['Float']['input']>;
-  type?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type MasterCommon = {
@@ -283,11 +365,41 @@ export type MasterCommonNumber = {
 export type Menu = {
   __typename?: 'Menu';
   _id: Scalars['ID']['output'];
-  availability: Array<AvailabilityDate>;
-  master: Scalars['Boolean']['output'];
-  name: Scalars['String']['output'];
-  status: Scalars['String']['output'];
-  visibility: Visibility;
+  categories?: Maybe<Array<Category>>;
+  createdAt: Scalars['DateTimeISO']['output'];
+  name: MasterCommon;
+  status: StatusEnum;
+  taxes: TaxRate;
+  type: MenuStatusEnum;
+  updatedAt: Scalars['DateTimeISO']['output'];
+};
+
+/** Menu status enum */
+export enum MenuStatusEnum {
+  Catering = 'Catering',
+  DineIn = 'DineIn',
+  OnlineOrdering = 'OnlineOrdering'
+}
+
+export type Modifier = {
+  __typename?: 'Modifier';
+  _id: Scalars['ID']['output'];
+  createdAt: Scalars['DateTimeISO']['output'];
+  name: MasterCommon;
+  price: MasterCommonNumber;
+  updatedAt: Scalars['DateTimeISO']['output'];
+};
+
+export type ModifierGroup = {
+  __typename?: 'ModifierGroup';
+  _id: Scalars['ID']['output'];
+  createdAt: Scalars['DateTimeISO']['output'];
+  maxSelections: MasterCommonNumber;
+  modifiers?: Maybe<Array<Modifier>>;
+  name: MasterCommon;
+  optional: Scalars['Boolean']['output'];
+  pricingType: PriceTypeEnum;
+  updatedAt: Scalars['DateTimeISO']['output'];
 };
 
 export type Mutation = {
@@ -298,6 +410,7 @@ export type Mutation = {
   addWaitListUser: Scalars['Boolean']['output'];
   blockAdmin: Scalars['Boolean']['output'];
   changeRole: Scalars['Boolean']['output'];
+  changeUserStatus: Scalars['Boolean']['output'];
   createEmailCampaign: Scalars['Boolean']['output'];
   createEmailTemplate: Scalars['Boolean']['output'];
   deleteAdmin: Scalars['Boolean']['output'];
@@ -332,13 +445,18 @@ export type MutationAddWaitListUserArgs = {
 
 export type MutationBlockAdminArgs = {
   id: Scalars['String']['input'];
-  updateStatus: PlantFormStatus;
+  updateStatus: PlatformStatus;
 };
 
 
 export type MutationChangeRoleArgs = {
   id: Scalars['String']['input'];
   role: AdminRole;
+};
+
+
+export type MutationChangeUserStatusArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -387,10 +505,18 @@ export type MutationVerifyUserDetailsArgs = {
 };
 
 /** Restaurant user status */
-export enum PlantFormStatus {
+export enum PlatformStatus {
   Active = 'active',
   Blocked = 'blocked',
+  OnboardingPending = 'onboardingPending',
   PaymentPending = 'paymentPending'
+}
+
+/** Price type enum  */
+export enum PriceTypeEnum {
+  FreeOfCharge = 'FreeOfCharge',
+  IndividualPrice = 'IndividualPrice',
+  SamePrice = 'SamePrice'
 }
 
 export type Query = {
@@ -466,10 +592,11 @@ export type Restaurant = {
   __typename?: 'Restaurant';
   _id: Scalars['ID']['output'];
   address: AddressInfo;
-  availability: Array<AvailabilityDate>;
+  availability: Array<Availability>;
   brandingLogo: Scalars['String']['output'];
   createdAt: Scalars['DateTimeISO']['output'];
-  locationName?: Maybe<LocationCommon>;
+  integrations?: Maybe<Array<Integration>>;
+  locationName?: Maybe<MasterCommon>;
   menus?: Maybe<Array<Menu>>;
   name: MasterCommon;
   socialInfo?: Maybe<SocialInfo>;
@@ -482,6 +609,7 @@ export type Restaurant = {
 
 export type RestaurantInfo = {
   __typename?: 'RestaurantInfo';
+  _id: Scalars['ID']['output'];
   city?: Maybe<MasterCommon>;
   name: MasterCommon;
   status: RestaurantStatus;
@@ -503,6 +631,13 @@ export type SocialInfo = {
   website?: Maybe<Scalars['String']['output']>;
 };
 
+export type SocialInfoInput = {
+  facebook?: InputMaybe<Scalars['String']['input']>;
+  instagram?: InputMaybe<Scalars['String']['input']>;
+  twitter?: InputMaybe<Scalars['String']['input']>;
+  website?: InputMaybe<Scalars['String']['input']>;
+};
+
 /** Types of SoftWare Enum */
 export enum SoftWareEnum {
   None = 'None',
@@ -511,12 +646,20 @@ export enum SoftWareEnum {
   Software3 = 'Software3'
 }
 
+/** Status enum  */
+export enum StatusEnum {
+  Active = 'active',
+  Inactive = 'inactive'
+}
+
 export type TaxRate = {
   __typename?: 'TaxRate';
   _id: Scalars['ID']['output'];
-  applyOnAllItems: Scalars['Boolean']['output'];
+  createdAt: Scalars['DateTimeISO']['output'];
+  default: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
   salesTax: MasterCommonNumber;
+  updatedAt: Scalars['DateTimeISO']['output'];
 };
 
 export type TaxRateInput = {
@@ -533,16 +676,26 @@ export type TestEmailInput = {
 
 export type UpdateRestaurantInput = {
   address?: InputMaybe<AddressInfoInput>;
-  availability?: InputMaybe<Array<AvailabilityDateInput>>;
+  availability?: InputMaybe<Array<AvailabilityInput>>;
+  brandingLogo?: InputMaybe<Scalars['String']['input']>;
+  locationName?: InputMaybe<MasterCommonInput>;
   restaurantId: Scalars['String']['input'];
-  status?: InputMaybe<RestaurantStatus>;
-  taxRate?: InputMaybe<TaxRateInput>;
+  socialInfo?: InputMaybe<SocialInfoInput>;
+  status: RestaurantStatus;
+  taxRates?: InputMaybe<TaxRateInput>;
+  timezone?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateUserProfileInput = {
-  accountPreferences?: InputMaybe<Array<AccountPreferenceInput>>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  restaurantIds?: InputMaybe<Array<Scalars['String']['input']>>;
+  address?: InputMaybe<AddressInfoInput>;
+  businessName?: InputMaybe<Scalars['String']['input']>;
+  businessType?: InputMaybe<BusinessTypeEnum>;
+  dob?: InputMaybe<Scalars['DateTimeISO']['input']>;
+  ein?: InputMaybe<Scalars['String']['input']>;
+  employeeSize?: InputMaybe<MasterCommonInput>;
+  establishedAt?: InputMaybe<Scalars['String']['input']>;
+  estimatedRevenue?: InputMaybe<MasterCommonInput>;
+  ssn?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type User = {
@@ -550,22 +703,23 @@ export type User = {
   _id: Scalars['ID']['output'];
   accessHistory: Array<AccessHistory>;
   accountPreferences?: Maybe<AccountPreference>;
-  address: AddressInfo;
-  businessName: Scalars['String']['output'];
-  businessType: BusinessTypeEnum;
+  address?: Maybe<AddressInfo>;
+  businessName?: Maybe<Scalars['String']['output']>;
+  businessType?: Maybe<BusinessTypeEnum>;
   createdAt: Scalars['DateTimeISO']['output'];
-  dob: Scalars['DateTimeISO']['output'];
-  ein: Scalars['String']['output'];
+  dob?: Maybe<Scalars['DateTimeISO']['output']>;
+  ein?: Maybe<Scalars['String']['output']>;
   email: Scalars['String']['output'];
-  employeeSize: MasterCommon;
-  establishedAt: Scalars['String']['output'];
-  estimatedRevenue: MasterCommon;
+  employeeSize?: Maybe<MasterCommon>;
+  establishedAt?: Maybe<Scalars['String']['output']>;
+  estimatedRevenue?: Maybe<MasterCommon>;
   firstName: Scalars['String']['output'];
   lastName: Scalars['String']['output'];
   phone: Scalars['String']['output'];
   restaurants?: Maybe<Array<RestaurantInfo>>;
-  ssn: Scalars['String']['output'];
-  status: PlantFormStatus;
+  ssn?: Maybe<Scalars['String']['output']>;
+  status: PlatformStatus;
+  statusUpdatedBy?: Maybe<Admin>;
   updatedAt: Scalars['DateTimeISO']['output'];
 };
 
@@ -581,12 +735,11 @@ export type VerifyUserDetails = {
   phone: Scalars['String']['input'];
 };
 
-/** Menu visibility enum. */
-export enum Visibility {
-  Delivery = 'Delivery',
-  Online = 'Online',
-  Pos = 'POS'
-}
+export type Visibility = {
+  __typename?: 'Visibility';
+  name: Scalars['String']['output'];
+  status: Scalars['Boolean']['output'];
+};
 
 export type WaitListUser = {
   __typename?: 'WaitListUser';
@@ -598,14 +751,6 @@ export type WaitListUser = {
   software: SoftWareEnum;
   updatedAt?: Maybe<Scalars['DateTimeISO']['output']>;
   website: Scalars['String']['output'];
-};
-
-export type AddUserInput = {
-  accountPreferences: AccountPreferenceInput;
-  email: Scalars['String']['input'];
-  firstName: Scalars['String']['input'];
-  lastName: Scalars['String']['input'];
-  phone: Scalars['String']['input'];
 };
 
 export type LogoutQueryVariables = Exact<{ [key: string]: never; }>;
@@ -667,7 +812,7 @@ export const VerifyOtpForLoginDocument = gql`
 }
     `;
 export const AddUserDocument = gql`
-    mutation addUser($input: addUserInput!) {
+    mutation addUser($input: AddUserInput!) {
   addUser(input: $input) {
     emailOtpVerifyKey
     numberOtpVerifyKey

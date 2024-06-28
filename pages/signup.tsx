@@ -1,13 +1,12 @@
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import logo1 from "../assets/logo/logoWhite.png";
 import Image from "next/image";
-import CButton from "@/components/common/button/button";
-import { ButtonType } from "@/components/common/button/interface";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import { sdk } from "@/utils/graphqlClient";
 import useGlobalStore from "@/store/global";
-import { AddUserInput } from "@/generated/graphql";
+import { VerifyUserDetails, AddUserInput } from "@/generated/graphql";
+import ReusableModal from "@/components/common/modal/modal"; // Import your reusable modal component
 
 enum CommunicationType {
   Email = "EMAIL",
@@ -18,7 +17,6 @@ interface IFormInput {
   firstName: string;
   lastName: string;
   email: string;
-  password: string;
   phone: string;
   commPref: CommunicationType[];
 }
@@ -27,6 +25,20 @@ const Signup: FC = () => {
   const router = useRouter();
   const { setToastData } = useGlobalStore();
 
+  const [firstName, setFirstName] = useState<string>("");
+  const [lastName, setLastName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [phone, setPhone] = useState<string>("");
+  const [commPref, setCommPref] = useState<CommunicationType[]>([]);
+  const [emailOtpVerifyKey, setEmailOtpVerifyKey] = useState<string>("");
+  const [numberOtpVerifyKey, setNumberOtpVerifyKey] = useState<string>("");
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [otpEmail, setOtpEmail] = useState<string>("");
+  const [otpWhatsApp, setOtpWhatsApp] = useState<string>("");
+  const [otpError, setOtpError] = useState<string>("");
+  const [timer, setTimer] = useState<number>(120);
+  const [showResendButton, setShowResendButton] = useState<boolean>(false);
+
   const {
     register,
     handleSubmit,
@@ -34,32 +46,121 @@ const Signup: FC = () => {
   } = useForm<IFormInput>();
 
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
-    const { email, firstName, lastName, phone, commPref } = data;
+    const { firstName, lastName, email, phone, commPref } = data;
 
     try {
-      const communicationPreferences = commPref.map((pref) => pref);
+      const accountPreferences = {
+        email: commPref.includes(CommunicationType.Email),
+        whatsApp: commPref.includes(CommunicationType.WhatsApp),
+      };
 
       const input: AddUserInput = {
         firstName,
         lastName,
         email,
         phone,
-        accountPreferences: communicationPreferences,
+        accountPreferences,
       };
-
-      console.log("Input data:", input); // Debugging: print the input data
 
       const response = await sdk.addUser({ input });
 
       if (response.addUser) {
-        console.log("Signup successful:", response);
+        setEmailOtpVerifyKey(response.addUser.emailOtpVerifyKey);
+        setNumberOtpVerifyKey(response.addUser.numberOtpVerifyKey);
         setToastData({ message: "Signup Successful", type: "success" });
-        router.push("/login"); // Redirect to login page
+
+        setShowModal(true);
+        startTimer();
       }
     } catch (error) {
       console.error("Signup failed:", error);
       setToastData({ message: "Signup Failed", type: "error" });
     }
+  };
+
+  const onSubmitOtp: SubmitHandler<{
+    emailOtp: string;
+    numberOtp: string;
+  }> = async (data) => {
+    const { emailOtp, numberOtp } = data;
+
+    try {
+      const input: VerifyUserDetails = {
+        email,
+        phone,
+        emailOtp,
+        numberOtp,
+        firstName,
+        lastName,
+        emailOtpVerifyKey,
+        numberOtpVerifyKey,
+        accountPreferences: {
+          email: commPref.includes(CommunicationType.Email),
+          whatsApp: commPref.includes(CommunicationType.WhatsApp),
+        },
+      };
+
+      const response = await sdk.verifyUserDetails({ input });
+
+      if (response.verifyUserDetails) {
+        setToastData({ message: "Verification Successful", type: "success" });
+        router.push("/"); // Redirect to home page after successful verification
+      }
+    } catch (error) {
+      console.error("Verification failed:", error);
+      setOtpError("Invalid OTP"); // Display error message for OTP verification failure
+    }
+  };
+
+  const startTimer = () => {
+    let interval: NodeJS.Timeout;
+
+    if (timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prevTimer) => prevTimer - 1);
+      }, 1000);
+    } else {
+      setShowResendButton(true);
+    }
+
+    return () => clearInterval(interval);
+  };
+
+  useEffect(() => {
+    if (timer === 0) {
+      setShowResendButton(true);
+    } else if (timer < 0) {
+      setTimer(0);
+    } else {
+      setShowResendButton(false);
+    }
+  }, [timer]);
+
+  useEffect(() => {
+    setOtpEmail("");
+    setOtpWhatsApp("");
+  }, [showModal]);
+
+  // const handleResendOtp = async () => {
+  //   try {
+  //     const response = await sdk.GenerateOtpForLogin({ input: email });
+
+  //     if (response) {
+  //       setEmailOtpVerifyKey(response.generateOtpForLogin);
+  //       startTimer();
+  //       setToastData({ message: "OTP resent successfully", type: "success" });
+  //     }
+  //   } catch (error) {
+  //     console.error("Failed to resend OTP:", error);
+  //     setToastData({ message: "Failed to resend OTP", type: "error" });
+  //   }
+  // };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setOtpEmail("");
+    setOtpWhatsApp("");
+    setTimer(120); // Reset timer when modal is closed
   };
 
   return (
@@ -94,8 +195,10 @@ const Signup: FC = () => {
                       required: "First Name is required",
                     })}
                     id="firstName"
-                    className=" input input-primary"
+                    className="input input-primary"
                     placeholder="Enter your First Name"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
                   />
                   {errors.firstName && (
                     <p className="text-red-500 text-sm">
@@ -116,8 +219,10 @@ const Signup: FC = () => {
                       required: "Last Name is required",
                     })}
                     id="lastName"
-                    className=" input input-primary"
+                    className="input input-primary"
                     placeholder="Enter your Last Name"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
                   />
                   {errors.lastName && (
                     <p className="text-red-500 text-sm">
@@ -142,8 +247,10 @@ const Signup: FC = () => {
                       },
                     })}
                     id="email"
-                    className=" input input-primary"
+                    className="input input-primary"
                     placeholder="Enter your Email Address"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                   />
                   {errors.email && (
                     <p className="text-red-500 text-sm">
@@ -151,28 +258,7 @@ const Signup: FC = () => {
                     </p>
                   )}
                 </div>
-                <div className="col-span-2">
-                  <label
-                    htmlFor="password"
-                    className="block mb-2 text-sm font-medium text-black"
-                  >
-                    Password
-                  </label>
-                  <input
-                    type="password"
-                    {...register("password", {
-                      required: "Password is required",
-                    })}
-                    id="password"
-                    className=" input input-primary"
-                    placeholder="Enter your Password"
-                  />
-                  {errors.password && (
-                    <p className="text-red-500 text-sm">
-                      {errors.password.message}
-                    </p>
-                  )}
-                </div>
+
                 <div className="col-span-2">
                   <label
                     htmlFor="phone"
@@ -186,8 +272,10 @@ const Signup: FC = () => {
                       required: "Phone number is required",
                     })}
                     id="phone"
-                    className=" input input-primary"
+                    className="input input-primary"
                     placeholder="Enter your Phone Number"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
                   />
                   {errors.phone && (
                     <p className="text-red-500 text-sm">
@@ -209,6 +297,20 @@ const Signup: FC = () => {
                         {...register("commPref")}
                         value={CommunicationType.Email}
                         className="form-checkbox"
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setCommPref((prev) => [
+                              ...prev,
+                              CommunicationType.Email,
+                            ]);
+                          } else {
+                            setCommPref((prev) =>
+                              prev.filter(
+                                (pref) => pref !== CommunicationType.Email
+                              )
+                            );
+                          }
+                        }}
                       />
                       <span className="ml-2 text-black">Email</span>
                     </label>
@@ -218,6 +320,20 @@ const Signup: FC = () => {
                         {...register("commPref")}
                         value={CommunicationType.WhatsApp}
                         className="form-checkbox"
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setCommPref((prev) => [
+                              ...prev,
+                              CommunicationType.WhatsApp,
+                            ]);
+                          } else {
+                            setCommPref((prev) =>
+                              prev.filter(
+                                (pref) => pref !== CommunicationType.WhatsApp
+                              )
+                            );
+                          }
+                        }}
                       />
                       <span className="ml-2 text-black">WhatsApp</span>
                     </label>
@@ -261,6 +377,93 @@ const Signup: FC = () => {
           </div>
         </div>
       </div>
+      {showModal && (
+        <ReusableModal
+          title="Enter OTP"
+          width="lg"
+          onClose={() => setShowModal(false)}
+          isOpen={showModal}
+        >
+          <form onSubmit={handleSubmit(onSubmitOtp)}>
+            <div className="text-center">
+              <h3 className="text-lg font-medium mb-4">Enter OTP</h3>
+              <p className="text-sm mb-4">
+                Please enter the OTP sent to your Email and WhatsApp
+              </p>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label
+                  htmlFor="otpEmail"
+                  className="block mb-2 text-sm font-medium text-black"
+                >
+                  Email OTP
+                </label>
+                <input
+                  type="text"
+                  id="otpEmail"
+                  className="input input-primary"
+                  {...register("emailOtp", { required: true })}
+                  value={otpEmail}
+                  onChange={(e) => setOtpEmail(e.target.value)}
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="otpWhatsApp"
+                  className="block mb-2 text-sm font-medium text-black"
+                >
+                  WhatsApp OTP
+                </label>
+                <input
+                  type="text"
+                  id="otpWhatsApp"
+                  className="input input-primary"
+                  {...register("numberOtp", { required: true })}
+                  value={otpWhatsApp}
+                  onChange={(e) => setOtpWhatsApp(e.target.value)}
+                />
+              </div>
+            </div>
+            {otpError && (
+              <p className="text-red-500 text-sm mt-2">{otpError}</p>
+            )}
+            <div className="flex justify-between mt-4">
+              <div className="mt-5">
+                {showResendButton && (
+                  <button
+                    // onClick={handleResendOtp}
+                    className="text-sm text-primary underline"
+                  >
+                    Resend OTP
+                  </button>
+                )}
+                <span className="ml-2 text-warning">
+                  {showResendButton
+                    ? ""
+                    : `Resend OTP available after ${timer}s`}
+                </span>
+              </div>
+              <div className="flex justify-end mt-4">
+                <button
+                  type="button"
+                  className="btn btn-warning mr-2"
+                  onClick={handleCloseModal}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={!otpEmail || !otpWhatsApp}
+                >
+                  Submit
+                </button>
+              </div>
+            </div>
+          </form>
+        </ReusableModal>
+      )}
     </div>
   );
 };

@@ -120,55 +120,6 @@ const config: Config = {
       };
 
 
-      // const inputs = {
-      //   '.input': {
-      //     padding: '.4rem 1rem',
-      //     borderRadius: '.375rem',
-      //     border: '1px solid #D1D5DB', // border-gray-300
-      //     backgroundColor: colors.input, // assuming colors.input is the intended bg color
-      //     fontSize: '.875rem', // text-sm
-      //     width: '100%', // w-full
-      //     outline: 'none', // focus:outline-none
-      //     display: 'block', // block
-      //     padding: '0.625rem', // p-2.5
-      //     color: colors.black, // text-black
-      //     '&::placeholder': {
-      //       color: '#9CA3AF', // placeholder-gray-400
-      //       opacity: '1', // ensured opacity is full
-      //       transition: 'color 0.3s ease', // added transition for focus
-      //     },
-      //     '&:focus::placeholder': {
-      //       color: colors.black, // black on focus
-      //     },
-      //     '&:focus': {
-      //       outline: 'none', // removed default outline
-      //       borderColor: colors.input, // assuming colors.input is the intended focus border color
-      //     },
-      //     '&.input-primary': {
-      //       backgroundColor: `${colors.input}`, // low opacity primary color
-      //       '&:focus': {
-      //         backgroundColor: `${colors.input}`, // slightly higher opacity on focus
-      //       },
-      //       '&::placeholder': {
-      //         color: colors.black, // placeholder color
-      //         opacity: '0.5', // ensured opacity is full
-      //         transition: 'color 0.3s ease', // added transition for focus
-      //       },
-      //     },
-      //     '&.input-secondary': {
-      //       backgroundColor: `${colors.secondary}1A`,
-      //       '&:focus': {
-      //         backgroundColor: `${colors.secondary}33`,
-      //       },
-      //     },
-      //     '&.input-warning': {
-      //       backgroundColor: `${colors.warning}1A`,
-      //       '&:focus': {
-      //         backgroundColor: `${colors.warning}33`,
-      //       },
-      //     },
-      //   },
-      // };
 
       const inputs = {
         '.input': {
