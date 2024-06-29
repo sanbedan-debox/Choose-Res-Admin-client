@@ -85,12 +85,12 @@ const Integrations = () => {
       </div>
 
       <div className="flex justify-center mt-4">
-        <CButton
+        <button
           onClick={() => router.push("/onboarding/availibility")}
-          type={ButtonType.Primary}
+          className="btn btn-primary"
         >
           Continue
-        </CButton>
+        </button>
       </div>
 
       <motion.div variants={STAGGER_CHILD_VARIANTS} className="text-center">

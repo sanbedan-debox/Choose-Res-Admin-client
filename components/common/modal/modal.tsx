@@ -5,7 +5,7 @@ interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
-  width?: "xs" | "sm" | "md" | "lg" | "xl";
+  width?: "xs" | "sm" | "md" | "ml" | "lg" | "xl";
   title: string;
 }
 
@@ -38,6 +38,7 @@ const ReusableModal: React.FC<ModalProps> = ({
     xs: "w-1/5",
     sm: "w-1/4",
     md: "w-1/3",
+    ml: "w-1/2",
     lg: "w-3/4",
     xl: "w-full",
   };

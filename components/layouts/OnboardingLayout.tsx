@@ -4,7 +4,7 @@ import { AnimatePresence } from "framer-motion";
 import { ArrowLeft as ArrowLeftIcon } from "lucide-react";
 import CButton from "@/components/common/button/button";
 import Image from "next/image";
-import logo1 from "../../assets/logo/logoWhite.png";
+import logo1 from "../../assets/logo/logoDark.png";
 
 type Props = {
   children: ReactNode;
@@ -47,7 +47,7 @@ const OnboardingLayout = ({ children }: Props) => {
           </button>
         )}
         <div className="flex-1 flex justify-center">
-          <Image src={logo1} alt="Logo" width={100} height={100} />
+          <Image src={logo1} alt="Logo" width={140} height={140} />
         </div>
       </div>
       <div className="relative h-2 bg-gray-200">

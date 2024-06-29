@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import logo1 from "../assets/logo/logoWhite.png";
+import logo1 from "../assets/logo/logoDark.png";
 import Image from "next/image";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useRouter } from "next/router";
@@ -36,7 +36,7 @@ const Signup: FC = () => {
   const [otpEmail, setOtpEmail] = useState<string>("");
   const [otpWhatsApp, setOtpWhatsApp] = useState<string>("");
   const [otpError, setOtpError] = useState<string>("");
-  const [timer, setTimer] = useState<number>(120);
+  const [timer, setTimer] = useState<number>(20);
   const [showResendButton, setShowResendButton] = useState<boolean>(false);
 
   const {
@@ -362,16 +362,15 @@ const Signup: FC = () => {
           className="hidden bg-cover lg:block lg:w-2/3"
           style={{
             backgroundImage:
-              "url(https://images.unsplash.com/photo-1616763355603-9755a640a287?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80)",
+              "url(https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)",
           }}
         >
-          <div className="flex items-end h-full px-20 bg-gray-900 bg-opacity-40">
+          <div className="flex items-end h-full px-20 bg-gray-900 bg-opacity-55">
             <div className="mb-20">
               <h2 className="text-4xl font-bold text-white">CHOOSE</h2>
               <p className="max-w-xl mt-3 text-gray-300">
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit. In
-                autem ipsa, nulla laboriosam dolores, repellendus perferendis
-                libero suscipit nam temporibus molestiae.
+                Built along with Restaurant Owners, Marketers, Technology
+                Experts to revolutionise the Restaurant space.
               </p>
             </div>
           </div>
@@ -380,7 +379,7 @@ const Signup: FC = () => {
       {showModal && (
         <ReusableModal
           title="Enter OTP"
-          width="lg"
+          width="ml"
           onClose={() => setShowModal(false)}
           isOpen={showModal}
         >
@@ -445,13 +444,6 @@ const Signup: FC = () => {
                 </span>
               </div>
               <div className="flex justify-end mt-4">
-                <button
-                  type="button"
-                  className="btn btn-warning mr-2"
-                  onClick={handleCloseModal}
-                >
-                  Cancel
-                </button>
                 <button
                   type="submit"
                   className="btn btn-primary"

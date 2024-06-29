@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import useGlobalStore from "@/store/global";
-import logo1 from "../../assets/logo/logoWhite.png";
+import logo1 from "../../assets/logo/logoDark.png";
 import {
   FaHome,
   FaCog,
@@ -63,7 +63,7 @@ const Sidebar: React.FC = () => {
       >
         {isSidebarExpanded && (
           <div className="relative z-10 flex items-center  justify-center my-4">
-            <Image className="mb-4" src={logo1} alt="Logo" width={170} />
+            <Image className="mb-4" src={logo1} alt="Logo" width={150} />
           </div>
         )}
         <hr className="border-gray-600 " />

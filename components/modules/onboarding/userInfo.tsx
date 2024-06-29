@@ -104,7 +104,7 @@ const UserInfo = () => {
             htmlFor="businessType"
             className="block mb-2 text-sm font-medium text-left text-gray-700"
           >
-            What kind of business are you?
+            What kind of business are you ?
           </label>
           <Select
             {...register("businessType", {
@@ -128,7 +128,7 @@ const UserInfo = () => {
             htmlFor="businessName"
             className="block mb-2 text-sm font-medium text-left text-gray-700"
           >
-            What is your business name?
+            What is your business name ?
           </label>
           <input
             type="text"
@@ -188,7 +188,7 @@ const UserInfo = () => {
             htmlFor="employees"
             className="block mb-2 text-sm font-medium text-left text-gray-700"
           >
-            How many employees
+            How many employees ?
           </label>
           <Select
             {...register("employees", {
@@ -210,7 +210,7 @@ const UserInfo = () => {
             htmlFor="revenue"
             className="block mb-2 text-sm font-medium text-left text-gray-700"
           >
-            Estimated annual revenue
+            Estimated annual revenue ?
           </label>
           <Select
             {...register("revenue", {

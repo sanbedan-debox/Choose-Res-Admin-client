@@ -50,12 +50,15 @@ const MenuSection: React.FC<MenuSectionProps> = ({ contentList }) => {
               <li className="mb-1" key={content.id}>
                 <a
                   href={`#${content.id}`}
-                  className={`block p-2 text-black text-sm rounded border border-transparent hover:border-primary hover:text-black hover:bg-transparent ${
+                  className={`block p-2 text-black text-sm rounded border border-transparent hover:border-primary hover:text-black hover:bg-transparent relative ${
                     activeId === content.id ? "border-primary text-primary" : ""
                   }`}
                   onClick={() => handleNavLinkClick(content.id)}
                 >
-                  {content.title}
+                  {activeId === content.id && (
+                    <div className="absolute top-0 left-0 w-1 h-[100%] bg-primary "></div>
+                  )}
+                  <span className="pl-3">{content.title}</span>
                 </a>
               </li>
             ))}

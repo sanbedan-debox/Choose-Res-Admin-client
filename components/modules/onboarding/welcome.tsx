@@ -33,13 +33,13 @@ const Intro = () => {
           revolutionise the Restaurant space.
         </motion.p>
         <motion.div variants={STAGGER_CHILD_VARIANTS}>
-          <CButton
-            type={ButtonType.Primary}
-            className="px-10 text-base font-medium"
+          <button
+            // className="px-10 text-base font-medium"
+            className="btn btn-primary"
             onClick={() => router.push("/onboarding/user-info")}
           >
             Get Started
-          </CButton>
+          </button>
         </motion.div>
       </motion.div>
     </motion.div>

@@ -14,8 +14,10 @@ export const Toast: FC<ToastProps> = ({ message, type }) => {
     switch (type) {
       case "success":
         return {
-          container: "text-gray-400 bg-secondary bg-opacity-20",
+          container: "text-gray-400 bg-white border-4  border-green-200",
           icon: "bg-green-800 text-green-200",
+          closebtn: " text-white",
+          closectn: "bg-green-800",
           iconPath: (
             <svg
               className="w-5 h-5"
@@ -30,8 +32,11 @@ export const Toast: FC<ToastProps> = ({ message, type }) => {
         };
       case "error":
         return {
-          container: " text-gray-400 bg-gray-800",
+          container: " text-gray-400 bg-white  border-4   border-red-200",
           icon: " bg-red-800 text-red-200",
+          closebtn: " text-white",
+          closectn: "bg-green-800",
+
           iconPath: (
             <svg
               className="w-5 h-5"
@@ -46,8 +51,11 @@ export const Toast: FC<ToastProps> = ({ message, type }) => {
         };
       case "warning":
         return {
-          container: " text-gray-400 bg-gray-800",
+          container: " text-gray-400 bg-white  border-4    border-orange-200",
           icon: " bg-orange-700 text-orange-200",
+          closebtn: "text-white",
+          closectn: "bg-green-800",
+
           iconPath: (
             <svg
               className="w-5 h-5"
@@ -61,11 +69,17 @@ export const Toast: FC<ToastProps> = ({ message, type }) => {
           ),
         };
       default:
-        return { container: "", icon: "", iconPath: null };
+        return {
+          container: "",
+          icon: "",
+          iconPath: null,
+          closebtn: "",
+          closectn: "",
+        };
     }
   };
 
-  const { container, icon, iconPath } = getTypeStyles();
+  const { container, icon, iconPath, closebtn, closectn } = getTypeStyles();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -97,13 +111,13 @@ export const Toast: FC<ToastProps> = ({ message, type }) => {
       <div className="ms-3 text-sm font-normal">{message}</div>
       <button
         type="button"
-        className="ms-auto -mx-1.5 -my-1.5    rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 inline-flex items-center justify-center h-8 w-8 text-gray-500 hover:text-white bg-gray-800  hover:bg-gray-700"
+        className={`ms-auto -mx-1.5 -my-1.5  ${closectn}  rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 inline-flex items-center justify-center h-8 w-8 text-gray-500 hover:text-white   hover:bg-primary`}
         aria-label="Close"
         onClick={() => setToastData(null)}
       >
         <span className="sr-only">Close</span>
         <svg
-          className="w-3 h-3"
+          className={`w-3 h-3 ${closebtn}`}
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"

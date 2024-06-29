@@ -19,6 +19,67 @@ const UserLocation = () => {
     router.push("/onboarding/integrations");
   };
 
+  const revenueOptions = [
+    { value: "0-50000", label: "$0 - $50,000" },
+    { value: "50001-200000", label: "$50,001 - $200,000" },
+    { value: "200001-500000", label: "$200,001 - $500,000" },
+    { value: "500001-1000000", label: "$500,001 - $1,000,000" },
+    { value: "1000001+", label: "$1,000,001+" },
+  ];
+
+  const stateOptions = [
+    { value: "AL", label: "Alabama" },
+    { value: "AK", label: "Alaska" },
+    { value: "AZ", label: "Arizona" },
+    { value: "AR", label: "Arkansas" },
+    { value: "CA", label: "California" },
+    { value: "CO", label: "Colorado" },
+    { value: "CT", label: "Connecticut" },
+    { value: "DE", label: "Delaware" },
+    { value: "FL", label: "Florida" },
+    { value: "GA", label: "Georgia" },
+    { value: "HI", label: "Hawaii" },
+    { value: "ID", label: "Idaho" },
+    { value: "IL", label: "Illinois" },
+    { value: "IN", label: "Indiana" },
+    { value: "IA", label: "Iowa" },
+    { value: "KS", label: "Kansas" },
+    { value: "KY", label: "Kentucky" },
+    { value: "LA", label: "Louisiana" },
+    { value: "ME", label: "Maine" },
+    { value: "MD", label: "Maryland" },
+    { value: "MA", label: "Massachusetts" },
+    { value: "MI", label: "Michigan" },
+    { value: "MN", label: "Minnesota" },
+    { value: "MS", label: "Mississippi" },
+    { value: "MO", label: "Missouri" },
+    { value: "MT", label: "Montana" },
+    { value: "NE", label: "Nebraska" },
+    { value: "NV", label: "Nevada" },
+    { value: "NH", label: "New Hampshire" },
+    { value: "NJ", label: "New Jersey" },
+    { value: "NM", label: "New Mexico" },
+    { value: "NY", label: "New York" },
+    { value: "NC", label: "North Carolina" },
+    { value: "ND", label: "North Dakota" },
+    { value: "OH", label: "Ohio" },
+    { value: "OK", label: "Oklahoma" },
+    { value: "OR", label: "Oregon" },
+    { value: "PA", label: "Pennsylvania" },
+    { value: "RI", label: "Rhode Island" },
+    { value: "SC", label: "South Carolina" },
+    { value: "SD", label: "South Dakota" },
+    { value: "TN", label: "Tennessee" },
+    { value: "TX", label: "Texas" },
+    { value: "UT", label: "Utah" },
+    { value: "VT", label: "Vermont" },
+    { value: "VA", label: "Virginia" },
+    { value: "WA", label: "Washington" },
+    { value: "WV", label: "West Virginia" },
+    { value: "WI", label: "Wisconsin" },
+    { value: "WY", label: "Wyoming" },
+  ];
+
   return (
     <motion.div
       className="z-10 flex flex-col w-full max-w-md items-center space-y-5 text-center"
@@ -79,38 +140,45 @@ const UserLocation = () => {
           />
         </div>
 
-        <div className="col-span-2">
-          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-            City
-          </label>
-          <input
-            type="text"
-            {...register("city", {
-              required: "City is required",
-            })}
-            className=" input input-primary"
-            placeholder="City"
-          />
-          {errors.city && (
-            <p className="text-red-500 text-sm">{errors.city.message}</p>
-          )}
-        </div>
+        <div className="flex flex-wrap gap-4">
+          <div className="col-span-3 flex-1">
+            <label className="block mb-2 text-sm font-medium text-left text-gray-700">
+              City
+            </label>
+            <input
+              type="text"
+              {...register("city", {
+                required: "City is required",
+              })}
+              className=" input input-primary"
+              placeholder="City"
+            />
+            {errors.city && (
+              <p className="text-red-500 text-sm">{errors.city.message}</p>
+            )}
+          </div>
 
-        <div className="col-span-2">
-          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-            State
-          </label>
-          <input
-            type="text"
-            {...register("state", {
-              required: "State is required",
-            })}
-            className=" input input-primary"
-            placeholder="State"
-          />
-          {errors.state && (
-            <p className="text-red-500 text-sm">{errors.state.message}</p>
-          )}
+          <div className="col-span-2 flex-1">
+            <label
+              htmlFor="state"
+              className="block mb-2 text-sm font-medium text-left text-gray-700"
+            >
+              State
+            </label>
+            <Select
+              {...register("state", {
+                required: "State is required",
+              })}
+              id="state"
+              options={stateOptions}
+              className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+              classNamePrefix="react-select"
+              placeholder="Select State"
+            />
+            {errors.state && (
+              <p className="text-red-500 text-sm">{errors.state.message}</p>
+            )}
+          </div>
         </div>
 
         <div className="col-span-2">
@@ -131,27 +199,25 @@ const UserLocation = () => {
         </div>
 
         <div className="col-span-2">
-          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-            Latitude
+          <label
+            htmlFor="location"
+            className="block mb-2 text-sm font-medium text-left text-gray-700"
+          >
+            Select Location
           </label>
-          <input
-            type="text"
-            {...register("latitude")}
-            className=" input input-primary"
-            placeholder="Latitude"
+          <Select
+            {...register("location", {
+              required: "Location is required",
+            })}
+            id="revenue"
+            options={revenueOptions}
+            className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+            classNamePrefix="react-select"
+            placeholder="Select location"
           />
-        </div>
-
-        <div className="col-span-2">
-          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-            Longitude
-          </label>
-          <input
-            type="text"
-            {...register("longitude")}
-            className=" input input-primary"
-            placeholder="Longitude"
-          />
+          {errors.revenue && (
+            <p className="text-red-500 text-sm">{errors.location.message}</p>
+          )}
         </div>
 
         <button

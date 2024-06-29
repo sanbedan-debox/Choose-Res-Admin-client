@@ -103,20 +103,6 @@ const Navbar: React.FC = () => {
         </div>
         <div className="flex items-center space-x-1 relative">
           <Link
-            href="/shop"
-            className="hover:bg-primary hover:text-white px-3 py-2 rounded flex items-center group"
-          >
-            <FaStore className="h-4 w-4 mr-1 text-black group-hover:text-white" />
-            <span className="text-sm">Shop</span>
-          </Link>
-          <Link
-            href="/unpublished-changes"
-            className="hover:bg-primary hover:text-white px-3 py-2 rounded flex items-center group"
-          >
-            <FaBell className="h-4 w-4 mr-1 text-black group-hover:text-white" />
-            <span className="text-sm">Unpublished changes</span>
-          </Link>
-          <Link
             href="/search"
             className="hover:bg-primary hover:text-white px-3 py-2 rounded flex items-center group"
           >
