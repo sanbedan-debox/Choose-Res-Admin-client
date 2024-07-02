@@ -201,7 +201,7 @@ const UserInfo = () => {
             htmlFor="revenue"
             className="block mb-2 text-sm font-medium text-left text-gray-700"
           >
-            Estimated annual revenue ?
+            Estimated annual revenue
           </label>
           <Select
             {...register("revenue", {
