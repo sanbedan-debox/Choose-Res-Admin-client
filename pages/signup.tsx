@@ -7,6 +7,10 @@ import { sdk } from "@/utils/graphqlClient";
 import useGlobalStore from "@/store/global";
 import { VerifyUserDetails, AddUserInput } from "@/generated/graphql";
 import ReusableModal from "@/components/common/modal/modal"; // Import your reusable modal component
+import useAuthStore from "@/store/auth";
+import Link from "next/link";
+import { GetServerSideProps } from "next";
+import { parseCookies } from "nookies";
 
 enum CommunicationType {
   Email = "EMAIL",
@@ -44,10 +48,10 @@ const Signup: FC = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<IFormInput>();
+  const { setUserId } = useAuthStore();
 
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
     const { firstName, lastName, email, phone, commPref } = data;
-
     try {
       const accountPreferences = {
         email: commPref.includes(CommunicationType.Email),
@@ -65,8 +69,7 @@ const Signup: FC = () => {
       const response = await sdk.addUser({ input });
 
       if (response.addUser) {
-        setEmailOtpVerifyKey(response.addUser.emailOtpVerifyKey);
-        setNumberOtpVerifyKey(response.addUser.numberOtpVerifyKey);
+        setEmailOtpVerifyKey(response.addUser);
         setToastData({ message: "Signup Successful", type: "success" });
 
         setShowModal(true);
@@ -89,11 +92,9 @@ const Signup: FC = () => {
         email,
         phone,
         emailOtp,
-        numberOtp,
         firstName,
         lastName,
         emailOtpVerifyKey,
-        numberOtpVerifyKey,
         accountPreferences: {
           email: commPref.includes(CommunicationType.Email),
           whatsApp: commPref.includes(CommunicationType.WhatsApp),
@@ -103,6 +104,8 @@ const Signup: FC = () => {
       const response = await sdk.verifyUserDetails({ input });
 
       if (response.verifyUserDetails) {
+        console.log(response.verifyUserDetails);
+        setUserId(response.verifyUserDetails);
         setToastData({ message: "Verification Successful", type: "success" });
         router.replace("/onboarding/user/intro");
       }
@@ -160,7 +163,7 @@ const Signup: FC = () => {
     setShowModal(false);
     setOtpEmail("");
     setOtpWhatsApp("");
-    setTimer(120); // Reset timer when modal is closed
+    setTimer(120);
   };
 
   return (
@@ -339,6 +342,22 @@ const Signup: FC = () => {
                     </label>
                   </div>
                 </div>
+                <p className="text-sm text-gray-800">
+                  By logging in, you agree to CHOOSE's{" "}
+                  <Link
+                    href="/signup"
+                    className="text-primary focus:outline-none focus:underline hover:underline"
+                  >
+                    Terms and Conditions
+                  </Link>{" "}
+                  and{" "}
+                  <Link
+                    href="/signup"
+                    className="text-primary focus:outline-none focus:underline hover:underline"
+                  >
+                    Privacy Policy
+                  </Link>
+                </p>
                 <div className="flex justify-end">
                   <button className="btn btn-primary" type="submit">
                     Sign Up
@@ -347,12 +366,12 @@ const Signup: FC = () => {
               </form>
               <p className="mt-6 text-sm text-center text-gray-400">
                 Already have an account?{" "}
-                <a
+                <Link
                   href="/login"
                   className="text-blue-500 focus:outline-none focus:underline hover:underline"
                 >
                   Login
-                </a>
+                </Link>
                 .
               </p>
             </div>
@@ -384,45 +403,21 @@ const Signup: FC = () => {
           isOpen={showModal}
         >
           <form onSubmit={handleSubmit(onSubmitOtp)}>
-            <div className="text-center">
-              <h3 className="text-lg font-medium mb-4">Enter OTP</h3>
-              <p className="text-sm mb-4">
-                Please enter the OTP sent to your Email and WhatsApp
-              </p>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <label
-                  htmlFor="otpEmail"
-                  className="block mb-2 text-sm font-medium text-black"
-                >
-                  Email OTP
-                </label>
-                <input
-                  type="text"
-                  id="otpEmail"
-                  className="input input-primary"
-                  {...register("emailOtp", { required: true })}
-                  value={otpEmail}
-                  onChange={(e) => setOtpEmail(e.target.value)}
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="otpWhatsApp"
-                  className="block mb-2 text-sm font-medium text-black"
-                >
-                  WhatsApp OTP
-                </label>
-                <input
-                  type="text"
-                  id="otpWhatsApp"
-                  className="input input-primary"
-                  {...register("numberOtp", { required: true })}
-                  value={otpWhatsApp}
-                  onChange={(e) => setOtpWhatsApp(e.target.value)}
-                />
-              </div>
+            <div>
+              <label
+                htmlFor="otpEmail"
+                className="block mb-2 text-sm font-medium text-black"
+              >
+                Email OTP
+              </label>
+              <input
+                type="text"
+                id="otpEmail"
+                className="input input-primary"
+                {...register("emailOtp", { required: true })}
+                value={otpEmail}
+                onChange={(e) => setOtpEmail(e.target.value)}
+              />
             </div>
             {otpError && (
               <p className="text-red-500 text-sm mt-2">{otpError}</p>
@@ -447,7 +442,7 @@ const Signup: FC = () => {
                 <button
                   type="submit"
                   className="btn btn-primary"
-                  disabled={!otpEmail || !otpWhatsApp}
+                  disabled={!otpEmail}
                 >
                   Submit
                 </button>
@@ -461,3 +456,41 @@ const Signup: FC = () => {
 };
 
 export default Signup;
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const cookies = parseCookies(context);
+  const token = cookies.accessToken;
+
+  if (!token) {
+    return {
+      props: {},
+    };
+  }
+
+  try {
+    const response = await sdk.MeUser(
+      {},
+      {
+        cookie: context.req.headers.cookie?.toString() ?? "",
+      }
+    );
+
+    if (response && response.meUser) {
+      return {
+        redirect: {
+          destination: "/dashboard",
+          permanent: false,
+        },
+      };
+    } else {
+      return {
+        props: {},
+      };
+    }
+  } catch (error) {
+    console.error("Failed to fetch user details:", error);
+    return {
+      props: {},
+    };
+  }
+};

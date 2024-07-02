@@ -1,44 +1,60 @@
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { STAGGER_CHILD_VARIANTS } from "@/lib/constants";
 import { useRouter } from "next/router";
 import useGlobalStore from "@/store/global";
-import { useForm } from "react-hook-form";
+import useOnboardingStore from "@/store/onboarding";
+import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
 import { sdk } from "@/utils/graphqlClient";
+import useAuthStore from "@/store/auth";
+import { BusinessTypeEnum } from "@/generated/graphql";
 
 interface IFormInput {
   businessType: string;
   businessName: string;
-  phoneNumber: string;
-  ein?: string;
   employees: string;
   revenue: string;
-  mobileBusiness: boolean;
-  address: string;
-  apartment?: string;
-  city: string;
-  state: string;
-  zip: string;
 }
 
 const UserInfo = () => {
   const { setToastData } = useGlobalStore();
   const router = useRouter();
   const {
-    register,
     handleSubmit,
     formState: { errors },
+    control,
+    setValue,
+    register,
   } = useForm<IFormInput>();
 
-  const roleOptions = [
-    { value: "LLC", label: "Limited Liability Company (LLC)" },
-    { value: "Corporation", label: "Corporation" },
-    { value: "Sole Proprietorship", label: "Sole Proprietorship" },
-    { value: "Partnership", label: "Partnership" },
+  const {
+    businessType,
+    setbusinessType,
+    businessName,
+    setbusinessName,
+    employeeSize,
+    setemployeeSize,
+    estimatedRevenue,
+    setestimatedRevenue,
+  } = useOnboardingStore();
+
+  const { userId } = useAuthStore();
+
+  useEffect(() => {
+    setValue("businessType", businessType);
+    setValue("businessName", businessName);
+    setValue("employees", employeeSize);
+    setValue("revenue", estimatedRevenue);
+  }, [businessType, businessName, employeeSize, estimatedRevenue, setValue]);
+
+  const BusinessType = [
+    { value: "Llc", label: "LLC" },
+    { value: "PrivateLimited", label: "PrivateLimited" },
   ];
 
-  const employeeOptions = [
-    { value: "1", label: "Just me" },
+  const employeSize = [
+    { value: "1", label: "1" },
     { value: "2-10", label: "2-10" },
     { value: "11-50", label: "11-50" },
     { value: "51-200", label: "51-200" },
@@ -55,26 +71,18 @@ const UserInfo = () => {
 
   const onSubmit = async (data: IFormInput) => {
     try {
+      const businessTypeValue =
+        BusinessTypeEnum[data.businessType as keyof typeof BusinessTypeEnum];
       const response = await sdk.UpdateUserOnboarding({
         input: {
-          _id: "user-id", // Replace with actual user ID
-          businessDetails: {
-            businessName: data.businessName,
-            businessType: data.businessType,
-            dob: "", // Add appropriate dob
-            estimatedRevenue: data.revenue,
-            employeeSize: data.employees,
-            establishedAt: "", // Add appropriate established date
+          _id: userId,
+          businessName: data.businessName,
+          businessType: businessTypeValue,
+          estimatedRevenue: {
+            value: data.revenue,
           },
-          businessAddress: {
-            address: data.address,
-            apartment: data.apartment,
-            city: data.city,
-            state: data.state,
-            zip: data.zip,
-          },
-          businessAccountDetails: {
-            // Add appropriate business account details
+          employeeSize: {
+            value: data.employees,
           },
         },
       });
@@ -82,7 +90,7 @@ const UserInfo = () => {
         message: "Business details updated successfully!",
         type: "success",
       });
-      router.push("/onboarding/location");
+      router.push("/onboarding/user/user-location");
     } catch (error) {
       setToastData({
         message: "Failed to update business details.",
@@ -132,15 +140,17 @@ const UserInfo = () => {
           >
             What kind of business are you
           </label>
+
           <Select
-            {...register("businessType", {
-              required: "Business type is required",
-            })}
-            id="businessType"
-            options={roleOptions}
+            options={BusinessType}
             className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
             classNamePrefix="react-select"
             placeholder="Select business type"
+            value={BusinessType.find((option) => option.value === businessType)}
+            onChange={(option) => {
+              setValue("businessType", option?.value || "");
+              setbusinessType(option?.value || "");
+            }}
           />
           {errors.businessType && (
             <p className="text-red-500 text-sm text-start">
@@ -159,11 +169,13 @@ const UserInfo = () => {
           <input
             type="text"
             {...register("businessName", {
-              required: "Business name is required",
+              validate: (value) =>
+                !!value.trim() || "Business name is required",
             })}
             id="businessName"
             className="input input-primary"
             placeholder="Enter your business name"
+            onChange={(e) => setbusinessName(e.target.value)}
           />
           {errors.businessName && (
             <p className="text-red-500 text-sm text-start">
@@ -179,15 +191,17 @@ const UserInfo = () => {
           >
             How many employees
           </label>
+
           <Select
-            {...register("employees", {
-              required: "Number of employees is required",
-            })}
-            id="employees"
-            options={employeeOptions}
+            options={employeSize}
             className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
             classNamePrefix="react-select"
             placeholder="Select number of employees"
+            value={employeSize.find((option) => option.value === employeeSize)}
+            onChange={(option) => {
+              setValue("employees", option?.value || "");
+              setemployeeSize(option?.value || "");
+            }}
           />
           {errors.employees && (
             <p className="text-red-500 text-sm text-start">
@@ -204,14 +218,17 @@ const UserInfo = () => {
             Estimated annual revenue
           </label>
           <Select
-            {...register("revenue", {
-              required: "Estimated annual revenue is required",
-            })}
-            id="revenue"
             options={revenueOptions}
             className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
             classNamePrefix="react-select"
             placeholder="Select estimated annual revenue"
+            value={revenueOptions.find(
+              (option) => option.value === estimatedRevenue
+            )}
+            onChange={(option) => {
+              setValue("revenue", option?.value || "");
+              setestimatedRevenue(option?.value || "");
+            }}
           />
           {errors.revenue && (
             <p className="text-red-500 text-sm text-start">
@@ -221,10 +238,7 @@ const UserInfo = () => {
         </div>
 
         <div className="col-span-2">
-          <button
-            type="submit"
-            className="inline-flex btn btn-primary items-center justify-center w-full mt-8"
-          >
+          <button type="submit" className="mt-8 w-full btn btn-primary">
             Continue
           </button>
         </div>

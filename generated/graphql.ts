@@ -83,12 +83,6 @@ export type AddUserInput = {
   phone: Scalars['String']['input'];
 };
 
-export type AddUserKeys = {
-  __typename?: 'AddUserKeys';
-  emailOtpVerifyKey: Scalars['String']['output'];
-  numberOtpVerifyKey: Scalars['String']['output'];
-};
-
 export type AddWaitListUserInput = {
   email: Scalars['String']['input'];
   name: Scalars['String']['input'];
@@ -157,21 +151,6 @@ export type AvailabilityInput = {
   day: Day;
   end: Scalars['DateTimeISO']['input'];
   start: Scalars['DateTimeISO']['input'];
-};
-
-export type BusinessAccountDetailsInput = {
-  ein: Scalars['String']['input'];
-  ssn: Scalars['String']['input'];
-  taxRates: Array<TaxRateInput>;
-};
-
-export type BusinessDetailsInput = {
-  businessName: Scalars['String']['input'];
-  businessType: BusinessTypeEnum;
-  dob: Scalars['String']['input'];
-  employeeSize: MasterCommonInput;
-  establishedAt: Scalars['String']['input'];
-  estimatedRevenue: MasterCommonInput;
 };
 
 /** Business type enum  */
@@ -447,7 +426,7 @@ export type Mutation = {
   addCategory: Scalars['Boolean']['output'];
   addMenu: Scalars['Boolean']['output'];
   addRestaurant: Scalars['String']['output'];
-  addUser: AddUserKeys;
+  addUser: Scalars['String']['output'];
   addWaitListUser: Scalars['Boolean']['output'];
   blockAdmin: Scalars['Boolean']['output'];
   changeRole: Scalars['Boolean']['output'];
@@ -464,7 +443,7 @@ export type Mutation = {
   updateRestaurant: Scalars['Boolean']['output'];
   updateUserOnboarding: Scalars['Boolean']['output'];
   updateUserProfile: Scalars['Boolean']['output'];
-  verifyUserDetails: Scalars['Boolean']['output'];
+  verifyUserDetails: Scalars['String']['output'];
 };
 
 
@@ -588,6 +567,8 @@ export type MutationVerifyUserDetailsArgs = {
 export enum PlatformStatus {
   Active = 'active',
   Blocked = 'blocked',
+  InternalVerificationPending = 'internalVerificationPending',
+  OnboardingPending = 'onboardingPending',
   PaymentPending = 'paymentPending'
 }
 
@@ -786,9 +767,17 @@ export type UpdateRestaurantInput = {
 
 export type UpdateUserOnboardingInput = {
   _id: Scalars['String']['input'];
-  businessAccountDetails?: InputMaybe<BusinessAccountDetailsInput>;
-  businessAddress?: InputMaybe<AddressInfoInput>;
-  businessDetails?: InputMaybe<BusinessDetailsInput>;
+  address?: InputMaybe<AddressInfoInput>;
+  businessName?: InputMaybe<Scalars['String']['input']>;
+  businessType?: InputMaybe<BusinessTypeEnum>;
+  dob?: InputMaybe<Scalars['String']['input']>;
+  ein?: InputMaybe<Scalars['String']['input']>;
+  employeeSize?: InputMaybe<MasterCommonInput>;
+  establishedAt?: InputMaybe<Scalars['String']['input']>;
+  estimatedRevenue?: InputMaybe<MasterCommonInput>;
+  ssn?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<PlatformStatus>;
+  taxRates?: InputMaybe<Array<TaxRateInput>>;
 };
 
 export type UpdateUserProfileInput = {
@@ -820,7 +809,6 @@ export type User = {
   estimatedRevenue?: Maybe<MasterCommon>;
   firstName: Scalars['String']['output'];
   lastName: Scalars['String']['output'];
-  onBoardingStatus: UserOnboardingStatus;
   phone: Scalars['String']['output'];
   restaurants?: Maybe<Array<RestaurantInfo>>;
   ssn?: Maybe<Scalars['String']['output']>;
@@ -830,16 +818,6 @@ export type User = {
   updatedAt: Scalars['DateTimeISO']['output'];
 };
 
-/** User onboarding status */
-export enum UserOnboardingStatus {
-  BusinessAccountDetailsPending = 'businessAccountDetailsPending',
-  BusinessAddressPending = 'businessAddressPending',
-  BusinessDetailsPending = 'businessDetailsPending',
-  Completed = 'completed',
-  EmailPending = 'emailPending',
-  PhonePending = 'phonePending'
-}
-
 export type VerifyUserDetails = {
   accountPreferences: AccountPreferenceInput;
   email: Scalars['String']['input'];
@@ -847,8 +825,6 @@ export type VerifyUserDetails = {
   emailOtpVerifyKey: Scalars['String']['input'];
   firstName: Scalars['String']['input'];
   lastName: Scalars['String']['input'];
-  numberOtp: Scalars['String']['input'];
-  numberOtpVerifyKey: Scalars['String']['input'];
   phone: Scalars['String']['input'];
 };
 
@@ -924,14 +900,14 @@ export type AddUserMutationVariables = Exact<{
 }>;
 
 
-export type AddUserMutation = { __typename?: 'Mutation', addUser: { __typename?: 'AddUserKeys', emailOtpVerifyKey: string, numberOtpVerifyKey: string } };
+export type AddUserMutation = { __typename?: 'Mutation', addUser: string };
 
 export type VerifyUserDetailsMutationVariables = Exact<{
   input: VerifyUserDetails;
 }>;
 
 
-export type VerifyUserDetailsMutation = { __typename?: 'Mutation', verifyUserDetails: boolean };
+export type VerifyUserDetailsMutation = { __typename?: 'Mutation', verifyUserDetails: string };
 
 export type UpdateRestaurantUserProfileMutationVariables = Exact<{
   input: UpdateUserProfileInput;
@@ -996,10 +972,7 @@ export const VerifyOtpForLoginDocument = gql`
     `;
 export const AddUserDocument = gql`
     mutation addUser($input: AddUserInput!) {
-  addUser(input: $input) {
-    emailOtpVerifyKey
-    numberOtpVerifyKey
-  }
+  addUser(input: $input)
 }
     `;
 export const VerifyUserDetailsDocument = gql`

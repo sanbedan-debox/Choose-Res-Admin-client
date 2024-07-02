@@ -3,20 +3,108 @@ import { STAGGER_CHILD_VARIANTS } from "@/lib/constants";
 import { useRouter } from "next/router";
 import useGlobalStore from "@/store/global";
 import { useForm } from "react-hook-form";
-import Select from "react-select";
+import useOnboardingStore from "@/store/onboarding";
+import useAuthStore from "@/store/auth";
+import { sdk } from "@/utils/graphqlClient";
+
+interface IFormInput {
+  ein: string;
+  ssn: string;
+}
 
 const UserVerification = () => {
   const { setToastData } = useGlobalStore();
   const router = useRouter();
+  const { userId } = useAuthStore();
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm<IFormInput>();
 
-  const onSubmit = (data) => {
-    console.log(data);
-    router.push("/onboarding/integrations");
+  const {
+    ein,
+    ssn,
+    setein,
+    setssn,
+    addressLine1,
+    addressLine2,
+    businessName,
+    businessType,
+    city,
+    employeeSize,
+    establishedAt,
+    dob,
+    location,
+    postcode,
+    estimatedRevenue,
+    state,
+  } = useOnboardingStore();
+
+  const onSubmit = async (data: IFormInput) => {
+    if (!businessType || !businessName || !employeeSize || !estimatedRevenue) {
+      try {
+        setToastData({
+          message: "Please fill business details first.",
+          type: "error",
+        });
+        router.push("/onboarding/user/user-info");
+        return;
+      } catch (error) {
+        console.error("Failed to call API to fill details:", error);
+        setToastData({
+          message: "Failed to check business details.",
+          type: "error",
+        });
+        return;
+      }
+    }
+
+    if (
+      !addressLine1 ||
+      !addressLine2 ||
+      !city ||
+      !state ||
+      !postcode ||
+      !location
+    ) {
+      try {
+        setToastData({
+          message: "Please fill location details first.",
+          type: "error",
+        });
+        router.push("/onboarding/user/user-location");
+        return;
+      } catch (error) {
+        console.error("Failed to call API to fill details:", error);
+        setToastData({
+          message: "Failed to check location details.",
+          type: "error",
+        });
+        return;
+      }
+    }
+
+    try {
+      const response = await sdk.UpdateUserOnboarding({
+        input: {
+          _id: userId,
+          ssn: data.ssn,
+          ein: data.ein,
+        },
+      });
+
+      setToastData({
+        message: "User verification details updated successfully!",
+        type: "success",
+      });
+      router.push("/onboarding/location");
+    } catch (error) {
+      setToastData({
+        message: "Failed to update user verification details.",
+        type: "error",
+      });
+    }
   };
 
   return (
@@ -57,8 +145,10 @@ const UserVerification = () => {
             {...register("ein", {
               required: "EIN is required",
             })}
-            className=" input input-primary"
+            className="input input-primary"
             placeholder="EIN"
+            defaultValue={ein}
+            onChange={(e) => setein(e.target.value)}
           />
           {errors.ein && (
             <p className="text-red-500 text-sm text-start">
@@ -76,8 +166,10 @@ const UserVerification = () => {
             {...register("ssn", {
               required: "SSN is required",
             })}
-            className=" input input-primary"
+            className="input input-primary"
             placeholder="SSN"
+            defaultValue={ssn}
+            onChange={(e) => setssn(e.target.value)}
           />
           {errors.ssn && (
             <p className="text-red-500 text-sm text-start">
@@ -88,7 +180,6 @@ const UserVerification = () => {
 
         <div className="col-span-2">
           <button
-            onClick={() => router.push("/onboarding/user/location")}
             type="submit"
             className="inline-flex btn btn-primary items-center justify-center w-full mt-8"
           >

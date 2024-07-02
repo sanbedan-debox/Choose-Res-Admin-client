@@ -4,6 +4,20 @@ import { useRouter } from "next/router";
 import useGlobalStore from "@/store/global";
 import { useForm } from "react-hook-form";
 import Select from "react-select";
+import { revenueOptions, stateOptions } from "./interface/interface";
+import useOnboardingStore from "@/store/onboarding";
+import { useEffect } from "react";
+import { sdk } from "@/utils/graphqlClient";
+import useAuthStore from "@/store/auth";
+
+interface IFormInput {
+  addressLine1: string;
+  addressLine2: string;
+  city: string;
+  state: string;
+  postcode: string;
+  location: string;
+}
 
 const UserLocation = () => {
   const { setToastData } = useGlobalStore();
@@ -11,74 +25,73 @@ const UserLocation = () => {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
-  } = useForm();
+  } = useForm<IFormInput>();
 
-  const onSubmit = (data) => {
-    console.log(data);
-    router.push("/onboarding/integrations");
+  const {
+    addressLine1,
+    addressLine2,
+    city,
+    state,
+    postcode,
+    location,
+    setAddressLine1,
+    setAddressLine2,
+    setCity,
+    setState,
+    setPostcode,
+    setLocation,
+  } = useOnboardingStore();
+
+  const { userId } = useAuthStore();
+
+  useEffect(() => {
+    setValue("addressLine1", addressLine1);
+    setValue("addressLine2", addressLine2);
+    setValue("city", city);
+    setValue("state", state);
+    setValue("postcode", postcode);
+    setValue("location", location);
+  }, [setValue, addressLine1, addressLine2, city, state, postcode, location]);
+
+  const onSubmit = async (data: IFormInput) => {
+    try {
+      const response = await sdk.UpdateUserOnboarding({
+        input: {
+          _id: userId,
+          address: {
+            addressLine1: {
+              value: data.addressLine1,
+            },
+            addressLine2: {
+              value: data.addressLine2,
+            },
+            city: {
+              value: data.city,
+            },
+            state: { value: data.state },
+            postcode: {
+              value: data.postcode,
+            },
+            coordinate: {
+              coordinates: [22, 22],
+            },
+          },
+        },
+      });
+      setToastData({
+        message: "Location details updated successfully!",
+        type: "success",
+      });
+      router.push("/onboarding/user/user-verification");
+    } catch (error) {
+      setToastData({
+        message: "Failed to update location details.",
+        type: "error",
+      });
+    }
   };
-
-  const revenueOptions = [
-    { value: "0-50000", label: "$0 - $50,000" },
-    { value: "50001-200000", label: "$50,001 - $200,000" },
-    { value: "200001-500000", label: "$200,001 - $500,000" },
-    { value: "500001-1000000", label: "$500,001 - $1,000,000" },
-    { value: "1000001+", label: "$1,000,001+" },
-  ];
-
-  const stateOptions = [
-    { value: "AL", label: "Alabama" },
-    { value: "AK", label: "Alaska" },
-    { value: "AZ", label: "Arizona" },
-    { value: "AR", label: "Arkansas" },
-    { value: "CA", label: "California" },
-    { value: "CO", label: "Colorado" },
-    { value: "CT", label: "Connecticut" },
-    { value: "DE", label: "Delaware" },
-    { value: "FL", label: "Florida" },
-    { value: "GA", label: "Georgia" },
-    { value: "HI", label: "Hawaii" },
-    { value: "ID", label: "Idaho" },
-    { value: "IL", label: "Illinois" },
-    { value: "IN", label: "Indiana" },
-    { value: "IA", label: "Iowa" },
-    { value: "KS", label: "Kansas" },
-    { value: "KY", label: "Kentucky" },
-    { value: "LA", label: "Louisiana" },
-    { value: "ME", label: "Maine" },
-    { value: "MD", label: "Maryland" },
-    { value: "MA", label: "Massachusetts" },
-    { value: "MI", label: "Michigan" },
-    { value: "MN", label: "Minnesota" },
-    { value: "MS", label: "Mississippi" },
-    { value: "MO", label: "Missouri" },
-    { value: "MT", label: "Montana" },
-    { value: "NE", label: "Nebraska" },
-    { value: "NV", label: "Nevada" },
-    { value: "NH", label: "New Hampshire" },
-    { value: "NJ", label: "New Jersey" },
-    { value: "NM", label: "New Mexico" },
-    { value: "NY", label: "New York" },
-    { value: "NC", label: "North Carolina" },
-    { value: "ND", label: "North Dakota" },
-    { value: "OH", label: "Ohio" },
-    { value: "OK", label: "Oklahoma" },
-    { value: "OR", label: "Oregon" },
-    { value: "PA", label: "Pennsylvania" },
-    { value: "RI", label: "Rhode Island" },
-    { value: "SC", label: "South Carolina" },
-    { value: "SD", label: "South Dakota" },
-    { value: "TN", label: "Tennessee" },
-    { value: "TX", label: "Texas" },
-    { value: "UT", label: "Utah" },
-    { value: "VT", label: "Vermont" },
-    { value: "VA", label: "Virginia" },
-    { value: "WA", label: "Washington" },
-    { value: "WV", label: "West Virginia" },
-    { value: "WI", label: "Wisconsin" },
-    { value: "WY", label: "Wyoming" },
-  ];
 
   return (
     <motion.div
@@ -115,11 +128,10 @@ const UserLocation = () => {
           </label>
           <input
             type="text"
-            {...register("addressLine1", {
-              required: "Address Line 1 is required",
-            })}
-            className=" input input-primary"
+            {...register("addressLine1")}
+            className="input input-primary"
             placeholder="Address Line 1"
+            onChange={(e) => setAddressLine1(e.target.value)}
           />
           {errors.addressLine1 && (
             <p className="text-red-500 text-sm text-start">
@@ -135,8 +147,9 @@ const UserLocation = () => {
           <input
             type="text"
             {...register("addressLine2")}
-            className=" input input-primary"
+            className="input input-primary"
             placeholder="Address Line 2"
+            onChange={(e) => setAddressLine2(e.target.value)}
           />
         </div>
 
@@ -147,11 +160,10 @@ const UserLocation = () => {
             </label>
             <input
               type="text"
-              {...register("city", {
-                required: "City is required",
-              })}
-              className=" input input-primary"
+              {...register("city")}
+              className="input input-primary"
               placeholder="City"
+              onChange={(e) => setCity(e.target.value)}
             />
             {errors.city && (
               <p className="text-red-500 text-sm text-start">
@@ -168,14 +180,16 @@ const UserLocation = () => {
               State
             </label>
             <Select
-              {...register("state", {
-                required: "State is required",
-              })}
               id="state"
               options={stateOptions}
               className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
               classNamePrefix="react-select"
               placeholder="Select State"
+              value={stateOptions.find((option) => option.value === state)}
+              onChange={(option) => {
+                setValue("state", option?.value || "");
+                setState(option?.value || "");
+              }}
             />
             {errors.state && (
               <p className="text-red-500 text-sm text-start">
@@ -192,10 +206,14 @@ const UserLocation = () => {
           <input
             type="text"
             {...register("postcode", {
-              required: "Postcode is required",
+              pattern: {
+                value: /^\d{5}(-\d{4})?$/,
+                message: "Invalid postcode format",
+              },
             })}
-            className=" input input-primary"
+            className="input input-primary"
             placeholder="Postcode"
+            onChange={(e) => setPostcode(e.target.value)}
           />
           {errors.postcode && (
             <p className="text-red-500 text-sm text-start">
@@ -209,19 +227,21 @@ const UserLocation = () => {
             htmlFor="location"
             className="block mb-2 text-sm font-medium text-left text-gray-700"
           >
-            Select Location
+            Search Location
           </label>
           <Select
-            {...register("location", {
-              required: "Location is required",
-            })}
-            id="revenue"
-            options={revenueOptions}
+            id="location"
+            options={revenueOptions} // Update with appropriate options
             className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
             classNamePrefix="react-select"
-            placeholder="Select location"
+            placeholder="Search location"
+            value={revenueOptions.find((option) => option.value === location)}
+            onChange={(option) => {
+              setValue("location", option?.value || "");
+              setLocation(option?.value || "");
+            }}
           />
-          {errors.revenue && (
+          {errors.location && (
             <p className="text-red-500 text-sm text-start">
               {errors.location.message}
             </p>
@@ -230,7 +250,6 @@ const UserLocation = () => {
 
         <div className="col-span-2">
           <button
-            onClick={() => router.push("/onboarding/user/user-verification")}
             type="submit"
             className="inline-flex btn btn-primary items-center justify-center w-full mt-8"
           >

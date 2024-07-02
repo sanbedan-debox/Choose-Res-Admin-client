@@ -7,15 +7,22 @@ import UserInfo from "@/components/modules/onboarding/userInfo";
 import UserLocation from "@/components/modules/onboarding/UserLocation";
 import UserVerification from "@/components/modules/onboarding/UserVerification";
 import Intro from "@/components/modules/onboarding/welcome";
+import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 
-const OnboardingPage = () => {
+type HomePageProps = {
+  repo: {
+    pagePath: string;
+  };
+};
+
+const OnboardingPage = ({ repo: { pagePath } }: HomePageProps) => {
   const router = useRouter();
-  const { onBordingRoute } = router.query;
+  // const { onBordingRoute } = router.query;
 
   let childComponent;
 
-  switch (onBordingRoute) {
+  switch (pagePath) {
     case "intro":
       childComponent = <Intro />;
       break;
@@ -37,6 +44,7 @@ const OnboardingPage = () => {
     case "availibility":
       childComponent = <Availability />;
       break;
+
     default:
       childComponent = <NotFound />;
       break;
@@ -46,3 +54,15 @@ const OnboardingPage = () => {
 };
 
 export default OnboardingPage;
+
+export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
+  context
+) => {
+  return {
+    props: {
+      repo: {
+        pagePath: context.query["onBordingRoute"]?.toString() ?? "",
+      },
+    },
+  };
+};

@@ -34,7 +34,6 @@ const Intro = () => {
         </motion.p>
         <motion.div variants={STAGGER_CHILD_VARIANTS}>
           <button
-            // className="px-10 text-base font-medium"
             className="btn btn-primary"
             onClick={() => router.push("/onboarding/user/user-info")}
           >

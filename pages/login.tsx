@@ -6,6 +6,9 @@ import useGlobalStore from "@/store/global";
 import ReusableModal from "@/components/common/modal/modal";
 import { sdk } from "@/utils/graphqlClient";
 import logo1 from "../assets/logo/logoDark.png";
+import Link from "next/link";
+import { GetServerSideProps } from "next";
+import { parseCookies } from "nookies";
 
 interface IFormInput {
   email: string;
@@ -91,7 +94,7 @@ const Login: FC = () => {
           message: "OTP verification successful",
           type: "success",
         });
-        router.replace("/");
+        router.replace("/dashboard");
       }
     } catch (error) {
       console.error("OTP verification failed:", error);
@@ -164,13 +167,20 @@ const Login: FC = () => {
                     )}
                   </div>
                   <p className="text-sm text-gray-800">
-                    By logging in, you agree to CHOOSE{" "}
-                    <a
+                    By logging in, you agree to CHOOSE's{" "}
+                    <Link
                       href="/signup"
                       className="text-primary focus:outline-none focus:underline hover:underline"
                     >
                       Terms and Conditions
-                    </a>
+                    </Link>{" "}
+                    and{" "}
+                    <Link
+                      href="/signup"
+                      className="text-primary focus:outline-none focus:underline hover:underline"
+                    >
+                      Privacy Policy
+                    </Link>
                   </p>
                   <div className="flex justify-end">
                     <button className="btn btn-primary">Log in</button>
@@ -179,12 +189,12 @@ const Login: FC = () => {
 
                 <p className="mt-6 text-sm text-center text-gray-800">
                   Don't have an account yet?{" "}
-                  <a
+                  <Link
                     href="/signup"
                     className="text-primary focus:outline-none focus:underline hover:underline"
                   >
                     Sign up
-                  </a>
+                  </Link>
                   .
                 </p>
               </div>
@@ -229,3 +239,41 @@ const Login: FC = () => {
 };
 
 export default Login;
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const cookies = parseCookies(context);
+  const token = cookies.accessToken;
+
+  if (!token) {
+    return {
+      props: {},
+    };
+  }
+
+  try {
+    const response = await sdk.MeUser(
+      {},
+      {
+        cookie: context.req.headers.cookie?.toString() ?? "",
+      }
+    );
+
+    if (response && response.meUser) {
+      return {
+        redirect: {
+          destination: "/dashboard",
+          permanent: false,
+        },
+      };
+    } else {
+      return {
+        props: {},
+      };
+    }
+  } catch (error) {
+    console.error("Failed to fetch user details:", error);
+    return {
+      props: {},
+    };
+  }
+};
