@@ -364,7 +364,7 @@ const Signup: FC = () => {
                   </button>
                 </div>
               </form>
-              <p className="mt-6 text-sm text-center text-gray-400">
+              <p className="mt-6 text-sm text-center text-gray-600">
                 Already have an account?{" "}
                 <Link
                   href="/login"

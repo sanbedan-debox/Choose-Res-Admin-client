@@ -182,8 +182,8 @@ const Login: FC = () => {
                       Privacy Policy
                     </Link>
                   </p>
-                  <div className="flex justify-end">
-                    <button className="btn btn-primary">Log in</button>
+                  <div className="flex justify-end ">
+                    <button className="btn btn-primary w-full">Log in</button>
                   </div>
                 </form>
 
