@@ -40,13 +40,13 @@ const UserVerification = () => {
         className="flex flex-col items-center space-y-5 text-center"
       >
         <h1 className="font-display max-w-md text-2xl font-semibold transition-colors">
-          Tax Information
+          User Verification
         </h1>
       </motion.div>
 
       <form
         className="space-y-4 md:space-y-3 w-full max-w-2xl"
-        // onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit(onSubmit)}
       >
         <div className="col-span-2">
           <label className="block mb-2 text-sm font-medium text-left text-gray-700">
@@ -61,7 +61,9 @@ const UserVerification = () => {
             placeholder="EIN"
           />
           {errors.ein && (
-            <p className="text-red-500 text-sm">{errors.ein.message}</p>
+            <p className="text-red-500 text-sm text-start">
+              {errors.ein.message}
+            </p>
           )}
         </div>
 
@@ -78,34 +80,21 @@ const UserVerification = () => {
             placeholder="SSN"
           />
           {errors.ssn && (
-            <p className="text-red-500 text-sm">{errors.ssn.message}</p>
+            <p className="text-red-500 text-sm text-start">
+              {errors.ssn.message}
+            </p>
           )}
         </div>
 
         <div className="col-span-2">
-          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-            Tax Rate
-          </label>
-          <input
-            type="text"
-            {...register("taxRate", {
-              required: "Tax Rate is required",
-            })}
-            className=" input input-primary"
-            placeholder="Tax Rate"
-          />
-          {errors.taxRate && (
-            <p className="text-red-500 text-sm">{errors.taxRate.message}</p>
-          )}
+          <button
+            onClick={() => router.push("/onboarding/user/location")}
+            type="submit"
+            className="inline-flex btn btn-primary items-center justify-center w-full mt-8"
+          >
+            Continue
+          </button>
         </div>
-
-        <button
-          onClick={() => router.push("/onboarding/location")}
-          type="submit"
-          className="inline-flex btn btn-primary items-center justify-center w-full mt-8"
-        >
-          Continue
-        </button>
       </form>
     </motion.div>
   );

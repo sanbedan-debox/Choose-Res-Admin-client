@@ -77,7 +77,13 @@ const RestaurantLocation = () => {
     { value: "WI", label: "Wisconsin" },
     { value: "WY", label: "Wyoming" },
   ];
-
+  const mondayChecked = watch("mondayRegularHours");
+  const tuesdayChecked = watch("tuesdayRegularHours");
+  const wednesdayChecked = watch("wednesdayRegularHours");
+  const thursdayChecked = watch("thursdayRegularHours");
+  const fridayChecked = watch("fridayRegularHours");
+  const saturdayChecked = watch("saturdayRegularHours");
+  const sundayChecked = watch("sundayRegularHours");
   return (
     <motion.div
       className="z-10 flex flex-col w-full max-w-md items-center space-y-5 text-center"
@@ -109,44 +115,6 @@ const RestaurantLocation = () => {
       >
         <div className="col-span-2">
           <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-            Location business name
-          </label>
-          <input
-            type="text"
-            {...register("businessName", {
-              required: "Business name is required",
-            })}
-            className="input input-primary"
-            placeholder="Name"
-          />
-          {errors.businessName && (
-            <p className="text-red-500 text-sm">
-              {errors.businessName.message}
-            </p>
-          )}
-        </div>
-
-        <div className="col-span-2">
-          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-            Location nickname
-          </label>
-          <input
-            type="text"
-            {...register("locationNickname", {
-              required: "Location nickname is required",
-            })}
-            className="input input-primary"
-            placeholder="Location nickname"
-          />
-          {errors.locationNickname && (
-            <p className="text-red-500 text-sm">
-              {errors.locationNickname.message}
-            </p>
-          )}
-        </div>
-
-        <div className="col-span-2">
-          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
             Business description
           </label>
           <textarea
@@ -158,7 +126,7 @@ const RestaurantLocation = () => {
             rows="4"
           />
           {errors.businessDescription && (
-            <p className="text-red-500 text-sm">
+            <p className="text-red-500 text-sm text-start">
               {errors.businessDescription.message}
             </p>
           )}
@@ -177,8 +145,26 @@ const RestaurantLocation = () => {
             placeholder="Address Line 1"
           />
           {errors.addressLine1 && (
-            <p className="text-red-500 text-sm">
+            <p className="text-red-500 text-sm text-start">
               {errors.addressLine1.message}
+            </p>
+          )}
+        </div>
+        <div className="col-span-2">
+          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
+            Address Line 2
+          </label>
+          <input
+            type="text"
+            {...register("addressLine2", {
+              required: "Address Line 2 is required",
+            })}
+            className="input input-primary"
+            placeholder="Address Line 2"
+          />
+          {errors.addressLine1 && (
+            <p className="text-red-500 text-sm text-start">
+              {errors.addressLine2.message}
             </p>
           )}
         </div>
@@ -196,7 +182,9 @@ const RestaurantLocation = () => {
               placeholder="City"
             />
             {errors.city && (
-              <p className="text-red-500 text-sm">{errors.city.message}</p>
+              <p className="text-red-500 text-sm text-start">
+                {errors.city.message}
+              </p>
             )}
           </div>
 
@@ -218,7 +206,9 @@ const RestaurantLocation = () => {
               placeholder="Select State"
             />
             {errors.state && (
-              <p className="text-red-500 text-sm">{errors.state.message}</p>
+              <p className="text-red-500 text-sm text-start">
+                {errors.state.message}
+              </p>
             )}
           </div>
         </div>
@@ -236,7 +226,9 @@ const RestaurantLocation = () => {
             placeholder="Postcode"
           />
           {errors.postcode && (
-            <p className="text-red-500 text-sm">{errors.postcode.message}</p>
+            <p className="text-red-500 text-sm text-start">
+              {errors.postcode.message}
+            </p>
           )}
         </div>
 
@@ -258,7 +250,7 @@ const RestaurantLocation = () => {
             placeholder="Select Location "
           />
           {errors.locationType && (
-            <p className="text-red-500 text-sm">
+            <p className="text-red-500 text-sm text-start">
               {errors.locationType.message}
             </p>
           )}
@@ -319,7 +311,9 @@ const RestaurantLocation = () => {
             placeholder="Select Timezone"
           />
           {errors.timezone && (
-            <p className="text-red-500 text-sm">{errors.timezone.message}</p>
+            <p className="text-red-500 text-sm text-start">
+              {errors.timezone.message}
+            </p>
           )}
         </div>
 
@@ -346,12 +340,12 @@ const RestaurantLocation = () => {
                 <div className="flex space-x-2 mt-1">
                   <input
                     type="checkbox"
-                    {...register(`hours.${day}.enabled`)} // Register checkbox state
+                    {...register(`hours.${day}.enabled`)}
                     className="mr-2"
                   />
                   <input
                     type="text"
-                    {...register(`hours.${day}.from`, { disabled: true })} // Disable based on checkbox state
+                    {...register(`hours.${day}.from`, { disabled: true })}
                     className={`input input-primary ${
                       watch(`hours.${day}.enabled`) ? "" : "opacity-50"
                     }`}
@@ -359,7 +353,7 @@ const RestaurantLocation = () => {
                   />
                   <input
                     type="text"
-                    {...register(`hours.${day}.to`, { disabled: true })} // Disable based on checkbox state
+                    {...register(`hours.${day}.to`, { disabled: true })}
                     className={`input input-primary ${
                       watch(`hours.${day}.enabled`) ? "" : "opacity-50"
                     }`}
@@ -370,8 +364,15 @@ const RestaurantLocation = () => {
             ))}
           </div>
         </div>
-
-        <button className="btn btn-primary w-full mt-8">Continue</button>
+        <div className="col-span-2">
+          <button
+            onClick={() => router.push("/onboarding/location")}
+            type="submit"
+            className="inline-flex btn btn-primary items-center justify-center w-full mt-8"
+          >
+            Continue
+          </button>
+        </div>
       </form>
     </motion.div>
   );

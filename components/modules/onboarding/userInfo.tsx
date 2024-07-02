@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import useGlobalStore from "@/store/global";
 import { useForm } from "react-hook-form";
 import Select from "react-select";
+import { sdk } from "@/utils/graphqlClient";
 
 interface IFormInput {
   businessType: string;
@@ -52,17 +53,42 @@ const UserInfo = () => {
     { value: "1000001+", label: "$1,000,001+" },
   ];
 
-  // const stateOptions = [
-  //   { value: "NY", label: "New York" },
-  //   { value: "CA", label: "California" },
-  //   { value: "TX", label: "Texas" },
-  //   // Add more states as needed
-  // ];
-
-  const onSubmit = (data: IFormInput) => {
-    // handle form submission
-    console.log(data);
-    router.push("/onboarding/location");
+  const onSubmit = async (data: IFormInput) => {
+    try {
+      const response = await sdk.UpdateUserOnboarding({
+        input: {
+          _id: "user-id", // Replace with actual user ID
+          businessDetails: {
+            businessName: data.businessName,
+            businessType: data.businessType,
+            dob: "", // Add appropriate dob
+            estimatedRevenue: data.revenue,
+            employeeSize: data.employees,
+            establishedAt: "", // Add appropriate established date
+          },
+          businessAddress: {
+            address: data.address,
+            apartment: data.apartment,
+            city: data.city,
+            state: data.state,
+            zip: data.zip,
+          },
+          businessAccountDetails: {
+            // Add appropriate business account details
+          },
+        },
+      });
+      setToastData({
+        message: "Business details updated successfully!",
+        type: "success",
+      });
+      router.push("/onboarding/location");
+    } catch (error) {
+      setToastData({
+        message: "Failed to update business details.",
+        type: "error",
+      });
+    }
   };
 
   return (
@@ -104,7 +130,7 @@ const UserInfo = () => {
             htmlFor="businessType"
             className="block mb-2 text-sm font-medium text-left text-gray-700"
           >
-            What kind of business are you ?
+            What kind of business are you
           </label>
           <Select
             {...register("businessType", {
@@ -117,7 +143,7 @@ const UserInfo = () => {
             placeholder="Select business type"
           />
           {errors.businessType && (
-            <p className="text-red-500 text-sm">
+            <p className="text-red-500 text-sm text-start">
               {errors.businessType.message}
             </p>
           )}
@@ -128,7 +154,7 @@ const UserInfo = () => {
             htmlFor="businessName"
             className="block mb-2 text-sm font-medium text-left text-gray-700"
           >
-            What is your business name ?
+            What is your business name
           </label>
           <input
             type="text"
@@ -140,55 +166,18 @@ const UserInfo = () => {
             placeholder="Enter your business name"
           />
           {errors.businessName && (
-            <p className="text-red-500 text-sm">
+            <p className="text-red-500 text-sm text-start">
               {errors.businessName.message}
             </p>
           )}
         </div>
-
-        {/* <div className="col-span-2">
-          <label
-            htmlFor="phoneNumber"
-            className="block mb-2 text-sm font-medium text-left text-gray-700"
-          >
-            Preferred phone number
-          </label>
-          <input
-            type="text"
-            {...register("phoneNumber", {
-              required: "Phone number is required",
-            })}
-            id="phoneNumber"
-            className="mt-1 border bg-input text-sm rounded-lg w-full focus:outline-none block p-2.5 border-gray-500 placeholder-gray-400 text-black"
-            placeholder="Enter your phone number"
-          />
-          {errors.phoneNumber && (
-            <p className="text-red-500 text-sm">{errors.phoneNumber.message}</p>
-          )}
-        </div>
-
-        <div className="col-span-2">
-          <label
-            htmlFor="ein"
-            className="block mb-2 text-sm font-medium text-left text-gray-700"
-          >
-            Employer Identification Number (Optional)
-          </label>
-          <input
-            type="text"
-            {...register("ein")}
-            id="ein"
-            className="mt-1 border bg-input text-sm rounded-lg w-full focus:outline-none block p-2.5 border-gray-500 placeholder-gray-400 text-black"
-            placeholder="Enter your EIN"
-          />
-        </div> */}
 
         <div className="col-span-2">
           <label
             htmlFor="employees"
             className="block mb-2 text-sm font-medium text-left text-gray-700"
           >
-            How many employees ?
+            How many employees
           </label>
           <Select
             {...register("employees", {
@@ -201,7 +190,9 @@ const UserInfo = () => {
             placeholder="Select number of employees"
           />
           {errors.employees && (
-            <p className="text-red-500 text-sm">{errors.employees.message}</p>
+            <p className="text-red-500 text-sm text-start">
+              {errors.employees.message}
+            </p>
           )}
         </div>
 
@@ -223,129 +214,14 @@ const UserInfo = () => {
             placeholder="Select estimated annual revenue"
           />
           {errors.revenue && (
-            <p className="text-red-500 text-sm">{errors.revenue.message}</p>
+            <p className="text-red-500 text-sm text-start">
+              {errors.revenue.message}
+            </p>
           )}
         </div>
-
-        {/* <div className="col-span-2">
-          <label
-            htmlFor="mobileBusiness"
-            className="flex items-center mb-2 text-sm font-medium text-left text-gray-700"
-          >
-            <input
-              type="checkbox"
-              {...register("mobileBusiness")}
-              id="mobileBusiness"
-              className="mr-2"
-            />
-            I have a mobile business
-          </label>
-        </div>
-
-        <div className="col-span-2">
-          <label
-            htmlFor="address"
-            className="block mb-2 text-sm font-medium text-left text-gray-700"
-          >
-            Address
-          </label>
-          <input
-            type="text"
-            {...register("address", {
-              required: "Address is required",
-            })}
-            id="address"
-            className="mt-1 border bg-input text-sm rounded-lg w-full focus:outline-none block p-2.5 border-gray-500 placeholder-gray-400 text-black"
-            placeholder="Enter your address"
-          />
-          {errors.address && (
-            <p className="text-red-500 text-sm">{errors.address.message}</p>
-          )}
-        </div>
-
-        <div className="col-span-2">
-          <label
-            htmlFor="apartment"
-            className="block mb-2 text-sm font-medium text-left text-gray-700"
-          >
-            Apartment, suite, unit, etc. (Optional)
-          </label>
-          <input
-            type="text"
-            {...register("apartment")}
-            id="apartment"
-            className="mt-1 border bg-input text-sm rounded-lg w-full focus:outline-none block p-2.5 border-gray-500 placeholder-gray-400 text-black"
-            placeholder="Enter apartment, suite, etc."
-          />
-        </div>
-
-        <div className="col-span-2">
-          <label
-            htmlFor="city"
-            className="block mb-2 text-sm font-medium text-left text-gray-700"
-          >
-            City
-          </label>
-          <input
-            type="text"
-            {...register("city", {
-              required: "City is required",
-            })}
-            id="city"
-            className="mt-1 border bg-input text-sm rounded-lg w-full focus:outline-none block p-2.5 border-gray-500 placeholder-gray-400 text-black"
-            placeholder="Enter your city"
-          />
-          {errors.city && (
-            <p className="text-red-500 text-sm">{errors.city.message}</p>
-          )}
-        </div>
-
-        <div className="col-span-2">
-          <label
-            htmlFor="state"
-            className="block mb-2 text-sm font-medium text-left text-gray-700"
-          >
-            State
-          </label>
-          <Select
-            {...register("state", {
-              required: "State is required",
-            })}
-            id="state"
-            options={stateOptions}
-            className="mt-1 text-sm rounded-lg w-full focus:outline-none"
-            classNamePrefix="react-select"
-            placeholder="Select state"
-          />
-          {errors.state && (
-            <p className="text-red-500 text-sm">{errors.state.message}</p>
-          )}
-        </div>
-
-        <div className="col-span-2">
-          <label
-            htmlFor="zip"
-            className="block mb-2 text-sm font-medium text-left text-gray-700"
-          >
-            ZIP code
-          </label>
-          <input
-            type="text"
-            {...register("zip", {
-              required: "ZIP code is required",
-            })}
-            id="zip"
-            className="mt-1 border bg-input text-sm rounded-lg w-full focus:outline-none block p-2.5 border-gray-500 placeholder-gray-400 text-black"
-            placeholder="Enter your ZIP code"
-          />
-          {errors.zip && (
-            <p className="text-red-500 text-sm">{errors.zip.message}</p>
-          )}
-        </div> */}
 
         <div className="col-span-2">
           <button
-            onClick={() => router.push("/onboarding/user-location")}
             type="submit"
             className="inline-flex btn btn-primary items-center justify-center w-full mt-8"
           >

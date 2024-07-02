@@ -63,6 +63,13 @@ export type AddEmailTemplateInput = {
   title: Scalars['String']['input'];
 };
 
+export type AddMenuInput = {
+  name: MasterCommonInput;
+  status: StatusEnum;
+  taxes?: InputMaybe<TaxRateInput>;
+  type: MenuStatusEnum;
+};
+
 export type AddRestaurantInput = {
   address: AddressInfoInput;
   name: MasterCommonInput;
@@ -152,6 +159,21 @@ export type AvailabilityInput = {
   start: Scalars['DateTimeISO']['input'];
 };
 
+export type BusinessAccountDetailsInput = {
+  ein: Scalars['String']['input'];
+  ssn: Scalars['String']['input'];
+  taxRates: Array<TaxRateInput>;
+};
+
+export type BusinessDetailsInput = {
+  businessName: Scalars['String']['input'];
+  businessType: BusinessTypeEnum;
+  dob: Scalars['String']['input'];
+  employeeSize: MasterCommonInput;
+  establishedAt: Scalars['String']['input'];
+  estimatedRevenue: MasterCommonInput;
+};
+
 /** Business type enum  */
 export enum BusinessTypeEnum {
   Llc = 'LLC',
@@ -166,10 +188,18 @@ export type Category = {
   desc: MasterCommon;
   items?: Maybe<Array<Item>>;
   name: MasterCommon;
+  restaurantId: Restaurant;
   status: StatusEnum;
   upSellCategories?: Maybe<Array<Category>>;
   updatedAt: Scalars['DateTimeISO']['output'];
+  user: User;
   visibility?: Maybe<Array<Visibility>>;
+};
+
+export type CategoryInfo = {
+  __typename?: 'CategoryInfo';
+  _id: Category;
+  name?: Maybe<MasterCommon>;
 };
 
 /** ConnectionStatusEnum enum type  */
@@ -365,13 +395,22 @@ export type MasterCommonNumber = {
 export type Menu = {
   __typename?: 'Menu';
   _id: Scalars['ID']['output'];
-  categories?: Maybe<Array<Category>>;
+  availability?: Maybe<Array<Availability>>;
+  categories: Array<CategoryInfo>;
   createdAt: Scalars['DateTimeISO']['output'];
   name: MasterCommon;
   status: StatusEnum;
   taxes: TaxRate;
   type: MenuStatusEnum;
   updatedAt: Scalars['DateTimeISO']['output'];
+  user: User;
+  visibility?: Maybe<Array<Visibility>>;
+};
+
+export type MenuInfo = {
+  __typename?: 'MenuInfo';
+  _id: Menu;
+  name?: Maybe<MasterCommon>;
 };
 
 /** Menu status enum */
@@ -405,7 +444,9 @@ export type ModifierGroup = {
 export type Mutation = {
   __typename?: 'Mutation';
   addAdmin: Scalars['Boolean']['output'];
-  addRestaurant: Scalars['Boolean']['output'];
+  addCategory: Scalars['Boolean']['output'];
+  addMenu: Scalars['Boolean']['output'];
+  addRestaurant: Scalars['String']['output'];
   addUser: AddUserKeys;
   addWaitListUser: Scalars['Boolean']['output'];
   blockAdmin: Scalars['Boolean']['output'];
@@ -415,9 +456,13 @@ export type Mutation = {
   createEmailTemplate: Scalars['Boolean']['output'];
   deleteAdmin: Scalars['Boolean']['output'];
   deleteEmailTemplate: Scalars['Boolean']['output'];
+  deleteMenu: Scalars['Boolean']['output'];
   removeRestaurant: Scalars['Boolean']['output'];
   sendTestEmails: Scalars['Boolean']['output'];
+  updateCategory: Scalars['Boolean']['output'];
+  updateMenu: Scalars['Boolean']['output'];
   updateRestaurant: Scalars['Boolean']['output'];
+  updateUserOnboarding: Scalars['Boolean']['output'];
   updateUserProfile: Scalars['Boolean']['output'];
   verifyUserDetails: Scalars['Boolean']['output'];
 };
@@ -425,6 +470,19 @@ export type Mutation = {
 
 export type MutationAddAdminArgs = {
   input: AddAdminInput;
+};
+
+
+export type MutationAddCategoryArgs = {
+  input: AddCategoryInput;
+  menuId: Scalars['String']['input'];
+  restaurantId: Scalars['String']['input'];
+};
+
+
+export type MutationAddMenuArgs = {
+  input: AddMenuInput;
+  restaurantId: Scalars['String']['input'];
 };
 
 
@@ -480,6 +538,11 @@ export type MutationDeleteEmailTemplateArgs = {
 };
 
 
+export type MutationDeleteMenuArgs = {
+  menuId: Scalars['String']['input'];
+};
+
+
 export type MutationRemoveRestaurantArgs = {
   id: Scalars['String']['input'];
 };
@@ -490,8 +553,25 @@ export type MutationSendTestEmailsArgs = {
 };
 
 
+export type MutationUpdateCategoryArgs = {
+  categoryId: Scalars['String']['input'];
+  input: UpdateCategoryInput;
+};
+
+
+export type MutationUpdateMenuArgs = {
+  input: UpdateMenuInput;
+  menuId: Scalars['String']['input'];
+};
+
+
 export type MutationUpdateRestaurantArgs = {
   input: UpdateRestaurantInput;
+};
+
+
+export type MutationUpdateUserOnboardingArgs = {
+  input: UpdateUserOnboardingInput;
 };
 
 
@@ -508,7 +588,6 @@ export type MutationVerifyUserDetailsArgs = {
 export enum PlatformStatus {
   Active = 'active',
   Blocked = 'blocked',
-  OnboardingPending = 'onboardingPending',
   PaymentPending = 'paymentPending'
 }
 
@@ -532,9 +611,12 @@ export type Query = {
   getAllEmailTemplates: Array<EmailTemplatesObject>;
   getAllRestaurantUsers: Array<User>;
   getAllRestaurants: Array<Restaurant>;
+  getUserRestaurant: Array<Restaurant>;
+  getUserRestaurants: Array<Restaurant>;
   getWaitListUsers: Array<WaitListUser>;
   logout: Scalars['Boolean']['output'];
   me: Admin;
+  meUser: User;
   mobileNumberOtpVerification: Scalars['Boolean']['output'];
   resetPasswordAdmin: Scalars['Boolean']['output'];
   verifyOtpForLogin: Scalars['Boolean']['output'];
@@ -569,6 +651,11 @@ export type QueryGenerateOtpForNumberVerificationArgs = {
 };
 
 
+export type QueryGetUserRestaurantArgs = {
+  id: Scalars['String']['input'];
+};
+
+
 export type QueryMobileNumberOtpVerificationArgs = {
   key: Scalars['String']['input'];
   number: Scalars['String']['input'];
@@ -597,7 +684,7 @@ export type Restaurant = {
   createdAt: Scalars['DateTimeISO']['output'];
   integrations?: Maybe<Array<Integration>>;
   locationName?: Maybe<MasterCommon>;
-  menus?: Maybe<Array<Menu>>;
+  menus: Array<MenuInfo>;
   name: MasterCommon;
   socialInfo?: Maybe<SocialInfo>;
   status: RestaurantStatus;
@@ -657,14 +744,15 @@ export type TaxRate = {
   _id: Scalars['ID']['output'];
   createdAt: Scalars['DateTimeISO']['output'];
   default: Scalars['Boolean']['output'];
-  name: Scalars['String']['output'];
+  name: MasterCommon;
   salesTax: MasterCommonNumber;
   updatedAt: Scalars['DateTimeISO']['output'];
 };
 
 export type TaxRateInput = {
-  applyOnAllItems: Scalars['Boolean']['input'];
-  name: Scalars['String']['input'];
+  _id?: InputMaybe<Scalars['String']['input']>;
+  default: Scalars['Boolean']['input'];
+  name: MasterCommonInput;
   salesTax: MasterCommonInputNumber;
 };
 
@@ -672,6 +760,16 @@ export type TestEmailInput = {
   emails: Scalars['String']['input'];
   html: Scalars['String']['input'];
   subject: Scalars['String']['input'];
+};
+
+export type UpdateCategoryInput = {
+  availability?: InputMaybe<Array<AvailabilityInput>>;
+  visibility?: InputMaybe<Array<VisibilityInput>>;
+};
+
+export type UpdateMenuInput = {
+  availability?: InputMaybe<Array<AvailabilityInput>>;
+  visibility?: InputMaybe<Array<VisibilityInput>>;
 };
 
 export type UpdateRestaurantInput = {
@@ -684,6 +782,13 @@ export type UpdateRestaurantInput = {
   status: RestaurantStatus;
   taxRates?: InputMaybe<TaxRateInput>;
   timezone?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateUserOnboardingInput = {
+  _id: Scalars['String']['input'];
+  businessAccountDetails?: InputMaybe<BusinessAccountDetailsInput>;
+  businessAddress?: InputMaybe<AddressInfoInput>;
+  businessDetails?: InputMaybe<BusinessDetailsInput>;
 };
 
 export type UpdateUserProfileInput = {
@@ -715,13 +820,25 @@ export type User = {
   estimatedRevenue?: Maybe<MasterCommon>;
   firstName: Scalars['String']['output'];
   lastName: Scalars['String']['output'];
+  onBoardingStatus: UserOnboardingStatus;
   phone: Scalars['String']['output'];
   restaurants?: Maybe<Array<RestaurantInfo>>;
   ssn?: Maybe<Scalars['String']['output']>;
   status: PlatformStatus;
   statusUpdatedBy?: Maybe<Admin>;
+  taxRates: Array<TaxRate>;
   updatedAt: Scalars['DateTimeISO']['output'];
 };
+
+/** User onboarding status */
+export enum UserOnboardingStatus {
+  BusinessAccountDetailsPending = 'businessAccountDetailsPending',
+  BusinessAddressPending = 'businessAddressPending',
+  BusinessDetailsPending = 'businessDetailsPending',
+  Completed = 'completed',
+  EmailPending = 'emailPending',
+  PhonePending = 'phonePending'
+}
 
 export type VerifyUserDetails = {
   accountPreferences: AccountPreferenceInput;
@@ -737,8 +854,13 @@ export type VerifyUserDetails = {
 
 export type Visibility = {
   __typename?: 'Visibility';
-  name: Scalars['String']['output'];
+  name: MasterCommon;
   status: Scalars['Boolean']['output'];
+};
+
+export type VisibilityInput = {
+  name: MasterCommonInput;
+  status: Scalars['Boolean']['input'];
 };
 
 export type WaitListUser = {
@@ -753,6 +875,12 @@ export type WaitListUser = {
   website: Scalars['String']['output'];
 };
 
+export type AddCategoryInput = {
+  desc: MasterCommonInput;
+  name: MasterCommonInput;
+  status: StatusEnum;
+};
+
 export type LogoutQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -764,6 +892,23 @@ export type GenerateOtpForLoginQueryVariables = Exact<{
 
 
 export type GenerateOtpForLoginQuery = { __typename?: 'Query', generateOtpForLogin: string };
+
+export type MeUserQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MeUserQuery = { __typename?: 'Query', meUser: { __typename?: 'User', _id: string, firstName: string, lastName: string, email: string, phone: string, accountPreferences?: { __typename?: 'AccountPreference', whatsApp: boolean, email: boolean } | null } };
+
+export type GetUserRestaurantsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetUserRestaurantsQuery = { __typename?: 'Query', getUserRestaurants: Array<{ __typename?: 'Restaurant', _id: string, status: RestaurantStatus }> };
+
+export type GetUserRestaurantQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type GetUserRestaurantQuery = { __typename?: 'Query', getUserRestaurant: Array<{ __typename?: 'Restaurant', _id: string, status: RestaurantStatus }> };
 
 export type VerifyOtpForLoginQueryVariables = Exact<{
   key: Scalars['String']['input'];
@@ -795,6 +940,13 @@ export type UpdateRestaurantUserProfileMutationVariables = Exact<{
 
 export type UpdateRestaurantUserProfileMutation = { __typename?: 'Mutation', updateUserProfile: boolean };
 
+export type UpdateUserOnboardingMutationVariables = Exact<{
+  input: UpdateUserOnboardingInput;
+}>;
+
+
+export type UpdateUserOnboardingMutation = { __typename?: 'Mutation', updateUserOnboarding: boolean };
+
 
 export const LogoutDocument = gql`
     query Logout {
@@ -804,6 +956,37 @@ export const LogoutDocument = gql`
 export const GenerateOtpForLoginDocument = gql`
     query GenerateOtpForLogin($input: String!) {
   generateOtpForLogin(input: $input)
+}
+    `;
+export const MeUserDocument = gql`
+    query MeUser {
+  meUser {
+    _id
+    firstName
+    lastName
+    email
+    phone
+    accountPreferences {
+      whatsApp
+      email
+    }
+  }
+}
+    `;
+export const GetUserRestaurantsDocument = gql`
+    query GetUserRestaurants {
+  getUserRestaurants {
+    _id
+    status
+  }
+}
+    `;
+export const GetUserRestaurantDocument = gql`
+    query GetUserRestaurant($id: String!) {
+  getUserRestaurant(id: $id) {
+    _id
+    status
+  }
 }
     `;
 export const VerifyOtpForLoginDocument = gql`
@@ -829,6 +1012,11 @@ export const UpdateRestaurantUserProfileDocument = gql`
   updateUserProfile(input: $input)
 }
     `;
+export const UpdateUserOnboardingDocument = gql`
+    mutation UpdateUserOnboarding($input: UpdateUserOnboardingInput!) {
+  updateUserOnboarding(input: $input)
+}
+    `;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string, variables?: any) => Promise<T>;
 
@@ -843,6 +1031,15 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     GenerateOtpForLogin(variables: GenerateOtpForLoginQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GenerateOtpForLoginQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GenerateOtpForLoginQuery>(GenerateOtpForLoginDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'GenerateOtpForLogin', 'query', variables);
     },
+    MeUser(variables?: MeUserQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<MeUserQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<MeUserQuery>(MeUserDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'MeUser', 'query', variables);
+    },
+    GetUserRestaurants(variables?: GetUserRestaurantsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetUserRestaurantsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetUserRestaurantsQuery>(GetUserRestaurantsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'GetUserRestaurants', 'query', variables);
+    },
+    GetUserRestaurant(variables: GetUserRestaurantQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetUserRestaurantQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetUserRestaurantQuery>(GetUserRestaurantDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'GetUserRestaurant', 'query', variables);
+    },
     VerifyOtpForLogin(variables: VerifyOtpForLoginQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<VerifyOtpForLoginQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<VerifyOtpForLoginQuery>(VerifyOtpForLoginDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'VerifyOtpForLogin', 'query', variables);
     },
@@ -854,6 +1051,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     UpdateRestaurantUserProfile(variables: UpdateRestaurantUserProfileMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UpdateRestaurantUserProfileMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<UpdateRestaurantUserProfileMutation>(UpdateRestaurantUserProfileDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'UpdateRestaurantUserProfile', 'mutation', variables);
+    },
+    UpdateUserOnboarding(variables: UpdateUserOnboardingMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UpdateUserOnboardingMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<UpdateUserOnboardingMutation>(UpdateUserOnboardingDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'UpdateUserOnboarding', 'mutation', variables);
     }
   };
 }

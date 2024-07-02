@@ -122,7 +122,7 @@ const UserLocation = () => {
             placeholder="Address Line 1"
           />
           {errors.addressLine1 && (
-            <p className="text-red-500 text-sm">
+            <p className="text-red-500 text-sm text-start">
               {errors.addressLine1.message}
             </p>
           )}
@@ -154,7 +154,9 @@ const UserLocation = () => {
               placeholder="City"
             />
             {errors.city && (
-              <p className="text-red-500 text-sm">{errors.city.message}</p>
+              <p className="text-red-500 text-sm text-start">
+                {errors.city.message}
+              </p>
             )}
           </div>
 
@@ -176,7 +178,9 @@ const UserLocation = () => {
               placeholder="Select State"
             />
             {errors.state && (
-              <p className="text-red-500 text-sm">{errors.state.message}</p>
+              <p className="text-red-500 text-sm text-start">
+                {errors.state.message}
+              </p>
             )}
           </div>
         </div>
@@ -194,7 +198,9 @@ const UserLocation = () => {
             placeholder="Postcode"
           />
           {errors.postcode && (
-            <p className="text-red-500 text-sm">{errors.postcode.message}</p>
+            <p className="text-red-500 text-sm text-start">
+              {errors.postcode.message}
+            </p>
           )}
         </div>
 
@@ -216,17 +222,21 @@ const UserLocation = () => {
             placeholder="Select location"
           />
           {errors.revenue && (
-            <p className="text-red-500 text-sm">{errors.location.message}</p>
+            <p className="text-red-500 text-sm text-start">
+              {errors.location.message}
+            </p>
           )}
         </div>
 
-        <button
-          onClick={() => router.push("/onboarding/user-verification")}
-          type="submit"
-          className="inline-flex btn btn-primary items-center justify-center w-full mt-8"
-        >
-          Continue
-        </button>
+        <div className="col-span-2">
+          <button
+            onClick={() => router.push("/onboarding/user/user-verification")}
+            type="submit"
+            className="inline-flex btn btn-primary items-center justify-center w-full mt-8"
+          >
+            Continue
+          </button>
+        </div>
       </form>
     </motion.div>
   );

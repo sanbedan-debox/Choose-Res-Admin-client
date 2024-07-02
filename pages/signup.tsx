@@ -104,11 +104,11 @@ const Signup: FC = () => {
 
       if (response.verifyUserDetails) {
         setToastData({ message: "Verification Successful", type: "success" });
-        router.push("/"); // Redirect to home page after successful verification
+        router.replace("/onboarding/user/intro");
       }
     } catch (error) {
       console.error("Verification failed:", error);
-      setOtpError("Invalid OTP"); // Display error message for OTP verification failure
+      setOtpError("Invalid OTP");
     }
   };
 
@@ -201,7 +201,7 @@ const Signup: FC = () => {
                     onChange={(e) => setFirstName(e.target.value)}
                   />
                   {errors.firstName && (
-                    <p className="text-red-500 text-sm">
+                    <p className="text-red-500 text-sm text-start">
                       {errors.firstName.message}
                     </p>
                   )}
@@ -225,7 +225,7 @@ const Signup: FC = () => {
                     onChange={(e) => setLastName(e.target.value)}
                   />
                   {errors.lastName && (
-                    <p className="text-red-500 text-sm">
+                    <p className="text-red-500 text-sm text-start">
                       {errors.lastName.message}
                     </p>
                   )}
@@ -253,7 +253,7 @@ const Signup: FC = () => {
                     onChange={(e) => setEmail(e.target.value)}
                   />
                   {errors.email && (
-                    <p className="text-red-500 text-sm">
+                    <p className="text-red-500 text-sm text-start">
                       {errors.email.message}
                     </p>
                   )}
@@ -278,7 +278,7 @@ const Signup: FC = () => {
                     onChange={(e) => setPhone(e.target.value)}
                   />
                   {errors.phone && (
-                    <p className="text-red-500 text-sm">
+                    <p className="text-red-500 text-sm text-start">
                       {errors.phone.message}
                     </p>
                   )}

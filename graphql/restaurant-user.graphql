@@ -10,6 +10,34 @@ query GenerateOtpForLogin($input: String!) {
   generateOtpForLogin(input: $input)
 }
 
+# Query to fetch user's profile
+query MeUser {
+  meUser {
+    _id
+    firstName
+    lastName
+    email
+    phone
+    accountPreferences {
+      whatsApp
+      email
+    }
+  }
+}
+
+query GetUserRestaurants {
+  getUserRestaurants {
+    _id
+    status
+  }
+}
+
+query GetUserRestaurant($id: String!) {
+  getUserRestaurant(id: $id) {
+    _id
+    status
+  }
+}
 # Query to verify OTP for login
 query VerifyOtpForLogin($key: String!, $input: String!, $otp: String!) {
   verifyOtpForLogin(key: $key, input: $input, otp: $otp)
@@ -31,6 +59,10 @@ mutation UpdateRestaurantUserProfile($input: UpdateUserProfileInput!) {
   updateUserProfile(input: $input)
 }
 
+# Mutation to update user onboarding details
+mutation UpdateUserOnboarding($input: UpdateUserOnboardingInput!) {
+  updateUserOnboarding(input: $input)
+}
 # Inputs
 
 # Input for adding a new restaurant user

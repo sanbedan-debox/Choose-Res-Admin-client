@@ -36,7 +36,7 @@ const Intro = () => {
           <button
             // className="px-10 text-base font-medium"
             className="btn btn-primary"
-            onClick={() => router.push("/onboarding/user-info")}
+            onClick={() => router.push("/onboarding/user/user-info")}
           >
             Get Started
           </button>
