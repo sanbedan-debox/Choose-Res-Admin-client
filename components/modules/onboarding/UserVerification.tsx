@@ -88,7 +88,6 @@ const UserVerification = () => {
     try {
       const response = await sdk.UpdateUserOnboarding({
         input: {
-          _id: userId,
           ssn: data.ssn,
           ein: data.ein,
         },
@@ -98,7 +97,7 @@ const UserVerification = () => {
         message: "User verification details updated successfully!",
         type: "success",
       });
-      router.push("/onboarding/location");
+      router.push("/onboarding/user/location");
     } catch (error) {
       setToastData({
         message: "Failed to update user verification details.",

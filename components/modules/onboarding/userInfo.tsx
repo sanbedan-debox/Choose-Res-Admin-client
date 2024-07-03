@@ -75,7 +75,6 @@ const UserInfo = () => {
         BusinessTypeEnum[data.businessType as keyof typeof BusinessTypeEnum];
       const response = await sdk.UpdateUserOnboarding({
         input: {
-          _id: userId,
           businessName: data.businessName,
           businessType: businessTypeValue,
           estimatedRevenue: {

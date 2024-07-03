@@ -48,7 +48,7 @@ const Signup: FC = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<IFormInput>();
-  const { setUserId } = useAuthStore();
+  // const { setUserId } = useAuthStore();
 
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
     const { firstName, lastName, email, phone, commPref } = data;
@@ -104,7 +104,7 @@ const Signup: FC = () => {
       const response = await sdk.verifyUserDetails({ input });
 
       if (response.verifyUserDetails) {
-        setUserId(response.verifyUserDetails);
+        // setUserId(response.verifyUserDetails);
         setToastData({ message: "Verification Successful", type: "success" });
         router.replace("/onboarding/user/intro");
       }

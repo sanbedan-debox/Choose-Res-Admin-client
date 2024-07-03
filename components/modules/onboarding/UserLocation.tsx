@@ -59,7 +59,6 @@ const UserLocation = () => {
     try {
       const response = await sdk.UpdateUserOnboarding({
         input: {
-          _id: userId,
           address: {
             addressLine1: {
               value: data.addressLine1,

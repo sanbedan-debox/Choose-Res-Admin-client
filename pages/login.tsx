@@ -9,12 +9,22 @@ import logo1 from "../assets/logo/logoDark.png";
 import Link from "next/link";
 import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
+import { UserStatus } from "@/generated/graphql";
 
 interface IFormInput {
   email: string;
   otp?: string;
 }
 
+export enum UserOnboardingStatusMessage {
+  completed = "Account Completed",
+  // active = "active",
+  blocked = "Your account is blocked.",
+  paymentPending = "Your payment details are pending.",
+  internalVerificationPending = "Verification pending.",
+  onboardingPending = "Your onboarding details are pending",
+  restaurantOnboardingPending = "Restaurant onboarding pending",
+}
 const Login: FC = () => {
   const router = useRouter();
   const { setToastData } = useGlobalStore();
@@ -94,7 +104,23 @@ const Login: FC = () => {
           message: "OTP verification successful",
           type: "success",
         });
-        router.replace("/dashboard");
+        if (
+          response.verifyOtpForLogin === UserOnboardingStatusMessage.completed
+        ) {
+          router.replace("/dashboard");
+        } else if (response.verifyOtpForLogin === "blocked") {
+          router.replace("/blocked");
+        } else if (response.verifyOtpForLogin === "onboardingPending") {
+          router.replace("/onboarding/user/intro");
+        } else if (
+          response.verifyOtpForLogin === "restaurantOnboardingPending"
+        ) {
+          router.replace("/onboarding/user/location");
+        } else if (
+          response.verifyOtpForLogin === "internalVerificationPending"
+        ) {
+          router.replace("/verificationPending");
+        }
       }
     } catch (error) {
       console.error("OTP verification failed:", error);

@@ -70,7 +70,14 @@ export type AddMenuInput = {
 
 export type AddRestaurantInput = {
   address: AddressInfoInput;
+  availability: Array<AvailabilityInput>;
+  brandingLogo?: InputMaybe<Scalars['String']['input']>;
+  locationName: MasterCommonInput;
   name: MasterCommonInput;
+  socialInfo?: InputMaybe<SocialInfoInput>;
+  status: RestaurantStatus;
+  taxRates: TaxRateInput;
+  timezone: Scalars['String']['input'];
 };
 
 export type AddUserInput = {
@@ -420,6 +427,7 @@ export type Mutation = {
   blockAdmin: Scalars['Boolean']['output'];
   changeRole: Scalars['Boolean']['output'];
   changeUserStatus: Scalars['Boolean']['output'];
+  completeUserOnboarding: Scalars['Boolean']['output'];
   createEmailCampaign: Scalars['Boolean']['output'];
   createEmailTemplate: Scalars['Boolean']['output'];
   deleteAdmin: Scalars['Boolean']['output'];
@@ -432,7 +440,7 @@ export type Mutation = {
   updateRestaurant: Scalars['Boolean']['output'];
   updateUserOnboarding: Scalars['Boolean']['output'];
   updateUserProfile: Scalars['Boolean']['output'];
-  verifyUserDetails: Scalars['String']['output'];
+  verifyUserDetails: Scalars['Boolean']['output'];
 };
 
 
@@ -581,6 +589,8 @@ export type Query = {
   getAllEmailTemplates: Array<EmailTemplatesObject>;
   getAllRestaurantUsers: Array<User>;
   getAllRestaurants: Array<Restaurant>;
+  getRestaurantDetails: Restaurant;
+  getUserOnboardingDetails: User;
   getUserRestaurant: Restaurant;
   getUserRestaurants: Array<Restaurant>;
   getWaitListUsers: Array<WaitListUser>;
@@ -589,7 +599,7 @@ export type Query = {
   meUser: User;
   mobileNumberOtpVerification: Scalars['Boolean']['output'];
   resetPasswordAdmin: Scalars['Boolean']['output'];
-  verifyOtpForLogin: Scalars['Boolean']['output'];
+  verifyOtpForLogin: Scalars['String']['output'];
 };
 
 
@@ -764,7 +774,6 @@ export type UpdateUserOnboardingInput = {
   establishedAt?: InputMaybe<Scalars['String']['input']>;
   estimatedRevenue?: InputMaybe<MasterCommonInput>;
   ssn?: InputMaybe<Scalars['String']['input']>;
-  status?: InputMaybe<PlatformStatus>;
   taxRates?: InputMaybe<Array<TaxRateInput>>;
 };
 
@@ -783,7 +792,7 @@ export type UpdateUserProfileInput = {
 export type User = {
   __typename?: 'User';
   _id: Scalars['ID']['output'];
-  accessHistory: Array<AccessHistory>;
+  accessHistory?: Maybe<Array<AccessHistory>>;
   accountPreferences?: Maybe<AccountPreference>;
   address?: Maybe<AddressInfo>;
   businessName?: Maybe<Scalars['String']['output']>;
@@ -802,11 +811,21 @@ export type User = {
   phone: Scalars['String']['output'];
   restaurants?: Maybe<Array<RestaurantInfo>>;
   ssn?: Maybe<Scalars['String']['output']>;
-  status: PlatformStatus;
+  status: UserStatus;
   statusUpdatedBy?: Maybe<Admin>;
-  taxRates: Array<TaxRate>;
+  taxRates?: Maybe<Array<TaxRate>>;
   updatedAt: Scalars['DateTimeISO']['output'];
 };
+
+/** UserStatus type enum  */
+export enum UserStatus {
+  Active = 'active',
+  Blocked = 'blocked',
+  InternalVerificationPending = 'internalVerificationPending',
+  OnboardingPending = 'onboardingPending',
+  PaymentPending = 'paymentPending',
+  RestaurantOnboardingPending = 'restaurantOnboardingPending'
+}
 
 export type VerifyUserDetails = {
   accountPreferences: AccountPreferenceInput;
@@ -883,7 +902,7 @@ export type VerifyOtpForLoginQueryVariables = Exact<{
 }>;
 
 
-export type VerifyOtpForLoginQuery = { __typename?: 'Query', verifyOtpForLogin: boolean };
+export type VerifyOtpForLoginQuery = { __typename?: 'Query', verifyOtpForLogin: string };
 
 export type AddUserMutationVariables = Exact<{
   input: AddUserInput;
@@ -897,7 +916,7 @@ export type VerifyUserDetailsMutationVariables = Exact<{
 }>;
 
 
-export type VerifyUserDetailsMutation = { __typename?: 'Mutation', verifyUserDetails: string };
+export type VerifyUserDetailsMutation = { __typename?: 'Mutation', verifyUserDetails: boolean };
 
 export type UpdateRestaurantUserProfileMutationVariables = Exact<{
   input: UpdateUserProfileInput;
