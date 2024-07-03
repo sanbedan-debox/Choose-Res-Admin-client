@@ -20,7 +20,7 @@ const RestaurantLocation = () => {
     watch,
   } = useForm();
 
-  const onSubmit = (data) => {
+  const onSubmit = (data: any) => {
     console.log(data);
     router.push("/onboarding/integrations");
   };

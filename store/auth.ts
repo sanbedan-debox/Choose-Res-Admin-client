@@ -8,7 +8,6 @@ type authStates = {
 const useAuthStore = create<authStates>((set) => ({
   userId: "",
   setUserId: (e: string) => {
-    console.log("USerId Saved", e);
     set({ userId: e });
   },
 }));

@@ -23,8 +23,6 @@ export type AccessHistory = {
   _id: Scalars['ID']['output'];
   createdAt: Scalars['DateTimeISO']['output'];
   device: DeviceInfo;
-  lastLoggedIn: Scalars['DateTimeISO']['output'];
-  lastLoggedOut: Scalars['DateTimeISO']['output'];
 };
 
 export type AccountPreference = {
@@ -114,10 +112,10 @@ export type AddressInfoInput = {
 export type Admin = {
   __typename?: 'Admin';
   _id: Scalars['ID']['output'];
+  accessHistory: Array<AccessHistory>;
   blockedBy: Admin;
   createdAt: Scalars['DateTimeISO']['output'];
   createdBy: Admin;
-  devices: Array<Device>;
   email: Scalars['String']['output'];
   lastLoggedIn?: Maybe<Scalars['DateTimeISO']['output']>;
   lastLoggedOut?: Maybe<Scalars['DateTimeISO']['output']>;
@@ -199,15 +197,6 @@ export enum Day {
   Tuesday = 'Tuesday',
   Wednesday = 'Wednesday'
 }
-
-export type Device = {
-  __typename?: 'Device';
-  _id: Scalars['ID']['output'];
-  createdAt: Scalars['DateTimeISO']['output'];
-  lastLoggedIn: Scalars['DateTimeISO']['output'];
-  lastLoggedOut: Scalars['DateTimeISO']['output'];
-  userAgent: Scalars['String']['output'];
-};
 
 export type DeviceInfo = {
   __typename?: 'DeviceInfo';
@@ -592,7 +581,7 @@ export type Query = {
   getAllEmailTemplates: Array<EmailTemplatesObject>;
   getAllRestaurantUsers: Array<User>;
   getAllRestaurants: Array<Restaurant>;
-  getUserRestaurant: Array<Restaurant>;
+  getUserRestaurant: Restaurant;
   getUserRestaurants: Array<Restaurant>;
   getWaitListUsers: Array<WaitListUser>;
   logout: Scalars['Boolean']['output'];
@@ -766,7 +755,6 @@ export type UpdateRestaurantInput = {
 };
 
 export type UpdateUserOnboardingInput = {
-  _id: Scalars['String']['input'];
   address?: InputMaybe<AddressInfoInput>;
   businessName?: InputMaybe<Scalars['String']['input']>;
   businessType?: InputMaybe<BusinessTypeEnum>;
@@ -808,6 +796,8 @@ export type User = {
   establishedAt?: Maybe<Scalars['String']['output']>;
   estimatedRevenue?: Maybe<MasterCommon>;
   firstName: Scalars['String']['output'];
+  lastLoggedIn: Scalars['DateTimeISO']['output'];
+  lastLoggedOut: Scalars['DateTimeISO']['output'];
   lastName: Scalars['String']['output'];
   phone: Scalars['String']['output'];
   restaurants?: Maybe<Array<RestaurantInfo>>;
@@ -884,7 +874,7 @@ export type GetUserRestaurantQueryVariables = Exact<{
 }>;
 
 
-export type GetUserRestaurantQuery = { __typename?: 'Query', getUserRestaurant: Array<{ __typename?: 'Restaurant', _id: string, status: RestaurantStatus }> };
+export type GetUserRestaurantQuery = { __typename?: 'Query', getUserRestaurant: { __typename?: 'Restaurant', _id: string, status: RestaurantStatus } };
 
 export type VerifyOtpForLoginQueryVariables = Exact<{
   key: Scalars['String']['input'];

@@ -185,11 +185,10 @@ const Dashboard: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
   }
 
   return (
-    <div>
-      <h1>Dashboard</h1>
+    <div className="text-black">
       <p>Welcome, {repo.firstName}!</p>
       <p>Welcome, {repo.email}!</p>
-      <p>Your role: {repo._id}</p>
+      <p>Your id: {repo._id}</p>
     </div>
   );
 };

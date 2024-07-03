@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import { sdk } from "@/utils/graphqlClient";
 import useGlobalStore from "@/store/global";
 import { VerifyUserDetails, AddUserInput } from "@/generated/graphql";
-import ReusableModal from "@/components/common/modal/modal"; // Import your reusable modal component
+import ReusableModal from "@/components/common/modal/modal";
 import useAuthStore from "@/store/auth";
 import Link from "next/link";
 import { GetServerSideProps } from "next";
@@ -104,7 +104,6 @@ const Signup: FC = () => {
       const response = await sdk.verifyUserDetails({ input });
 
       if (response.verifyUserDetails) {
-        console.log(response.verifyUserDetails);
         setUserId(response.verifyUserDetails);
         setToastData({ message: "Verification Successful", type: "success" });
         router.replace("/onboarding/user/intro");

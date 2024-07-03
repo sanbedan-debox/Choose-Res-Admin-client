@@ -7,6 +7,7 @@ interface ModalProps {
   children: React.ReactNode;
   width?: "xs" | "sm" | "md" | "ml" | "lg" | "xl";
   title: string;
+  comments?: string;
 }
 
 const ReusableModal: React.FC<ModalProps> = ({
@@ -15,6 +16,7 @@ const ReusableModal: React.FC<ModalProps> = ({
   children,
   width = "md",
   title,
+  comments,
 }) => {
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
@@ -44,19 +46,19 @@ const ReusableModal: React.FC<ModalProps> = ({
   };
 
   return ReactDOM.createPortal(
-    <div className="modal-overlay fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
+    <div className="modal-overlay fixed inset-0 bg-white bg-opacity-80 flex items-center justify-center z-50">
       <div
-        className={`rounded shadow-lg bg-white text-black ${widthClasses[width]} z-10`}
+        className={`rounded shadow-lg bg-white ${widthClasses[width]} z-10`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="bg-dot-white/[0.12] md:bg-dot-white/[0.15] py-5 px-6">
-          <div className="flex items-start justify-between py-2 mb-4 rounded-t dark:border-gray-600">
+        <div className="py-5 px-6">
+          <div className="flex items-start justify-between py-2 rounded-t">
             <div className="flex items-center space-x-4">
               <h2 className="text-2xl font-bold text-black">{title}</h2>
             </div>
             <button
               type="button"
-              className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+              className="text-black bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center dark:hover:bg-primary dark:hover:text-white"
               onClick={onClose}
             >
               <svg
@@ -77,6 +79,14 @@ const ReusableModal: React.FC<ModalProps> = ({
               <span className="sr-only">Close modal</span>
             </button>
           </div>
+          {comments && (
+            <p
+              className="text-gray-700
+           mb-4"
+            >
+              {comments}
+            </p>
+          )}{" "}
           {children}
         </div>
       </div>

@@ -40,7 +40,7 @@ const Hello: NextPageWithLayout = () => {
           placeholder="Warning Input"
         />
 
-        <div className="switch switch-primary checked"></div>
+        <div className="switch switch-primary "></div>
         <div className="switch switch-secondary"></div>
         <div className="switch switch-warning"></div>
 
