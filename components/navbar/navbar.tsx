@@ -1,10 +1,6 @@
 import Link from "next/link";
 import {
-  FaStore,
-  FaBell,
-  FaSearch,
   FaUser,
-  FaCog,
   FaQuestionCircle,
   FaExpandArrowsAlt,
   FaCompressArrowsAlt,
@@ -12,20 +8,35 @@ import {
 } from "react-icons/fa";
 import { useState } from "react";
 import useGlobalStore from "@/store/global";
+import useAuthStore from "@/store/auth";
+import { sdk } from "@/utils/graphqlClient";
+import { useRouter } from "next/router";
 
 const Navbar: React.FC = () => {
+  const {} = useAuthStore();
   const User = "Roop37";
   const { isSidebarExpanded, setisSidebarExpanded } = useGlobalStore();
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isRestaurantDropdownOpen, setIsRestaurantDropdownOpen] =
     useState(false);
-
+  const router = useRouter();
   const toggleSidebar = () => {
     setisSidebarExpanded(!isSidebarExpanded);
   };
 
   const toggleProfileDropdown = () => {
     setIsProfileDropdownOpen(!isProfileDropdownOpen);
+  };
+  const handleLogout = async () => {
+    try {
+      const response = await sdk.Logout();
+
+      if (response && response.logout) {
+        router.replace("/login");
+      }
+    } catch (error) {
+      console.error("Failed to logout:", error);
+    }
   };
 
   const toggleRestaurantDropdown = () => {
@@ -102,13 +113,6 @@ const Navbar: React.FC = () => {
           </div>
         </div>
         <div className="flex items-center space-x-1 relative">
-          <Link
-            href="/search"
-            className="hover:bg-primary hover:text-white px-3 py-2 rounded flex items-center group"
-          >
-            <FaSearch className="h-4 w-4 mr-1 text-black group-hover:text-white" />
-            <span className="text-sm">Search</span>
-          </Link>
           <div className="relative">
             <button
               onClick={toggleProfileDropdown}
@@ -125,41 +129,17 @@ const Navbar: React.FC = () => {
                 >
                   My account
                 </Link>
-                <Link
-                  href="/toast-community"
-                  className="block px-4 py-2 text-sm text-black hover:text-white hover:bg-primary"
-                >
-                  Choose Community
-                </Link>
-                <Link
-                  href="/referral-program"
-                  className="block px-4 py-2 text-sm text-black hover:text-white hover:bg-primary"
-                >
-                  Referral Program
-                </Link>
-                <Link
-                  href="/share-your-screen"
-                  className="block px-4 py-2 text-sm text-black hover:text-white hover:bg-primary"
-                >
-                  Share your screen
-                </Link>
-                <Link
-                  href="/logout"
-                  className="block px-4 py-2 text-sm text-black hover:text-white hover:bg-primary"
+
+                <button
+                  onClick={handleLogout}
+                  className="block px-4 py-2 w-full text-left text-sm text-black hover:text-white hover:bg-primary"
                 >
                   Logout
-                </Link>
+                </button>
               </div>
             )}
           </div>
           <div className="border-r border-gray-400 h-6"></div>{" "}
-          <Link
-            href="/setup"
-            className="hover:bg-primary hover:text-white px-3 py-2 rounded flex items-center group"
-          >
-            <FaCog className="h-4 w-4 mr-1 text-black group-hover:text-white" />
-            <span className="text-sm">Setup</span>
-          </Link>
           <Link
             href="/help"
             className="hover:bg-primary hover:text-white px-3 py-2 rounded flex items-center group"

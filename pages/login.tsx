@@ -119,7 +119,7 @@ const Login: FC = () => {
         } else if (
           response.verifyOtpForLogin === "internalVerificationPending"
         ) {
-          router.replace("/verificationPending");
+          router.replace("/pending");
         }
       }
     } catch (error) {

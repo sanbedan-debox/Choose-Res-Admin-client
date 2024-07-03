@@ -10,20 +10,8 @@ type NextPageWithLayout = React.FC & {
 };
 
 const Menu: NextPageWithLayout = () => {
-  const { setSelectedMenu } = useGlobalStore();
-  // const [loading, setLoading] = useState(true);
-
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     setLoading(false);
-  //   }, 1000);
-  // }, []);
-
-  // if (loading) {
-  //   return <Loader />;
-  // }
-
-  return <MenuSection contentList={menuContents} />;
+  // return <MenuSection contentList={menuContents} />;
+  return <div className="text-black">COMING SOON</div>;
 };
 
 Menu.getLayout = function getLayout(page: React.ReactNode) {
