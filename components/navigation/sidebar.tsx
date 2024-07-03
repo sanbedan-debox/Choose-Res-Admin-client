@@ -62,8 +62,15 @@ const Sidebar: React.FC = () => {
         } `}
       >
         {isSidebarExpanded && (
-          <div className="relative z-10 flex items-center  justify-center my-4">
-            <Image className="mb-4" src={logo1} alt="Logo" width={150} />
+          <div className="relative z-10 flex items-center justify-center my-4">
+            <Link href="/dashboard">
+              <Image
+                className="mb-4 cursor-pointer"
+                src={logo1}
+                alt="Logo"
+                width={150}
+              />
+            </Link>
           </div>
         )}
         <hr className="border-gray-600 " />
