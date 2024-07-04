@@ -104,23 +104,7 @@ const Login: FC = () => {
           message: "OTP verification successful",
           type: "success",
         });
-        if (
-          response.verifyOtpForLogin === UserOnboardingStatusMessage.completed
-        ) {
-          router.replace("/dashboard");
-        } else if (response.verifyOtpForLogin === "blocked") {
-          router.replace("/blocked");
-        } else if (response.verifyOtpForLogin === "onboardingPending") {
-          router.replace("/onboarding/user/intro");
-        } else if (
-          response.verifyOtpForLogin === "restaurantOnboardingPending"
-        ) {
-          router.replace("/onboarding/user/location");
-        } else if (
-          response.verifyOtpForLogin === "internalVerificationPending"
-        ) {
-          router.replace("/pending");
-        }
+        router.replace("/dashboard");
       }
     } catch (error) {
       console.error("OTP verification failed:", error);

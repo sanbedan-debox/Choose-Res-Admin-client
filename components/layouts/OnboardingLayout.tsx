@@ -9,14 +9,7 @@ type Props = {
   children: ReactNode;
 };
 
-const steps = [
-  "intro",
-  "user-info",
-  "user-location",
-  "user-verification",
-  "res",
-  "availibility",
-];
+const steps = ["user-info", "user-location", "user-verification"];
 
 const OnboardingLayout = ({ children }: Props) => {
   const router = useRouter();
@@ -28,7 +21,8 @@ const OnboardingLayout = ({ children }: Props) => {
   };
 
   const hideBackButtonPaths = ["/onboarding/user/intro"];
-  const showBackButton = !hideBackButtonPaths.includes(pathname);
+  const showBackButton =
+    !hideBackButtonPaths.includes(pathname) || onBoardingRoute !== "intro";
 
   const currentStepIndex = steps.indexOf(onBoardingRoute as string);
 

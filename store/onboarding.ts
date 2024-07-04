@@ -6,14 +6,14 @@ type OnboardingStates = {
   setbusinessType: (e: string) => void;
   businessName: string;
   setbusinessName: (e: string) => void;
-  dob: string;
-  setdob: (e: string) => void;
   estimatedRevenue: string;
   setestimatedRevenue: (e: string) => void;
   employeeSize: string;
   setemployeeSize: (e: string) => void;
-  establishedAt: string;
-  setestablishedAt: (e: string) => void;
+  establishedAt: Date | null;
+  setestablishedAt: (e: Date | null) => void;
+  dob: Date | null;
+  setdob: (e: Date | null) => void;
 
   //STEP 2
   addressLine1: string;
@@ -42,14 +42,14 @@ const useOnboardingStore = create<OnboardingStates>((set) => ({
   setbusinessType: (e: string) => set({ businessType: e }),
   businessName: "",
   setbusinessName: (e: string) => set({ businessName: e }),
-  dob: "",
-  setdob: (e: string) => set({ dob: e }),
   estimatedRevenue: "",
   setestimatedRevenue: (e: string) => set({ estimatedRevenue: e }),
   employeeSize: "",
   setemployeeSize: (e: string) => set({ employeeSize: e }),
-  establishedAt: "",
-  setestablishedAt: (e: string) => set({ establishedAt: e }),
+  establishedAt: null,
+  setestablishedAt: (e: Date | null) => set({ establishedAt: e }),
+  dob: null,
+  setdob: (e: Date | null) => set({ dob: e }),
 
   //STEP 2
   addressLine1: "",

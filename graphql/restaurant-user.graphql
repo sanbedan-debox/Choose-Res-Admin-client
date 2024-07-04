@@ -11,13 +11,17 @@ query GenerateOtpForLogin($input: String!) {
 }
 
 # Query to fetch user's profile
+
 query MeUser {
   meUser {
     _id
     firstName
     lastName
+    status
     email
     phone
+    businessName
+    establishedAt
     accountPreferences {
       whatsApp
       email
@@ -25,19 +29,6 @@ query MeUser {
   }
 }
 
-query GetUserRestaurants {
-  getUserRestaurants {
-    _id
-    status
-  }
-}
-
-query GetUserRestaurant($id: String!) {
-  getUserRestaurant(id: $id) {
-    _id
-    status
-  }
-}
 # Query to verify OTP for login
 query VerifyOtpForLogin($key: String!, $input: String!, $otp: String!) {
   verifyOtpForLogin(key: $key, input: $input, otp: $otp)
@@ -105,6 +96,43 @@ input CommunicationPreferenceInput {
 type AddRestaurantUser {
   emailOtpVerifyKey: String!
   numberOtpVerifyKey: String!
+}
+
+query getUserOnboardingDetails {
+  getUserOnboardingDetails {
+    ein
+    ssn
+    businessName
+    address {
+      addressLine1 {
+        value
+      }
+      addressLine2 {
+        value
+      }
+      state {
+        value
+      }
+      city {
+        value
+      }
+      postcode {
+        value
+      }
+      coordinate {
+        coordinates
+      }
+    }
+    employeeSize {
+      value
+    }
+    dob
+    establishedAt
+    businessType
+    estimatedRevenue {
+      value
+    }
+  }
 }
 
 type Mutation {

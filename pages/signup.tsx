@@ -48,7 +48,6 @@ const Signup: FC = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<IFormInput>();
-  // const { setUserId } = useAuthStore();
 
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
     const { firstName, lastName, email, phone, commPref } = data;
@@ -104,7 +103,6 @@ const Signup: FC = () => {
       const response = await sdk.verifyUserDetails({ input });
 
       if (response.verifyUserDetails) {
-        // setUserId(response.verifyUserDetails);
         setToastData({ message: "Verification Successful", type: "success" });
         router.replace("/onboarding/user/intro");
       }
@@ -142,21 +140,6 @@ const Signup: FC = () => {
     setOtpEmail("");
     setOtpWhatsApp("");
   }, [showModal]);
-
-  // const handleResendOtp = async () => {
-  //   try {
-  //     const response = await sdk.GenerateOtpForLogin({ input: email });
-
-  //     if (response) {
-  //       setEmailOtpVerifyKey(response.generateOtpForLogin);
-  //       startTimer();
-  //       setToastData({ message: "OTP resent successfully", type: "success" });
-  //     }
-  //   } catch (error) {
-  //     console.error("Failed to resend OTP:", error);
-  //     setToastData({ message: "Failed to resend OTP", type: "error" });
-  //   }
-  // };
 
   const handleCloseModal = () => {
     setShowModal(false);
@@ -272,6 +255,10 @@ const Signup: FC = () => {
                     type="text"
                     {...register("phone", {
                       required: "Phone number is required",
+                      pattern: {
+                        value: /^[0-9]{10}$/,
+                        message: "Invalid phone number",
+                      },
                     })}
                     id="phone"
                     className="input input-primary"
@@ -397,7 +384,7 @@ const Signup: FC = () => {
       {showModal && (
         <ReusableModal
           title="Enter OTP"
-          width="ml"
+          width="md"
           onClose={() => setShowModal(false)}
           isOpen={showModal}
         >
@@ -423,19 +410,19 @@ const Signup: FC = () => {
             )}
             <div className="flex justify-between mt-4">
               <div className="mt-5">
-                {showResendButton && (
+                {/* {showResendButton && (
                   <button
                     // onClick={handleResendOtp}
                     className="text-sm text-primary underline"
                   >
                     Resend OTP
                   </button>
-                )}
-                <span className="ml-2 text-warning">
+                )} */}
+                {/* <span className="ml-2 text-warning">
                   {showResendButton
                     ? ""
                     : `Resend OTP available after ${timer}s`}
-                </span>
+                </span> */}
               </div>
               <div className="flex justify-end mt-4">
                 <button

@@ -5,6 +5,7 @@ import React, { useEffect } from "react";
 import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
 import { sdk } from "@/utils/graphqlClient";
+import useAuthStore from "@/store/auth";
 
 type NextPageWithLayout = React.FC & {
   getLayout?: (page: React.ReactNode) => React.ReactNode;
@@ -13,12 +14,39 @@ type NextPageWithLayout = React.FC & {
 type UserRepo = {
   _id: string;
   email: string;
+  phone: string;
   firstName: string;
+  lastName: string;
+  status: string;
+  businessName: string;
+  establishedAt: string;
 };
 
 const Dashboard: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
   const { setSelectedMenu } = useGlobalStore();
-  const [loading, setLoading] = React.useState(true);
+
+  const {
+    setBusinessName,
+    setEmail,
+    setEstablishedAt,
+    setFirstName,
+    setLastName,
+    setPhone,
+    setStatus,
+    setUserId,
+    firstName,
+  } = useAuthStore();
+
+  useEffect(() => {
+    setUserId(repo?._id);
+    setEmail(repo?.email);
+    setPhone(repo?.phone);
+    setFirstName(repo?.firstName);
+    setLastName(repo?.lastName);
+    setStatus(repo?.status);
+    setBusinessName(repo?.businessName);
+    setEstablishedAt(repo?.establishedAt);
+  }, [repo]);
 
   useEffect(() => {
     setSelectedMenu("dashboard");
@@ -33,6 +61,8 @@ const Dashboard: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
       <p>Welcome, {repo.firstName}!</p>
       <p>Welcome, {repo.email}!</p>
       <p>Your id: {repo._id}</p>
+      <p>Your status: {repo.status}</p>
+      <p>Your Name from auth state: {firstName}</p>
     </div>
   );
 };
@@ -42,7 +72,6 @@ Dashboard.getLayout = function getLayout(page: React.ReactNode) {
 };
 
 export default Dashboard;
-
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const cookies = parseCookies(context);
   const token = cookies.accessToken;
@@ -65,13 +94,65 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     );
 
     if (response && response.meUser) {
-      const { _id, email, firstName } = response.meUser;
+      const {
+        _id,
+        email,
+        firstName,
+        status,
+        lastName,
+        phone,
+        businessName,
+        establishedAt,
+      } = response.meUser;
+
+      if (status === "blocked") {
+        return {
+          redirect: {
+            destination: "/blocked",
+            permanent: false,
+          },
+        };
+      } else if (status === "onboardingPending") {
+        return {
+          redirect: {
+            destination: "/onboarding/user/intro",
+            permanent: false,
+          },
+        };
+      } else if (status === "paymentPending") {
+        return {
+          redirect: {
+            destination: "/onboarding/pending",
+            permanent: false,
+          },
+        };
+      } else if (status === "restaurantOnboardingPending") {
+        return {
+          redirect: {
+            destination: "/onboardingRestaurant/restaurant",
+            permanent: false,
+          },
+        };
+      } else if (status === "internalVerificationPending") {
+        return {
+          redirect: {
+            destination: "/pending",
+            permanent: false,
+          },
+        };
+      }
+
       return {
         props: {
           repo: {
             _id,
             email,
+            phone,
             firstName,
+            lastName,
+            status,
+            businessName,
+            establishedAt,
           },
         },
       };

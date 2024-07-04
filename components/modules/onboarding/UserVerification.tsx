@@ -100,9 +100,10 @@ const UserVerification = () => {
             message: "User verification details updated successfully!",
             type: "success",
           });
-          router.push("/onboarding/user/location");
+          // router.replace("/pending");
         }
       }
+      router.replace("/pending");
     } catch (error) {
       setToastData({
         message: "Failed to update user verification details.",

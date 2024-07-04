@@ -13,8 +13,8 @@ import { sdk } from "@/utils/graphqlClient";
 import { useRouter } from "next/router";
 
 const Navbar: React.FC = () => {
-  const {} = useAuthStore();
-  const User = "Roop37";
+  const { firstName } = useAuthStore();
+
   const { isSidebarExpanded, setisSidebarExpanded } = useGlobalStore();
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isRestaurantDropdownOpen, setIsRestaurantDropdownOpen] =
@@ -43,10 +43,10 @@ const Navbar: React.FC = () => {
     setIsRestaurantDropdownOpen(!isRestaurantDropdownOpen);
   };
 
-  const restaurants: any[] = [
-    { name: "Rasoi Indian Cuisine", id: 1 },
-    { name: "Spice Hub", id: 2 },
-  ];
+  // const restaurants: any[] = [
+  //   { name: "Rasoi Indian Cuisine", id: 1 },
+  //   { name: "Spice Hub", id: 2 },
+  // ];
 
   return (
     <nav
@@ -71,7 +71,7 @@ const Navbar: React.FC = () => {
               <FaExpandArrowsAlt className="h-4 w-4 mr-1" />
             )}
           </button>
-          <div className="relative">
+          {/* <div className="relative">
             <button
               onClick={toggleRestaurantDropdown}
               className="flex items-center space-x-2  hover:bg-primary hover:text-white px-2 py-2 rounded group"
@@ -110,7 +110,7 @@ const Navbar: React.FC = () => {
                 )}
               </div>
             )}
-          </div>
+          </div> */}
         </div>
         <div className="flex items-center space-x-1 relative">
           <div className="relative">
@@ -119,7 +119,7 @@ const Navbar: React.FC = () => {
               className="hover:bg-primary hover:text-white px-3 py-2 rounded flex items-center group focus:outline-none"
             >
               <FaUser className="h-4 w-4 mr-1 text-black group-hover:text-white" />
-              <span className="text-sm">{User}</span>
+              <span className="text-sm">{firstName}</span>
             </button>
             {isProfileDropdownOpen && (
               <div className=" bg-white  absolute right-0 mt-4 w-48  rounded-md shadow-lg py-1 text-black z-50">

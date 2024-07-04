@@ -9,12 +9,15 @@ import Select from "react-select";
 import { sdk } from "@/utils/graphqlClient";
 import useAuthStore from "@/store/auth";
 import { BusinessTypeEnum } from "@/generated/graphql";
-
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 interface IFormInput {
   businessType: string;
   businessName: string;
   employees: string;
   revenue: string;
+  // establishedAt: string;
+  // dob: string;
 }
 
 const UserInfo = () => {
@@ -37,9 +40,11 @@ const UserInfo = () => {
     setemployeeSize,
     estimatedRevenue,
     setestimatedRevenue,
+    establishedAt,
+    setestablishedAt,
+    dob,
+    setdob,
   } = useOnboardingStore();
-
-  const { userId } = useAuthStore();
 
   useEffect(() => {
     setValue("businessType", businessType);
@@ -76,6 +81,7 @@ const UserInfo = () => {
       const response = await sdk.UpdateUserOnboarding({
         input: {
           businessName: data.businessName,
+
           businessType: businessTypeValue,
           estimatedRevenue: {
             value: data.revenue,
@@ -83,6 +89,8 @@ const UserInfo = () => {
           employeeSize: {
             value: data.employees,
           },
+          // establishedAt: establishedAt?.toISOString(),
+          // dob: dob?.toISOString(),
         },
       });
       setToastData({
@@ -91,8 +99,9 @@ const UserInfo = () => {
       });
       router.push("/onboarding/user/user-location");
     } catch (error) {
+      console.log(error);
       setToastData({
-        message: "Failed to update business details.",
+        message: `{Failed to update business details.:${error.message}`,
         type: "error",
       });
     }
@@ -141,6 +150,9 @@ const UserInfo = () => {
           </label>
 
           <Select
+            {...register("businessType", {
+              required: "Business type is required",
+            })}
             options={BusinessType}
             className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
             classNamePrefix="react-select"
@@ -170,6 +182,7 @@ const UserInfo = () => {
             {...register("businessName", {
               validate: (value) =>
                 !!value.trim() || "Business name is required",
+              required: "Business name is required",
             })}
             id="businessName"
             className="input input-primary"
@@ -193,6 +206,9 @@ const UserInfo = () => {
 
           <Select
             options={employeSize}
+            {...register("employees", {
+              required: "Number of employees is required",
+            })}
             className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
             classNamePrefix="react-select"
             placeholder="Select number of employees"
@@ -218,6 +234,9 @@ const UserInfo = () => {
           </label>
           <Select
             options={revenueOptions}
+            {...register("revenue", {
+              required: "Estimated revenue is required",
+            })}
             className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
             classNamePrefix="react-select"
             placeholder="Select estimated annual revenue"
@@ -236,6 +255,42 @@ const UserInfo = () => {
           )}
         </div>
 
+        {/* <div className="flex justify-between">
+          <div className="col-span-2">
+            <label
+              htmlFor="establishedAt"
+              className="block mb-2 text-sm font-medium text-left text-gray-700"
+            >
+              Established At
+            </label>
+            <div className="relative min-w-full flex items-start">
+              <DatePicker
+                id="establishedAt"
+                selected={establishedAt}
+                onChange={(date: Date | null) => setestablishedAt(date)}
+                className="bg-input border border-gray-300 max-w-full text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 pr-2.5 py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholderText="Select date"
+              />
+            </div>
+          </div>
+          <div className="col-span-2">
+            <label
+              htmlFor="dob"
+              className="block mb-2 text-sm font-medium text-left text-gray-700"
+            >
+              Date of Birth
+            </label>
+            <div className="relative min-w-full flex items-start">
+              <DatePicker
+                id="dob"
+                selected={dob}
+                onChange={(date: Date | null) => setdob(date)}
+                className="bg-input border border-gray-300 max-w-full text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 pr-2.5 py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholderText="Select Date of Birth"
+              />
+            </div>
+          </div>
+        </div> */}
         <div className="col-span-2">
           <button type="submit" className="mt-8 w-full btn btn-primary">
             Continue

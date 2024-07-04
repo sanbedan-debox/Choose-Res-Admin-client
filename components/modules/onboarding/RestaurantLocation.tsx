@@ -1,10 +1,6 @@
 import { motion } from "framer-motion";
 import { STAGGER_CHILD_VARIANTS } from "@/lib/constants";
-import Image from "next/image";
-import logo1 from "../../../assets/logo/logoWhite.png";
 import { useRouter } from "next/router";
-import CButton from "@/components/common/button/button";
-import { ButtonType } from "@/components/common/button/interface";
 import useGlobalStore from "@/store/global";
 import { useForm } from "react-hook-form";
 import Select from "react-select";

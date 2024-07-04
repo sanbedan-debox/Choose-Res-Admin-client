@@ -1,18 +1,27 @@
 import NotFound from "@/components/common/notFound/notFound";
 import OnboardingLayout from "@/components/layouts/OnboardingLayout";
-import Availability from "@/components/modules/onboarding/Availibility";
-import Integrations from "@/components/modules/onboarding/Integrations";
-import RestaurantLocation from "@/components/modules/onboarding/RestaurantLocation";
+
 import UserInfo from "@/components/modules/onboarding/userInfo";
 import UserLocation from "@/components/modules/onboarding/UserLocation";
 import UserVerification from "@/components/modules/onboarding/UserVerification";
 import Intro from "@/components/modules/onboarding/welcome";
+import { sdk } from "@/utils/graphqlClient";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
+import { parseCookies } from "nookies";
 
 type HomePageProps = {
   repo: {
     pagePath: string;
+    // businessName: string;
+    // businessType: string;
+    // ein: string;
+    // dob: string;
+    // employeeSize: string;
+    // establishedAt: string;
+    // estimatedRevenue: string;
+    // ssn: string;
+    // address: string;
   };
 };
 
@@ -35,15 +44,13 @@ const OnboardingPage = ({ repo: { pagePath } }: HomePageProps) => {
     case "user-verification":
       childComponent = <UserVerification />;
       break;
-    // case "location":
-    //   childComponent = <RestaurantLocation />;
+
+    // case "integrations":
+    //   childComponent = <Integrations />;
     //   break;
-    case "integrations":
-      childComponent = <Integrations />;
-      break;
-    case "availibility":
-      childComponent = <Availability />;
-      break;
+    // case "availibility":
+    //   childComponent = <Availability />;
+    //   break;
 
     default:
       childComponent = <NotFound />;
@@ -58,11 +65,67 @@ export default OnboardingPage;
 export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
   context
 ) => {
-  return {
-    props: {
-      repo: {
-        pagePath: context.query["onBoardingRoute"]?.toString() ?? "",
+  const cookies = parseCookies(context);
+  const token = cookies.accessToken;
+  if (!token) {
+    return {
+      redirect: {
+        destination: "/login",
+        permanent: false,
       },
-    },
-  };
+    };
+  }
+  try {
+    const response = await sdk.getUserOnboardingDetails(
+      {},
+      {
+        cookie: context.req.headers.cookie?.toString() ?? "",
+      }
+    );
+
+    if (response && response.getUserOnboardingDetails) {
+      const {
+        address,
+        businessName,
+        businessType,
+        ein,
+        dob,
+        employeeSize,
+        establishedAt,
+        estimatedRevenue,
+        ssn,
+      } = response.getUserOnboardingDetails;
+      return {
+        props: {
+          repo: {
+            pagePath: context.query["onBoardingRoute"]?.toString() ?? "",
+            businessName,
+            businessType,
+            ein,
+            dob,
+            employeeSize,
+            establishedAt,
+            estimatedRevenue,
+            ssn,
+            address,
+          },
+        },
+      };
+    } else {
+      return {
+        redirect: {
+          destination: "/login",
+          permanent: false,
+        },
+      };
+    }
+  } catch (error) {
+    console.error("Failed to fetch user details:", error);
+    return {
+      redirect: {
+        destination: "/login",
+        permanent: false,
+      },
+    };
+  }
 };

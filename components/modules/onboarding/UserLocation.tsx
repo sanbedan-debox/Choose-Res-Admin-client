@@ -127,7 +127,9 @@ const UserLocation = () => {
           </label>
           <input
             type="text"
-            {...register("addressLine1")}
+            {...register("addressLine1", {
+              required: "Address Line 1 is required",
+            })}
             className="input input-primary"
             placeholder="Address Line 1"
             onChange={(e) => setAddressLine1(e.target.value)}
@@ -145,11 +147,18 @@ const UserLocation = () => {
           </label>
           <input
             type="text"
-            {...register("addressLine2")}
+            {...register("addressLine2", {
+              required: "Address Line 2 is required",
+            })}
             className="input input-primary"
             placeholder="Address Line 2"
             onChange={(e) => setAddressLine2(e.target.value)}
           />
+          {errors.addressLine2 && (
+            <p className="text-red-500 text-sm text-start">
+              {errors.addressLine2.message}
+            </p>
+          )}
         </div>
 
         <div className="flex flex-wrap gap-4">
@@ -159,7 +168,7 @@ const UserLocation = () => {
             </label>
             <input
               type="text"
-              {...register("city")}
+              {...register("city", { required: "City is required" })}
               className="input input-primary"
               placeholder="City"
               onChange={(e) => setCity(e.target.value)}
@@ -179,6 +188,7 @@ const UserLocation = () => {
               State
             </label>
             <Select
+              {...register("state", { required: "State is required" })}
               id="state"
               options={stateOptions}
               className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
@@ -200,7 +210,7 @@ const UserLocation = () => {
 
         <div className="col-span-2">
           <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-            Postcode
+            Zipcode
           </label>
           <input
             type="text"
@@ -209,6 +219,7 @@ const UserLocation = () => {
                 value: /^\d{5}(-\d{4})?$/,
                 message: "Invalid postcode format",
               },
+              required: "ZipCode is required",
             })}
             className="input input-primary"
             placeholder="Postcode"
@@ -230,7 +241,8 @@ const UserLocation = () => {
           </label>
           <Select
             id="location"
-            options={revenueOptions} // Update with appropriate options
+            {...register("location", { required: "Location is required" })}
+            options={revenueOptions}
             className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
             classNamePrefix="react-select"
             placeholder="Search location"
