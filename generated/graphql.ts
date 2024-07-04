@@ -421,10 +421,11 @@ export type Mutation = {
   addAdmin: Scalars['Boolean']['output'];
   addCategory: Scalars['Boolean']['output'];
   addMenu: Scalars['Boolean']['output'];
-  addRestaurant: Scalars['String']['output'];
+  addRestaurant: Scalars['Boolean']['output'];
   addUser: Scalars['String']['output'];
   addWaitListUser: Scalars['Boolean']['output'];
   blockAdmin: Scalars['Boolean']['output'];
+  changeRestaurantStatus: Scalars['Boolean']['output'];
   changeRole: Scalars['Boolean']['output'];
   changeUserStatus: Scalars['Boolean']['output'];
   completeUserOnboarding: Scalars['Boolean']['output'];
@@ -480,6 +481,11 @@ export type MutationAddWaitListUserArgs = {
 export type MutationBlockAdminArgs = {
   id: Scalars['String']['input'];
   updateStatus: PlatformStatus;
+};
+
+
+export type MutationChangeRestaurantStatusArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -599,7 +605,7 @@ export type Query = {
   meUser: User;
   mobileNumberOtpVerification: Scalars['Boolean']['output'];
   resetPasswordAdmin: Scalars['Boolean']['output'];
-  verifyOtpForLogin: Scalars['String']['output'];
+  verifyOtpForLogin: Scalars['Boolean']['output'];
 };
 
 
@@ -628,6 +634,11 @@ export type QueryGenerateOtpForLoginArgs = {
 
 export type QueryGenerateOtpForNumberVerificationArgs = {
   number: Scalars['String']['input'];
+};
+
+
+export type QueryGetRestaurantDetailsArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -902,7 +913,7 @@ export type VerifyOtpForLoginQueryVariables = Exact<{
 }>;
 
 
-export type VerifyOtpForLoginQuery = { __typename?: 'Query', verifyOtpForLogin: string };
+export type VerifyOtpForLoginQuery = { __typename?: 'Query', verifyOtpForLogin: boolean };
 
 export type AddUserMutationVariables = Exact<{
   input: AddUserInput;
@@ -931,6 +942,11 @@ export type UpdateUserOnboardingMutationVariables = Exact<{
 
 
 export type UpdateUserOnboardingMutation = { __typename?: 'Mutation', updateUserOnboarding: boolean };
+
+export type CompleteUserOnboardingMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CompleteUserOnboardingMutation = { __typename?: 'Mutation', completeUserOnboarding: boolean };
 
 
 export const LogoutDocument = gql`
@@ -999,6 +1015,11 @@ export const UpdateUserOnboardingDocument = gql`
   updateUserOnboarding(input: $input)
 }
     `;
+export const CompleteUserOnboardingDocument = gql`
+    mutation completeUserOnboarding {
+  completeUserOnboarding
+}
+    `;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string, variables?: any) => Promise<T>;
 
@@ -1036,6 +1057,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     UpdateUserOnboarding(variables: UpdateUserOnboardingMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UpdateUserOnboardingMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<UpdateUserOnboardingMutation>(UpdateUserOnboardingDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'UpdateUserOnboarding', 'mutation', variables);
+    },
+    completeUserOnboarding(variables?: CompleteUserOnboardingMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<CompleteUserOnboardingMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<CompleteUserOnboardingMutation>(CompleteUserOnboardingDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'completeUserOnboarding', 'mutation', variables);
     }
   };
 }

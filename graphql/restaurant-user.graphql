@@ -62,6 +62,10 @@ mutation UpdateUserOnboarding($input: UpdateUserOnboardingInput!) {
 }
 # Inputs
 
+mutation completeUserOnboarding {
+  completeUserOnboarding
+}
+
 # Input for adding a new restaurant user
 input AddRestaurantUserInput {
   name: String!

@@ -93,11 +93,16 @@ const UserVerification = () => {
         },
       });
 
-      setToastData({
-        message: "User verification details updated successfully!",
-        type: "success",
-      });
-      router.push("/onboarding/user/location");
+      if (response.updateUserOnboarding) {
+        const res = await sdk.completeUserOnboarding();
+        if (res.completeUserOnboarding) {
+          setToastData({
+            message: "User verification details updated successfully!",
+            type: "success",
+          });
+          router.push("/onboarding/user/location");
+        }
+      }
     } catch (error) {
       setToastData({
         message: "Failed to update user verification details.",
@@ -182,7 +187,7 @@ const UserVerification = () => {
             type="submit"
             className="inline-flex btn btn-primary items-center justify-center w-full mt-8"
           >
-            Continue
+            Submit
           </button>
         </div>
       </form>

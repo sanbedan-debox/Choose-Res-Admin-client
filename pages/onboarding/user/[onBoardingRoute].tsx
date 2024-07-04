@@ -18,7 +18,7 @@ type HomePageProps = {
 
 const OnboardingPage = ({ repo: { pagePath } }: HomePageProps) => {
   const router = useRouter();
-  // const { onBordingRoute } = router.query;
+  // const { onBoardingRoute } = router.query;
 
   let childComponent;
 
@@ -35,9 +35,9 @@ const OnboardingPage = ({ repo: { pagePath } }: HomePageProps) => {
     case "user-verification":
       childComponent = <UserVerification />;
       break;
-    case "location":
-      childComponent = <RestaurantLocation />;
-      break;
+    // case "location":
+    //   childComponent = <RestaurantLocation />;
+    //   break;
     case "integrations":
       childComponent = <Integrations />;
       break;
@@ -61,7 +61,7 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
   return {
     props: {
       repo: {
-        pagePath: context.query["onBordingRoute"]?.toString() ?? "",
+        pagePath: context.query["onBoardingRoute"]?.toString() ?? "",
       },
     },
   };
