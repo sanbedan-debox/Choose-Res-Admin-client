@@ -6,6 +6,9 @@ import React from "react";
 import { BsShopWindow } from "react-icons/bs";
 import { FaStore } from "react-icons/fa";
 import { FaArrowRight } from "react-icons/fa";
+import { GetServerSideProps } from "next";
+import { parseCookies } from "nookies";
+import { sdk } from "@/utils/graphqlClient";
 
 type NextPageWithLayout = React.FC & {
   getLayout?: (page: React.ReactNode) => React.ReactNode;
@@ -39,3 +42,76 @@ PaymentPending.getLayout = function getLayout(page: React.ReactNode) {
 };
 
 export default PaymentPending;
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const cookies = parseCookies(context);
+  const token = cookies.accessToken;
+
+  if (!token) {
+    return {
+      redirect: {
+        destination: "/login",
+        permanent: false,
+      },
+    };
+  }
+
+  try {
+    const response = await sdk.MeUser(
+      {},
+      {
+        cookie: context.req.headers.cookie?.toString() ?? "",
+      }
+    );
+
+    if (response && response.meUser) {
+      const { status } = response.meUser;
+
+      if (status === "blocked") {
+        return {
+          redirect: {
+            destination: "/account/blocked",
+            permanent: false,
+          },
+        };
+      } else if (status === "onboardingPending") {
+        return {
+          redirect: {
+            destination: "/onboarding/user/intro",
+            permanent: false,
+          },
+        };
+      } else if (status === "paymentPending") {
+        return {
+          redirect: {
+            destination: "/account/payment-pending",
+            permanent: false,
+          },
+        };
+      }
+
+      return {
+        props: {
+          repo: {
+            status,
+          },
+        },
+      };
+    } else {
+      return {
+        redirect: {
+          destination: "/login",
+          permanent: false,
+        },
+      };
+    }
+  } catch (error) {
+    console.error("Failed to fetch user details:", error);
+    return {
+      redirect: {
+        destination: "/login",
+        permanent: false,
+      },
+    };
+  }
+};

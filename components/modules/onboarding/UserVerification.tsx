@@ -103,7 +103,6 @@ const UserVerification = () => {
           router.replace("/account/verification-pending");
         }
       }
-      router.replace("/pending");
     } catch (error) {
       setToastData({
         message: "Failed to update user verification details.",

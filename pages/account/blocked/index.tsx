@@ -3,6 +3,9 @@ import Image from "next/image";
 import LogoImage from "../../../assets/logo/logoDark.png";
 import IllustrationImage from "../../../assets/svg/pending.svg";
 import React from "react";
+import { GetServerSideProps } from "next";
+import { parseCookies } from "nookies";
+import { sdk } from "@/utils/graphqlClient";
 
 type NextPageWithLayout = React.FC & {
   getLayout?: (page: React.ReactNode) => React.ReactNode;
@@ -11,27 +14,11 @@ type NextPageWithLayout = React.FC & {
 const PaymentPending: NextPageWithLayout = () => {
   return (
     <div className="text-black ">
-      <h1 className="text-4xl font-bold text-gray-800 mb-4">Account Blocked</h1>
-      <p className="text-gray-600 mb-6">
-        Your account payment is pending. Please check your email for further
-        instructions.
+      <h1 className="text-4xl font-bold text-gray-800 mb-2">Account Blocked</h1>
+      <p className="text-gray-600 whitespace-pre-line">
+        {`Your account has been blocked due to suspicious activity detected on your account.\nPlease contact our support team for further assistance and to resolve this issue promptly.`}
       </p>
-      {/* <div className="mb-4 flex justify-center">
-        <Image
-          src={IllustrationImage}
-          alt="Illustration"
-          className="w-20  rounded-lg shadow-lg"
-        />
-      </div> */}
-      <div className="bg-primary p-4 rounded-lg text-white">
-        <p>Contact Number: +1 (123) 456-7890</p>
-        <p>Email: support@choose.com</p>
-        <p>Operating Hours: Monday to Friday, 9 AM to 5 PM (EST)</p>
-        <p>
-          Please check your email for instructions on completing your account
-          verification.
-        </p>
-      </div>
+      <p className="text-gray-600 mb-8"></p>
     </div>
   );
 };
@@ -41,3 +28,83 @@ PaymentPending.getLayout = function getLayout(page: React.ReactNode) {
 };
 
 export default PaymentPending;
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const cookies = parseCookies(context);
+  const token = cookies.accessToken;
+
+  if (!token) {
+    return {
+      redirect: {
+        destination: "/login",
+        permanent: false,
+      },
+    };
+  }
+
+  try {
+    const response = await sdk.MeUser(
+      {},
+      {
+        cookie: context.req.headers.cookie?.toString() ?? "",
+      }
+    );
+
+    if (response && response.meUser) {
+      const { status } = response.meUser;
+
+      if (status === "onboardingPending") {
+        return {
+          redirect: {
+            destination: "/onboarding/user/intro",
+            permanent: false,
+          },
+        };
+      } else if (status === "restaurantOnboardingPending") {
+        return {
+          redirect: {
+            destination: "/onboardingRestaurant/restaurant",
+            permanent: false,
+          },
+        };
+      } else if (status === "internalVerificationPending") {
+        return {
+          redirect: {
+            destination: "/account/verification-pending",
+            permanent: false,
+          },
+        };
+      } else if (status === "paymentPending") {
+        return {
+          redirect: {
+            destination: "/account/payment-pending",
+            permanent: false,
+          },
+        };
+      }
+
+      return {
+        props: {
+          repo: {
+            status,
+          },
+        },
+      };
+    } else {
+      return {
+        redirect: {
+          destination: "/login",
+          permanent: false,
+        },
+      };
+    }
+  } catch (error) {
+    console.error("Failed to fetch user details:", error);
+    return {
+      redirect: {
+        destination: "/login",
+        permanent: false,
+      },
+    };
+  }
+};

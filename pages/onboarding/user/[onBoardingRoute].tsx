@@ -1,10 +1,10 @@
 import NotFound from "@/components/common/notFound/notFound";
 import OnboardingLayout from "@/components/layouts/OnboardingLayout";
+import UserInfo from "@/components/modules/onboarding/UserInformation";
 
-import UserInfo from "@/components/modules/onboarding/userInfo";
 import UserLocation from "@/components/modules/onboarding/UserLocation";
 import UserVerification from "@/components/modules/onboarding/UserVerification";
-import Intro from "@/components/modules/onboarding/welcome";
+import Intro from "@/components/modules/onboarding/WelcomeUser";
 import useOnboardingStore from "@/store/onboarding";
 import { sdk } from "@/utils/graphqlClient";
 import { GetServerSideProps } from "next";
@@ -56,11 +56,12 @@ const OnboardingPage = ({ repo }: HomePageProps) => {
     setemployeeSize(repo.employeeSize);
     setestablishedAt(repo.establishedAt);
     setestimatedRevenue(repo.estimatedRevenue);
-    // setAddressLine1(repo.address.addressLine1);
-    // setAddressLine2(repo.address.addressLine2);
-    // setCity(repo.address.city);
-    // setPostcode(repo.address.postcode);
-    // setState(repo.address.state);
+    setAddressLine1(repo.address?.addressLine1?.value);
+    setAddressLine2(repo.address?.addressLine2?.value);
+    setCity(repo.address?.city?.value);
+
+    setPostcode(repo.address?.postcode?.value);
+    setState(repo.address?.state?.value);
   }, [repo]);
 
   let childComponent;

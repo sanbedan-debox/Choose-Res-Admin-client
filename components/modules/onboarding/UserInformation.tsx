@@ -147,8 +147,7 @@ const UserInfo = () => {
         type: "success",
       });
       router.push("/onboarding/user/user-location");
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
       setToastData({
         message: `{Failed to update business details.:${error.message}`,
         type: "error",

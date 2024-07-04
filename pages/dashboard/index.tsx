@@ -108,7 +108,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       if (status === "blocked") {
         return {
           redirect: {
-            destination: "/blocked",
+            destination: "/account/blocked",
             permanent: false,
           },
         };
@@ -122,7 +122,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       } else if (status === "paymentPending") {
         return {
           redirect: {
-            destination: "/onboarding/pending",
+            destination: "/account/payment-pending",
             permanent: false,
           },
         };
@@ -136,7 +136,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       } else if (status === "internalVerificationPending") {
         return {
           redirect: {
-            destination: "/pending",
+            destination: "/account/verification-pending",
             permanent: false,
           },
         };
