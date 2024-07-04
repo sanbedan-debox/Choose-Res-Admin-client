@@ -123,15 +123,11 @@ query getUserOnboardingDetails {
         coordinates
       }
     }
-    employeeSize {
-      value
-    }
+    employeeSize
     dob
     establishedAt
     businessType
-    estimatedRevenue {
-      value
-    }
+    estimatedRevenue
   }
 }
 

@@ -384,7 +384,7 @@ const Signup: FC = () => {
       {showModal && (
         <ReusableModal
           title="Enter OTP"
-          width="md"
+          width="sm"
           onClose={() => setShowModal(false)}
           isOpen={showModal}
         >

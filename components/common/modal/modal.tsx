@@ -46,7 +46,7 @@ const ReusableModal: React.FC<ModalProps> = ({
   };
 
   return ReactDOM.createPortal(
-    <div className="modal-overlay fixed inset-0 bg-white bg-opacity-80 flex items-center justify-center z-50">
+    <div className="modal-overlay fixed inset-0 bg-black bg-opacity-45 flex items-center justify-center z-50">
       <div
         className={`rounded shadow-lg bg-white ${widthClasses[width]} z-10`}
         onClick={(e) => e.stopPropagation()}

@@ -1,8 +1,7 @@
-import MenuSection from "@/components/common/menuSection/menuSection";
 import MainLayout from "@/components/layouts/MainLayout";
-import Loader from "@/components/loader";
-import useGlobalStore from "@/store/global";
-import React, { useEffect, useState } from "react";
+import React from "react";
+import oneStore from "@/store/test";
+import MenuSection from "@/components/common/menuSection/menuSection";
 import { menuContents } from "./menuContent";
 
 type NextPageWithLayout = React.FC & {
@@ -10,8 +9,10 @@ type NextPageWithLayout = React.FC & {
 };
 
 const Menu: NextPageWithLayout = () => {
-  // return <MenuSection contentList={menuContents} />;
-  return <div className="text-black">COMING SOON</div>;
+  const { userId } = oneStore();
+
+  return <MenuSection contentList={menuContents} />;
+  // return <div className="text-black">{userId}</div>;
 };
 
 Menu.getLayout = function getLayout(page: React.ReactNode) {

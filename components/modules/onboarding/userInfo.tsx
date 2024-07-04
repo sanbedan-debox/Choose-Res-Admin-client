@@ -7,7 +7,11 @@ import useOnboardingStore from "@/store/onboarding";
 import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
 import { sdk } from "@/utils/graphqlClient";
-import { BusinessTypeEnum } from "@/generated/graphql";
+import {
+  BusinessTypeEnum,
+  EstimatedRevenueEnum,
+  StaffCountEnum,
+} from "@/generated/graphql";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 interface IFormInput {
@@ -15,13 +19,61 @@ interface IFormInput {
   businessName: string;
   employees: string;
   revenue: string;
-  // establishedAt: string;
+  // establishedAt: any;
   // dob: string;
 }
+
+const formatBusinessTypeEnum = (value: BusinessTypeEnum) => {
+  switch (value) {
+    case BusinessTypeEnum.Lp:
+      return "LP";
+    case BusinessTypeEnum.Llp:
+      return "LLP";
+    case BusinessTypeEnum.Llc:
+      return "LLC";
+    case BusinessTypeEnum.Corporation:
+      return "Corporation";
+    case BusinessTypeEnum.SoleProprietor:
+      return "Sole Proprietor";
+    default:
+      return "";
+  }
+};
+
+const formatStaffCountEnum = (value: StaffCountEnum) => {
+  switch (value) {
+    case StaffCountEnum.From0To10:
+      return "0 to 10";
+    case StaffCountEnum.From11to25:
+      return "11 to 25";
+    case StaffCountEnum.From26to40:
+      return "26 to 40";
+    case StaffCountEnum.Above40:
+      return "Above 41";
+    default:
+      return "";
+  }
+};
+
+const formatEstimatedRevenueEnum = (value: EstimatedRevenueEnum) => {
+  switch (value) {
+    case EstimatedRevenueEnum.From0to50K:
+      return "$0 to $50,000";
+    case EstimatedRevenueEnum.From50Kto200K:
+      return "$50,000 to $200,000";
+    case EstimatedRevenueEnum.From200Kto500K:
+      return "$200,000 to $500,000";
+    case EstimatedRevenueEnum.Above1M:
+      return "Above $1,000,000";
+    default:
+      return "";
+  }
+};
 
 const UserInfo = () => {
   const { setToastData } = useGlobalStore();
   const router = useRouter();
+
   const {
     handleSubmit,
     formState: { errors },
@@ -39,8 +91,8 @@ const UserInfo = () => {
     setemployeeSize,
     estimatedRevenue,
     setestimatedRevenue,
-    establishedAt,
-    setestablishedAt,
+    // establishedAt,
+    // setestablishedAt,
     dob,
     setdob,
   } = useOnboardingStore();
@@ -52,42 +104,40 @@ const UserInfo = () => {
     setValue("revenue", estimatedRevenue);
   }, [businessType, businessName, employeeSize, estimatedRevenue, setValue]);
 
-  const BusinessType = [
-    { value: "Llc", label: "LLC" },
-    { value: "PrivateLimited", label: "PrivateLimited" },
-  ];
+  const BusinessType = Object.values(BusinessTypeEnum).map((val) => ({
+    value: val.toString(),
+    label: formatBusinessTypeEnum(val),
+  }));
 
-  const employeSize = [
-    { value: "1", label: "1" },
-    { value: "2-10", label: "2-10" },
-    { value: "11-50", label: "11-50" },
-    { value: "51-200", label: "51-200" },
-    { value: "200+", label: "200+" },
-  ];
+  const employeSize = Object.values(StaffCountEnum).map((val) => ({
+    value: val.toString(),
+    label: formatStaffCountEnum(val),
+  }));
 
-  const revenueOptions = [
-    { value: "0-50000", label: "$0 - $50,000" },
-    { value: "50001-200000", label: "$50,001 - $200,000" },
-    { value: "200001-500000", label: "$200,001 - $500,000" },
-    { value: "500001-1000000", label: "$500,001 - $1,000,000" },
-    { value: "1000001+", label: "$1,000,001+" },
-  ];
+  // const employeSize = Object.values(StaffCountEnum).map((val)=>({
+  //   value: val.toString(),
+  //   label: val.toString(),
+  // }))
+
+  const revenueOptions = Object.values(EstimatedRevenueEnum).map((val) => ({
+    value: val.toString(),
+    label: formatEstimatedRevenueEnum(val),
+  }));
 
   const onSubmit = async (data: IFormInput) => {
     try {
-      const businessTypeValue =
-        BusinessTypeEnum[data.businessType as keyof typeof BusinessTypeEnum];
+      const businessTypeValue = data.businessType as BusinessTypeEnum;
+      const estimatedRevenueValue = data.revenue as EstimatedRevenueEnum;
+      const employeeSizeValue = data.employees as StaffCountEnum;
       const response = await sdk.UpdateUserOnboarding({
         input: {
           businessName: data.businessName,
 
           businessType: businessTypeValue,
-          estimatedRevenue: {
-            value: data.revenue,
-          },
-          employeeSize: {
-            value: data.employees,
-          },
+          estimatedRevenue: estimatedRevenueValue,
+
+          employeeSize: employeeSizeValue,
+
           // establishedAt: establishedAt?.toISOString(),
           // dob: dob?.toISOString(),
         },
@@ -174,7 +224,7 @@ const UserInfo = () => {
             htmlFor="businessName"
             className="block mb-2 text-sm font-medium text-left text-gray-700"
           >
-            What is your business name
+            What is your business legal name
           </label>
           <input
             type="text"
@@ -200,17 +250,17 @@ const UserInfo = () => {
             htmlFor="employees"
             className="block mb-2 text-sm font-medium text-left text-gray-700"
           >
-            How many employees
+            What is your staff count
           </label>
 
           <Select
             options={employeSize}
             {...register("employees", {
-              required: "Number of employees is required",
+              required: "Staff count is required",
             })}
             className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
             classNamePrefix="react-select"
-            placeholder="Select number of employees"
+            placeholder="Select number of staffs"
             value={employeSize.find((option) => option.value === employeeSize)}
             onChange={(option) => {
               setValue("employees", option?.value || "");
@@ -229,7 +279,7 @@ const UserInfo = () => {
             htmlFor="revenue"
             className="block mb-2 text-sm font-medium text-left text-gray-700"
           >
-            Estimated annual revenue
+            What is your estimated annual revenue
           </label>
           <Select
             options={revenueOptions}
@@ -253,7 +303,23 @@ const UserInfo = () => {
             </p>
           )}
         </div>
-
+        {/* <div className="col-span-2">
+          <label
+            htmlFor="establishedAt"
+            className="block mb-2 text-sm font-medium text-left text-gray-700"
+          >
+            Established At
+          </label>
+          <div className="relative min-w-full flex items-start">
+            <DatePicker
+              id="establishedAt"
+              selected={establishedAt}
+              onChange={(date: Date | null) => setestablishedAt(date)}
+              className="bg-input border border-gray-300 max-w-full text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 pr-2.5 py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              placeholderText="Select date"
+            />
+          </div>
+        </div> */}
         <div className="col-span-2">
           <button type="submit" className="mt-8 w-full btn btn-primary">
             Continue

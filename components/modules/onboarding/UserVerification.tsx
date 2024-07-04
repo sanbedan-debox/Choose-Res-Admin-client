@@ -100,7 +100,7 @@ const UserVerification = () => {
             message: "User verification details updated successfully!",
             type: "success",
           });
-          // router.replace("/pending");
+          router.replace("/account/verification-pending");
         }
       }
       router.replace("/pending");

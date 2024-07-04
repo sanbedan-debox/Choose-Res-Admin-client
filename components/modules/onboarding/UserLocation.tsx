@@ -217,12 +217,12 @@ const UserLocation = () => {
             {...register("postcode", {
               pattern: {
                 value: /^\d{5}(-\d{4})?$/,
-                message: "Invalid postcode format",
+                message: "Invalid zipcode format",
               },
-              required: "ZipCode is required",
+              required: "Zipcode is required",
             })}
             className="input input-primary"
-            placeholder="Postcode"
+            placeholder="Zipcode"
             onChange={(e) => setPostcode(e.target.value)}
           />
           {errors.postcode && (
