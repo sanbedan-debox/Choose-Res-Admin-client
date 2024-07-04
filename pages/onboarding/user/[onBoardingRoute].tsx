@@ -5,33 +5,67 @@ import UserInfo from "@/components/modules/onboarding/userInfo";
 import UserLocation from "@/components/modules/onboarding/UserLocation";
 import UserVerification from "@/components/modules/onboarding/UserVerification";
 import Intro from "@/components/modules/onboarding/welcome";
+import useOnboardingStore from "@/store/onboarding";
 import { sdk } from "@/utils/graphqlClient";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { parseCookies } from "nookies";
+import { useEffect } from "react";
 
 type HomePageProps = {
   repo: {
     pagePath: string;
-    // businessName: string;
-    // businessType: string;
-    // ein: string;
-    // dob: string;
-    // employeeSize: string;
-    // establishedAt: string;
-    // estimatedRevenue: string;
-    // ssn: string;
-    // address: string;
+    address: any;
+    businessName: any;
+    businessType: any;
+    ein: any;
+    dob: any;
+    employeeSize: any;
+    establishedAt: any;
+    estimatedRevenue: any;
+    ssn: any;
   };
 };
 
-const OnboardingPage = ({ repo: { pagePath } }: HomePageProps) => {
+const OnboardingPage = ({ repo }: HomePageProps) => {
   const router = useRouter();
   // const { onBoardingRoute } = router.query;
+  const {
+    setAddressLine1,
+    setAddressLine2,
+    setCity,
+    setLocation,
+    setPostcode,
+    setState,
+    setbusinessName,
+    setbusinessType,
+    setdob,
+    setein,
+    setemployeeSize,
+    setestablishedAt,
+    setestimatedRevenue,
+    setssn,
+  } = useOnboardingStore();
+
+  useEffect(() => {
+    setbusinessName(repo.businessName);
+    setbusinessType(repo.businessType);
+    setdob(repo.dob);
+    setein(repo.ein);
+    setssn(repo.ssn);
+    setemployeeSize(repo.employeeSize);
+    setestablishedAt(repo.establishedAt);
+    setestimatedRevenue(repo.estimatedRevenue);
+    // setAddressLine1(repo.address.addressLine1);
+    // setAddressLine2(repo.address.addressLine2);
+    // setCity(repo.address.city);
+    // setPostcode(repo.address.postcode);
+    // setState(repo.address.state);
+  }, [repo]);
 
   let childComponent;
 
-  switch (pagePath) {
+  switch (repo.pagePath) {
     case "intro":
       childComponent = <Intro />;
       break;
@@ -95,6 +129,7 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
         estimatedRevenue,
         ssn,
       } = response.getUserOnboardingDetails;
+      console.log(response.getUserOnboardingDetails);
       return {
         props: {
           repo: {
