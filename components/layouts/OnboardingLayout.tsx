@@ -21,7 +21,7 @@ const steps = [
 const OnboardingLayout = ({ children }: Props) => {
   const router = useRouter();
   const { pathname, query } = router;
-  const { onBordingRoute } = query;
+  const { onBoardingRoute } = query;
 
   const handleBackClick = () => {
     router.back();
@@ -30,7 +30,7 @@ const OnboardingLayout = ({ children }: Props) => {
   const hideBackButtonPaths = ["/onboarding/user/intro"];
   const showBackButton = !hideBackButtonPaths.includes(pathname);
 
-  const currentStepIndex = steps.indexOf(onBordingRoute as string);
+  const currentStepIndex = steps.indexOf(onBoardingRoute as string);
 
   const progressPercentage = ((currentStepIndex + 1) / steps.length) * 100;
 
