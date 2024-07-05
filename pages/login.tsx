@@ -31,7 +31,6 @@ const Login: FC = () => {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [otp, setOtp] = useState<string>("");
   const [otpError, setOtpError] = useState<string>("");
-  const [timer, setTimer] = useState<number>(50);
   const [otpKey, setOtpKey] = useState<string>("");
   const [email, setEmail] = useState<string>("");
 
@@ -41,27 +40,12 @@ const Login: FC = () => {
     formState: { errors },
   } = useForm<IFormInput>();
 
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (timer > 0) {
-      interval = setInterval(() => {
-        setTimer((prevTimer) => prevTimer - 1);
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [timer]);
-
-  const startTimer = () => {
-    setTimer(50);
-  };
-
   const handleResendOtp = async () => {
     try {
       const response = await sdk.GenerateOtpForLogin({ input: email });
 
       if (response) {
         setOtpKey(response.generateOtpForLogin);
-        startTimer();
         setToastData({ message: "OTP resent successfully", type: "success" });
       }
     } catch (error) {
@@ -79,7 +63,6 @@ const Login: FC = () => {
       if (response) {
         setOtpKey(response.generateOtpForLogin);
         setShowModal(true);
-        startTimer();
         setToastData({ message: "OTP sent successfully", type: "success" });
       }
     } catch (error) {
@@ -219,16 +202,16 @@ const Login: FC = () => {
         width="md"
       >
         <form onSubmit={handleSubmit(onSubmitOtp)}>
-          <div className="flex flex-col space-y-4">
+          <div className="flex flex-col ">
             <input
               type="text"
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
-              className="input input-primary"
+              className="input input-primary mb-8"
               placeholder="Enter OTP"
             />
             {otpError && <p className="text-red-500">{otpError}</p>}
-            <div className="flex items-center justify-between">
+            {/* <div className="flex items-center justify-between">
               <button
                 type="button"
                 className="text-sm text-blue-500 focus:outline-none hover:underline"
@@ -238,7 +221,7 @@ const Login: FC = () => {
                 Resend OTP
               </button>
               {timer > 0 && <p>Time remaining: {timer} seconds</p>}
-            </div>
+            </div> */}
 
             <button className="btn btn-primary">Submit</button>
           </div>

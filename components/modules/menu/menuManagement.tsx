@@ -1,36 +1,48 @@
 import React from "react";
 import { FaArrowRight } from "react-icons/fa";
+import { useRouter } from "next/router";
 
 const MenuManagement: React.FC = () => {
+  const router = useRouter();
+
   const menuItems = [
     {
-      title: "Menu builder",
+      title: "Add or Edit Menu",
       caption:
-        "Our newest tool for creating and managing menus with improved workflows and streamlined settings.",
+        "Add or Edit your menu for your restaurant in just few easy steps ",
+      link: "/menu/menu-editor",
     },
     {
       title: "Edit menus",
       caption:
         "Original menu editing pages that contain all advanced menu features.",
+      link: "/edit-menus",
     },
     {
       title: "Menu builder",
       caption:
         "Our newest tool for creating and managing menus with improved workflows and streamlined settings.",
+      link: "/menu-builder",
     },
     {
       title: "Edit menus",
       caption:
         "Original menu editing pages that contain all advanced menu features.",
+      link: "/edit-menus",
     },
   ];
+
+  const handleMenuItemClick = (link: string) => {
+    router.push(link);
+  };
 
   return (
     <div className="p-4">
       {menuItems.map((item, index) => (
         <div
           key={index}
-          className="flex justify-between items-center p-4 mb-4 border rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition duration-200"
+          onClick={() => handleMenuItemClick(item.link)}
+          className="flex justify-between items-center p-4 mb-4 border rounded-lg hover:bg-primary hover:bg-opacity-10 transition duration-200 transform hover:scale-105 cursor-pointer"
         >
           <div>
             <h3 className="text-md font-semibold mb-1">{item.title}</h3>
