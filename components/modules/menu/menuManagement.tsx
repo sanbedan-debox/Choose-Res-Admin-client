@@ -7,16 +7,10 @@ const MenuManagement: React.FC = () => {
 
   const menuItems = [
     {
-<<<<<<< HEAD
-      title: "View Menus",
-      caption: "Add or Edit categories for your menu in few easy steps. ",
-      link: "/menu/menu-editor",
-=======
       title: "Add or Edit Menu",
       caption:
         "Add or Edit your menu for your restaurant in just few easy steps ",
       link: "/menu/menu-section",
->>>>>>> 222775c5915c3a1676e2ec1390902c291ebbacca
     },
     {
       title: "Upload Menu",
