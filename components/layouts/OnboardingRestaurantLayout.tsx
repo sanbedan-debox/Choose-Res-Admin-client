@@ -9,7 +9,11 @@ type Props = {
   children: ReactNode;
 };
 
-const steps = ["res"];
+const steps = [
+  "restaurant-location",
+  "restaurant-availibility",
+  "restaurant-info",
+];
 
 const OnboardingRestaurantLayout = ({ children }: Props) => {
   const router = useRouter();

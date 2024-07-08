@@ -1,11 +1,12 @@
 import MainLayout from "@/components/layouts/MainLayout";
 import Loader from "@/components/loader";
 import useGlobalStore from "@/store/global";
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
 import { sdk } from "@/utils/graphqlClient";
 import useAuthStore from "@/store/auth";
+import SetupGuide from "@/components/common/setupGuide/setupGuide";
 
 type NextPageWithLayout = React.FC & {
   getLayout?: (page: React.ReactNode) => React.ReactNode;
@@ -23,7 +24,7 @@ type UserRepo = {
 };
 
 const Dashboard: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
-  const { setSelectedMenu } = useGlobalStore();
+  const { setSelectedMenu, isShowSetupPanel } = useGlobalStore();
 
   const {
     setBusinessName,
@@ -58,6 +59,11 @@ const Dashboard: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
 
   return (
     <div className="text-black">
+      {isShowSetupPanel && (
+        <div>
+          <SetupGuide />
+        </div>
+      )}
       <p>Welcome, {repo.firstName}!</p>
       <p>Welcome, {repo.email}!</p>
       <p>Your id: {repo._id}</p>
@@ -72,6 +78,7 @@ Dashboard.getLayout = function getLayout(page: React.ReactNode) {
 };
 
 export default Dashboard;
+
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const cookies = parseCookies(context);
   const token = cookies.accessToken;

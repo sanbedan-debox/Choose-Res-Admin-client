@@ -10,7 +10,7 @@ const MenuManagement: React.FC = () => {
       title: "Add or Edit Menu",
       caption:
         "Add or Edit your menu for your restaurant in just few easy steps ",
-      link: "/menu/menu-editor",
+      link: "/menu/menu-section",
     },
     {
       title: "Edit menus",

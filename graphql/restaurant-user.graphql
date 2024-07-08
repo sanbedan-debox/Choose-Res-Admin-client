@@ -136,3 +136,34 @@ type Mutation {
   verifyRestaurantUserDetails(input: VerifyRestaurantUserDetails!): Boolean
   updateRestaurantUserProfile(input: UpdateUserProfileInput!): Boolean
 }
+
+query GetAdmins {
+  getAllMenus {
+    _id
+    type
+    user {
+      firstName
+      lastName
+      email
+      phone
+      businessName
+    }
+    name {
+      value
+    }
+    categories {
+      name {
+        value
+      }
+    }
+    visibility {
+      name {
+        value
+      }
+      status
+    }
+    createdAt
+    updatedAt
+    status
+  }
+}
