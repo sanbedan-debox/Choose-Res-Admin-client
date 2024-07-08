@@ -9,7 +9,7 @@ import Reports from "@/components/modules/menu/reports";
 export const menuContents: SectionContent[] = [
   {
     id: "section1",
-    title: "Menu management",
+    title: "Menus",
     Component: MenuManagement,
   },
   // {

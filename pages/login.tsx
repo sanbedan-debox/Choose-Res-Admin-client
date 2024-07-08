@@ -160,7 +160,7 @@ const Login: FC = () => {
                     )}
                   </div>
                   <p className="text-sm text-gray-800">
-                    By logging in, you agree to CHOOSE's{" "}
+                    {`By logging in, you agree to CHOOSE's`}{" "}
                     <Link
                       href="/signup"
                       className="text-primary focus:outline-none focus:underline hover:underline"
@@ -181,7 +181,7 @@ const Login: FC = () => {
                 </form>
 
                 <p className="mt-6 text-sm text-center text-gray-800">
-                  Don't have an account yet?{" "}
+                  {`Don't have an account yet?`}{" "}
                   <Link
                     href="/signup"
                     className="text-primary focus:outline-none focus:underline hover:underline"

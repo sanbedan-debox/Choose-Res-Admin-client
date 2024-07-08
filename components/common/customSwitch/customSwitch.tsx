@@ -1,7 +1,15 @@
 import React from "react";
 
-const CustomSwitch = ({ checked, onChange, label }) => {
-  const handleKeyDown = (e) => {
+const CustomSwitch = ({
+  checked,
+  onChange,
+  label,
+}: {
+  checked: boolean;
+  onChange: () => void;
+  label: string;
+}) => {
+  const handleKeyDown: React.KeyboardEventHandler<HTMLDivElement> = (e) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       onChange();

@@ -7,29 +7,43 @@ const MenuManagement: React.FC = () => {
 
   const menuItems = [
     {
-      title: "Add or Edit Menu",
-      caption:
-        "Add or Edit your menu for your restaurant in just few easy steps ",
+      title: "View Menus",
+      caption: "Add or Edit categories for your menu in few easy steps. ",
       link: "/menu/menu-editor",
     },
     {
-      title: "Edit menus",
-      caption:
-        "Original menu editing pages that contain all advanced menu features.",
-      link: "/edit-menus",
+      title: "Upload Menu",
+      caption: "Add or Edit categories for your menu in few easy steps. ",
+      link: "/menu/menu-editor",
     },
     {
-      title: "Menu builder",
-      caption:
-        "Our newest tool for creating and managing menus with improved workflows and streamlined settings.",
-      link: "/menu-builder",
+      title: "Bulk Edit",
+      caption: "Add or Edit categories for your menu in few easy steps. ",
+      link: "/menu/menu-editor",
     },
     {
-      title: "Edit menus",
-      caption:
-        "Original menu editing pages that contain all advanced menu features.",
-      link: "/edit-menus",
+      title: "Export Menu",
+      caption: "Add or Edit categories for your menu in few easy steps. ",
+      link: "/menu/menu-editor",
     },
+    // {
+    //   title: "Edit menus",
+    //   caption:
+    //     "Original menu editing pages that contain all advanced menu features.",
+    //   link: "/edit-menus",
+    // },
+    // {
+    //   title: "Menu builder",
+    //   caption:
+    //     "Our newest tool for creating and managing menus with improved workflows and streamlined settings.",
+    //   link: "/menu-builder",
+    // },
+    // {
+    //   title: "Edit menus",
+    //   caption:
+    //     "Original menu editing pages that contain all advanced menu features.",
+    //   link: "/edit-menus",
+    // },
   ];
 
   const handleMenuItemClick = (link: string) => {
@@ -51,9 +65,9 @@ const MenuManagement: React.FC = () => {
           <FaArrowRight className="text-gray-500 group-hover:text-primary" />
         </div>
       ))}
-      <a href="#" className="text-blue-500 mt-4 block">
+      {/* <a href="#" className="text-blue-500 mt-4 block">
         Compare menu tools
-      </a>
+      </a> */}
     </div>
   );
 };

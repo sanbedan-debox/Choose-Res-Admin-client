@@ -6,6 +6,7 @@ import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
 import { sdk } from "@/utils/graphqlClient";
 import useAuthStore from "@/store/auth";
+import { UserStatus } from "@/generated/graphql";
 
 type NextPageWithLayout = React.FC & {
   getLayout?: (page: React.ReactNode) => React.ReactNode;
@@ -38,15 +39,25 @@ const Dashboard: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
   } = useAuthStore();
 
   useEffect(() => {
-    setUserId(repo?._id);
-    setEmail(repo?.email);
-    setPhone(repo?.phone);
-    setFirstName(repo?.firstName);
-    setLastName(repo?.lastName);
-    setStatus(repo?.status);
-    setBusinessName(repo?.businessName);
-    setEstablishedAt(repo?.establishedAt);
-  }, [repo]);
+    setUserId(repo?._id ?? "");
+    setEmail(repo?.email ?? "");
+    setPhone(repo?.phone ?? "");
+    setFirstName(repo?.firstName ?? "");
+    setLastName(repo?.lastName ?? "");
+    setStatus(repo?.status ?? "");
+    setBusinessName(repo?.businessName ?? "");
+    setEstablishedAt(repo?.establishedAt ?? "");
+  }, [
+    repo,
+    setBusinessName,
+    setEmail,
+    setEstablishedAt,
+    setFirstName,
+    setLastName,
+    setPhone,
+    setStatus,
+    setUserId,
+  ]);
 
   useEffect(() => {
     setSelectedMenu("dashboard");
@@ -105,31 +116,31 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         establishedAt,
       } = response.meUser;
 
-      if (status === "blocked") {
+      if (status === UserStatus.Blocked) {
         return {
           redirect: {
             destination: "/account/blocked",
             permanent: false,
           },
         };
-      } else if (status === "onboardingPending") {
+      } else if (status === UserStatus.OnboardingPending) {
         return {
           redirect: {
             destination: "/onboarding/user/intro",
             permanent: false,
           },
         };
-      } else if (status === "paymentPending") {
+      } else if (status === UserStatus.PaymentPending) {
         return {
           redirect: {
             destination: "/account/payment-pending",
             permanent: false,
           },
         };
-      } else if (status === "restaurantOnboardingPending") {
+      } else if (status === UserStatus.RestaurantOnboardingPending) {
         return {
           redirect: {
-            destination: "/onboardingRestaurant/restaurant",
+            destination: "/onboarding-restaurant/restaurant",
             permanent: false,
           },
         };

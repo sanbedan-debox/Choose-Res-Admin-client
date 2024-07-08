@@ -87,7 +87,7 @@ const MenuEditor: NextPageWithLayout = () => {
         {categories.length === 0 && (
           <div className="text-gray-500">
             <p>
-              No categories available. Click the "+" button to add a category.
+              {`No categories available. Click the "+" button to add a category.`}
             </p>
             <div className="mt-2">
               <p>Start by adding a category.</p>
@@ -143,7 +143,7 @@ const MenuEditor: NextPageWithLayout = () => {
               Description
             </label>
             <input
-              onChange={(e) => setNewCategoryName(e.target.value)}
+              // onChange={(e) => setNewCategoryName(e.target.value)}
               type="text"
               // {...register("postcode", {
               //   required: "Postcode is required",

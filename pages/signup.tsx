@@ -329,7 +329,7 @@ const Signup: FC = () => {
                   </div>
                 </div>
                 <p className="text-sm text-gray-800">
-                  By logging in, you agree to CHOOSE's{" "}
+                  {`By logging in, you agree to CHOOSE's`}{" "}
                   <Link
                     href="/signup"
                     className="text-primary focus:outline-none focus:underline hover:underline"

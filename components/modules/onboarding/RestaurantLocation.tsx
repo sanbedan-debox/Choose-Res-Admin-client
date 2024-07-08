@@ -5,6 +5,7 @@ import useGlobalStore from "@/store/global";
 import { useForm } from "react-hook-form";
 import Select from "react-select";
 import { locationTypeOptions, timeZoneOptions } from "./interface/interface";
+import { sdk } from "@/utils/graphqlClient";
 
 const RestaurantLocation = () => {
   const { setToastData } = useGlobalStore();
@@ -119,11 +120,11 @@ const RestaurantLocation = () => {
             })}
             className="input input-primary"
             placeholder="Business description"
-            rows="4"
+            rows={4}
           />
           {errors.businessDescription && (
             <p className="text-red-500 text-sm text-start">
-              {errors.businessDescription.message}
+              {errors.businessDescription?.message?.toString() ?? ""}
             </p>
           )}
         </div>
@@ -142,7 +143,7 @@ const RestaurantLocation = () => {
           />
           {errors.addressLine1 && (
             <p className="text-red-500 text-sm text-start">
-              {errors.addressLine1.message}
+              {errors.addressLine1?.message?.toString()}
             </p>
           )}
         </div>
@@ -160,7 +161,7 @@ const RestaurantLocation = () => {
           />
           {errors.addressLine1 && (
             <p className="text-red-500 text-sm text-start">
-              {errors.addressLine2.message}
+              {errors.addressLine2?.message?.toString() ?? ""}
             </p>
           )}
         </div>
@@ -179,7 +180,7 @@ const RestaurantLocation = () => {
             />
             {errors.city && (
               <p className="text-red-500 text-sm text-start">
-                {errors.city.message}
+                {errors.city?.message?.toString() ?? ""}
               </p>
             )}
           </div>
@@ -203,7 +204,7 @@ const RestaurantLocation = () => {
             />
             {errors.state && (
               <p className="text-red-500 text-sm text-start">
-                {errors.state.message}
+                {errors.state.message?.toString() ?? ""}
               </p>
             )}
           </div>
@@ -223,7 +224,7 @@ const RestaurantLocation = () => {
           />
           {errors.postcode && (
             <p className="text-red-500 text-sm text-start">
-              {errors.postcode.message}
+              {errors.postcode.message?.toString() ?? ""}
             </p>
           )}
         </div>
@@ -247,11 +248,11 @@ const RestaurantLocation = () => {
           />
           {errors.locationType && (
             <p className="text-red-500 text-sm text-start">
-              {errors.locationType.message}
+              {errors.locationType.message?.toString() ?? ""}
             </p>
           )}
         </div>
-        <div className="col-span-2">
+        {/* <div className="col-span-2">
           <label className="block mb-2 text-sm font-medium text-left text-gray-700">
             Branding
           </label>
@@ -290,7 +291,7 @@ const RestaurantLocation = () => {
               </label>
             </div>
           </div>
-        </div>
+        </div> */}
 
         <div className="col-span-2">
           <label className="block mb-2 text-sm font-medium text-left text-gray-700">
@@ -308,7 +309,7 @@ const RestaurantLocation = () => {
           />
           {errors.timezone && (
             <p className="text-red-500 text-sm text-start">
-              {errors.timezone.message}
+              {errors.timezone.message?.toString() ?? ""}
             </p>
           )}
         </div>
@@ -362,7 +363,10 @@ const RestaurantLocation = () => {
         </div>
         <div className="col-span-2">
           <button
-            onClick={() => router.push("/onboarding/location")}
+            onClick={async () => {
+              await sdk.ChangeUserToActive();
+              router.replace("/dashboard");
+            }}
             type="submit"
             className="inline-flex btn btn-primary items-center justify-center w-full mt-8"
           >

@@ -136,3 +136,11 @@ type Mutation {
   verifyRestaurantUserDetails(input: VerifyRestaurantUserDetails!): Boolean
   updateRestaurantUserProfile(input: UpdateUserProfileInput!): Boolean
 }
+
+mutation AddRestaurant($input: AddRestaurantInput!) {
+  addRestaurant(input: $input)
+}
+
+query ChangeUserToActive {
+  changeUserToActive
+}

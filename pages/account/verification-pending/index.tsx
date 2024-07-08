@@ -9,6 +9,7 @@ import { FaArrowRight } from "react-icons/fa";
 import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
 import { sdk } from "@/utils/graphqlClient";
+import { UserStatus } from "@/generated/graphql";
 
 type NextPageWithLayout = React.FC & {
   getLayout?: (page: React.ReactNode) => React.ReactNode;
@@ -67,24 +68,31 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     if (response && response.meUser) {
       const { status } = response.meUser;
 
-      if (status === "blocked") {
+      if (status === UserStatus.Blocked) {
         return {
           redirect: {
             destination: "/account/blocked",
             permanent: false,
           },
         };
-      } else if (status === "onboardingPending") {
+      } else if (status === UserStatus.OnboardingPending) {
         return {
           redirect: {
             destination: "/onboarding/user/intro",
             permanent: false,
           },
         };
-      } else if (status === "paymentPending") {
+      } else if (status === UserStatus.PaymentPending) {
         return {
           redirect: {
             destination: "/account/payment-pending",
+            permanent: false,
+          },
+        };
+      } else if (status === UserStatus.RestaurantOnboardingPending) {
+        return {
+          redirect: {
+            destination: "/onboarding-restaurant/restaurant",
             permanent: false,
           },
         };
