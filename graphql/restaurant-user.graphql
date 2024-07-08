@@ -137,6 +137,37 @@ type Mutation {
   updateRestaurantUserProfile(input: UpdateUserProfileInput!): Boolean
 }
 
+query GetAdmins {
+  getAllMenus {
+    _id
+    type
+    user {
+      firstName
+      lastName
+      email
+      phone
+      businessName
+    }
+    name {
+      value
+    }
+    categories {
+      name {
+        value
+      }
+    }
+    visibility {
+      name {
+        value
+      }
+      status
+    }
+    createdAt
+    updatedAt
+    status
+  }
+}
+
 mutation AddRestaurant($input: AddRestaurantInput!) {
   addRestaurant(input: $input)
 }

@@ -8,8 +8,8 @@ import Select from "react-select";
 import RoopTable from "@/components/common/table/table";
 import {
   availibilityOptions,
-  menuTypeOptions,
   visibilityOptions,
+  menuTypeOptions,
 } from "./interface";
 
 type NextPageWithLayout = React.FC & {
@@ -77,7 +77,7 @@ const MenuEditor: NextPageWithLayout = () => {
             </Tab>
           ))}
           <button
-            className="btn btn-primary p-2 bg-opacity-20 text-xl m-"
+            className="  text-2xl hover:text-primary"
             onClick={() => setIsCategoryModalOpen(true)}
           >
             <MdAddCircleOutline />

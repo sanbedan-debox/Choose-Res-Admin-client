@@ -1,8 +1,18 @@
 import MainLayout from "@/components/layouts/MainLayout";
 import React from "react";
 import oneStore from "@/store/test";
-import MenuSection from "@/components/common/menuSection/menuSection";
-import { menuContents } from "./menuContent";
+import MenuManagement from "@/components/modules/menu/menuManagement";
+import BulkManagement from "@/components/modules/menu/bulkManagement";
+import Catering from "../catering";
+import Tabs from "@/components/common/tabs/tabs";
+
+const tabItems = [
+  { label: "Menus", component: <MenuManagement /> },
+  { label: "Categories", component: <BulkManagement /> },
+  { label: "Items", component: <Catering /> },
+  { label: "Modifier Groups", component: <Catering /> },
+  { label: "Modifiers", component: <Catering /> },
+];
 
 type NextPageWithLayout = React.FC & {
   getLayout?: (page: React.ReactNode) => React.ReactNode;
@@ -11,8 +21,7 @@ type NextPageWithLayout = React.FC & {
 const Menu: NextPageWithLayout = () => {
   const { userId } = oneStore();
 
-  return <MenuSection contentList={menuContents} />;
-  // return <div className="text-black">{userId}</div>;
+  return <Tabs items={tabItems} />;
 };
 
 Menu.getLayout = function getLayout(page: React.ReactNode) {

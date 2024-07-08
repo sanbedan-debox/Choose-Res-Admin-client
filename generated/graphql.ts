@@ -1197,6 +1197,11 @@ export type GetUserOnboardingDetailsQueryVariables = Exact<{ [key: string]: neve
 
 export type GetUserOnboardingDetailsQuery = { __typename?: 'Query', getUserOnboardingDetails: { __typename?: 'User', ein?: string | null, ssn?: string | null, businessName?: string | null, employeeSize?: StaffCountEnum | null, dob?: any | null, establishedAt?: string | null, businessType?: BusinessTypeEnum | null, estimatedRevenue?: EstimatedRevenueEnum | null, address?: { __typename?: 'AddressInfo', addressLine1: { __typename?: 'MasterCommon', value: string }, addressLine2?: { __typename?: 'MasterCommon', value: string } | null, state: { __typename?: 'MasterCommon', value: string }, city: { __typename?: 'MasterCommon', value: string }, postcode: { __typename?: 'MasterCommon', value: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null } | null } };
 
+export type GetAdminsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAdminsQuery = { __typename?: 'Query', getAllMenus: Array<{ __typename?: 'Menu', _id: string, type: MenuTypeEnum, createdAt: any, updatedAt: any, status: StatusEnum, user: { __typename?: 'User', firstName: string, lastName: string, email: string, phone: string, businessName?: string | null }, name: { __typename?: 'MasterCommon', value: string }, categories: Array<{ __typename?: 'CategoryInfo', name?: { __typename?: 'MasterCommon', value: string } | null }>, visibility?: Array<{ __typename?: 'Visibility', status: boolean, name: { __typename?: 'MasterCommon', value: string } }> | null }> };
+
 export type AddRestaurantMutationVariables = Exact<{
   input: AddRestaurantInput;
 }>;
@@ -1302,6 +1307,38 @@ export const GetUserOnboardingDetailsDocument = gql`
   }
 }
     `;
+export const GetAdminsDocument = gql`
+    query GetAdmins {
+  getAllMenus {
+    _id
+    type
+    user {
+      firstName
+      lastName
+      email
+      phone
+      businessName
+    }
+    name {
+      value
+    }
+    categories {
+      name {
+        value
+      }
+    }
+    visibility {
+      name {
+        value
+      }
+      status
+    }
+    createdAt
+    updatedAt
+    status
+  }
+}
+    `;
 export const AddRestaurantDocument = gql`
     mutation AddRestaurant($input: AddRestaurantInput!) {
   addRestaurant(input: $input)
@@ -1349,6 +1386,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     getUserOnboardingDetails(variables?: GetUserOnboardingDetailsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetUserOnboardingDetailsQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetUserOnboardingDetailsQuery>(GetUserOnboardingDetailsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getUserOnboardingDetails', 'query', variables);
+    },
+    GetAdmins(variables?: GetAdminsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetAdminsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetAdminsQuery>(GetAdminsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'GetAdmins', 'query', variables);
     },
     AddRestaurant(variables: AddRestaurantMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddRestaurantMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<AddRestaurantMutation>(AddRestaurantDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'AddRestaurant', 'mutation', variables);

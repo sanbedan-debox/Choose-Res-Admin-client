@@ -5,7 +5,6 @@ import useGlobalStore from "@/store/global";
 import { useForm } from "react-hook-form";
 import Select from "react-select";
 import { locationTypeOptions, timeZoneOptions } from "./interface/interface";
-import { sdk } from "@/utils/graphqlClient";
 
 const RestaurantLocation = () => {
   const { setToastData } = useGlobalStore();
@@ -119,21 +118,12 @@ const RestaurantLocation = () => {
               required: "Business description is required",
             })}
             className="input input-primary"
-<<<<<<< HEAD
-            placeholder="Business description"
-            rows={4}
-=======
             placeholder="Restaurant Name"
             type="text"
->>>>>>> 222775c5915c3a1676e2ec1390902c291ebbacca
           />
           {errors.resname && (
             <p className="text-red-500 text-sm text-start">
-<<<<<<< HEAD
-              {errors.businessDescription?.message?.toString() ?? ""}
-=======
               {errors.resname.message}
->>>>>>> 222775c5915c3a1676e2ec1390902c291ebbacca
             </p>
           )}
         </div>
@@ -152,7 +142,7 @@ const RestaurantLocation = () => {
           />
           {errors.addressLine1 && (
             <p className="text-red-500 text-sm text-start">
-              {errors.addressLine1?.message?.toString()}
+              {errors.addressLine1.message}
             </p>
           )}
         </div>
@@ -170,7 +160,7 @@ const RestaurantLocation = () => {
           />
           {errors.addressLine1 && (
             <p className="text-red-500 text-sm text-start">
-              {errors.addressLine2?.message?.toString() ?? ""}
+              {errors.addressLine2.message}
             </p>
           )}
         </div>
@@ -189,7 +179,7 @@ const RestaurantLocation = () => {
             />
             {errors.city && (
               <p className="text-red-500 text-sm text-start">
-                {errors.city?.message?.toString() ?? ""}
+                {errors.city.message}
               </p>
             )}
           </div>
@@ -213,7 +203,7 @@ const RestaurantLocation = () => {
             />
             {errors.state && (
               <p className="text-red-500 text-sm text-start">
-                {errors.state.message?.toString() ?? ""}
+                {errors.state.message}
               </p>
             )}
           </div>
@@ -233,7 +223,7 @@ const RestaurantLocation = () => {
           />
           {errors.postcode && (
             <p className="text-red-500 text-sm text-start">
-              {errors.postcode.message?.toString() ?? ""}
+              {errors.postcode.message}
             </p>
           )}
         </div>
@@ -257,134 +247,16 @@ const RestaurantLocation = () => {
           />
           {errors.locationType && (
             <p className="text-red-500 text-sm text-start">
-              {errors.locationType.message?.toString() ?? ""}
+              {errors.locationType.message}
             </p>
           )}
         </div>
-<<<<<<< HEAD
-        {/* <div className="col-span-2">
-          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-            Branding
-          </label>
-          <div className="mb-4">
-            <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-              Logo
-            </label>
-            <div className="border-2 border-dashed border-gray-300 p-6 text-center rounded-lg cursor-pointer hover:bg-gray-100">
-              <input
-                type="file"
-                {...register("logo")}
-                className="hidden"
-                id="logo-upload"
-              />
-              <label htmlFor="logo-upload" className="cursor-pointer">
-                <div className="text-gray-500">
-                  <svg
-                    xmlns="http:www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    className="w-6 h-6 mx-auto"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 7l3-3m0 0l3 3M6 4v12M21 11v7a2 2 0 01-2 2H5a2 2 0 01-2-2v-7M16 8l-3-3m0 0l-3 3m3-3v12"
-                    />
-                  </svg>
-                </div>
-                <p className="mt-1 text-sm text-gray-500">
-                  Drag and drop a logo or{" "}
-                  <span className="text-blue-600">browse file</span>
-                </p>
-              </label>
-            </div>
-          </div>
-        </div> */}
-
-        <div className="col-span-2">
-          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-            Timezone
-          </label>
-          <Select
-            {...register("timezone", {
-              required: "Timezone is required",
-            })}
-            id="timezone"
-            options={timeZoneOptions}
-            className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
-            classNamePrefix="react-select"
-            placeholder="Select Timezone"
-          />
-          {errors.timezone && (
-            <p className="text-red-500 text-sm text-start">
-              {errors.timezone.message?.toString() ?? ""}
-            </p>
-          )}
-        </div>
-
-        <div className="mb-4">
-          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-            Regular hours
-          </label>
-          <div className="space-y-2">
-            {[
-              "Monday",
-              "Tuesday",
-              "Wednesday",
-              "Thursday",
-              "Friday",
-              "Saturday",
-              "Sunday",
-            ].map((day) => (
-              <div key={day} className="flex flex-col">
-                <div className="flex items-center">
-                  <label className="block text-sm font-medium text-start text-gray-700">
-                    {day}
-                  </label>
-                </div>
-                <div className="flex space-x-2 mt-1">
-                  <input
-                    type="checkbox"
-                    {...register(`hours.${day}.enabled`)}
-                    className="mr-2"
-                  />
-                  <input
-                    type="text"
-                    {...register(`hours.${day}.from`, { disabled: true })}
-                    className={`input input-primary ${
-                      watch(`hours.${day}.enabled`) ? "" : "opacity-50"
-                    }`}
-                    placeholder="From"
-                  />
-                  <input
-                    type="text"
-                    {...register(`hours.${day}.to`, { disabled: true })}
-                    className={`input input-primary ${
-                      watch(`hours.${day}.enabled`) ? "" : "opacity-50"
-                    }`}
-                    placeholder="To"
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="col-span-2">
-          <button
-            onClick={async () => {
-              await sdk.ChangeUserToActive();
-              router.replace("/dashboard");
-            }}
-=======
 
         <div className="col-span-2">
           <button
             onClick={() =>
               router.push("/onboarding-restaurant/restaurant-availibility")
             }
->>>>>>> 222775c5915c3a1676e2ec1390902c291ebbacca
             type="submit"
             className="inline-flex btn btn-primary items-center justify-center w-full mt-8"
           >
