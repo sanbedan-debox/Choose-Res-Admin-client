@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import useGlobalStore from "@/store/global";
 import { useForm } from "react-hook-form";
 import Select from "react-select";
-import { locationTypeOptions, timeZoneOptions } from "./interface/interface";
+import { RestaurantCategory, RestaurantType } from "./interface/interface";
 import { sdk } from "@/utils/graphqlClient";
 
 const RestaurantLocation = () => {
@@ -22,65 +22,6 @@ const RestaurantLocation = () => {
     router.push("/onboarding/integrations");
   };
 
-  const stateOptions = [
-    { value: "AL", label: "Alabama" },
-    { value: "AK", label: "Alaska" },
-    { value: "AZ", label: "Arizona" },
-    { value: "AR", label: "Arkansas" },
-    { value: "CA", label: "California" },
-    { value: "CO", label: "Colorado" },
-    { value: "CT", label: "Connecticut" },
-    { value: "DE", label: "Delaware" },
-    { value: "FL", label: "Florida" },
-    { value: "GA", label: "Georgia" },
-    { value: "HI", label: "Hawaii" },
-    { value: "ID", label: "Idaho" },
-    { value: "IL", label: "Illinois" },
-    { value: "IN", label: "Indiana" },
-    { value: "IA", label: "Iowa" },
-    { value: "KS", label: "Kansas" },
-    { value: "KY", label: "Kentucky" },
-    { value: "LA", label: "Louisiana" },
-    { value: "ME", label: "Maine" },
-    { value: "MD", label: "Maryland" },
-    { value: "MA", label: "Massachusetts" },
-    { value: "MI", label: "Michigan" },
-    { value: "MN", label: "Minnesota" },
-    { value: "MS", label: "Mississippi" },
-    { value: "MO", label: "Missouri" },
-    { value: "MT", label: "Montana" },
-    { value: "NE", label: "Nebraska" },
-    { value: "NV", label: "Nevada" },
-    { value: "NH", label: "New Hampshire" },
-    { value: "NJ", label: "New Jersey" },
-    { value: "NM", label: "New Mexico" },
-    { value: "NY", label: "New York" },
-    { value: "NC", label: "North Carolina" },
-    { value: "ND", label: "North Dakota" },
-    { value: "OH", label: "Ohio" },
-    { value: "OK", label: "Oklahoma" },
-    { value: "OR", label: "Oregon" },
-    { value: "PA", label: "Pennsylvania" },
-    { value: "RI", label: "Rhode Island" },
-    { value: "SC", label: "South Carolina" },
-    { value: "SD", label: "South Dakota" },
-    { value: "TN", label: "Tennessee" },
-    { value: "TX", label: "Texas" },
-    { value: "UT", label: "Utah" },
-    { value: "VT", label: "Vermont" },
-    { value: "VA", label: "Virginia" },
-    { value: "WA", label: "Washington" },
-    { value: "WV", label: "West Virginia" },
-    { value: "WI", label: "Wisconsin" },
-    { value: "WY", label: "Wyoming" },
-  ];
-  const mondayChecked = watch("mondayRegularHours");
-  const tuesdayChecked = watch("tuesdayRegularHours");
-  const wednesdayChecked = watch("wednesdayRegularHours");
-  const thursdayChecked = watch("thursdayRegularHours");
-  const fridayChecked = watch("fridayRegularHours");
-  const saturdayChecked = watch("saturdayRegularHours");
-  const sundayChecked = watch("sundayRegularHours");
   return (
     <motion.div
       className="z-10 flex flex-col w-full max-w-md items-center space-y-5 text-center"
@@ -119,8 +60,6 @@ const RestaurantLocation = () => {
               required: "Business description is required",
             })}
             className="input input-primary"
-            placeholder="Business description"
-            rows={4}
             placeholder="Restaurant Name"
             type="text"
           />
@@ -130,127 +69,119 @@ const RestaurantLocation = () => {
             </p>
           )}
         </div>
-
         <div className="col-span-2">
-          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-            Address Line 1
+          <label className="block mb-2 text-lg font-medium text-left text-gray-700">
+            Branding
           </label>
-          <input
-            type="text"
-            {...register("addressLine1", {
-              required: "Address Line 1 is required",
-            })}
-            className="input input-primary"
-            placeholder="Address Line 1"
-          />
-          {errors.addressLine1 && (
-            <p className="text-red-500 text-sm text-start">
-              {errors.addressLine1?.message?.toString()}
-            </p>
-          )}
-        </div>
-        <div className="col-span-2">
-          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-            Address Line 2
-          </label>
-          <input
-            type="text"
-            {...register("addressLine2", {
-              required: "Address Line 2 is required",
-            })}
-            className="input input-primary"
-            placeholder="Address Line 2"
-          />
-          {errors.addressLine1 && (
-            <p className="text-red-500 text-sm text-start">
-              {errors.addressLine2?.message?.toString() ?? ""}
-            </p>
-          )}
-        </div>
-        <div className="flex flex-wrap gap-4">
-          <div className="col-span-3 flex-1">
+          <div className="mb-4">
             <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-              City
+              Logo(Optional)
             </label>
-            <input
-              type="text"
-              {...register("city", {
-                required: "City is required",
-              })}
-              className="input input-primary"
-              placeholder="City"
-            />
-            {errors.city && (
-              <p className="text-red-500 text-sm text-start">
-                {errors.city?.message?.toString() ?? ""}
-              </p>
-            )}
-          </div>
-
-          <div className="col-span-2 flex-1">
-            <label
-              htmlFor="state"
-              className="block mb-2 text-sm font-medium text-left text-gray-700"
-            >
-              State
-            </label>
-            <Select
-              {...register("state", {
-                required: "State is required",
-              })}
-              id="state"
-              options={stateOptions}
-              className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
-              classNamePrefix="react-select"
-              placeholder="Select State"
-            />
-            {errors.state && (
-              <p className="text-red-500 text-sm text-start">
-                {errors.state.message?.toString() ?? ""}
-              </p>
-            )}
+            <div className="border-2 border-dashed border-gray-300 p-6 text-center rounded-lg cursor-pointer hover:bg-gray-100">
+              <input
+                type="file"
+                {...register("logo")}
+                className="hidden"
+                id="logo-upload"
+              />
+              <label htmlFor="logo-upload" className="cursor-pointer">
+                <div className="text-gray-500">
+                  <svg
+                    xmlns="http:www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    className="w-6 h-6 mx-auto"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 7l3-3m0 0l3 3M6 4v12M21 11v7a2 2 0 01-2 2H5a2 2 0 01-2-2v-7M16 8l-3-3m0 0l-3 3m3-3v12"
+                    />
+                  </svg>
+                </div>
+                <p className="mt-1 text-sm text-gray-500">
+                  Drag and drop a logo or{" "}
+                  <span className="text-blue-600">browse file</span>
+                </p>
+              </label>
+            </div>
           </div>
         </div>
-
         <div className="col-span-2">
           <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-            ZipCode
+            Restaurant Website
           </label>
           <input
-            type="text"
-            {...register("postcode", {
-              required: "Postcode is required",
+            {...register("resname", {
+              required: "Business description is required",
             })}
             className="input input-primary"
-            placeholder="Zipcode"
+            placeholder="Restaurant Website"
+            type="text"
           />
-          {errors.postcode && (
+          {errors.resname && (
             <p className="text-red-500 text-sm text-start">
-              {errors.postcode.message?.toString() ?? ""}
+              {errors.resname.message}
             </p>
           )}
         </div>
-
         <div className="col-span-2">
-          <label
-            htmlFor="location"
-            className="block mb-2 text-sm font-medium text-left text-gray-700"
-          >
-            Select Location
+          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
+            Restaurant Type
           </label>
           <Select
-            {...register("locationType", {
-              required: "Location type is required",
+            {...register("type", {
+              required: "Type is required",
             })}
-            id="location"
-            options={locationTypeOptions}
+            id="state"
+            options={RestaurantType}
             className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
             classNamePrefix="react-select"
-            placeholder="Select Location "
+            placeholder="Select Restaurant Type"
           />
-          {errors.locationType && (
+          {errors.state && (
             <p className="text-red-500 text-sm text-start">
-              {errors.locationType.message?.toString() ?? ""}
+              {errors.state.message}
+            </p>
+          )}
+        </div>
+        <div className="col-span-2">
+          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
+            Restaurant Category
+          </label>
+          <Select
+            {...register("category", {
+              required: "Restaurant category is required",
+            })}
+            id="state"
+            options={RestaurantCategory}
+            className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+            classNamePrefix="react-select"
+            placeholder="Select Restaurant Category"
+          />
+          {errors.state && (
+            <p className="text-red-500 text-sm text-start">
+              {errors.state.message}
+            </p>
+          )}
+        </div>
+        <div className="col-span-2">
+          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
+            Dine-In Capacity
+          </label>
+          <input
+            {...register("resname", {
+              required: "Business description is required",
+            })}
+            className="input input-primary"
+            placeholder="Dine-In Capacity"
+            type="text"
+          />
+          {errors.dineincap && (
+            <p className="text-red-500 text-sm text-start">
+              {errors.dineincap.message}
             </p>
           )}
         </div>

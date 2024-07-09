@@ -1,74 +1,63 @@
-import React from "react";
-import { FaArrowRight } from "react-icons/fa";
-import { useRouter } from "next/router";
+import ReusableTable from "@/components/common/table/table";
 
-const MenuManagement: React.FC = () => {
-  const router = useRouter();
+const MenuManagement = () => {
+  const headings = ["Menu"];
+  const data = [{ menu: "Item 1", available: true }];
 
-  const menuItems = [
-    {
-      title: "Add or Edit Menu",
-      caption:
-        "Add or Edit your menu for your restaurant in just few easy steps ",
-      link: "/menu/menu-section",
-    },
-    {
-      title: "Upload Menu",
-      caption: "Add or Edit categories for your menu in few easy steps. ",
-      link: "/menu/menu-editor",
-    },
-    {
-      title: "Bulk Edit",
-      caption: "Add or Edit categories for your menu in few easy steps. ",
-      link: "/menu/menu-editor",
-    },
-    {
-      title: "Export Menu",
-      caption: "Add or Edit categories for your menu in few easy steps. ",
-      link: "/menu/menu-editor",
-    },
-    // {
-    //   title: "Edit menus",
-    //   caption:
-    //     "Original menu editing pages that contain all advanced menu features.",
-    //   link: "/edit-menus",
-    // },
-    // {
-    //   title: "Menu builder",
-    //   caption:
-    //     "Our newest tool for creating and managing menus with improved workflows and streamlined settings.",
-    //   link: "/menu-builder",
-    // },
-    // {
-    //   title: "Edit menus",
-    //   caption:
-    //     "Original menu editing pages that contain all advanced menu features.",
-    //   link: "/edit-menus",
-    // },
-  ];
+  const handleEdit = (item: { [key: string]: any }) => {
+    console.log("Edit clicked", item);
+  };
 
-  const handleMenuItemClick = (link: string) => {
-    router.push(link);
+  const handleDelete = (item: { [key: string]: any }) => {
+    console.log("Delete clicked", item);
   };
 
   return (
-    <div className="p-4">
-      {menuItems.map((item, index) => (
-        <div
-          key={index}
-          onClick={() => handleMenuItemClick(item.link)}
-          className="flex justify-between items-center p-4 mb-4 border rounded-lg hover:bg-primary hover:bg-opacity-10 transition duration-200 transform hover:scale-105 cursor-pointer"
-        >
-          <div>
-            <h3 className="text-md font-semibold mb-1">{item.title}</h3>
-            <p className="text-sm">{item.caption}</p>
-          </div>
-          <FaArrowRight className="text-gray-500 group-hover:text-primary" />
-        </div>
-      ))}
-      {/* <a href="#" className="text-blue-500 mt-4 block">
-        Compare menu tools
-      </a> */}
+    <div className="container mx-auto p-4">
+      <ReusableTable headings={headings} data={data}>
+        {(item) => (
+          <>
+            <button
+              className="text-blue-500 hover:text-blue-700"
+              onClick={() => handleEdit(item)}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 12H9m0 0v6m0-6V6"
+                />
+              </svg>
+            </button>
+            <button
+              className="text-red-500 hover:text-red-700"
+              onClick={() => handleDelete(item)}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </>
+        )}
+      </ReusableTable>
     </div>
   );
 };

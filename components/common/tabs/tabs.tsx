@@ -18,7 +18,7 @@ const Tabs: React.FC<TabsProps> = ({ items }) => {
         {items.map((item, index) => (
           <button
             key={index}
-            className={`pb-2 px-2 ${
+            className={`pb-2 px-2 text-sm ${
               index === activeTab
                 ? "border-b-2 border-blue-500 text-primary"
                 : "text-black"
@@ -28,9 +28,6 @@ const Tabs: React.FC<TabsProps> = ({ items }) => {
             {item.label}
           </button>
         ))}
-        {/* <button className="ml-auto bg-blue-500 text-white py-1 px-4 rounded">
-          Filter
-        </button> */}
       </div>
       <div className="mt-4">{items[activeTab].component}</div>
     </div>

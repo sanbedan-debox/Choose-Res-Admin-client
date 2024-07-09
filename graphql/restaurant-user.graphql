@@ -175,3 +175,12 @@ mutation AddRestaurant($input: AddRestaurantInput!) {
 query ChangeUserToActive {
   changeUserToActive
 }
+
+query getUserRestaurants {
+  getUserRestaurants {
+    name {
+      value
+    }
+    _id
+  }
+}

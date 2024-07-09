@@ -91,6 +91,20 @@ export type AddMenuInput = {
   visibility?: InputMaybe<Array<VisibilityInput>>;
 };
 
+export type AddModifierGroupInput = {
+  maxSelections: MasterCommonInputNumber;
+  name: MasterCommonInput;
+  optional: Scalars['Boolean']['input'];
+  pricingType: PriceTypeEnum;
+  restaurantId: Scalars['String']['input'];
+};
+
+export type AddModifierInput = {
+  name: MasterCommonInput;
+  price: MasterCommonInputNumber;
+  restaurantId: Scalars['String']['input'];
+};
+
 export type AddRestaurantInput = {
   address: AddressInfoInput;
   availability: Array<AvailabilityInput>;
@@ -364,7 +378,7 @@ export type Item = {
   createdAt: Scalars['DateTimeISO']['output'];
   desc: MasterCommon;
   image: Scalars['String']['output'];
-  modifierGroup?: Maybe<Array<ModifierGroup>>;
+  modifierGroup: Array<ModifierGroupInfo>;
   name: MasterCommon;
   popularItem: Scalars['Boolean']['output'];
   price: MasterCommonNumber;
@@ -452,7 +466,9 @@ export type Modifier = {
   createdAt: Scalars['DateTimeISO']['output'];
   name: MasterCommon;
   price: MasterCommonNumber;
+  restaurantId: Restaurant;
   updatedAt: Scalars['DateTimeISO']['output'];
+  user: User;
 };
 
 export type ModifierGroup = {
@@ -460,11 +476,27 @@ export type ModifierGroup = {
   _id: Scalars['ID']['output'];
   createdAt: Scalars['DateTimeISO']['output'];
   maxSelections: MasterCommonNumber;
-  modifiers?: Maybe<Array<Modifier>>;
+  modifiers: Array<ModifierInfo>;
   name: MasterCommon;
   optional: Scalars['Boolean']['output'];
   pricingType: PriceTypeEnum;
+  restaurantId: Restaurant;
   updatedAt: Scalars['DateTimeISO']['output'];
+  user: User;
+};
+
+export type ModifierGroupInfo = {
+  __typename?: 'ModifierGroupInfo';
+  _id: Scalars['ID']['output'];
+  name: MasterCommon;
+  pricingType: PriceTypeEnum;
+};
+
+export type ModifierInfo = {
+  __typename?: 'ModifierInfo';
+  _id: Scalars['ID']['output'];
+  name: MasterCommon;
+  price: MasterCommonNumber;
 };
 
 export type Mutation = {
@@ -475,6 +507,10 @@ export type Mutation = {
   addItem: Scalars['Boolean']['output'];
   addItemToCategory: Scalars['Boolean']['output'];
   addMenu: Scalars['Boolean']['output'];
+  addModifier: Scalars['Boolean']['output'];
+  addModifierGroup: Scalars['Boolean']['output'];
+  addModifierGroupToItem: Scalars['Boolean']['output'];
+  addModifierToModifierGroup: Scalars['Boolean']['output'];
   addRestaurant: Scalars['Boolean']['output'];
   addTaxRate: Scalars['Boolean']['output'];
   addTaxRateInRestaurant: Scalars['Boolean']['output'];
@@ -497,14 +533,20 @@ export type Mutation = {
   deleteEmailTemplate: Scalars['Boolean']['output'];
   deleteItem: Scalars['Boolean']['output'];
   deleteMenu: Scalars['Boolean']['output'];
+  deleteModifier: Scalars['Boolean']['output'];
   deleteTaxRate: Scalars['Boolean']['output'];
   removeCategoryFromMenu: Scalars['Boolean']['output'];
   removeItemFromCategory: Scalars['Boolean']['output'];
+  removeModifierFromModifierGroup: Scalars['Boolean']['output'];
+  removeModifierGroup: Scalars['Boolean']['output'];
+  removeModifierGroupFromItem: Scalars['Boolean']['output'];
   removeRestaurant: Scalars['Boolean']['output'];
   sendTestEmails: Scalars['Boolean']['output'];
   updateCategory: Scalars['Boolean']['output'];
   updateItem: Scalars['Boolean']['output'];
   updateMenu: Scalars['Boolean']['output'];
+  updateModifier: Scalars['Boolean']['output'];
+  updateModifierGroup: Scalars['Boolean']['output'];
   updateRestaurant: Scalars['Boolean']['output'];
   updateTaxRate: Scalars['Boolean']['output'];
   updateUserOnboarding: Scalars['Boolean']['output'];
@@ -544,6 +586,28 @@ export type MutationAddItemToCategoryArgs = {
 
 export type MutationAddMenuArgs = {
   input: AddMenuInput;
+};
+
+
+export type MutationAddModifierArgs = {
+  input: AddModifierInput;
+};
+
+
+export type MutationAddModifierGroupArgs = {
+  input: AddModifierGroupInput;
+};
+
+
+export type MutationAddModifierGroupToItemArgs = {
+  itemId: Scalars['String']['input'];
+  modifierGroupId: Scalars['String']['input'];
+};
+
+
+export type MutationAddModifierToModifierGroupArgs = {
+  modifierGroupId: Scalars['String']['input'];
+  modifierId: Scalars['String']['input'];
 };
 
 
@@ -656,6 +720,11 @@ export type MutationDeleteMenuArgs = {
 };
 
 
+export type MutationDeleteModifierArgs = {
+  id: Scalars['String']['input'];
+};
+
+
 export type MutationDeleteTaxRateArgs = {
   id: Scalars['String']['input'];
 };
@@ -670,6 +739,23 @@ export type MutationRemoveCategoryFromMenuArgs = {
 export type MutationRemoveItemFromCategoryArgs = {
   categoryId: Scalars['String']['input'];
   itemId: Scalars['String']['input'];
+};
+
+
+export type MutationRemoveModifierFromModifierGroupArgs = {
+  modifierGroupId: Scalars['String']['input'];
+  modifierId: Scalars['String']['input'];
+};
+
+
+export type MutationRemoveModifierGroupArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type MutationRemoveModifierGroupFromItemArgs = {
+  itemId: Scalars['String']['input'];
+  modifierGroupId: Scalars['String']['input'];
 };
 
 
@@ -695,6 +781,16 @@ export type MutationUpdateItemArgs = {
 
 export type MutationUpdateMenuArgs = {
   input: UpdateMenuInput;
+};
+
+
+export type MutationUpdateModifierArgs = {
+  input: UpdateModifierInput;
+};
+
+
+export type MutationUpdateModifierGroupArgs = {
+  input: UpdateModifierGroupInput;
 };
 
 
@@ -760,6 +856,10 @@ export type Query = {
   getItems: Item;
   getMenu: Menu;
   getMenusByType: Array<Menu>;
+  getModifier: Modifier;
+  getModifierGroup: ModifierGroup;
+  getModifierGroups: Array<ModifierGroup>;
+  getModifiers: Array<Modifier>;
   getRestaurantDetails: Restaurant;
   getTaxRate: TaxRate;
   getTaxRates: Array<TaxRate>;
@@ -838,6 +938,26 @@ export type QueryGetMenuArgs = {
 export type QueryGetMenusByTypeArgs = {
   id: Scalars['String']['input'];
   type: MenuTypeEnum;
+};
+
+
+export type QueryGetModifierArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type QueryGetModifierGroupArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type QueryGetModifierGroupsArgs = {
+  restaurantId: Scalars['String']['input'];
+};
+
+
+export type QueryGetModifiersArgs = {
+  restaurantId: Scalars['String']['input'];
 };
 
 
@@ -1017,6 +1137,20 @@ export type UpdateMenuInput = {
   taxes?: InputMaybe<TaxRateInput>;
   type?: InputMaybe<MenuTypeEnum>;
   visibility?: InputMaybe<Array<VisibilityInput>>;
+};
+
+export type UpdateModifierGroupInput = {
+  _id: Scalars['String']['input'];
+  maxSelections: MasterCommonInputNumber;
+  name: MasterCommonInput;
+  optional: Scalars['Boolean']['input'];
+  pricingType: PriceTypeEnum;
+};
+
+export type UpdateModifierInput = {
+  _id: Scalars['String']['input'];
+  name?: InputMaybe<MasterCommonInput>;
+  price?: InputMaybe<MasterCommonInputNumber>;
 };
 
 export type UpdateRestaurantInput = {
@@ -1214,6 +1348,11 @@ export type ChangeUserToActiveQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type ChangeUserToActiveQuery = { __typename?: 'Query', changeUserToActive: boolean };
 
+export type GetUserRestaurantsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetUserRestaurantsQuery = { __typename?: 'Query', getUserRestaurants: Array<{ __typename?: 'Restaurant', _id: string, name: { __typename?: 'MasterCommon', value: string } }> };
+
 
 export const LogoutDocument = gql`
     query Logout {
@@ -1349,6 +1488,16 @@ export const ChangeUserToActiveDocument = gql`
   changeUserToActive
 }
     `;
+export const GetUserRestaurantsDocument = gql`
+    query getUserRestaurants {
+  getUserRestaurants {
+    name {
+      value
+    }
+    _id
+  }
+}
+    `;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string, variables?: any) => Promise<T>;
 
@@ -1395,6 +1544,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     ChangeUserToActive(variables?: ChangeUserToActiveQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<ChangeUserToActiveQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<ChangeUserToActiveQuery>(ChangeUserToActiveDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'ChangeUserToActive', 'query', variables);
+    },
+    getUserRestaurants(variables?: GetUserRestaurantsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetUserRestaurantsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetUserRestaurantsQuery>(GetUserRestaurantsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getUserRestaurants', 'query', variables);
     }
   };
 }

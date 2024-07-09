@@ -1,6 +1,6 @@
 import MainLayout from "@/components/layouts/MainLayout";
 import React from "react";
-import oneStore from "@/store/test";
+import oneStore from "@/store/restaurant";
 import MenuManagement from "@/components/modules/menu/menuManagement";
 import BulkManagement from "@/components/modules/menu/bulkManagement";
 import Catering from "../catering";
@@ -19,8 +19,6 @@ type NextPageWithLayout = React.FC & {
 };
 
 const Menu: NextPageWithLayout = () => {
-  const { userId } = oneStore();
-
   return <Tabs items={tabItems} />;
 };
 

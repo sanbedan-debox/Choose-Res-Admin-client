@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   FaUser,
   FaQuestionCircle,
@@ -11,10 +11,11 @@ import useGlobalStore from "@/store/global";
 import useAuthStore from "@/store/auth";
 import { sdk } from "@/utils/graphqlClient";
 import { useRouter } from "next/router";
+import useRestaurantsStore from "@/store/restaurant";
 
 const Navbar: React.FC = () => {
   const { firstName } = useAuthStore();
-
+  const { restaurants, selectedRestaurant } = useRestaurantsStore();
   const { isSidebarExpanded, setisSidebarExpanded } = useGlobalStore();
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isRestaurantDropdownOpen, setIsRestaurantDropdownOpen] =
@@ -45,12 +46,6 @@ const Navbar: React.FC = () => {
     setIsRestaurantDropdownOpen(!isRestaurantDropdownOpen);
   };
 
-  // Replace this with your actual logic to determine if restaurants exist
-  const restaurants: any[] = [
-    // { name: "Rasoi Indian Cuisine", id: 1 },
-    // { name: "Spice Hub", id: 2 },
-  ];
-
   return (
     <nav
       className={`text-black p-4 bg-white fixed top-0 z-10 transition-all duration-300 ${
@@ -74,6 +69,7 @@ const Navbar: React.FC = () => {
               <FaExpandArrowsAlt className="h-4 w-4 mr-1" />
             )}
           </button>
+
           {restaurants.length > 0 ? (
             <div className="relative">
               <button
@@ -81,18 +77,27 @@ const Navbar: React.FC = () => {
                 className="flex items-center space-x-2 hover:bg-primary hover:text-white px-2 py-2 rounded group"
               >
                 <FaMapMarkerAlt className="h-4 w-4 text-black group-hover:text-white" />
-                <span className="text-sm">Restaurants</span>
+                <span className="text-sm">{selectedRestaurant}</span>
               </button>
               {isRestaurantDropdownOpen && (
                 <div className="bg-white absolute mt-2 w-64 rounded-md shadow-lg py-2 text-black z-50">
-                  {restaurants.map((restaurant) => (
-                    <div
-                      key={restaurant.id}
+                  {restaurants.length > 0 ? (
+                    restaurants.map((restaurant) => (
+                      <div
+                        key={restaurant?.id}
+                        className="block px-4 py-2 text-sm hover:bg-primary hover:text-white"
+                      >
+                        {restaurant?.name?.value}
+                      </div>
+                    ))
+                  ) : (
+                    <Link
                       className="block px-4 py-2 text-sm hover:bg-primary hover:text-white"
+                      href="/add-restaurant"
                     >
-                      {restaurant.name}
-                    </div>
-                  ))}
+                      <button>Add Restaurant</button>
+                    </Link>
+                  )}
                 </div>
               )}
             </div>

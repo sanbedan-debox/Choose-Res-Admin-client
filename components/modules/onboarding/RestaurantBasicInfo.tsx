@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import useGlobalStore from "@/store/global";
 import { useForm } from "react-hook-form";
 import Select from "react-select";
-import { locationTypeOptions, timeZoneOptions } from "./interface/interface";
+import { BevarageCategory, FoodType, MeatType } from "./interface/interface";
 
 const RestaurantLocation = () => {
   const { setToastData } = useGlobalStore();
@@ -21,58 +21,6 @@ const RestaurantLocation = () => {
     router.push("/onboarding/integrations");
   };
 
-  const stateOptions = [
-    { value: "AL", label: "Alabama" },
-    { value: "AK", label: "Alaska" },
-    { value: "AZ", label: "Arizona" },
-    { value: "AR", label: "Arkansas" },
-    { value: "CA", label: "California" },
-    { value: "CO", label: "Colorado" },
-    { value: "CT", label: "Connecticut" },
-    { value: "DE", label: "Delaware" },
-    { value: "FL", label: "Florida" },
-    { value: "GA", label: "Georgia" },
-    { value: "HI", label: "Hawaii" },
-    { value: "ID", label: "Idaho" },
-    { value: "IL", label: "Illinois" },
-    { value: "IN", label: "Indiana" },
-    { value: "IA", label: "Iowa" },
-    { value: "KS", label: "Kansas" },
-    { value: "KY", label: "Kentucky" },
-    { value: "LA", label: "Louisiana" },
-    { value: "ME", label: "Maine" },
-    { value: "MD", label: "Maryland" },
-    { value: "MA", label: "Massachusetts" },
-    { value: "MI", label: "Michigan" },
-    { value: "MN", label: "Minnesota" },
-    { value: "MS", label: "Mississippi" },
-    { value: "MO", label: "Missouri" },
-    { value: "MT", label: "Montana" },
-    { value: "NE", label: "Nebraska" },
-    { value: "NV", label: "Nevada" },
-    { value: "NH", label: "New Hampshire" },
-    { value: "NJ", label: "New Jersey" },
-    { value: "NM", label: "New Mexico" },
-    { value: "NY", label: "New York" },
-    { value: "NC", label: "North Carolina" },
-    { value: "ND", label: "North Dakota" },
-    { value: "OH", label: "Ohio" },
-    { value: "OK", label: "Oklahoma" },
-    { value: "OR", label: "Oregon" },
-    { value: "PA", label: "Pennsylvania" },
-    { value: "RI", label: "Rhode Island" },
-    { value: "SC", label: "South Carolina" },
-    { value: "SD", label: "South Dakota" },
-    { value: "TN", label: "Tennessee" },
-    { value: "TX", label: "Texas" },
-    { value: "UT", label: "Utah" },
-    { value: "VT", label: "Vermont" },
-    { value: "VA", label: "Virginia" },
-    { value: "WA", label: "Washington" },
-    { value: "WV", label: "West Virginia" },
-    { value: "WI", label: "Wisconsin" },
-    { value: "WY", label: "Wyoming" },
-  ];
   const mondayChecked = watch("mondayRegularHours");
   const tuesdayChecked = watch("tuesdayRegularHours");
   const wednesdayChecked = watch("wednesdayRegularHours");
@@ -98,11 +46,12 @@ const RestaurantLocation = () => {
     >
       <motion.div
         variants={STAGGER_CHILD_VARIANTS}
-        className="flex flex-col items-center space-y-5 text-center"
+        className="flex flex-col items-center text-center mb-2"
       >
         <h1 className="font-display max-w-md text-2xl font-semibold transition-colors">
-          Restaurant Location Details
+          Restaurant Basic Information
         </h1>
+        <p className="text-sm text-gray-700">All these fields are optionals</p>
       </motion.div>
 
       <form
@@ -111,152 +60,80 @@ const RestaurantLocation = () => {
       >
         <div className="col-span-2">
           <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-            Restaurant Name
-          </label>
-          <input
-            {...register("resname", {
-              required: "Business description is required",
-            })}
-            className="input input-primary"
-            placeholder="Restaurant Name"
-            type="text"
-          />
-          {errors.resname && (
-            <p className="text-red-500 text-sm text-start">
-              {errors.resname.message}
-            </p>
-          )}
-        </div>
-
-        <div className="col-span-2">
-          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-            Address Line 1
-          </label>
-          <input
-            type="text"
-            {...register("addressLine1", {
-              required: "Address Line 1 is required",
-            })}
-            className="input input-primary"
-            placeholder="Address Line 1"
-          />
-          {errors.addressLine1 && (
-            <p className="text-red-500 text-sm text-start">
-              {errors.addressLine1.message}
-            </p>
-          )}
-        </div>
-        <div className="col-span-2">
-          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-            Address Line 2
-          </label>
-          <input
-            type="text"
-            {...register("addressLine2", {
-              required: "Address Line 2 is required",
-            })}
-            className="input input-primary"
-            placeholder="Address Line 2"
-          />
-          {errors.addressLine1 && (
-            <p className="text-red-500 text-sm text-start">
-              {errors.addressLine2.message}
-            </p>
-          )}
-        </div>
-        <div className="flex flex-wrap gap-4">
-          <div className="col-span-3 flex-1">
-            <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-              City
-            </label>
-            <input
-              type="text"
-              {...register("city", {
-                required: "City is required",
-              })}
-              className="input input-primary"
-              placeholder="City"
-            />
-            {errors.city && (
-              <p className="text-red-500 text-sm text-start">
-                {errors.city.message}
-              </p>
-            )}
-          </div>
-
-          <div className="col-span-2 flex-1">
-            <label
-              htmlFor="state"
-              className="block mb-2 text-sm font-medium text-left text-gray-700"
-            >
-              State
-            </label>
-            <Select
-              {...register("state", {
-                required: "State is required",
-              })}
-              id="state"
-              options={stateOptions}
-              className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
-              classNamePrefix="react-select"
-              placeholder="Select State"
-            />
-            {errors.state && (
-              <p className="text-red-500 text-sm text-start">
-                {errors.state.message}
-              </p>
-            )}
-          </div>
-        </div>
-
-        <div className="col-span-2">
-          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-            ZipCode
-          </label>
-          <input
-            type="text"
-            {...register("postcode", {
-              required: "Postcode is required",
-            })}
-            className="input input-primary"
-            placeholder="Zipcode"
-          />
-          {errors.postcode && (
-            <p className="text-red-500 text-sm text-start">
-              {errors.postcode.message}
-            </p>
-          )}
-        </div>
-
-        <div className="col-span-2">
-          <label
-            htmlFor="location"
-            className="block mb-2 text-sm font-medium text-left text-gray-700"
-          >
-            Select Location
+            Bevarage Category
           </label>
           <Select
-            {...register("locationType", {
-              required: "Location type is required",
-            })}
-            id="location"
-            options={locationTypeOptions}
+            {...register("bevarage", {})}
+            id="bevarage"
+            options={BevarageCategory}
             className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
             classNamePrefix="react-select"
-            placeholder="Select Location "
+            placeholder="Select Bevarage Category(Optional)"
           />
-          {errors.locationType && (
-            <p className="text-red-500 text-sm text-start">
-              {errors.locationType.message}
-            </p>
-          )}
+        </div>
+        <div className="col-span-2">
+          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
+            Food Type
+          </label>
+          <Select
+            {...register("food", {})}
+            id="food"
+            options={FoodType}
+            className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+            classNamePrefix="react-select"
+            placeholder="Select Type(Optional)"
+          />
+        </div>
+        <div className="col-span-2">
+          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
+            Meat Type
+          </label>
+          <Select
+            {...register("meat", {})}
+            id="food"
+            options={MeatType}
+            className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+            classNamePrefix="react-select"
+            placeholder="Select Type(Optional)"
+          />
+        </div>
+        <div className="col-span-2">
+          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
+            Instagram Link
+          </label>
+          <input
+            {...register("sociallink", {})}
+            className="input input-primary"
+            placeholder="Instagram Link(Optional)"
+            type="text"
+          />
+        </div>
+        <div className="col-span-2">
+          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
+            Facebook Link
+          </label>
+          <input
+            {...register("sociallink", {})}
+            className="input input-primary"
+            placeholder="Facebook Link(Optional)"
+            type="text"
+          />
+        </div>
+        <div className="col-span-2">
+          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
+            Twitter Link
+          </label>
+          <input
+            {...register("sociallink", {})}
+            className="input input-primary"
+            placeholder="Twitter Link(Optional)"
+            type="text"
+          />
         </div>
 
         <div className="col-span-2">
           <button
-            onClick={() =>
-              router.push("/onboarding-restaurant/restaurant-availibility")
-            }
+            onClick={() => router.push("/dashboard")}
             type="submit"
             className="inline-flex btn btn-primary items-center justify-center w-full mt-8"
           >

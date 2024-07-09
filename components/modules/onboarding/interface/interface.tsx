@@ -2,6 +2,30 @@ export const locationTypeOptions = [
   { value: "physical", label: "Physical location" },
   { value: "virtual", label: "Virtual location" },
 ];
+export const RestaurantType = [
+  { value: "independent", label: "Independent" },
+  { value: "partofchain", label: "Part of Chain" },
+];
+export const RestaurantCategory = [
+  { value: "premiumdinein", label: "Premium Dine-In" },
+  { value: "dinein", label: "Dine-in" },
+  { value: "qsr", label: "QSR" },
+  { value: "cloudKitchen", label: "Only Cloud Kitchen/Takeout" },
+];
+export const BevarageCategory = [
+  { value: "alcoholic", label: "Alcohol + NonAlcohol" },
+  { value: "nonalcoholic", label: "Non Alcoholic" },
+];
+export const FoodType = [
+  { value: "veg", label: "Vegetarian" },
+  { value: "nonveg", label: "Non-Vegetarian" },
+  { value: "vegan", label: "Vegan" },
+  { value: "Veg, Non-Veg and Vegan", label: "Veg, Non-Veg and Vegan" },
+];
+export const MeatType = [
+  { value: "halal", label: "Halal" },
+  { value: "nonhalal", label: "Non-Halal" },
+];
 
 export const timeZoneOptions = [
   { value: "Pacific/Midway", label: "(UTC-11:00) Midway Island" },
