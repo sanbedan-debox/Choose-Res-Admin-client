@@ -3,6 +3,8 @@ import MenuLayout from "@/components/layouts/MenuLayout";
 import Categories from "@/components/modules/menu/category";
 import Items from "@/components/modules/menu/items";
 import Menu from "@/components/modules/menu/menu";
+import ModifiersGroup from "@/components/modules/menu/modifierGroups";
+import Modifiers from "@/components/modules/menu/modifiers";
 
 import { GetServerSideProps } from "next";
 
@@ -26,10 +28,10 @@ const MenuPage = ({ repo: { pagePath } }: MenuPageProps) => {
       childComponent = <Items />;
       break;
     case "modifier-group":
-      childComponent = <Items />;
+      childComponent = <ModifiersGroup />;
       break;
     case "modifier":
-      childComponent = <Items />;
+      childComponent = <Modifiers />;
       break;
 
     default:

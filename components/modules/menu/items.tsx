@@ -1,26 +1,72 @@
 import CBTable from "@/components/common/table/table";
-import React from "react";
+import useRestaurantsStore from "@/store/restaurant";
+import { sdk } from "@/utils/graphqlClient";
+import React, { useEffect, useState } from "react";
+import { FaTrash, FaEdit, FaShieldAlt } from "react-icons/fa";
 
-const Items: React.FC = () => {
-  const items = [
-    { name: "Cheeseburger", category: "Main Courses", price: "$8.99" },
-    { name: "Margherita Pizza", category: "Main Courses", price: "$10.99" },
-    { name: "Caesar Salad", category: "Appetizers", price: "$5.99" },
-    { name: "Chocolate Cake", category: "Desserts", price: "$4.99" },
-    { name: "Lemonade", category: "Beverages", price: "$2.99" },
+const Categories: React.FC = () => {
+  const [items, setItems] = useState();
+  const { selectedRestaurantId } = useRestaurantsStore();
+  useEffect(() => {
+    const fetchRestaurantUsers = async () => {
+      // setLoading(true);
+      try {
+        const response = await sdk.getItems({
+          id: selectedRestaurantId,
+        });
+        if (response && response.getItems) {
+          // const formattedRestaurant = response.getAllMenus.map((res) => ({
+          //   ...res,
+          // }));
+          // setMenu(formattedRestaurant);
+          setItems(response.getItems);
+        }
+      } catch (error) {
+        console.error("Failed to fetch restaurant users:", error);
+      } finally {
+        // setLoading(false);
+      }
+    };
+
+    fetchRestaurantUsers();
+  }, []);
+
+  const headings = [{ title: "Name", dataKey: "name" }];
+
+  const renderActions = (rowData: { id: number }) => (
+    <div className="flex space-x-3">
+      <FaTrash
+        className="text-red-500 cursor-pointer"
+        onClick={() => console.log("Delete", rowData.id)}
+      />
+      <FaEdit
+        className="text-blue-500 cursor-pointer"
+        onClick={() => console.log("Edit", rowData.id)}
+      />
+      <FaShieldAlt
+        className="text-green-500 cursor-pointer"
+        onClick={() => console.log("Change Password", rowData.id)}
+      />
+    </div>
+  );
+  const mainActions = [
+    {
+      label: "Add Item",
+      onClick: () => console.log(true),
+    },
   ];
-
-  const headings = [
-    { title: "Item", dataKey: "name" },
-    { title: "Category", dataKey: "category" },
-    { title: "Price", dataKey: "price" },
-  ];
-
   return (
-    <div className=" p-4">
-      <CBTable headings={headings} data={items} />
+    <div className="py-2">
+      <CBTable
+        headings={headings}
+        data={items}
+        // data={menuItems}
+        showAvailableSwitch
+        actions={renderActions}
+        mainActions={mainActions}
+      />
     </div>
   );
 };
 
-export default Items;
+export default Categories;

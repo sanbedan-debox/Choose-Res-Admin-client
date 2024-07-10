@@ -1,14 +1,32 @@
 import CBTable from "@/components/common/table/table";
-import React from "react";
+import { sdk } from "@/utils/graphqlClient";
+import React, { useEffect, useState } from "react";
 import { FaTrash, FaEdit, FaShieldAlt } from "react-icons/fa";
 
 const Menu: React.FC = () => {
-  const menuItems = [
-    { name: "Burger", price: "$5.99", id: 1134, active: true },
-    { name: "Pizza", price: "$8.99", id: 131, active: false },
-    { name: "Pasta", price: "$7.99", id: 1123, active: false },
-    { name: "Salad", price: "$4.99", id: 13123, active: true },
-  ];
+  const [menu, setMenu] = useState();
+
+  useEffect(() => {
+    const fetchRestaurantUsers = async () => {
+      // setLoading(true);
+      try {
+        const response = await sdk.getAllMenus();
+        if (response && response.getAllMenus) {
+          // const formattedRestaurant = response.getAllMenus.map((res) => ({
+          //   ...res,
+          // }));
+          // setMenu(formattedRestaurant);
+          setMenu(response.getAllMenus);
+        }
+      } catch (error) {
+        console.error("Failed to fetch restaurant users:", error);
+      } finally {
+        // setLoading(false);
+      }
+    };
+
+    fetchRestaurantUsers();
+  }, []);
 
   const headings = [{ title: "Name", dataKey: "name" }];
 
@@ -38,7 +56,8 @@ const Menu: React.FC = () => {
     <div className="py-2">
       <CBTable
         headings={headings}
-        data={menuItems}
+        data={menu}
+        // data={menuItems}
         showAvailableSwitch
         actions={renderActions}
         mainActions={mainActions}

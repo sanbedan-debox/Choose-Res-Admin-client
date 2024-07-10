@@ -3,7 +3,7 @@ export const modules = [
     name: "Dashboard",
     roles: ["admin", "master", "normal"],
     route: "/dashboard",
-    icon: "dashboard", // Updated to match the icon name in the getIconComponent function
+    icon: "dashboard",
   },
   {
     name: "Menu Management",

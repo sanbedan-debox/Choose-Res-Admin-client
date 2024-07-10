@@ -45,14 +45,14 @@ const CBTable: React.FC<CBTableProps> = ({
         )
       )
     : [];
-
+  const dataLength = data ? data.length : 0;
   return (
     <div className="overflow-x-auto rounded-lg  bg-white ">
       <div
         className={`flex mb-4 min-h-14 border-b justify-between items-center
         `}
       >
-        {data.length > 0 && (
+        {dataLength > 0 && (
           <div className="flex">
             <input
               type="text"
