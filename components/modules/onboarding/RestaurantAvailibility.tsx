@@ -18,6 +18,7 @@ import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import { sdk } from "@/utils/graphqlClient";
 import useRestaurantLocationStore from "@/store/restaurantOnboarding";
+import { extractErrorMessage } from "@/utils/utilFUncs";
 
 type Day =
   | "Monday"
@@ -325,9 +326,10 @@ const RestaurantAvailability = () => {
       });
       router.push("/onboarding-restaurant/restaurant-additional-info");
     } catch (error: any) {
+      const errorMessage = extractErrorMessage(error);
       setToastData({
-        message: `Failed to update restaurant details: ${error.message}`,
         type: "error",
+        message: errorMessage,
       });
     }
   };

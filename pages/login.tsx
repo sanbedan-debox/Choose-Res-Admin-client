@@ -12,6 +12,7 @@ import { parseCookies } from "nookies";
 import { UserStatus } from "@/generated/graphql";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
+import { extractErrorMessage } from "@/utils/utilFUncs";
 
 interface IFormInput {
   email: string;
@@ -51,10 +52,13 @@ const Login: FC = () => {
   //       setOtpKey(response.generateOtpForLogin);
   //       setToastData({ message: "OTP resent successfully", type: "success" });
   //     }
-  //   } catch (error) {
-  //     console.error("Failed to resend OTP:", error);
-  //     setToastData({ message: "Failed to resend OTP", type: "error" });
-  //   }
+  //   }  catch (error: any) {
+  //   const errorMessage = extractErrorMessage(error);
+  //   setToastData({
+  //     type: "error",
+  //     message: errorMessage,
+  //   });
+  // }
   // };
 
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
@@ -70,11 +74,13 @@ const Login: FC = () => {
         setToastData({ message: "OTP sent successfully", type: "success" });
         setBtnLoading(false);
       }
-    } catch (error) {
+    } catch (error: any) {
       setBtnLoading(false);
-
-      console.error("Failed to generate OTP:", error);
-      setToastData({ message: "Failed to generate OTP", type: "error" });
+      const errorMessage = extractErrorMessage(error);
+      setToastData({
+        type: "error",
+        message: errorMessage,
+      });
     }
   };
 
@@ -99,11 +105,13 @@ const Login: FC = () => {
         });
         router.replace("/dashboard");
       }
-    } catch (error) {
+    } catch (error: any) {
       setBtnLoading(false);
-
-      console.error("OTP verification failed:", error);
-      setOtpError("Invalid OTP");
+      const errorMessage = extractErrorMessage(error);
+      setToastData({
+        type: "error",
+        message: errorMessage,
+      });
     }
   };
 

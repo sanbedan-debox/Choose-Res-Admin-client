@@ -140,10 +140,11 @@ const RestaurantAdditionalInformation = () => {
           router.replace("/dashboard");
         }
       }
-    } catch (error) {
+    } catch (error: any) {
+      const errorMessage = extractErrorMessage(error);
       setToastData({
-        message: "Failed to update user verification details.",
         type: "error",
+        message: errorMessage,
       });
     }
   };

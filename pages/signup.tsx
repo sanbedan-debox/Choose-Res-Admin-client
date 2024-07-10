@@ -13,6 +13,7 @@ import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
+import { extractErrorMessage } from "@/utils/utilFUncs";
 
 enum CommunicationType {
   Email = "EMAIL",
@@ -76,9 +77,12 @@ const Signup: FC = () => {
         setShowModal(true);
         startTimer();
       }
-    } catch (error) {
-      console.error("Signup failed:", error);
-      setToastData({ message: "Signup Failed", type: "error" });
+    } catch (error: any) {
+      const errorMessage = extractErrorMessage(error);
+      setToastData({
+        type: "error",
+        message: errorMessage,
+      });
     }
   };
 

@@ -8,6 +8,7 @@ import useAuthStore from "@/store/auth";
 import { sdk } from "@/utils/graphqlClient";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
+import { extractErrorMessage } from "@/utils/utilFUncs";
 
 interface IFormInput {
   ein: string;
@@ -48,11 +49,11 @@ const UserVerification = () => {
         });
         router.push("/onboarding/user/user-info");
         return;
-      } catch (error) {
-        console.error("Failed to call API to fill details:", error);
+      } catch (error: any) {
+        const errorMessage = extractErrorMessage(error);
         setToastData({
-          message: "Failed to check business details.",
           type: "error",
+          message: errorMessage,
         });
         return;
       }
@@ -66,11 +67,11 @@ const UserVerification = () => {
         });
         router.push("/onboarding/user/user-location");
         return;
-      } catch (error) {
-        console.error("Failed to call API to fill details:", error);
+      } catch (error: any) {
+        const errorMessage = extractErrorMessage(error);
         setToastData({
-          message: "Failed to check location details.",
           type: "error",
+          message: errorMessage,
         });
         return;
       }
@@ -93,11 +94,13 @@ const UserVerification = () => {
           router.replace("/account/verification-pending");
         }
       }
-    } catch (error) {
+    } catch (error: any) {
+      const errorMessage = extractErrorMessage(error);
       setToastData({
-        message: "Failed to update user verification details.",
         type: "error",
+        message: errorMessage,
       });
+      return;
     }
   };
 

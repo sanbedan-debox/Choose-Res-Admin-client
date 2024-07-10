@@ -16,6 +16,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
+import { extractErrorMessage } from "@/utils/utilFUncs";
 interface IFormInput {
   businessType: string;
   businessName: string;
@@ -150,9 +151,10 @@ const UserInfo = () => {
       });
       router.push("/onboarding/user/user-location");
     } catch (error: any) {
+      const errorMessage = extractErrorMessage(error);
       setToastData({
-        message: `{Failed to update business details.:${error.message}`,
         type: "error",
+        message: errorMessage,
       });
     }
   };

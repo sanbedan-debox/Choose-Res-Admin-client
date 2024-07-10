@@ -8,7 +8,10 @@ import Select from "react-select";
 import { sdk } from "@/utils/graphqlClient";
 import { RestaurantType, RestaurantCategory } from "@/generated/graphql";
 import useRestaurantLocationStore from "@/store/restaurantOnboarding";
-import { formatWebsiteUrlClickable } from "@/store/utilFUncs";
+import {
+  extractErrorMessage,
+  formatWebsiteUrlClickable,
+} from "@/utils/utilFUncs";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 
@@ -160,9 +163,10 @@ const RestaurantBasicInformation = () => {
       });
       router.push("/onboarding-restaurant/restaurant-availibility");
     } catch (error: any) {
+      const errorMessage = extractErrorMessage(error);
       setToastData({
-        message: `Failed to update restaurant details: ${error.message}`,
         type: "error",
+        message: errorMessage,
       });
     }
   };

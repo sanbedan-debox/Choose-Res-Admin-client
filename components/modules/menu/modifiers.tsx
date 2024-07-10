@@ -1,12 +1,16 @@
 import CBTable from "@/components/common/table/table";
+import useGlobalStore from "@/store/global";
 import useRestaurantsStore from "@/store/restaurant";
 import { sdk } from "@/utils/graphqlClient";
+import { extractErrorMessage } from "@/utils/utilFUncs";
 import React, { useEffect, useState } from "react";
 import { FaTrash, FaEdit, FaShieldAlt } from "react-icons/fa";
 
 const Modifiers: React.FC = () => {
   const [modifier, setModifier] = useState();
   const { selectedRestaurantId } = useRestaurantsStore();
+  const { setToastData } = useGlobalStore();
+
   useEffect(() => {
     const fetchRestaurantUsers = async () => {
       // setLoading(true);
@@ -21,8 +25,12 @@ const Modifiers: React.FC = () => {
           // setMenu(formattedRestaurant);
           setModifier(response.getModifiers);
         }
-      } catch (error) {
-        console.error("Failed to fetch restaurant users:", error);
+      } catch (error: any) {
+        const errorMessage = extractErrorMessage(error);
+        setToastData({
+          type: "error",
+          message: errorMessage,
+        });
       } finally {
         // setLoading(false);
       }

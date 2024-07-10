@@ -13,6 +13,7 @@ import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import AsyncSelect from "react-select/async";
 import debounce from "lodash.debounce";
+import { extractErrorMessage } from "@/utils/utilFUncs";
 
 interface IFormInput {
   addressLine1: string;
@@ -132,10 +133,11 @@ const UserLocation = () => {
         type: "success",
       });
       router.push("/onboarding/user/user-verification");
-    } catch (error) {
+    } catch (error: any) {
+      const errorMessage = extractErrorMessage(error);
       setToastData({
-        message: "Failed to update location details.",
         type: "error",
+        message: errorMessage,
       });
     }
   };

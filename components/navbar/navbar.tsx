@@ -14,11 +14,13 @@ import { useRouter } from "next/router";
 import useRestaurantsStore from "@/store/restaurant";
 import CButton from "../common/button/button";
 import { ButtonType } from "../common/button/interface";
+import { extractErrorMessage } from "@/utils/utilFUncs";
 
 const Navbar: React.FC = () => {
   const { firstName } = useAuthStore();
   const { restaurants, selectedRestaurant } = useRestaurantsStore();
-  const { isSidebarExpanded, setisSidebarExpanded } = useGlobalStore();
+  const { isSidebarExpanded, setisSidebarExpanded, setToastData } =
+    useGlobalStore();
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isRestaurantDropdownOpen, setIsRestaurantDropdownOpen] =
     useState(false);
@@ -39,8 +41,12 @@ const Navbar: React.FC = () => {
       if (response && response.logout) {
         router.replace("/login");
       }
-    } catch (error) {
-      console.error("Failed to logout:", error);
+    } catch (error: any) {
+      const errorMessage = extractErrorMessage(error);
+      setToastData({
+        type: "error",
+        message: errorMessage,
+      });
     }
   };
 
