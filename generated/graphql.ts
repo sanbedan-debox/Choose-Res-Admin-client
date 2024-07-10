@@ -1618,6 +1618,13 @@ export type GetModifierGroupsQueryVariables = Exact<{
 
 export type GetModifierGroupsQuery = { __typename?: 'Query', getModifierGroups: Array<{ __typename?: 'ModifierGroup', _id: string, name: { __typename?: 'MasterCommon', value: string } }> };
 
+export type GetRestaurantOnboardingDataQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type GetRestaurantOnboardingDataQuery = { __typename?: 'Query', getRestaurantOnboardingData: { __typename?: 'Restaurant', brandingLogo: string, website?: string | null, timezone: string, category: Array<RestaurantCategory>, beverageCategory: Array<BeverageCategory>, foodType: Array<FoodType>, meatType: MeatType, type: RestaurantType, name: { __typename?: 'MasterCommon', value: string }, address: { __typename?: 'AddressInfo', addressLine1: { __typename?: 'MasterCommon', value: string }, addressLine2?: { __typename?: 'MasterCommon', value: string } | null, state: { __typename?: 'MasterCommon', value: string }, city: { __typename?: 'MasterCommon', value: string }, postcode: { __typename?: 'MasterCommon', value: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string, placeId: string } | null }, socialInfo?: { __typename?: 'SocialInfo', facebook?: string | null, instagram?: string | null, twitter?: string | null } | null, dineInCapacity?: { __typename?: 'MasterCommonNumber', value: number } | null } };
+
 
 export const LogoutDocument = gql`
     query Logout {
@@ -1870,6 +1877,55 @@ export const GetModifierGroupsDocument = gql`
   }
 }
     `;
+export const GetRestaurantOnboardingDataDocument = gql`
+    query getRestaurantOnboardingData($id: String!) {
+  getRestaurantOnboardingData(id: $id) {
+    name {
+      value
+    }
+    address {
+      addressLine1 {
+        value
+      }
+      addressLine2 {
+        value
+      }
+      state {
+        value
+      }
+      city {
+        value
+      }
+      postcode {
+        value
+      }
+      coordinate {
+        coordinates
+      }
+      place {
+        displayName
+        placeId
+      }
+    }
+    brandingLogo
+    socialInfo {
+      facebook
+      instagram
+      twitter
+    }
+    website
+    timezone
+    category
+    beverageCategory
+    foodType
+    meatType
+    type
+    dineInCapacity {
+      value
+    }
+  }
+}
+    `;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string, variables?: any) => Promise<T>;
 
@@ -1946,6 +2002,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     getModifierGroups(variables: GetModifierGroupsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetModifierGroupsQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetModifierGroupsQuery>(GetModifierGroupsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getModifierGroups', 'query', variables);
+    },
+    getRestaurantOnboardingData(variables: GetRestaurantOnboardingDataQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetRestaurantOnboardingDataQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetRestaurantOnboardingDataQuery>(GetRestaurantOnboardingDataDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getRestaurantOnboardingData', 'query', variables);
     }
   };
 }

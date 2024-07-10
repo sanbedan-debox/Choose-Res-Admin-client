@@ -7,13 +7,13 @@ import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
 import { sdk } from "@/utils/graphqlClient";
 import { RestaurantType, RestaurantCategory } from "@/generated/graphql";
-import useRestaurantLocationStore from "@/store/restaurantOnboarding";
 import {
   extractErrorMessage,
   formatWebsiteUrlClickable,
 } from "@/utils/utilFUncs";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
+import RestaurantOnboardingStore from "@/store/restaurantOnboarding";
 
 interface IFormInput {
   restaurantName: string;
@@ -80,7 +80,7 @@ const RestaurantBasicInformation = () => {
     dineInCapacity,
     setDineInCapacity,
     setId,
-  } = useRestaurantLocationStore();
+  } = RestaurantOnboardingStore();
 
   useEffect(() => {
     setValue("restaurantName", restaurantName);

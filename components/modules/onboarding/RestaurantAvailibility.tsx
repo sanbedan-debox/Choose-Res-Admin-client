@@ -17,8 +17,8 @@ import { useEffect, useState } from "react";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import { sdk } from "@/utils/graphqlClient";
-import useRestaurantLocationStore from "@/store/restaurantOnboarding";
 import { extractErrorMessage } from "@/utils/utilFUncs";
+import RestaurantOnboardingStore from "@/store/restaurantOnboarding";
 
 type Day =
   | "Monday"
@@ -135,7 +135,7 @@ const loadOptions = (
 };
 
 const RestaurantAvailability = () => {
-  const { id } = useRestaurantLocationStore();
+  const { id } = RestaurantOnboardingStore();
   const { setToastData } = useGlobalStore();
   const router = useRouter();
   const {

@@ -1,7 +1,7 @@
 import { BeverageCategory, FoodType, MeatType } from "@/generated/graphql";
 import { create } from "zustand";
 
-type RestaurantLocationStates = {
+type RestaurantOnboardingStates = {
   id: string;
   setId: (name: string) => void;
   restaurantName: string;
@@ -28,7 +28,7 @@ type RestaurantLocationStates = {
   setMeatType: (type: MeatType | null) => void;
 };
 
-const useRestaurantLocationStore = create<RestaurantLocationStates>((set) => ({
+const RestaurantOnboardingStore = create<RestaurantOnboardingStates>((set) => ({
   restaurantName: "",
   setRestaurantName: (name) => set({ restaurantName: name }),
   id: "",
@@ -55,4 +55,4 @@ const useRestaurantLocationStore = create<RestaurantLocationStates>((set) => ({
   setMeatType: (type) => set({ meatType: type }),
 }));
 
-export default useRestaurantLocationStore;
+export default RestaurantOnboardingStore;

@@ -283,3 +283,51 @@ query getModifierGroups($id: String!) {
     }
   }
 }
+
+query getRestaurantOnboardingData($id: String!) {
+  getRestaurantOnboardingData(id: $id) {
+    name {
+      value
+    }
+    address {
+      addressLine1 {
+        value
+      }
+      addressLine2 {
+        value
+      }
+      state {
+        value
+      }
+      city {
+        value
+      }
+      postcode {
+        value
+      }
+      coordinate {
+        coordinates
+      }
+      place {
+        displayName
+        placeId
+      }
+    }
+    brandingLogo
+    socialInfo {
+      facebook
+      instagram
+      twitter
+    }
+    website
+    timezone
+    category
+    beverageCategory
+    foodType
+    meatType
+    type
+    dineInCapacity {
+      value
+    }
+  }
+}

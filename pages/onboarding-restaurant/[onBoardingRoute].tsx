@@ -10,51 +10,59 @@ import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
 import { useEffect } from "react";
 import RestaurantAdditionalInformation from "@/components/modules/onboarding/RestaurantAdditionalInfo";
+import RestaurantOnboardingStore from "@/store/restaurantOnboarding";
+import {
+  BeverageCategory,
+  FoodType,
+  MeatType,
+  RestaurantCategory,
+} from "@/generated/graphql";
 
 type HomePageProps = {
   repo: {
     pagePath: string;
-    address: any;
-    businessName: any;
-    businessType: any;
-    ein: any;
-    dob: any;
-    employeeSize: any;
-    establishedAt: any;
-    estimatedRevenue: any;
-    ssn: any;
+    beverageCategory: [BeverageCategory];
+    brandingLogo: string;
+    category: [RestaurantCategory];
+    foodType: [FoodType];
+    meatType: MeatType;
+    name: any;
+    timezone: any;
+    type: any;
+    dineInCapacity: any;
+    socialInfo: any;
+    website: any;
   };
 };
 const OnboardingPage = ({ repo }: HomePageProps) => {
   const {
-    setAddressLine1,
-    setAddressLine2,
-    setCity,
-    setPostcode,
-    setState,
-    setbusinessName,
-    setbusinessType,
-    setdob,
-    setein,
-    setemployeeSize,
-    setestablishedAt,
-    setestimatedRevenue,
-  } = useOnboardingStore();
-  useEffect(() => {
-    setbusinessName(repo.businessName);
-    setbusinessType(repo.businessType);
-    setdob(repo.dob);
-    setein(repo.ein);
-    setemployeeSize(repo.employeeSize);
-    setestablishedAt(repo.establishedAt);
-    setestimatedRevenue(repo.estimatedRevenue);
-    setAddressLine1(repo.address?.addressLine1?.value);
-    setAddressLine2(repo.address?.addressLine2?.value);
-    setCity(repo.address?.city?.value);
+    setBeverageCategory,
+    setDineInCapacity,
+    setFoodType,
+    setFacebookLink,
+    setInstagramLink,
+    setMeatType,
+    setRestaurantCategory,
+    setRestaurantName,
+    setRestaurantType,
+    setRestaurantWebsite,
+    setTwitterLink,
+  } = RestaurantOnboardingStore();
+  // useEffect(() => {
+  //   setbusinessName(repo.businessName);
+  //   setbusinessType(repo.businessType);
+  //   setdob(repo.dob);
+  //   setein(repo.ein);
+  //   setemployeeSize(repo.employeeSize);
+  //   setestablishedAt(repo.establishedAt);
+  //   setestimatedRevenue(repo.estimatedRevenue);
+  //   setAddressLine1(repo.address?.addressLine1?.value);
+  //   setAddressLine2(repo.address?.addressLine2?.value);
+  //   setCity(repo.address?.city?.value);
 
-    setPostcode(repo.address?.postcode?.value);
-    setState(repo.address?.state?.value);
-  }, [repo]);
+  //   setPostcode(repo.address?.postcode?.value);
+  //   setState(repo.address?.state?.value);
+  // }, [repo]);
 
   let childComponent;
 
@@ -88,6 +96,17 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
   context
 ) => {
   const cookies = parseCookies(context);
+  let id = "";
+
+  try {
+    const restaurantData = RestaurantOnboardingStore();
+    if (restaurantData) {
+      id = restaurantData.id; // Assign id from RestaurantOnboardingStore
+    }
+  } catch (error) {
+    console.error("Error retrieving restaurant data:", error);
+  }
+
   const token = cookies.accessToken;
   if (!token) {
     return {
@@ -97,42 +116,64 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
       },
     };
   }
-  try {
-    const response = await sdk.getUserOnboardingDetails(
-      {},
-      {
-        cookie: context.req.headers.cookie?.toString() ?? "",
-      }
-    );
 
-    if (response && response.getUserOnboardingDetails) {
-      const {
-        address,
-        businessName,
-        businessType,
-        ein,
-        dob,
-        employeeSize,
-        establishedAt,
-        estimatedRevenue,
-      } = response.getUserOnboardingDetails;
-      console.log(response.getUserOnboardingDetails);
+  try {
+    if (!id) {
       return {
         props: {
           repo: {
             pagePath: context.query["onBoardingRoute"]?.toString() ?? "",
-            businessName,
-            businessType,
-            ein,
-            dob,
-            employeeSize,
-            establishedAt,
-            estimatedRevenue,
+          },
+        },
+      };
+    }
+
+    const response = await sdk.getRestaurantOnboardingData(
+      { id },
+      { cookie: context.req.headers.cookie?.toString() ?? "" }
+    );
+
+    if (response && response.getRestaurantOnboardingData) {
+      const {
+        address,
+        beverageCategory,
+        brandingLogo,
+        category,
+        foodType,
+        meatType,
+        name,
+        timezone,
+        type,
+        dineInCapacity,
+        socialInfo,
+        website,
+      } = response.getRestaurantOnboardingData;
+
+      console.log(response.getRestaurantOnboardingData);
+
+      return {
+        props: {
+          repo: {
+            pagePath: context.query["onBoardingRoute"]?.toString() ?? "",
+
             address,
+            beverageCategory,
+            brandingLogo,
+            category,
+            foodType,
+            meatType,
+            name,
+            timezone,
+            type,
+            dineInCapacity,
+            socialInfo,
+            website,
           },
         },
       };
     } else {
+      // Handle case where response or required details are not available
+      console.error("Failed to fetch user details:", response);
       return {
         redirect: {
           destination: "/login",
