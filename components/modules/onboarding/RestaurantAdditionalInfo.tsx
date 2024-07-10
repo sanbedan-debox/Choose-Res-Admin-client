@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { STAGGER_CHILD_VARIANTS } from "@/lib/constants";
 import { useRouter } from "next/router";
 import useGlobalStore from "@/store/global";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import Select from "react-select";
 import { sdk } from "@/utils/graphqlClient";
 import { MeatType, FoodType, BeverageCategory } from "@/generated/graphql";
@@ -55,7 +55,7 @@ const formatBeverageCategory = (value: BeverageCategory) => {
   }
 };
 
-const RestaurantInfo = () => {
+const RestaurantAdditionalInformation = () => {
   const { setToastData } = useGlobalStore();
   const router = useRouter();
 
@@ -172,7 +172,7 @@ const RestaurantInfo = () => {
           Restaurant Basic Details
         </h1>
         <p className="max-w-md text-accent-foreground/80 transition-colors text-sm">
-          These fields are optional. You can fill them in later if needed.
+          All these fields are optional. If you want you can fill it later.
         </p>
       </motion.div>
 
@@ -271,25 +271,34 @@ const RestaurantInfo = () => {
           >
             Beverage Category
           </label>
-          <Select
-            {...register("beverageCategory")}
-            options={beverageCategoryOptions}
-            className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
-            classNamePrefix="react-select"
-            placeholder="Select beverage categories"
-            isMulti
-            value={beverageCategoryOptions.filter((option) =>
-              (beverageCategory || []).includes(
-                option.value as BeverageCategory
-              )
+
+          <Controller
+            name="beverageCategory"
+            control={control}
+            render={({ field }) => (
+              <Select
+                {...field}
+                id="beverageCategory"
+                options={beverageCategoryOptions}
+                className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+                classNamePrefix="react-select"
+                placeholder="Select beverage categories"
+                isMulti
+                value={beverageCategoryOptions.filter((option) =>
+                  (beverageCategory || []).includes(
+                    option.value as BeverageCategory
+                  )
+                )}
+                onChange={(options) => {
+                  const selectedCategories =
+                    options?.map(
+                      (option) => option.value as BeverageCategory
+                    ) || [];
+                  setValue("beverageCategory", selectedCategories);
+                  setBeverageCategory(selectedCategories);
+                }}
+              />
             )}
-            onChange={(options) => {
-              const selectedCategories =
-                options?.map((option) => option.value as BeverageCategory) ||
-                [];
-              setValue("beverageCategory", selectedCategories);
-              setBeverageCategory(selectedCategories);
-            }}
           />
         </div>
 
@@ -300,22 +309,30 @@ const RestaurantInfo = () => {
           >
             Food Type
           </label>
-          <Select
-            {...register("foodType")}
-            options={foodTypeOptions}
-            className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
-            classNamePrefix="react-select"
-            placeholder="Select food types"
-            isMulti
-            value={foodTypeOptions.filter((option) =>
-              (foodType || []).includes(option.value as FoodType)
+
+          <Controller
+            name="foodType"
+            control={control}
+            render={({ field }) => (
+              <Select
+                {...field}
+                id="foodType"
+                options={foodTypeOptions}
+                className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+                classNamePrefix="react-select"
+                placeholder="Select beverage categories"
+                isMulti
+                value={foodTypeOptions.filter((option) =>
+                  (foodType || []).includes(option.value as FoodType)
+                )}
+                onChange={(options) => {
+                  const selectedTypes =
+                    options?.map((option) => option.value as FoodType) || [];
+                  setValue("foodType", selectedTypes);
+                  setFoodType(selectedTypes);
+                }}
+              />
             )}
-            onChange={(options) => {
-              const selectedTypes =
-                options?.map((option) => option.value as FoodType) || [];
-              setValue("foodType", selectedTypes);
-              setFoodType(selectedTypes);
-            }}
           />
         </div>
 
@@ -326,17 +343,27 @@ const RestaurantInfo = () => {
           >
             Meat Type
           </label>
-          <Select
-            {...register("meatType")}
-            options={meatTypeOptions}
-            className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
-            classNamePrefix="react-select"
-            placeholder="Select meat type"
-            value={meatTypeOptions.find((option) => option.value === meatType)}
-            onChange={(option) => {
-              setValue("meatType", option?.value || "");
-              setMeatType(option?.value as MeatType);
-            }}
+
+          <Controller
+            name="meatType"
+            control={control}
+            render={({ field }) => (
+              <Select
+                {...field}
+                id="state"
+                options={meatTypeOptions}
+                className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+                classNamePrefix="react-select"
+                placeholder="Select meat type"
+                value={meatTypeOptions.find(
+                  (option) => option.value === meatType
+                )}
+                onChange={(option) => {
+                  setValue("meatType", option?.value || "");
+                  setMeatType(option?.value as MeatType);
+                }}
+              />
+            )}
           />
         </div>
 
@@ -348,4 +375,4 @@ const RestaurantInfo = () => {
   );
 };
 
-export default RestaurantInfo;
+export default RestaurantAdditionalInformation;

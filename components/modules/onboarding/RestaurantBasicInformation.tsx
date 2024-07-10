@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { STAGGER_CHILD_VARIANTS } from "@/lib/constants";
 import { useRouter } from "next/router";
@@ -18,6 +18,7 @@ interface IFormInput {
   restaurantType: string;
   restaurantCategory: string;
   dineInCapacity?: string;
+  logo?: string;
 }
 
 const formatRestaurantType = (value: RestaurantType) => {
@@ -48,9 +49,13 @@ const formatRestaurantCategory = (value: RestaurantCategory) => {
   }
 };
 
-const RestaurantLocation = () => {
+const RestaurantBasicInformation = () => {
   const { setToastData } = useGlobalStore();
   const router = useRouter();
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [logoURL, setLogoURL] = useState<string | null>(null);
 
   const {
     handleSubmit,
@@ -100,6 +105,27 @@ const RestaurantLocation = () => {
       label: formatRestaurantCategory(val),
     })
   );
+  const handleLogoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    if (file) {
+      setLogoFile(file);
+      setIsUploading(true);
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", "csv-data");
+
+      const response = await fetch(
+        "https://api.cloudinary.com/v1_1/choose-pos/raw/upload",
+        { method: "POST", body: formData }
+      ).then((r) => r.json());
+
+      const cloudinaryUrl = response?.secure_url;
+      setPreviewUrl(cloudinaryUrl);
+      setLogoURL(cloudinaryUrl);
+      setIsUploading(false);
+    }
+  };
 
   const onSubmit = async (data: IFormInput) => {
     try {
@@ -107,18 +133,25 @@ const RestaurantLocation = () => {
         data.restaurantWebsite
       );
 
-      const response = await sdk.restaurantOnboarding({
-        input: {
-          name: {
-            value: data.restaurantName,
-          },
-          website: formattedWebsite,
-          type: data.restaurantType as RestaurantType,
-          category: [data.restaurantCategory as RestaurantCategory],
-          dineInCapacity: {
-            value: data.dineInCapacity ? parseInt(data.dineInCapacity) : 0,
-          },
+      const input: any = {
+        name: {
+          value: data.restaurantName,
         },
+        website: formattedWebsite,
+        type: data.restaurantType as RestaurantType,
+        category: [data.restaurantCategory as RestaurantCategory],
+        brandingLogo: logoURL,
+      };
+      if (
+        data.restaurantCategory === RestaurantCategory.DineIn ||
+        data.restaurantCategory === RestaurantCategory.PremiumDineIn
+      ) {
+        input.dineInCapacity = {
+          value: data.dineInCapacity ? parseInt(data.dineInCapacity) : 0,
+        };
+      }
+      const response = await sdk.restaurantOnboarding({
+        input: input,
       });
 
       setToastData({
@@ -190,7 +223,8 @@ const RestaurantLocation = () => {
             </p>
           )}
         </div>
-        {/* <div className="col-span-2">
+
+        <div className="col-span-2">
           <label className="block mb-2 text-lg font-medium text-left text-gray-700">
             Branding
           </label>
@@ -198,38 +232,67 @@ const RestaurantLocation = () => {
             <label className="block mb-2 text-sm font-medium text-left text-gray-700">
               Logo(Optional)
             </label>
-            <div className="border-2 border-dashed border-gray-300 p-6 text-center rounded-lg cursor-pointer hover:bg-gray-100">
+            <div className="border-2 border-dashed border-gray-300 p-6 text-center rounded-lg cursor-pointer hover:bg-gray-100 relative">
               <input
                 type="file"
                 {...register("logo")}
+                onChange={handleLogoChange}
                 className="hidden"
                 id="logo-upload"
               />
               <label htmlFor="logo-upload" className="cursor-pointer">
-                <div className="text-gray-500">
-                  <svg
-                    xmlns="http:www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    className="w-6 h-6 mx-auto"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 7l3-3m0 0l3 3M6 4v12M21 11v7a2 2 0 01-2 2H5a2 2 0 01-2-2v-7M16 8l-3-3m0 0l-3 3m3-3v12"
-                    />
-                  </svg>
-                </div>
-                <p className="mt-1 text-sm text-gray-500">
-                  Drag and drop a logo or{" "}
-                  <span className="text-blue-600">browse file</span>
-                </p>
+                {isUploading ? (
+                  <div className="text-gray-500">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      className="w-6 h-6 mx-auto animate-spin"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 7l3-3m0 0l3 3M6 4v12M21 11v7a2 2 0 01-2 2H5a2 2 0 01-2-2v-7M16 8l-3-3m0 0l-3 3m3-3v12"
+                      />
+                    </svg>
+                    <p className="mt-1 text-sm text-gray-500">Uploading...</p>
+                  </div>
+                ) : (
+                  <div className="text-gray-500">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      className="w-6 h-6 mx-auto"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 7l3-3m0 0l3 3M6 4v12M21 11v7a2 2 0 01-2 2H5a2 2 0 01-2-2v-7M16 8l-3-3m0 0l-3 3m3-3v12"
+                      />
+                    </svg>
+                    <p className="mt-1 text-sm text-gray-500">
+                      Drag and drop a logo or{" "}
+                      <span className="text-blue-600">browse file</span>
+                    </p>
+                  </div>
+                )}
               </label>
+              {previewUrl && (
+                <img
+                  src={previewUrl}
+                  alt="Preview"
+                  className="absolute top-0 left-0 w-full h-full opacity-20 object-cover"
+                />
+              )}
             </div>
           </div>
-        </div> */}
+        </div>
+
         <div className="col-span-2">
           <label
             htmlFor="restaurantWebsite"
@@ -266,21 +329,27 @@ const RestaurantLocation = () => {
           >
             Restaurant Type
           </label>
-          <Select
-            {...register("restaurantType", {
-              required: "Restaurant type is required",
-            })}
-            options={restaurantTypeOptions}
-            className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
-            classNamePrefix="react-select"
-            placeholder="Select restaurant type"
-            value={restaurantTypeOptions.find(
-              (option) => option.value === restaurantType
+          <Controller
+            name="restaurantType"
+            control={control}
+            rules={{ required: "Restaurant type is required" }}
+            render={({ field }) => (
+              <Select
+                {...field}
+                id="state"
+                options={restaurantTypeOptions}
+                className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+                classNamePrefix="react-select"
+                placeholder="Select Restaurant Type"
+                value={restaurantTypeOptions.find(
+                  (option) => option.value === restaurantType
+                )}
+                onChange={(option) => {
+                  setValue("restaurantType", option?.value || "");
+                  setRestaurantType(option?.value || "");
+                }}
+              />
             )}
-            onChange={(option) => {
-              setValue("restaurantType", option?.value || "");
-              setRestaurantType(option?.value || "");
-            }}
           />
           {errors.restaurantType && (
             <p className="text-red-500 text-sm text-start">
@@ -296,29 +365,35 @@ const RestaurantLocation = () => {
           >
             Restaurant Category
           </label>
-          <Select
-            {...register("restaurantCategory", {
-              required: "Restaurant category is required",
-            })}
-            options={restaurantCategoryOptions}
-            className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
-            classNamePrefix="react-select"
-            placeholder="Select restaurant category"
-            value={restaurantCategoryOptions.find(
-              (option) => option.value === restaurantCategory
-            )}
-            onChange={(option) => {
-              setValue("restaurantCategory", option?.value || "");
-              setRestaurantCategory(option?.value || "");
 
-              // Show dine-in capacity field if Dine-In or Premium Dine-In is selected
-              if (
-                option?.value === RestaurantCategory.DineIn ||
-                option?.value === RestaurantCategory.PremiumDineIn
-              ) {
-                setDineInCapacity("");
-              }
-            }}
+          <Controller
+            name="restaurantCategory"
+            control={control}
+            rules={{ required: "restaurantCategory is required" }}
+            render={({ field }) => (
+              <Select
+                {...field}
+                id="state"
+                options={restaurantCategoryOptions}
+                className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+                classNamePrefix="react-select"
+                placeholder="Select restaurant category"
+                value={restaurantCategoryOptions.find(
+                  (option) => option.value === restaurantCategory
+                )}
+                onChange={(option) => {
+                  setValue("restaurantCategory", option?.value || "");
+                  setRestaurantCategory(option?.value || "");
+
+                  if (
+                    option?.value === RestaurantCategory.DineIn ||
+                    option?.value === RestaurantCategory.PremiumDineIn
+                  ) {
+                    setDineInCapacity("");
+                  }
+                }}
+              />
+            )}
           />
           {errors.restaurantCategory && (
             <p className="text-red-500 text-sm text-start">
@@ -327,7 +402,6 @@ const RestaurantLocation = () => {
           )}
         </div>
 
-        {/* Dine-in capacity field */}
         {(restaurantCategory === RestaurantCategory.DineIn ||
           restaurantCategory === RestaurantCategory.PremiumDineIn) && (
           <div className="col-span-2">
@@ -363,4 +437,4 @@ const RestaurantLocation = () => {
   );
 };
 
-export default RestaurantLocation;
+export default RestaurantBasicInformation;

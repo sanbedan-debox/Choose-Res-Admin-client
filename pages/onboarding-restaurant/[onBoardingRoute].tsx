@@ -1,14 +1,15 @@
 import NotFound from "@/components/common/notFound/notFound";
 import OnboardingRestaurantLayout from "@/components/layouts/OnboardingRestaurantLayout";
 import RestaurantAvailibility from "@/components/modules/onboarding/RestaurantAvailibility";
-import RestaurantInfo from "@/components/modules/onboarding/RestaurantBasicInfo";
-import RestaurantLocation from "@/components/modules/onboarding/RestaurantLocation";
+import RestaurantBasicInformation from "@/components/modules/onboarding/RestaurantBasicInformation";
+import WelcomeRestaurantOnboarding from "@/components/modules/onboarding/WelcomeRestaurantOnboarding";
 import useOnboardingStore from "@/store/onboarding";
 import { sdk } from "@/utils/graphqlClient";
 
 import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
 import { useEffect } from "react";
+import RestaurantAdditionalInformation from "@/components/modules/onboarding/RestaurantAdditionalInfo";
 
 type HomePageProps = {
   repo: {
@@ -29,7 +30,6 @@ const OnboardingPage = ({ repo }: HomePageProps) => {
     setAddressLine1,
     setAddressLine2,
     setCity,
-    setLocation,
     setPostcode,
     setState,
     setbusinessName,
@@ -59,14 +59,17 @@ const OnboardingPage = ({ repo }: HomePageProps) => {
   let childComponent;
 
   switch (repo.pagePath) {
-    case "restaurant-location":
-      childComponent = <RestaurantLocation />;
+    case "restaurant-welcome":
+      childComponent = <WelcomeRestaurantOnboarding />;
+      break;
+    case "restaurant-basic-information":
+      childComponent = <RestaurantBasicInformation />;
       break;
     case "restaurant-availibility":
       childComponent = <RestaurantAvailibility />;
       break;
-    case "restaurant-info":
-      childComponent = <RestaurantInfo />;
+    case "restaurant-additional-info":
+      childComponent = <RestaurantAdditionalInformation />;
       break;
 
     default:

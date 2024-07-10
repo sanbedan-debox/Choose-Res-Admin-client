@@ -92,7 +92,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       } else if (status === UserStatus.RestaurantOnboardingPending) {
         return {
           redirect: {
-            destination: "/onboarding-restaurant/restaurant-location",
+            destination: "/onboarding-restaurant/restaurant-welcome",
             permanent: false,
           },
         };

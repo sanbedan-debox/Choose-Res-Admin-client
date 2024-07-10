@@ -35,6 +35,7 @@ const Login: FC = () => {
   const [otpError, setOtpError] = useState<string>("");
   const [otpKey, setOtpKey] = useState<string>("");
   const [email, setEmail] = useState<string>("");
+  const [btnloading, setBtnLoading] = useState(false);
 
   const {
     register,
@@ -42,32 +43,36 @@ const Login: FC = () => {
     formState: { errors },
   } = useForm<IFormInput>();
 
-  const handleResendOtp = async () => {
-    try {
-      const response = await sdk.GenerateOtpForLogin({ input: email });
+  // const handleResendOtp = async () => {
+  //   try {
+  //     const response = await sdk.GenerateOtpForLogin({ input: email });
 
-      if (response) {
-        setOtpKey(response.generateOtpForLogin);
-        setToastData({ message: "OTP resent successfully", type: "success" });
-      }
-    } catch (error) {
-      console.error("Failed to resend OTP:", error);
-      setToastData({ message: "Failed to resend OTP", type: "error" });
-    }
-  };
+  //     if (response) {
+  //       setOtpKey(response.generateOtpForLogin);
+  //       setToastData({ message: "OTP resent successfully", type: "success" });
+  //     }
+  //   } catch (error) {
+  //     console.error("Failed to resend OTP:", error);
+  //     setToastData({ message: "Failed to resend OTP", type: "error" });
+  //   }
+  // };
 
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
     const { email } = data;
     setEmail(email);
     try {
+      setBtnLoading(true);
       const response = await sdk.GenerateOtpForLogin({ input: email });
 
       if (response) {
         setOtpKey(response.generateOtpForLogin);
         setShowModal(true);
         setToastData({ message: "OTP sent successfully", type: "success" });
+        setBtnLoading(false);
       }
     } catch (error) {
+      setBtnLoading(false);
+
       console.error("Failed to generate OTP:", error);
       setToastData({ message: "Failed to generate OTP", type: "error" });
     }
@@ -75,6 +80,7 @@ const Login: FC = () => {
 
   const onSubmitOtp: SubmitHandler<IFormInput> = async () => {
     try {
+      setBtnLoading(true);
       const variables = {
         key: otpKey,
         input: email,
@@ -84,6 +90,8 @@ const Login: FC = () => {
       const response = await sdk.VerifyOtpForLogin(variables);
 
       if (response) {
+        setBtnLoading(false);
+
         setShowModal(false);
         setToastData({
           message: "OTP verification successful",
@@ -92,6 +100,8 @@ const Login: FC = () => {
         router.replace("/dashboard");
       }
     } catch (error) {
+      setBtnLoading(false);
+
       console.error("OTP verification failed:", error);
       setOtpError("Invalid OTP");
     }
@@ -178,7 +188,11 @@ const Login: FC = () => {
                     </Link>
                   </p>
                   <div className="flex justify-end ">
-                    <CButton variant={ButtonType.Primary} className=" w-full">
+                    <CButton
+                      loading={btnloading}
+                      variant={ButtonType.Primary}
+                      className=" w-full"
+                    >
                       Log in
                     </CButton>
                   </div>
@@ -215,19 +229,14 @@ const Login: FC = () => {
               placeholder="Enter OTP"
             />
             {otpError && <p className="text-red-500">{otpError}</p>}
-            {/* <div className="flex items-center justify-between">
-              <button
-                type="button"
-                className="text-sm text-blue-500 focus:outline-none hover:underline"
-                onClick={handleResendOtp}
-                disabled={timer !== 0}
-              >
-                Resend OTP
-              </button>
-              {timer > 0 && <p>Time remaining: {timer} seconds</p>}
-            </div> */}
 
-            <button className="btn btn-primary">Submit</button>
+            <CButton
+              loading={btnloading}
+              variant={ButtonType.Primary}
+              className="btn btn-primary"
+            >
+              Submit
+            </CButton>
           </div>
         </form>
       </ReusableModal>

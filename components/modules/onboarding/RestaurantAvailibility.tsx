@@ -6,6 +6,7 @@ import { useForm, Controller, useFieldArray } from "react-hook-form";
 import Select, { SingleValue } from "react-select";
 import AsyncSelect from "react-select/async";
 import { DateTime } from "luxon";
+import debounce from "lodash.debounce";
 
 import {
   locationTypeOptions,
@@ -44,6 +45,7 @@ interface FormData {
   addressLine1: string;
   addressLine2: string;
   city: string;
+  location: PlacesType;
   state: { value: string; label: string };
   postcode: string;
   locationType: { value: string; label: string };
@@ -115,6 +117,20 @@ const timeOptions = generateTimeOptions();
 type PlacesType = {
   label: string;
   value: string;
+};
+
+const loadOptions = (
+  inputValue: string,
+  callback: (options: PlacesType[]) => void
+) => {
+  sdk.AllPlaces({ input: inputValue }).then((d) => {
+    callback(
+      d.getPlacesList.map((el) => ({
+        label: el.displayName,
+        value: el.placeId,
+      }))
+    );
+  });
 };
 
 const RestaurantAvailability = () => {
@@ -291,8 +307,12 @@ const RestaurantAvailability = () => {
             postcode: {
               value: data.postcode,
             },
+            place: {
+              displayName: selectedPlace?.label ?? "",
+              placeId: selectedPlace?.value ?? "",
+            },
             coordinate: {
-              coordinates: [22, 22],
+              coordinates: coords,
             },
           },
           timezone: data.timezone.value,
@@ -303,7 +323,7 @@ const RestaurantAvailability = () => {
         message: "Restaurant details updated successfully!",
         type: "success",
       });
-      router.push("/onboarding-restaurant/restaurant-info");
+      router.push("/onboarding-restaurant/restaurant-additional-info");
     } catch (error: any) {
       setToastData({
         message: `Failed to update restaurant details: ${error.message}`,
@@ -325,6 +345,10 @@ const RestaurantAvailability = () => {
       );
     });
   };
+
+  const [selectedPlace, setSelectedPlace] = useState<PlacesType | null>(null);
+  const [coords, setCoords] = useState<number[]>([]);
+  const debouncedLoadOptions = debounce(loadOptions, 800);
 
   return (
     <motion.div
@@ -466,29 +490,62 @@ const RestaurantAvailability = () => {
             htmlFor="location"
             className="block mb-2 text-sm font-medium text-left text-gray-700"
           >
-            Select Location
+            Search Location
           </label>
-          <Controller
-            name="locationType"
-            control={control}
-            rules={{ required: "Location type is required" }}
-            render={({ field }) => (
-              <AsyncSelect
-                {...field}
-                id="location"
-                // options={}
-                defaultOptions={[]}
-                cacheOptions
-                loadOptions={loadOptions}
-                className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
-                classNamePrefix="react-select"
-                placeholder="Select Location "
-              />
-            )}
+          <AsyncSelect
+            id="location"
+            {...register("location", { required: "Location is required" })}
+            className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+            classNamePrefix="react-select"
+            placeholder="Search location"
+            value={selectedPlace}
+            menuPlacement="auto"
+            maxMenuHeight={200}
+            onChange={async (option) => {
+              setSelectedPlace({
+                label: option?.label ?? "",
+                value: option?.value ?? "",
+              });
+              // setPlace({
+              //   displayName: option?.label ?? "",
+              //   placeId: option?.value ?? "",
+              // });
+              const d = await sdk.PlaceDetails({
+                placeId: option?.value ?? "",
+              });
+              if (d.getPlaceDetails) {
+                setCoords([
+                  d.getPlaceDetails.latitude,
+                  d.getPlaceDetails.longitude,
+                ]);
+                // setCords([
+                //   d.getPlaceDetails.latitude,
+                //   d.getPlaceDetails.longitude,
+                // ]);
+              }
+              setValue("location", {
+                value: option?.value ?? "",
+                label: option?.label ?? "",
+              });
+              // setLocation(option?.value || "");
+            }}
+            // defaultOptions={[
+            //   { value: "One", label: "One" },
+            //   { value: "One", label: "One" },
+            //   { value: "One", label: "One" },
+            //   { value: "One", label: "One" },
+            //   { value: "One", label: "One" },
+            //   { value: "One", label: "One" },
+            //   { value: "One", label: "One" },
+            //   { value: "One", label: "One" },
+            //   { value: "One", label: "One" },
+            //   { value: "One", label: "One" },
+            // ]}
+            loadOptions={debouncedLoadOptions}
           />
-          {errors.locationType && (
+          {errors.location && (
             <p className="text-red-500 text-sm text-start">
-              {errors.locationType.message?.toString() ?? ""}
+              {errors.location.message}
             </p>
           )}
         </div>

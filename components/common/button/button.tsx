@@ -1,14 +1,17 @@
 import React from "react";
 import { ButtonType } from "./interface";
+import { FaSpinner } from "react-icons/fa";
 
 interface ReusableButtonProps {
   type?: "button" | "submit" | "reset";
   variant: ButtonType;
   onClick?: () => void;
   disabled?: boolean;
+  loading?: boolean;
   className?: string;
   children: React.ReactNode;
 }
+
 const buttonStyles = {
   [ButtonType.Confirm]: "btn btn-confirmation",
   [ButtonType.Icon]:
@@ -24,6 +27,7 @@ const CButton: React.FC<ReusableButtonProps> = ({
   variant,
   onClick,
   disabled,
+  loading,
   className,
   children,
   type,
@@ -32,10 +36,18 @@ const CButton: React.FC<ReusableButtonProps> = ({
     <button
       type={type}
       onClick={onClick}
-      disabled={disabled}
-      className={`${buttonStyles[variant]} ${className}`}
+      disabled={disabled || loading} // Disable button when loading
+      className={`${buttonStyles[variant]} ${className} ${
+        loading ? "flex items-center justify-center" : "" // Center content if loading
+      } ${loading ? "opacity-50 cursor-not-allowed" : ""} ${
+        disabled ? "pointer-events-none" : ""
+      }`}
     >
-      {children}
+      {loading ? (
+        <FaSpinner className="animate-spin h-5 w-5 text-white" /> // Adjust spinner size and color
+      ) : (
+        children // Display children when not loading
+      )}
     </button>
   );
 };

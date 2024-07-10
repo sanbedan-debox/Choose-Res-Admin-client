@@ -198,21 +198,29 @@ const UserInfo = () => {
           >
             What kind of business are you
           </label>
-
-          <Select
-            {...register("businessType", {
-              required: "Business type is required",
-            })}
-            options={BusinessType}
-            className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
-            classNamePrefix="react-select"
-            placeholder="Select business type"
-            value={BusinessType.find((option) => option.value === businessType)}
-            onChange={(option) => {
-              setValue("businessType", option?.value || "");
-              setbusinessType(option?.value || "");
-            }}
+          <Controller
+            name="businessType"
+            control={control}
+            rules={{ required: "Business type is required" }}
+            render={({ field }) => (
+              <Select
+                {...field}
+                id="state"
+                options={BusinessType}
+                value={BusinessType.find(
+                  (option) => option.value === businessType
+                )}
+                onChange={(option) => {
+                  setValue("businessType", option?.value || "");
+                  setbusinessType(option?.value || "");
+                }}
+                className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+                classNamePrefix="react-select"
+                placeholder="Select business type"
+              />
+            )}
           />
+
           {errors.businessType && (
             <p className="text-red-500 text-sm text-start">
               {errors.businessType.message}
@@ -254,19 +262,27 @@ const UserInfo = () => {
             What is your staff count
           </label>
 
-          <Select
-            options={employeSize}
-            {...register("employees", {
-              required: "Staff count is required",
-            })}
-            className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
-            classNamePrefix="react-select"
-            placeholder="Select number of staffs"
-            value={employeSize.find((option) => option.value === employeeSize)}
-            onChange={(option) => {
-              setValue("employees", option?.value || "");
-              setemployeeSize(option?.value || "");
-            }}
+          <Controller
+            name="employees"
+            control={control}
+            rules={{ required: "employees is required" }}
+            render={({ field }) => (
+              <Select
+                {...field}
+                id="state"
+                options={employeSize}
+                value={employeSize.find(
+                  (option) => option.value === employeeSize
+                )}
+                onChange={(option) => {
+                  setValue("employees", option?.value || "");
+                  setemployeeSize(option?.value || "");
+                }}
+                className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+                classNamePrefix="react-select"
+                placeholder="Select number of staffs"
+              />
+            )}
           />
           {errors.employees && (
             <p className="text-red-500 text-sm text-start">
@@ -282,21 +298,27 @@ const UserInfo = () => {
           >
             What is your estimated annual revenue
           </label>
-          <Select
-            options={revenueOptions}
-            {...register("revenue", {
-              required: "Estimated revenue is required",
-            })}
-            className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
-            classNamePrefix="react-select"
-            placeholder="Select estimated annual revenue"
-            value={revenueOptions.find(
-              (option) => option.value === estimatedRevenue
+          <Controller
+            name="revenue"
+            control={control}
+            rules={{ required: "revenue is required" }}
+            render={({ field }) => (
+              <Select
+                {...field}
+                id="state"
+                options={revenueOptions}
+                value={revenueOptions.find(
+                  (option) => option.value === estimatedRevenue
+                )}
+                onChange={(option) => {
+                  setValue("revenue", option?.value || "");
+                  setestimatedRevenue(option?.value || "");
+                }}
+                className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+                classNamePrefix="react-select"
+                placeholder="Select estimated Revenue"
+              />
             )}
-            onChange={(option) => {
-              setValue("revenue", option?.value || "");
-              setestimatedRevenue(option?.value || "");
-            }}
           />
           {errors.revenue && (
             <p className="text-red-500 text-sm text-start">

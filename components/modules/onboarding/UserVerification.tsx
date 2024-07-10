@@ -58,14 +58,7 @@ const UserVerification = () => {
       }
     }
 
-    if (
-      !addressLine1 ||
-      !addressLine2 ||
-      !city ||
-      !state ||
-      !postcode ||
-      !place
-    ) {
+    if (!addressLine1 || !city || !state || !postcode || !place) {
       try {
         setToastData({
           message: "Please fill location details first.",
@@ -157,27 +150,6 @@ const UserVerification = () => {
             </p>
           )}
         </div>
-
-        {/* <div className="col-span-2">
-          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-            SSN
-          </label>
-          <input
-            type="text"
-            {...register("ssn", {
-              required: "SSN is required",
-            })}
-            className="input input-primary"
-            placeholder="SSN"
-            defaultValue={ssn}
-            onChange={(e) => setssn(e.target.value)}
-          />
-          {errors.ssn && (
-            <p className="text-red-500 text-sm text-start">
-              {errors.ssn.message}
-            </p>
-          )}
-        </div> */}
 
         <div className="col-span-2">
           <CButton

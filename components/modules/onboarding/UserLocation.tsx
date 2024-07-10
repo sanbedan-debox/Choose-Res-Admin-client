@@ -2,9 +2,9 @@ import { motion } from "framer-motion";
 import { STAGGER_CHILD_VARIANTS } from "@/lib/constants";
 import { useRouter } from "next/router";
 import useGlobalStore from "@/store/global";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import Select from "react-select";
-import { revenueOptions, stateOptions } from "./interface/interface";
+import { stateOptions } from "./interface/interface";
 import useOnboardingStore from "@/store/onboarding";
 import { useEffect, useState } from "react";
 import { sdk } from "@/utils/graphqlClient";
@@ -48,6 +48,7 @@ const UserLocation = () => {
   const {
     register,
     handleSubmit,
+    control,
     setValue,
     formState: { errors },
   } = useForm<IFormInput>();
@@ -77,7 +78,7 @@ const UserLocation = () => {
     setValue("city", city);
     setValue("state", state);
     setValue("postcode", postcode);
-    if (place.displayName && place.placeId) {
+    if (place?.displayName && place?.placeId) {
       setSelectedPlace({ label: place.displayName, value: place.placeId });
       setValue("location", { label: place.displayName, value: place.placeId });
     }
@@ -234,18 +235,25 @@ const UserLocation = () => {
             >
               State
             </label>
-            <Select
-              {...register("state", { required: "State is required" })}
-              id="state"
-              options={stateOptions}
-              className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
-              classNamePrefix="react-select"
-              placeholder="Select State"
-              value={stateOptions.find((option) => option.value === state)}
-              onChange={(option) => {
-                setValue("state", option?.value || "");
-                setState(option?.value || "");
-              }}
+            <Controller
+              name="state"
+              control={control}
+              rules={{ required: "State is required" }}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  id="state"
+                  options={stateOptions}
+                  className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+                  classNamePrefix="react-select"
+                  placeholder="Select State"
+                  value={stateOptions.find((option) => option.value === state)}
+                  onChange={(option) => {
+                    setValue("state", option?.value || "");
+                    setState(option?.value || "");
+                  }}
+                />
+              )}
             />
             {errors.state && (
               <p className="text-red-500 text-sm text-start">
@@ -289,7 +297,6 @@ const UserLocation = () => {
           <AsyncSelect
             id="location"
             {...register("location", { required: "Location is required" })}
-            // options={revenueOptions}
             className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
             classNamePrefix="react-select"
             placeholder="Search location"
@@ -338,19 +345,7 @@ const UserLocation = () => {
             // ]}
             loadOptions={debouncedLoadOptions}
           />
-          {/* <Select
-            id="location"
-            {...register("location", { required: "Location is required" })}
-            options={revenueOptions}
-            className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
-            classNamePrefix="react-select"
-            placeholder="Search location"
-            value={revenueOptions.find((option) => option.value === location)}
-            onChange={(option) => {
-              setValue("location", option?.value || "");
-              setLocation(option?.value || "");
-            }}
-          /> */}
+
           {errors.location && (
             <p className="text-red-500 text-sm text-start">
               {errors.location.message}

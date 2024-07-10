@@ -10,9 +10,10 @@ type Props = {
 };
 
 const steps = [
-  "restaurant-location",
+  "restaurant-welcome",
+  "restaurant-basic-information",
   "restaurant-availibility",
-  "restaurant-info",
+  "restaurant-additional-info",
 ];
 
 const OnboardingRestaurantLayout = ({ children }: Props) => {
