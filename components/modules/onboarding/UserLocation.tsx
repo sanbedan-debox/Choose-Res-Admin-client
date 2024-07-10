@@ -6,11 +6,13 @@ import { useForm } from "react-hook-form";
 import Select from "react-select";
 import { revenueOptions, stateOptions } from "./interface/interface";
 import useOnboardingStore from "@/store/onboarding";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { sdk } from "@/utils/graphqlClient";
 import useAuthStore from "@/store/auth";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
+import AsyncSelect from "react-select/async";
+import debounce from "lodash.debounce";
 
 interface IFormInput {
   addressLine1: string;
@@ -20,6 +22,25 @@ interface IFormInput {
   postcode: string;
   location: string;
 }
+
+type PlacesType = {
+  label: string;
+  value: string;
+};
+
+const loadOptions = (
+  inputValue: string,
+  callback: (options: PlacesType[]) => void
+) => {
+  sdk.AllPlaces({ input: inputValue }).then((d) => {
+    callback(
+      d.getPlacesList.map((el) => ({
+        label: el.displayName,
+        value: el.placeId,
+      }))
+    );
+  });
+};
 
 const UserLocation = () => {
   const { setToastData } = useGlobalStore();
@@ -57,6 +78,9 @@ const UserLocation = () => {
     setValue("location", location);
   }, [setValue, addressLine1, addressLine2, city, state, postcode, location]);
 
+  const [selectedPlace, setSelectedPlace] = useState<PlacesType | null>(null);
+  const [coords, setCoords] = useState<number[]>([]);
+
   const onSubmit = async (data: IFormInput) => {
     try {
       const response = await sdk.UpdateUserOnboarding({
@@ -75,8 +99,12 @@ const UserLocation = () => {
             postcode: {
               value: data.postcode,
             },
+            place: {
+              displayName: selectedPlace?.label ?? "",
+              placeId: selectedPlace?.value ?? "",
+            },
             coordinate: {
-              coordinates: [22, 22],
+              coordinates: coords,
             },
           },
         },
@@ -93,6 +121,8 @@ const UserLocation = () => {
       });
     }
   };
+
+  const debouncedLoadOptions = debounce(loadOptions, 800);
 
   return (
     <motion.div
@@ -239,7 +269,48 @@ const UserLocation = () => {
           >
             Search Location
           </label>
-          <Select
+          <AsyncSelect
+            id="location"
+            {...register("location", { required: "Location is required" })}
+            // options={revenueOptions}
+            className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+            classNamePrefix="react-select"
+            placeholder="Search location"
+            value={selectedPlace}
+            menuPlacement="auto"
+            maxMenuHeight={200}
+            onChange={async (option) => {
+              setSelectedPlace({
+                label: option?.label ?? "",
+                value: option?.value ?? "",
+              });
+              const d = await sdk.PlaceDetails({
+                placeId: option?.value ?? "",
+              });
+              if (d.getPlaceDetails) {
+                setCoords([
+                  d.getPlaceDetails.latitude,
+                  d.getPlaceDetails.longitude,
+                ]);
+              }
+              setValue("location", option?.value || "");
+              // setLocation(option?.value || "");
+            }}
+            // defaultOptions={[
+            //   { value: "One", label: "One" },
+            //   { value: "One", label: "One" },
+            //   { value: "One", label: "One" },
+            //   { value: "One", label: "One" },
+            //   { value: "One", label: "One" },
+            //   { value: "One", label: "One" },
+            //   { value: "One", label: "One" },
+            //   { value: "One", label: "One" },
+            //   { value: "One", label: "One" },
+            //   { value: "One", label: "One" },
+            // ]}
+            // loadOptions={debouncedLoadOptions}
+          />
+          {/* <Select
             id="location"
             {...register("location", { required: "Location is required" })}
             options={revenueOptions}
@@ -251,7 +322,7 @@ const UserLocation = () => {
               setValue("location", option?.value || "");
               setLocation(option?.value || "");
             }}
-          />
+          /> */}
           {errors.location && (
             <p className="text-red-500 text-sm text-start">
               {errors.location.message}

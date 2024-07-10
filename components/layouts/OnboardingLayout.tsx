@@ -29,7 +29,7 @@ const OnboardingLayout = ({ children }: Props) => {
   const progressPercentage = ((currentStepIndex + 1) / steps.length) * 100;
 
   return (
-    <div className="bg-white text-black min-h-screen flex flex-col">
+    <div className="bg-white text-black min-h-screen overflow-hidden flex flex-col">
       <div className="flex items-center justify-between px-4 py-2 border-b">
         {showBackButton && (
           <button

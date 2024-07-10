@@ -187,81 +187,16 @@ query CompleteRestaurantOnboarding {
   completeRestaurantOnboarding
 }
 
-query getAllMenus {
-  getAllMenus {
-    _id
-    name {
-      value
-    }
-    type
-    categories {
-      name {
-        value
-      }
-    }
+query AllPlaces($input: String!) {
+  getPlacesList(input: $input) {
+    placeId
+    displayName
   }
 }
 
-query getCategories($id: String!) {
-  getCategories(restaurantId: $id) {
-    _id
-    name {
-      value
-    }
-    desc {
-      value
-    }
-    status
-    items {
-      _id {
-        _id
-      }
-      name {
-        value
-      }
-    }
-  }
-}
-
-query getItems($id: String!) {
-  getItems(restaurantId: $id) {
-    _id
-    name {
-      value
-    }
-    desc {
-      value
-    }
-    status
-    modifierGroup {
-      name {
-        value
-      }
-      _id
-    }
-    price {
-      value
-    }
-  }
-}
-
-query getModifiers($id: String!) {
-  getModifiers(restaurantId: $id) {
-    _id
-    name {
-      value
-    }
-    price {
-      value
-    }
-  }
-}
-
-query getModifierGroups($id: String!) {
-  getModifierGroups(restaurantId: $id) {
-    _id
-    name {
-      value
-    }
+query PlaceDetails($placeId: String!) {
+  getPlaceDetails(placeId: $placeId) {
+    latitude
+    longitude
   }
 }
