@@ -10,10 +10,7 @@ const Menu: React.FC = () => {
     { name: "Salad", price: "$4.99", id: 13123, active: true },
   ];
 
-  const headings = [
-    { title: "Name", dataKey: "name" },
-    { title: "Price", dataKey: "price" },
-  ];
+  const headings = [{ title: "Name", dataKey: "name" }];
 
   const renderActions = (rowData: { id: number }) => (
     <div className="flex space-x-3">
@@ -31,14 +28,20 @@ const Menu: React.FC = () => {
       />
     </div>
   );
-
+  const mainActions = [
+    {
+      label: "Add Menu",
+      onClick: () => console.log(true),
+    },
+  ];
   return (
-    <div className="p-4">
+    <div className="py-2">
       <CBTable
         headings={headings}
         data={menuItems}
         showAvailableSwitch
         actions={renderActions}
+        mainActions={mainActions}
       />
     </div>
   );
