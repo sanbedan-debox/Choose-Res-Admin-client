@@ -4,7 +4,7 @@ import { sdk } from "@/utils/graphqlClient";
 import React, { useEffect, useState } from "react";
 import { FaTrash, FaEdit, FaShieldAlt } from "react-icons/fa";
 
-const Categories: React.FC = () => {
+const Items: React.FC = () => {
   const [items, setItems] = useState();
   const { selectedRestaurantId } = useRestaurantsStore();
   useEffect(() => {
@@ -69,4 +69,4 @@ const Categories: React.FC = () => {
   );
 };
 
-export default Categories;
+export default Items;
