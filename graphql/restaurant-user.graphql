@@ -186,3 +186,17 @@ mutation restaurantOnboarding($input: UpdateRestaurantDetailsInput!) {
 query CompleteRestaurantOnboarding {
   completeRestaurantOnboarding
 }
+
+query AllPlaces($input: String!) {
+  getPlacesList(input: $input) {
+    placeId
+    displayName
+  }
+}
+
+query PlaceDetails($placeId: String!) {
+  getPlaceDetails(placeId: $placeId) {
+    latitude
+    longitude
+  }
+}

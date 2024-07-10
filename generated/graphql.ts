@@ -152,6 +152,7 @@ export type AddressInfo = {
   addressLine2?: Maybe<MasterCommon>;
   city: MasterCommon;
   coordinate?: Maybe<LocationCommon>;
+  place?: Maybe<Places>;
   postcode: MasterCommon;
   state: MasterCommon;
 };
@@ -160,7 +161,8 @@ export type AddressInfoInput = {
   addressLine1: MasterCommonInput;
   addressLine2?: InputMaybe<MasterCommonInput>;
   city: MasterCommonInput;
-  coordinate?: InputMaybe<LocationCommonInput>;
+  coordinate: LocationCommonInput;
+  place: PlaceInput;
   postcode: MasterCommonInput;
   state: MasterCommonInput;
 };
@@ -930,6 +932,23 @@ export type MutationVerifyUserDetailsArgs = {
   input: VerifyUserDetails;
 };
 
+export type PlaceDetail = {
+  __typename?: 'PlaceDetail';
+  latitude: Scalars['Float']['output'];
+  longitude: Scalars['Float']['output'];
+};
+
+export type PlaceInput = {
+  displayName: Scalars['String']['input'];
+  placeId: Scalars['String']['input'];
+};
+
+export type Places = {
+  __typename?: 'Places';
+  displayName: Scalars['String']['output'];
+  placeId: Scalars['String']['output'];
+};
+
 /** Restaurant user status */
 export enum PlatformStatus {
   Active = 'active',
@@ -980,6 +999,8 @@ export type Query = {
   getModifierGroup: ModifierGroup;
   getModifierGroups: Array<ModifierGroup>;
   getModifiers: Array<Modifier>;
+  getPlaceDetails?: Maybe<PlaceDetail>;
+  getPlacesList: Array<Places>;
   getRestaurantDetails: Restaurant;
   getRestaurantOnboardingData: Restaurant;
   getTaxRate: TaxRate;
@@ -1084,6 +1105,16 @@ export type QueryGetModifierGroupsArgs = {
 
 export type QueryGetModifiersArgs = {
   restaurantId: Scalars['String']['input'];
+};
+
+
+export type QueryGetPlaceDetailsArgs = {
+  placeId: Scalars['String']['input'];
+};
+
+
+export type QueryGetPlacesListArgs = {
+  input: Scalars['String']['input'];
 };
 
 
@@ -1540,6 +1571,20 @@ export type CompleteRestaurantOnboardingQueryVariables = Exact<{ [key: string]: 
 
 export type CompleteRestaurantOnboardingQuery = { __typename?: 'Query', completeRestaurantOnboarding: boolean };
 
+export type AllPlacesQueryVariables = Exact<{
+  input: Scalars['String']['input'];
+}>;
+
+
+export type AllPlacesQuery = { __typename?: 'Query', getPlacesList: Array<{ __typename?: 'Places', placeId: string, displayName: string }> };
+
+export type PlaceDetailsQueryVariables = Exact<{
+  placeId: Scalars['String']['input'];
+}>;
+
+
+export type PlaceDetailsQuery = { __typename?: 'Query', getPlaceDetails?: { __typename?: 'PlaceDetail', latitude: number, longitude: number } | null };
+
 
 export const LogoutDocument = gql`
     query Logout {
@@ -1688,6 +1733,22 @@ export const CompleteRestaurantOnboardingDocument = gql`
   completeRestaurantOnboarding
 }
     `;
+export const AllPlacesDocument = gql`
+    query AllPlaces($input: String!) {
+  getPlacesList(input: $input) {
+    placeId
+    displayName
+  }
+}
+    `;
+export const PlaceDetailsDocument = gql`
+    query PlaceDetails($placeId: String!) {
+  getPlaceDetails(placeId: $placeId) {
+    latitude
+    longitude
+  }
+}
+    `;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string, variables?: any) => Promise<T>;
 
@@ -1743,6 +1804,12 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     CompleteRestaurantOnboarding(variables?: CompleteRestaurantOnboardingQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<CompleteRestaurantOnboardingQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<CompleteRestaurantOnboardingQuery>(CompleteRestaurantOnboardingDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'CompleteRestaurantOnboarding', 'query', variables);
+    },
+    AllPlaces(variables: AllPlacesQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AllPlacesQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<AllPlacesQuery>(AllPlacesDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'AllPlaces', 'query', variables);
+    },
+    PlaceDetails(variables: PlaceDetailsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<PlaceDetailsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<PlaceDetailsQuery>(PlaceDetailsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'PlaceDetails', 'query', variables);
     }
   };
 }

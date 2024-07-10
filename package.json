@@ -25,6 +25,7 @@
     "graphql-request": "^7.0.1",
     "graphql-ws": "^5.16.0",
     "leaflet": "^1.9.4",
+    "lodash.debounce": "^4.0.8",
     "lucide-react": "^0.395.0",
     "luxon": "^3.4.4",
     "mini-svg-data-uri": "^1.4.4",
@@ -45,6 +46,7 @@
     "zustand": "^4.5.2"
   },
   "devDependencies": {
+    "@types/lodash.debounce": "^4.0.9",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import useGlobalStore from "@/store/global";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import Select, { SingleValue } from "react-select";
+import AsyncSelect from "react-select/async";
 import { DateTime } from "luxon";
 
 import {
@@ -11,7 +12,7 @@ import {
   stateOptions,
   timeZoneOptions,
 } from "./interface/interface";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import { sdk } from "@/utils/graphqlClient";
@@ -111,6 +112,11 @@ const generateTimeOptions = () => {
 
 const timeOptions = generateTimeOptions();
 
+type PlacesType = {
+  label: string;
+  value: string;
+};
+
 const RestaurantAvailability = () => {
   const { id } = useRestaurantLocationStore();
   const { setToastData } = useGlobalStore();
@@ -169,6 +175,7 @@ const RestaurantAvailability = () => {
     Saturday: useFieldArray({ control, name: "regularHours.Saturday" }),
     Sunday: useFieldArray({ control, name: "regularHours.Sunday" }),
   };
+  const [placesOptions, setPlacesOptions] = useState<PlacesType[]>([]);
 
   const activeDays = watch("activeDays");
 
@@ -303,6 +310,20 @@ const RestaurantAvailability = () => {
         type: "error",
       });
     }
+  };
+
+  const loadOptions = (
+    inputValue: string,
+    callback: (options: PlacesType[]) => void
+  ) => {
+    sdk.AllPlaces({ input: inputValue }).then((d) => {
+      callback(
+        d.getPlacesList.map((el) => ({
+          label: el.displayName,
+          value: el.placeId,
+        }))
+      );
+    });
   };
 
   return (
@@ -452,10 +473,13 @@ const RestaurantAvailability = () => {
             control={control}
             rules={{ required: "Location type is required" }}
             render={({ field }) => (
-              <Select
+              <AsyncSelect
                 {...field}
                 id="location"
-                options={locationTypeOptions}
+                // options={}
+                defaultOptions={[]}
+                cacheOptions
+                loadOptions={loadOptions}
                 className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
                 classNamePrefix="react-select"
                 placeholder="Select Location "
