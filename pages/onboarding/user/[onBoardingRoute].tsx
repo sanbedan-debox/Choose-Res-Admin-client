@@ -34,7 +34,8 @@ const OnboardingPage = ({ repo }: HomePageProps) => {
     setAddressLine1,
     setAddressLine2,
     setCity,
-    setLocation,
+    setCords,
+    setPlace,
     setPostcode,
     setState,
     setbusinessName,
@@ -57,6 +58,8 @@ const OnboardingPage = ({ repo }: HomePageProps) => {
     setAddressLine1(repo.address?.addressLine1?.value);
     setAddressLine2(repo.address?.addressLine2?.value);
     setCity(repo.address?.city?.value);
+    setCords(repo?.address?.coordinate?.coordinates ?? []);
+    setPlace(repo?.address?.place);
 
     setPostcode(repo.address?.postcode?.value);
     setState(repo.address?.state?.value);
@@ -121,6 +124,9 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
         estimatedRevenue,
       } = response.getUserOnboardingDetails;
       console.log(response.getUserOnboardingDetails);
+      console.log("ADDRESSS");
+
+      console.log(response.getUserOnboardingDetails.address);
       return {
         props: {
           repo: {

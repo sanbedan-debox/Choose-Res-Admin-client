@@ -33,9 +33,7 @@ const UserVerification = () => {
     businessType,
     city,
     employeeSize,
-    establishedAt,
-    dob,
-    location,
+    place,
     postcode,
     estimatedRevenue,
     state,
@@ -66,7 +64,7 @@ const UserVerification = () => {
       !city ||
       !state ||
       !postcode ||
-      !location
+      !place
     ) {
       try {
         setToastData({

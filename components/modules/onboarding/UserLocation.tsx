@@ -20,7 +20,7 @@ interface IFormInput {
   city: string;
   state: string;
   postcode: string;
-  location: string;
+  location: PlacesType;
 }
 
 type PlacesType = {
@@ -58,13 +58,15 @@ const UserLocation = () => {
     city,
     state,
     postcode,
-    location,
+    cords,
+    place,
     setAddressLine1,
     setAddressLine2,
     setCity,
     setState,
     setPostcode,
-    setLocation,
+    setCords,
+    setPlace,
   } = useOnboardingStore();
 
   const { userId } = useAuthStore();
@@ -75,8 +77,23 @@ const UserLocation = () => {
     setValue("city", city);
     setValue("state", state);
     setValue("postcode", postcode);
-    setValue("location", location);
-  }, [setValue, addressLine1, addressLine2, city, state, postcode, location]);
+    if (place.displayName && place.placeId) {
+      setSelectedPlace({ label: place.displayName, value: place.placeId });
+      setValue("location", { label: place.displayName, value: place.placeId });
+    }
+    if (cords[0] !== 0 && cords[1] !== 0) {
+      setCoords(cords);
+    }
+  }, [
+    setValue,
+    addressLine1,
+    addressLine2,
+    city,
+    state,
+    postcode,
+    place,
+    cords,
+  ]);
 
   const [selectedPlace, setSelectedPlace] = useState<PlacesType | null>(null);
   const [coords, setCoords] = useState<number[]>([]);
@@ -181,7 +198,7 @@ const UserLocation = () => {
             type="text"
             {...register("addressLine2", {})}
             className="input input-primary"
-            placeholder="Address Line 2"
+            placeholder="Address Line 2(optional)"
             onChange={(e) => setAddressLine2(e.target.value)}
           />
           {errors.addressLine2 && (
@@ -284,6 +301,10 @@ const UserLocation = () => {
                 label: option?.label ?? "",
                 value: option?.value ?? "",
               });
+              setPlace({
+                displayName: option?.label ?? "",
+                placeId: option?.value ?? "",
+              });
               const d = await sdk.PlaceDetails({
                 placeId: option?.value ?? "",
               });
@@ -292,8 +313,15 @@ const UserLocation = () => {
                   d.getPlaceDetails.latitude,
                   d.getPlaceDetails.longitude,
                 ]);
+                setCords([
+                  d.getPlaceDetails.latitude,
+                  d.getPlaceDetails.longitude,
+                ]);
               }
-              setValue("location", option?.value || "");
+              setValue("location", {
+                value: option?.value ?? "",
+                label: option?.label ?? "",
+              });
               // setLocation(option?.value || "");
             }}
             // defaultOptions={[
@@ -308,7 +336,7 @@ const UserLocation = () => {
             //   { value: "One", label: "One" },
             //   { value: "One", label: "One" },
             // ]}
-            // loadOptions={debouncedLoadOptions}
+            loadOptions={debouncedLoadOptions}
           />
           {/* <Select
             id="location"

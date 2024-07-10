@@ -992,7 +992,7 @@ export type Query = {
   getCategory: Category;
   getCategoryByMenu: Category;
   getItem: Item;
-  getItems: Array<Item>;
+  getItems: Item;
   getMenu: Menu;
   getMenusByType: Array<Menu>;
   getModifier: Modifier;
@@ -1535,7 +1535,7 @@ export type CompleteUserOnboardingMutation = { __typename?: 'Mutation', complete
 export type GetUserOnboardingDetailsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetUserOnboardingDetailsQuery = { __typename?: 'Query', getUserOnboardingDetails: { __typename?: 'User', ein?: string | null, businessName?: string | null, employeeSize?: StaffCountEnum | null, dob?: any | null, establishedAt?: string | null, businessType?: BusinessTypeEnum | null, estimatedRevenue?: EstimatedRevenueEnum | null, address?: { __typename?: 'AddressInfo', addressLine1: { __typename?: 'MasterCommon', value: string }, addressLine2?: { __typename?: 'MasterCommon', value: string } | null, state: { __typename?: 'MasterCommon', value: string }, city: { __typename?: 'MasterCommon', value: string }, postcode: { __typename?: 'MasterCommon', value: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null } | null } };
+export type GetUserOnboardingDetailsQuery = { __typename?: 'Query', getUserOnboardingDetails: { __typename?: 'User', ein?: string | null, businessName?: string | null, employeeSize?: StaffCountEnum | null, dob?: any | null, establishedAt?: string | null, businessType?: BusinessTypeEnum | null, estimatedRevenue?: EstimatedRevenueEnum | null, address?: { __typename?: 'AddressInfo', addressLine1: { __typename?: 'MasterCommon', value: string }, addressLine2?: { __typename?: 'MasterCommon', value: string } | null, state: { __typename?: 'MasterCommon', value: string }, city: { __typename?: 'MasterCommon', value: string }, postcode: { __typename?: 'MasterCommon', value: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string, placeId: string } | null } | null } };
 
 export type GetAdminsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1584,6 +1584,39 @@ export type PlaceDetailsQueryVariables = Exact<{
 
 
 export type PlaceDetailsQuery = { __typename?: 'Query', getPlaceDetails?: { __typename?: 'PlaceDetail', latitude: number, longitude: number } | null };
+
+export type GetAllMenusQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllMenusQuery = { __typename?: 'Query', getAllMenus: Array<{ __typename?: 'Menu', _id: string, type: MenuTypeEnum, name: { __typename?: 'MasterCommon', value: string }, categories: Array<{ __typename?: 'CategoryInfo', name?: { __typename?: 'MasterCommon', value: string } | null }> }> };
+
+export type GetCategoriesQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type GetCategoriesQuery = { __typename?: 'Query', getCategories: Array<{ __typename?: 'Category', _id: string, status: StatusEnum, name: { __typename?: 'MasterCommon', value: string }, desc: { __typename?: 'MasterCommon', value: string }, items: Array<{ __typename?: 'ItemInfo', _id: { __typename?: 'Item', _id: string }, name?: { __typename?: 'MasterCommon', value: string } | null }> }> };
+
+export type GetItemsQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type GetItemsQuery = { __typename?: 'Query', getItems: { __typename?: 'Item', _id: string, status: StatusEnum, name: { __typename?: 'MasterCommon', value: string }, desc: { __typename?: 'MasterCommon', value: string }, modifierGroup: Array<{ __typename?: 'ModifierGroupInfo', _id: string, name: { __typename?: 'MasterCommon', value: string } }>, price: { __typename?: 'MasterCommonNumber', value: number } } };
+
+export type GetModifiersQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type GetModifiersQuery = { __typename?: 'Query', getModifiers: Array<{ __typename?: 'Modifier', _id: string, name: { __typename?: 'MasterCommon', value: string }, price: { __typename?: 'MasterCommonNumber', value: number } }> };
+
+export type GetModifierGroupsQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type GetModifierGroupsQuery = { __typename?: 'Query', getModifierGroups: Array<{ __typename?: 'ModifierGroup', _id: string, name: { __typename?: 'MasterCommon', value: string } }> };
 
 
 export const LogoutDocument = gql`
@@ -1668,6 +1701,10 @@ export const GetUserOnboardingDetailsDocument = gql`
       coordinate {
         coordinates
       }
+      place {
+        displayName
+        placeId
+      }
     }
     employeeSize
     dob
@@ -1749,6 +1786,90 @@ export const PlaceDetailsDocument = gql`
   }
 }
     `;
+export const GetAllMenusDocument = gql`
+    query getAllMenus {
+  getAllMenus {
+    _id
+    name {
+      value
+    }
+    type
+    categories {
+      name {
+        value
+      }
+    }
+  }
+}
+    `;
+export const GetCategoriesDocument = gql`
+    query getCategories($id: String!) {
+  getCategories(restaurantId: $id) {
+    _id
+    name {
+      value
+    }
+    desc {
+      value
+    }
+    status
+    items {
+      _id {
+        _id
+      }
+      name {
+        value
+      }
+    }
+  }
+}
+    `;
+export const GetItemsDocument = gql`
+    query getItems($id: String!) {
+  getItems(restaurantId: $id) {
+    _id
+    name {
+      value
+    }
+    desc {
+      value
+    }
+    status
+    modifierGroup {
+      name {
+        value
+      }
+      _id
+    }
+    price {
+      value
+    }
+  }
+}
+    `;
+export const GetModifiersDocument = gql`
+    query getModifiers($id: String!) {
+  getModifiers(restaurantId: $id) {
+    _id
+    name {
+      value
+    }
+    price {
+      value
+    }
+  }
+}
+    `;
+export const GetModifierGroupsDocument = gql`
+    query getModifierGroups($id: String!) {
+  getModifierGroups(restaurantId: $id) {
+    _id
+    name {
+      value
+    }
+  }
+}
+    `;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string, variables?: any) => Promise<T>;
 
@@ -1810,6 +1931,21 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     PlaceDetails(variables: PlaceDetailsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<PlaceDetailsQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<PlaceDetailsQuery>(PlaceDetailsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'PlaceDetails', 'query', variables);
+    },
+    getAllMenus(variables?: GetAllMenusQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetAllMenusQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetAllMenusQuery>(GetAllMenusDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getAllMenus', 'query', variables);
+    },
+    getCategories(variables: GetCategoriesQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetCategoriesQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetCategoriesQuery>(GetCategoriesDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getCategories', 'query', variables);
+    },
+    getItems(variables: GetItemsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetItemsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetItemsQuery>(GetItemsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getItems', 'query', variables);
+    },
+    getModifiers(variables: GetModifiersQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetModifiersQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetModifiersQuery>(GetModifiersDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getModifiers', 'query', variables);
+    },
+    getModifierGroups(variables: GetModifierGroupsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetModifierGroupsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetModifierGroupsQuery>(GetModifierGroupsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getModifierGroups', 'query', variables);
     }
   };
 }

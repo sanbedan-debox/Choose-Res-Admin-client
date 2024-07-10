@@ -26,8 +26,10 @@ type OnboardingStates = {
   setState: (state: string) => void;
   postcode: string;
   setPostcode: (postcode: string) => void;
-  location: string;
-  setLocation: (location: string) => void;
+  place: { displayName: string; placeId: string };
+  setPlace: (place: { displayName: string; placeId: string }) => void;
+  cords: [number, number];
+  setCords: (coords: [number, number]) => void;
 
   //STEP 3
   ein: string;
@@ -60,12 +62,13 @@ const useOnboardingStore = create<OnboardingStates>((set) => ({
   setState: (state) => set({ state }),
   postcode: "",
   setPostcode: (postcode) => set({ postcode }),
-  location: "",
-  setLocation: (location) => set({ location }),
+  place: { displayName: "", placeId: "" },
+  setPlace: (place) => set({ place }),
+  cords: [0, 0],
+  setCords: (cords) => set({ cords }),
 
   ein: "",
   setein: (ein) => set({ ein }),
-
 }));
 
 export default useOnboardingStore;
