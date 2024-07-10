@@ -65,8 +65,7 @@ const useOnboardingStore = create<OnboardingStates>((set) => ({
 
   ein: "",
   setein: (ein) => set({ ein }),
-  ssn: "",
-  setssn: (ein) => set({ ein }),
+
 }));
 
 export default useOnboardingStore;
