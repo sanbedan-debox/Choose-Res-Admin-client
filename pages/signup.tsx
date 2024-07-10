@@ -347,7 +347,11 @@ const Signup: FC = () => {
                   </Link>
                 </p>
                 <div className="flex justify-end">
-                  <CButton variant={ButtonType.Primary} type="submit">
+                  <CButton
+                    className="w-full"
+                    variant={ButtonType.Primary}
+                    type="submit"
+                  >
                     Sign Up
                   </CButton>
                 </div>
@@ -426,11 +430,11 @@ const Signup: FC = () => {
                     : `Resend OTP available after ${timer}s`}
                 </span> */}
               </div>
-              <div className="flex justify-end mt-4">
+              <div className="flex justify-end mt-4 w-full">
                 <CButton
                   variant={ButtonType.Primary}
                   type="submit"
-                  className="btn btn-primary"
+                  className="w-full"
                   disabled={!otpEmail}
                 >
                   Submit

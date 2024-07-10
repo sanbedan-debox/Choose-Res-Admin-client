@@ -15,6 +15,7 @@ import { useEffect } from "react";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import { sdk } from "@/utils/graphqlClient";
+import useRestaurantLocationStore from "@/store/restaurantOnboarding";
 
 type Day =
   | "Monday"
@@ -111,6 +112,7 @@ const generateTimeOptions = () => {
 const timeOptions = generateTimeOptions();
 
 const RestaurantAvailability = () => {
+  const { id } = useRestaurantLocationStore();
   const { setToastData } = useGlobalStore();
   const router = useRouter();
   const {
@@ -243,13 +245,13 @@ const RestaurantAvailability = () => {
 
       const formatData = (formattedData: any[]): any[] => {
         const currentDate = DateTime.now().toISO();
-
+        const endcurrentDate = DateTime.now().plus({ minutes: 90 }).toISO();
         return formattedData.map((dayData) => {
           const { Day, hours, active } = dayData;
 
           const formattedHours = hours.map((hour: any) => {
             let start = hour.start.value || currentDate;
-            let end = hour.end.value || currentDate;
+            let end = hour.end.value || endcurrentDate;
 
             return {
               start,
@@ -270,10 +272,10 @@ const RestaurantAvailability = () => {
         input: {
           address: {
             addressLine1: {
-              value: data.addressLine1,
+              value: data?.addressLine1,
             },
             addressLine2: {
-              value: data?.addressLine2,
+              value: data?.addressLine2 ? data?.addressLine2 : "",
             },
             city: {
               value: data.city,
@@ -359,9 +361,7 @@ const RestaurantAvailability = () => {
           </label>
           <input
             type="text"
-            {...register("addressLine2", {
-              required: "Address Line 2 is required",
-            })}
+            {...register("addressLine2", {})}
             className="input input-primary"
             placeholder="Address Line 2"
           />

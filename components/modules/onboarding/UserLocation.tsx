@@ -66,7 +66,7 @@ const UserLocation = () => {
               value: data.addressLine1,
             },
             addressLine2: {
-              value: data.addressLine2,
+              value: data?.addressLine2 ? data?.addressLine2 : "",
             },
             city: {
               value: data.city,
@@ -149,9 +149,7 @@ const UserLocation = () => {
           </label>
           <input
             type="text"
-            {...register("addressLine2", {
-              required: "Address Line 2 is required",
-            })}
+            {...register("addressLine2", {})}
             className="input input-primary"
             placeholder="Address Line 2"
             onChange={(e) => setAddressLine2(e.target.value)}

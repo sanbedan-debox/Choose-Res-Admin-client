@@ -71,6 +71,7 @@ const RestaurantLocation = () => {
     setRestaurantCategory,
     dineInCapacity,
     setDineInCapacity,
+    setId,
   } = useRestaurantLocationStore();
 
   useEffect(() => {
@@ -119,6 +120,7 @@ const RestaurantLocation = () => {
           },
         },
       });
+
       setToastData({
         message: "Restaurant details updated successfully!",
         type: "success",

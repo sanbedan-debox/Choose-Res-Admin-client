@@ -35,12 +35,12 @@ const CBTable: React.FC<CBTableProps> = ({
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full bg-white shadow-md rounded-lg w-full">
-        <thead className="bg-gray-50 w-full flex justify-between">
-          <tr>
+        <thead className=" w-full flex justify-between">
+          <tr className="flex space-x-4 justify-center">
             {headings.map((heading, index) => (
               <th
                 key={index}
-                className="py-3 px-6 text-left text-sm font-medium text-gray-700 border-b"
+                className="py-3 px-6 text-left text-sm font-medium text-gray-700 "
               >
                 {heading.title}
               </th>
@@ -48,46 +48,47 @@ const CBTable: React.FC<CBTableProps> = ({
           </tr>
           <tr>
             {showAvailableSwitch && (
-              <th className="py-3 px-6 text-left text-sm font-medium text-gray-700 border-b">
+              <th className="py-3 px-6 text-left text-sm font-medium text-gray-700 ">
                 Available
               </th>
             )}
             {actions && (
-              <th className="py-3 px-6 text-left text-sm font-medium text-gray-700 border-b">
+              <th className="py-3 px-6 text-left text-sm font-semibold text-gray-700 ">
                 Actions
               </th>
             )}
           </tr>
         </thead>
-        <tbody>
+        <tbody className="">
           {data.map((item, rowIndex) => (
-            <tr
-              key={rowIndex}
-              className="bg-white hover:bg-gray-100 transition-colors"
-            >
-              {headings.map((heading, colIndex) => (
-                <td
-                  key={colIndex}
-                  className="py-3 px-6 text-sm text-gray-700 border-b"
-                >
-                  {renderCell(item, heading)}
-                </td>
-              ))}
-              {showAvailableSwitch && (
-                <td className="py-3 px-6 text-sm text-gray-700 border-b">
-                  <input
-                    type="checkbox"
-                    checked={item.active}
-                    onChange={() => console.log("Switch toggled for", item)}
-                  />
-                </td>
-              )}
-              {actions && (
-                <td className="py-3 px-6 text-sm text-gray-700 border-b">
-                  {actions(item)}
-                </td>
-              )}
-            </tr>
+            <div key={item} className="flex justify-between">
+              <tr key={rowIndex} className="bg-white flex space-x-4 ">
+                {headings.map((heading, colIndex) => (
+                  <td
+                    key={colIndex}
+                    className="py-3 px-6 text-left text-sm text-gray-700 "
+                  >
+                    {renderCell(item, heading)}
+                  </td>
+                ))}
+              </tr>
+              <tr key={rowIndex} className="bg-white">
+                {showAvailableSwitch && (
+                  <td className="py-3 px-6 text-sm text-gray-700 ">
+                    <input
+                      type="checkbox"
+                      checked={item.active}
+                      onChange={() => console.log("Switch toggled for", item)}
+                    />
+                  </td>
+                )}
+                {actions && (
+                  <td className="py-3 px-6 text-sm text-gray-700 ">
+                    {actions(item)}
+                  </td>
+                )}
+              </tr>
+            </div>
           ))}
         </tbody>
       </table>

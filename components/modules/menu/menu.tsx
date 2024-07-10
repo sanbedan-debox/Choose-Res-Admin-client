@@ -1,4 +1,3 @@
-// components/Menu.tsx
 import CBTable from "@/components/common/table/table";
 import React from "react";
 import { FaTrash, FaEdit, FaShieldAlt } from "react-icons/fa";

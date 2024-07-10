@@ -47,6 +47,7 @@ export type AddCategoryInput = {
   availability?: InputMaybe<Array<AvailabilityInput>>;
   desc: MasterCommonInput;
   name: MasterCommonInput;
+  restaurantId: Scalars['String']['input'];
   status: StatusEnum;
 };
 
@@ -226,6 +227,7 @@ export type Category = {
   createdAt: Scalars['DateTimeISO']['output'];
   desc: MasterCommon;
   items: Array<ItemInfo>;
+  menu: Menu;
   name: MasterCommon;
   restaurantId: Restaurant;
   status: StatusEnum;
@@ -420,6 +422,7 @@ export type Item = {
   _id: Scalars['ID']['output'];
   applySalesTax: Scalars['Boolean']['output'];
   availability?: Maybe<Array<Availability>>;
+  category: Category;
   createdAt: Scalars['DateTimeISO']['output'];
   desc: MasterCommon;
   hasNuts: Scalars['Boolean']['output'];
@@ -593,6 +596,7 @@ export type Mutation = {
   deleteModifier: Scalars['Boolean']['output'];
   deleteTaxRate: Scalars['Boolean']['output'];
   deleteTaxRateFromRestaurant: Scalars['Boolean']['output'];
+  getItemByCategory: Item;
   removeCategoryFromMenu: Scalars['Boolean']['output'];
   removeItemFromCategory: Scalars['Boolean']['output'];
   removeModifierFromModifierGroup: Scalars['Boolean']['output'];
@@ -624,7 +628,6 @@ export type MutationAddAdminArgs = {
 
 export type MutationAddCategoryArgs = {
   input: AddCategoryInput;
-  restaurantId: Scalars['String']['input'];
 };
 
 
@@ -813,6 +816,12 @@ export type MutationDeleteTaxRateFromRestaurantArgs = {
 };
 
 
+export type MutationGetItemByCategoryArgs = {
+  itemId: Scalars['String']['input'];
+  modifierGroupId: Scalars['String']['input'];
+};
+
+
 export type MutationRemoveCategoryFromMenuArgs = {
   categoryId: Scalars['String']['input'];
   menuId: Scalars['String']['input'];
@@ -962,6 +971,7 @@ export type Query = {
   getAllTimezones: Array<Timezone>;
   getCategories: Array<Category>;
   getCategory: Category;
+  getCategoryByMenu: Category;
   getItem: Item;
   getItems: Item;
   getMenu: Menu;
@@ -998,11 +1008,6 @@ export type QueryChangeRestaurantStatusFromUserArgs = {
 };
 
 
-export type QueryCompleteRestaurantOnboardingArgs = {
-  id: Scalars['String']['input'];
-};
-
-
 export type QueryEmailOtpVerificationArgs = {
   email: Scalars['String']['input'];
   key: Scalars['String']['input'];
@@ -1032,6 +1037,11 @@ export type QueryGetCategoriesArgs = {
 
 export type QueryGetCategoryArgs = {
   id: Scalars['String']['input'];
+};
+
+
+export type QueryGetCategoryByMenuArgs = {
+  menuId: Scalars['String']['input'];
 };
 
 
@@ -1317,7 +1327,6 @@ export type UpdateModifierInput = {
 };
 
 export type UpdateRestaurantDetailsInput = {
-  _id?: InputMaybe<Scalars['String']['input']>;
   address?: InputMaybe<AddressInfoInput>;
   availability?: InputMaybe<Array<AvailabilityInput>>;
   beverageCategory?: InputMaybe<Array<BeverageCategory>>;
@@ -1526,6 +1535,11 @@ export type RestaurantOnboardingMutationVariables = Exact<{
 
 export type RestaurantOnboardingMutation = { __typename?: 'Mutation', restaurantOnboarding: string };
 
+export type CompleteRestaurantOnboardingQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CompleteRestaurantOnboardingQuery = { __typename?: 'Query', completeRestaurantOnboarding: boolean };
+
 
 export const LogoutDocument = gql`
     query Logout {
@@ -1669,6 +1683,11 @@ export const RestaurantOnboardingDocument = gql`
   restaurantOnboarding(input: $input)
 }
     `;
+export const CompleteRestaurantOnboardingDocument = gql`
+    query CompleteRestaurantOnboarding {
+  completeRestaurantOnboarding
+}
+    `;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string, variables?: any) => Promise<T>;
 
@@ -1721,6 +1740,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     restaurantOnboarding(variables: RestaurantOnboardingMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<RestaurantOnboardingMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<RestaurantOnboardingMutation>(RestaurantOnboardingDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'restaurantOnboarding', 'mutation', variables);
+    },
+    CompleteRestaurantOnboarding(variables?: CompleteRestaurantOnboardingQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<CompleteRestaurantOnboardingQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<CompleteRestaurantOnboardingQuery>(CompleteRestaurantOnboardingDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'CompleteRestaurantOnboarding', 'query', variables);
     }
   };
 }

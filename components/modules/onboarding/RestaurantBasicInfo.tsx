@@ -130,14 +130,19 @@ const RestaurantInfo = () => {
           meatType: data.meatType,
         },
       });
+      if (response.restaurantOnboarding) {
+        const res = await sdk.CompleteRestaurantOnboarding();
+        if (res.completeRestaurantOnboarding) {
+          setToastData({
+            message: "Restaurant Added successfully!",
+            type: "success",
+          });
+          router.replace("/dashboard");
+        }
+      }
+    } catch (error) {
       setToastData({
-        message: "Restaurant information updated successfully!",
-        type: "success",
-      });
-      router.replace("/dashboard");
-    } catch (error: any) {
-      setToastData({
-        message: `Failed to update restaurant information: ${error.message}`,
+        message: "Failed to update user verification details.",
         type: "error",
       });
     }

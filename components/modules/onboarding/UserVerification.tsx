@@ -88,7 +88,6 @@ const UserVerification = () => {
     try {
       const response = await sdk.UpdateUserOnboarding({
         input: {
-          // ssn: data.ssn,
           ein: data.ein,
         },
       });

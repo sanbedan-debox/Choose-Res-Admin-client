@@ -182,3 +182,7 @@ query getUserRestaurants {
 mutation restaurantOnboarding($input: UpdateRestaurantDetailsInput!) {
   restaurantOnboarding(input: $input)
 }
+
+query CompleteRestaurantOnboarding {
+  completeRestaurantOnboarding
+}
