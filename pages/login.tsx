@@ -10,6 +10,8 @@ import Link from "next/link";
 import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
 import { UserStatus } from "@/generated/graphql";
+import CButton from "@/components/common/button/button";
+import { ButtonType } from "@/components/common/button/interface";
 
 interface IFormInput {
   email: string;
@@ -176,7 +178,9 @@ const Login: FC = () => {
                     </Link>
                   </p>
                   <div className="flex justify-end ">
-                    <button className="btn btn-primary w-full">Log in</button>
+                    <CButton variant={ButtonType.Primary} className=" w-full">
+                      Log in
+                    </CButton>
                   </div>
                 </form>
 

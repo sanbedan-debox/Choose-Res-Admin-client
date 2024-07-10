@@ -14,6 +14,8 @@ import {
 } from "@/generated/graphql";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import CButton from "@/components/common/button/button";
+import { ButtonType } from "@/components/common/button/interface";
 interface IFormInput {
   businessType: string;
   businessName: string;
@@ -302,27 +304,15 @@ const UserInfo = () => {
             </p>
           )}
         </div>
-        {/* <div className="col-span-2">
-          <label
-            htmlFor="establishedAt"
-            className="block mb-2 text-sm font-medium text-left text-gray-700"
-          >
-            Established At
-          </label>
-          <div className="relative min-w-full flex items-start">
-            <DatePicker
-              id="establishedAt"
-              selected={establishedAt}
-              onChange={(date: Date | null) => setestablishedAt(date)}
-              className="bg-input border border-gray-300 max-w-full text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 pr-2.5 py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholderText="Select date"
-            />
-          </div>
-        </div> */}
+
         <div className="col-span-2">
-          <button type="submit" className="mt-8 w-full btn btn-primary">
+          <CButton
+            variant={ButtonType.Primary}
+            type="submit"
+            className="mt-8 w-full"
+          >
             Continue
-          </button>
+          </CButton>
         </div>
       </form>
     </motion.div>

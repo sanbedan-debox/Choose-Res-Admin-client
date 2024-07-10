@@ -44,7 +44,6 @@ const OnboardingPage = ({ repo }: HomePageProps) => {
     setemployeeSize,
     setestablishedAt,
     setestimatedRevenue,
-    setssn,
   } = useOnboardingStore();
 
   useEffect(() => {
@@ -52,7 +51,6 @@ const OnboardingPage = ({ repo }: HomePageProps) => {
     setbusinessType(repo.businessType);
     setdob(repo.dob);
     setein(repo.ein);
-    setssn(repo.ssn);
     setemployeeSize(repo.employeeSize);
     setestablishedAt(repo.establishedAt);
     setestimatedRevenue(repo.estimatedRevenue);
@@ -79,13 +77,6 @@ const OnboardingPage = ({ repo }: HomePageProps) => {
     case "user-verification":
       childComponent = <UserVerification />;
       break;
-
-    // case "integrations":
-    //   childComponent = <Integrations />;
-    //   break;
-    // case "availibility":
-    //   childComponent = <Availability />;
-    //   break;
 
     default:
       childComponent = <NotFound />;
@@ -128,7 +119,6 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
         employeeSize,
         establishedAt,
         estimatedRevenue,
-        ssn,
       } = response.getUserOnboardingDetails;
       console.log(response.getUserOnboardingDetails);
       return {
@@ -142,7 +132,6 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
             employeeSize,
             establishedAt,
             estimatedRevenue,
-            ssn,
             address,
           },
         },

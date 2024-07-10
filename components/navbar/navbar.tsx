@@ -12,6 +12,8 @@ import useAuthStore from "@/store/auth";
 import { sdk } from "@/utils/graphqlClient";
 import { useRouter } from "next/router";
 import useRestaurantsStore from "@/store/restaurant";
+import CButton from "../common/button/button";
+import { ButtonType } from "../common/button/interface";
 
 const Navbar: React.FC = () => {
   const { firstName } = useAuthStore();
@@ -95,7 +97,9 @@ const Navbar: React.FC = () => {
                       className="block px-4 py-2 text-sm hover:bg-primary hover:text-white"
                       href="/add-restaurant"
                     >
-                      <button>Add Restaurant</button>
+                      <CButton variant={ButtonType.Primary}>
+                        Add Restaurant
+                      </CButton>
                     </Link>
                   )}
                 </div>
@@ -103,7 +107,7 @@ const Navbar: React.FC = () => {
             </div>
           ) : (
             <Link href="/add-restaurant">
-              <button className="btn btn-primary">Add Restaurant</button>
+              <CButton variant={ButtonType.Primary}>Add Restaurant</CButton>
             </Link>
           )}
         </div>

@@ -1,7 +1,7 @@
 import NotFound from "@/components/common/notFound/notFound";
 import OnboardingRestaurantLayout from "@/components/layouts/OnboardingRestaurantLayout";
 import RestaurantAvailibility from "@/components/modules/onboarding/RestaurantAvailibility";
-import RestaurantBasicInfo from "@/components/modules/onboarding/RestaurantBasicInfo";
+import RestaurantInfo from "@/components/modules/onboarding/RestaurantBasicInfo";
 import RestaurantLocation from "@/components/modules/onboarding/RestaurantLocation";
 
 import { GetServerSideProps } from "next";
@@ -23,7 +23,7 @@ const OnboardingPage = ({ repo: { pagePath } }: HomePageProps) => {
       childComponent = <RestaurantAvailibility />;
       break;
     case "restaurant-info":
-      childComponent = <RestaurantBasicInfo />;
+      childComponent = <RestaurantInfo />;
       break;
 
     default:

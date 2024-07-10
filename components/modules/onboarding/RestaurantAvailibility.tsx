@@ -10,6 +10,30 @@ import {
   timeZoneOptions,
 } from "./interface/interface";
 import { useEffect } from "react";
+import CButton from "@/components/common/button/button";
+import { ButtonType } from "@/components/common/button/interface";
+
+type Day =
+  | "Monday"
+  | "Tuesday"
+  | "Wednesday"
+  | "Thursday"
+  | "Friday"
+  | "Saturday"
+  | "Sunday";
+
+type TimeSlot = {
+  from: { label: string; value: string };
+  to: { label: string; value: string };
+};
+
+type RegularHours = {
+  [key in Day]: TimeSlot[];
+};
+
+type ActiveDays = {
+  [key in Day]: boolean;
+};
 
 interface FormData {
   addressLine1: string;
@@ -143,84 +167,7 @@ const RestaurantAvailability = () => {
 
   const activeDays = watch("activeDays");
 
-  // const checkOverlapForDay = (day: string) => {
-  //   console.log(day);
-  //   let hours: {
-  //     from: { label: string; value: string };
-  //     to: { label: string; value: string };
-  //   }[] = [];
-
-  //   switch (day) {
-  //     case "Monday":
-  //       hours = getValues(`regularHours.Monday`);
-  //       break;
-  //     case "Tuesday":
-  //       hours = getValues(`regularHours.Tuesday`);
-  //       break;
-  //     case "Wednesday":
-  //       hours = getValues(`regularHours.Wednesday`);
-  //       break;
-  //     case "Thursday":
-  //       hours = getValues(`regularHours.Thursday`);
-  //       break;
-  //     case "Friday":
-  //       hours = getValues(`regularHours.Friday`);
-  //       break;
-  //     case "Saturday":
-  //       hours = getValues(`regularHours.Saturday`);
-  //       break;
-  //     case "Sunday":
-  //       hours = getValues(`regularHours.Sunday`);
-  //       break;
-  //     default:
-  //       hours = [];
-  //       break;
-  //   }
-
-  //   console.log(hours);
-
-  //   const sortedHours = hours
-  //     .filter((slot) => slot.from && slot.to)
-  //     .sort(
-  //       (a, b) =>
-  //         new Date(`1970-01-01T${a.from.value}:00`).getTime() -
-  //         new Date(`1970-01-01T${b.from.value}:00`).getTime()
-  //     );
-
-  //   for (let i = 0; i < sortedHours.length; i++) {
-  //     const startTime = new Date(
-  //       `1970-01-01T${sortedHours[i].from.value}:00`
-  //     ).getTime();
-  //     const endTime = new Date(
-  //       `1970-01-01T${sortedHours[i].to.value}:00`
-  //     ).getTime();
-
-  //     if (endTime <= startTime) {
-  //       console.log(
-  //         `Invalid time range for ${day}: ${sortedHours[i].from.label} - ${sortedHours[i].to.label}`
-  //       );
-  //       return false;
-  //     }
-
-  //     if (i > 0) {
-  //       const previousEndTime = new Date(
-  //         `1970-01-01T${sortedHours[i - 1].to.value}:00`
-  //       ).getTime();
-  //       if (startTime < previousEndTime) {
-  //         console.log(
-  //           `Overlap for ${day}: ${sortedHours[i - 1].to.label} - ${
-  //             sortedHours[i].from.label
-  //           }`
-  //         );
-  //         return false;
-  //       }
-  //     }
-  //   }
-
-  //   return true;
-  // };
   const checkOverlapForDay = (day: string) => {
-    console.log(day);
     let hours: {
       from: { label: string; value: string };
       to: { label: string; value: string };
@@ -253,65 +200,28 @@ const RestaurantAvailability = () => {
         break;
     }
 
-    console.log(hours);
+    for (let i = 0; i < hours.length; i++) {
+      const currentSession = hours[i];
+      const fromTime = new Date(currentSession.from.value);
+      const toTime = new Date(currentSession.to.value);
 
-    const sortedHours = hours
-      .filter((slot) => slot.from && slot.to)
-      .sort(
-        (a, b) =>
-          new Date(`1970-01-01T${a.from.value}`).getTime() -
-          new Date(`1970-01-01T${b.from.value}`).getTime()
-      );
-
-    for (let i = 0; i < sortedHours.length; i++) {
-      const startTime = new Date(
-        `1970-01-01T${sortedHours[i].from.value}`
-      ).getTime();
-      const endTime = new Date(
-        `1970-01-01T${sortedHours[i].to.value}`
-      ).getTime();
-
-      if (endTime <= startTime) {
-        console.log(
-          `Invalid time range for ${day}: ${sortedHours[i].from.label} - ${sortedHours[i].to.label}`
+      if (toTime <= fromTime) {
+        alert(
+          `Invalid session times: "to" time cannot be less than or equal to "from" time.`
         );
-        return false;
       }
 
       if (i > 0) {
-        const previousEndTime = new Date(
-          `1970-01-01T${sortedHours[i - 1].to.value}`
-        ).getTime();
-        if (startTime < previousEndTime) {
-          console.log(
-            `Overlap for ${day}: ${sortedHours[i - 1].to.label} - ${
-              sortedHours[i].from.label
-            }`
+        const previousSession = hours[i - 1];
+        const previousToTime = new Date(previousSession.to.value);
+
+        if (fromTime <= previousToTime) {
+          alert(
+            `Invalid session times: Start time overlaps with or is before previous session's end time.`
           );
-          return false;
         }
       }
     }
-
-    for (let i = 1; i < sortedHours.length; i++) {
-      const previousEndTime = new Date(
-        `1970-01-01T${sortedHours[i - 1].to.value}`
-      ).getTime();
-      const nextStartTime = new Date(
-        `1970-01-01T${sortedHours[i].from.value}`
-      ).getTime();
-
-      if (nextStartTime <= previousEndTime) {
-        console.log(
-          `Invalid time break for ${day}: ${sortedHours[i - 1].to.label} - ${
-            sortedHours[i].from.label
-          }`
-        );
-        return false;
-      }
-    }
-
-    return true;
   };
 
   const onSubmit = (data: FormData) => {
@@ -326,7 +236,6 @@ const RestaurantAvailability = () => {
       active: data.activeDays[day],
     }));
     console.log(formattedData);
-    availabilityValidation(formattedData);
     router.push("/onboarding-restaurant/restaurant-info");
   };
 
@@ -563,13 +472,13 @@ const RestaurantAvailability = () => {
                                 placeholder="From"
                                 value={field.value || null}
                                 onChange={(e: any) => {
-                                  checkOverlapForDay(day);
                                   field.onChange(e);
-                                  // console.log(e);
+                                  checkOverlapForDay(day);
                                 }}
                               />
                             )}
                           />
+
                           <Controller
                             control={control}
                             name={`regularHours.${day}.${index}.to` as const}
@@ -577,11 +486,6 @@ const RestaurantAvailability = () => {
                               <Select
                                 {...field}
                                 options={timeOptions}
-                                // onChange={() =>
-                                //   checkOverlapForDay(
-                                //     day as keyof typeof dayFieldArray
-                                //   )
-                                // }
                                 isDisabled={
                                   !activeDays[day as keyof typeof activeDays]
                                 }
@@ -591,9 +495,8 @@ const RestaurantAvailability = () => {
                                 placeholder="To"
                                 value={field.value || null}
                                 onChange={(e: any) => {
-                                  checkOverlapForDay(day);
                                   field.onChange(e);
-                                  // console.log(e);
+                                  checkOverlapForDay(day);
                                 }}
                               />
                             )}
@@ -628,9 +531,13 @@ const RestaurantAvailability = () => {
         </div>
 
         <div className="flex justify-end">
-          <button type="submit" className="btn btn-primary w-full mt-8">
+          <CButton
+            variant={ButtonType.Primary}
+            type="submit"
+            className="btn btn-primary w-full mt-8"
+          >
             Save
-          </button>
+          </CButton>
         </div>
       </form>
     </motion.div>

@@ -1,30 +1,140 @@
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { STAGGER_CHILD_VARIANTS } from "@/lib/constants";
 import { useRouter } from "next/router";
 import useGlobalStore from "@/store/global";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
-import { RestaurantCategory, RestaurantType } from "./interface/interface";
 import { sdk } from "@/utils/graphqlClient";
+import { RestaurantType, RestaurantCategory } from "@/generated/graphql";
+import useRestaurantLocationStore from "@/store/restaurantOnboarding";
+import { formatWebsiteUrlClickable } from "@/store/utilFUncs";
+import CButton from "@/components/common/button/button";
+import { ButtonType } from "@/components/common/button/interface";
+
+interface IFormInput {
+  restaurantName: string;
+  restaurantWebsite: string;
+  restaurantType: string;
+  restaurantCategory: string;
+  dineInCapacity?: string;
+}
+
+const formatRestaurantType = (value: RestaurantType) => {
+  switch (value) {
+    case RestaurantType.Independent:
+      return "Independent";
+    case RestaurantType.PartOfChain:
+      return "Part of Chain";
+    default:
+      return "";
+  }
+};
+
+const formatRestaurantCategory = (value: RestaurantCategory) => {
+  switch (value) {
+    case RestaurantCategory.CloudKitchen:
+      return "Cloud Kitchen";
+    case RestaurantCategory.DineIn:
+      return "Dine-In";
+    case RestaurantCategory.PremiumDineIn:
+      return "Premium Dine-In";
+    case RestaurantCategory.Qsr:
+      return "QSR";
+    case RestaurantCategory.Takeout:
+      return "Takeout";
+    default:
+      return "";
+  }
+};
 
 const RestaurantLocation = () => {
   const { setToastData } = useGlobalStore();
   const router = useRouter();
+
   const {
-    register,
     handleSubmit,
     formState: { errors },
-    watch,
-  } = useForm();
+    control,
+    setValue,
+    register,
+  } = useForm<IFormInput>();
 
-  const onSubmit = (data: any) => {
-    console.log(data);
-    router.push("/onboarding/integrations");
+  const {
+    restaurantName,
+    setRestaurantName,
+    restaurantWebsite,
+    setRestaurantWebsite,
+    restaurantType,
+    setRestaurantType,
+    restaurantCategory,
+    setRestaurantCategory,
+    dineInCapacity,
+    setDineInCapacity,
+  } = useRestaurantLocationStore();
+
+  useEffect(() => {
+    setValue("restaurantName", restaurantName);
+    setValue("restaurantWebsite", restaurantWebsite);
+    setValue("restaurantType", restaurantType);
+    setValue("restaurantCategory", restaurantCategory);
+    setValue("dineInCapacity", dineInCapacity);
+  }, [
+    restaurantName,
+    restaurantWebsite,
+    restaurantType,
+    restaurantCategory,
+    dineInCapacity,
+    setValue,
+  ]);
+
+  const restaurantTypeOptions = Object.values(RestaurantType).map((val) => ({
+    value: val.toString(),
+    label: formatRestaurantType(val),
+  }));
+
+  const restaurantCategoryOptions = Object.values(RestaurantCategory).map(
+    (val) => ({
+      value: val.toString(),
+      label: formatRestaurantCategory(val),
+    })
+  );
+
+  const onSubmit = async (data: IFormInput) => {
+    try {
+      const formattedWebsite = formatWebsiteUrlClickable(
+        data.restaurantWebsite
+      );
+
+      const response = await sdk.restaurantOnboarding({
+        input: {
+          name: {
+            value: data.restaurantName,
+          },
+          website: formattedWebsite,
+          type: data.restaurantType as RestaurantType,
+          category: [data.restaurantCategory as RestaurantCategory],
+          dineInCapacity: {
+            value: data.dineInCapacity ? parseInt(data.dineInCapacity) : 0,
+          },
+        },
+      });
+      setToastData({
+        message: "Restaurant details updated successfully!",
+        type: "success",
+      });
+      router.push("/onboarding-restaurant/restaurant-availibility");
+    } catch (error: any) {
+      setToastData({
+        message: `Failed to update restaurant details: ${error.message}`,
+        type: "error",
+      });
+    }
   };
 
   return (
     <motion.div
-      className="z-10 flex flex-col w-full max-w-md items-center space-y-5 text-center"
+      className="z-10 w-full min-h-full max-w-md flex flex-col items-center space-y-5 text-center"
       variants={{
         hidden: { opacity: 0, scale: 0.95 },
         show: {
@@ -42,9 +152,13 @@ const RestaurantLocation = () => {
         variants={STAGGER_CHILD_VARIANTS}
         className="flex flex-col items-center space-y-5 text-center"
       >
-        <h1 className="font-display max-w-md text-2xl font-semibold transition-colors">
-          Restaurant Location Details
+        <h1 className="font-display max-w-2xl font-semibold transition-colors text-2xl">
+          Tell us about your restaurant
         </h1>
+        <p className="max-w-md text-accent-foreground/80 transition-colors text-sm">
+          Every restaurant is unique. Provide accurate information for best
+          results.
+        </p>
       </motion.div>
 
       <form
@@ -52,24 +166,29 @@ const RestaurantLocation = () => {
         onSubmit={handleSubmit(onSubmit)}
       >
         <div className="col-span-2">
-          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
+          <label
+            htmlFor="restaurantName"
+            className="block mb-2 text-sm font-medium text-left text-gray-700"
+          >
             Restaurant Name
           </label>
           <input
-            {...register("resname", {
-              required: "Business description is required",
-            })}
-            className="input input-primary"
-            placeholder="Restaurant Name"
             type="text"
+            {...register("restaurantName", {
+              required: "Restaurant name is required",
+            })}
+            id="restaurantName"
+            className="input input-primary"
+            placeholder="Enter restaurant name"
+            onChange={(e) => setRestaurantName(e.target.value)}
           />
-          {errors.resname && (
+          {errors.restaurantName && (
             <p className="text-red-500 text-sm text-start">
-              {errors.resname.message}
+              {errors.restaurantName.message}
             </p>
           )}
         </div>
-        <div className="col-span-2">
+        {/* <div className="col-span-2">
           <label className="block mb-2 text-lg font-medium text-left text-gray-700">
             Branding
           </label>
@@ -108,94 +227,134 @@ const RestaurantLocation = () => {
               </label>
             </div>
           </div>
-        </div>
+        </div> */}
         <div className="col-span-2">
-          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
+          <label
+            htmlFor="restaurantWebsite"
+            className="block mb-2 text-sm font-medium text-left text-gray-700"
+          >
             Restaurant Website
           </label>
           <input
-            {...register("resname", {
-              required: "Business description is required",
-            })}
-            className="input input-primary"
-            placeholder="Restaurant Website"
             type="text"
-          />
-          {errors.resname && (
-            <p className="text-red-500 text-sm text-start">
-              {errors.resname.message}
-            </p>
-          )}
-        </div>
-        <div className="col-span-2">
-          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-            Restaurant Type
-          </label>
-          <Select
-            {...register("type", {
-              required: "Type is required",
+            {...register("restaurantWebsite", {
+              required: "Restaurant website is required",
+              pattern: {
+                value:
+                  /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/,
+                message: "Please enter a valid website URL",
+              },
             })}
-            id="state"
-            options={RestaurantType}
-            className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
-            classNamePrefix="react-select"
-            placeholder="Select Restaurant Type"
-          />
-          {errors.state && (
-            <p className="text-red-500 text-sm text-start">
-              {errors.state.message}
-            </p>
-          )}
-        </div>
-        <div className="col-span-2">
-          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-            Restaurant Category
-          </label>
-          <Select
-            {...register("category", {
-              required: "Restaurant category is required",
-            })}
-            id="state"
-            options={RestaurantCategory}
-            className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
-            classNamePrefix="react-select"
-            placeholder="Select Restaurant Category"
-          />
-          {errors.state && (
-            <p className="text-red-500 text-sm text-start">
-              {errors.state.message}
-            </p>
-          )}
-        </div>
-        <div className="col-span-2">
-          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-            Dine-In Capacity
-          </label>
-          <input
-            {...register("resname", {
-              required: "Business description is required",
-            })}
+            id="restaurantWebsite"
             className="input input-primary"
-            placeholder="Dine-In Capacity"
-            type="text"
+            placeholder="Enter restaurant website"
+            onChange={(e) => setRestaurantWebsite(e.target.value)}
           />
-          {errors.dineincap && (
+          {errors.restaurantWebsite && (
             <p className="text-red-500 text-sm text-start">
-              {errors.dineincap.message}
+              {errors.restaurantWebsite.message}
             </p>
           )}
         </div>
 
         <div className="col-span-2">
-          <button
-            onClick={() =>
-              router.push("/onboarding-restaurant/restaurant-availibility")
-            }
+          <label
+            htmlFor="restaurantType"
+            className="block mb-2 text-sm font-medium text-left text-gray-700"
+          >
+            Restaurant Type
+          </label>
+          <Select
+            {...register("restaurantType", {
+              required: "Restaurant type is required",
+            })}
+            options={restaurantTypeOptions}
+            className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+            classNamePrefix="react-select"
+            placeholder="Select restaurant type"
+            value={restaurantTypeOptions.find(
+              (option) => option.value === restaurantType
+            )}
+            onChange={(option) => {
+              setValue("restaurantType", option?.value || "");
+              setRestaurantType(option?.value || "");
+            }}
+          />
+          {errors.restaurantType && (
+            <p className="text-red-500 text-sm text-start">
+              {errors.restaurantType.message}
+            </p>
+          )}
+        </div>
+
+        <div className="col-span-2">
+          <label
+            htmlFor="restaurantCategory"
+            className="block mb-2 text-sm font-medium text-left text-gray-700"
+          >
+            Restaurant Category
+          </label>
+          <Select
+            {...register("restaurantCategory", {
+              required: "Restaurant category is required",
+            })}
+            options={restaurantCategoryOptions}
+            className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+            classNamePrefix="react-select"
+            placeholder="Select restaurant category"
+            value={restaurantCategoryOptions.find(
+              (option) => option.value === restaurantCategory
+            )}
+            onChange={(option) => {
+              setValue("restaurantCategory", option?.value || "");
+              setRestaurantCategory(option?.value || "");
+
+              // Show dine-in capacity field if Dine-In or Premium Dine-In is selected
+              if (
+                option?.value === RestaurantCategory.DineIn ||
+                option?.value === RestaurantCategory.PremiumDineIn
+              ) {
+                setDineInCapacity("");
+              }
+            }}
+          />
+          {errors.restaurantCategory && (
+            <p className="text-red-500 text-sm text-start">
+              {errors.restaurantCategory.message}
+            </p>
+          )}
+        </div>
+
+        {/* Dine-in capacity field */}
+        {(restaurantCategory === RestaurantCategory.DineIn ||
+          restaurantCategory === RestaurantCategory.PremiumDineIn) && (
+          <div className="col-span-2">
+            <label
+              htmlFor="dineInCapacity"
+              className="block mb-2 text-sm font-medium text-left text-gray-700"
+            >
+              Dine-In Capacity
+            </label>
+            <input
+              type="text"
+              {...register("dineInCapacity")}
+              id="dineInCapacity"
+              className="input input-primary"
+              placeholder="Enter dine-in capacity"
+              value={dineInCapacity}
+              onChange={(e) => setDineInCapacity(e.target.value)}
+            />
+          </div>
+        )}
+
+        <div className="col-span-2">
+          <CButton
+            variant={ButtonType.Primary}
             type="submit"
-            className="inline-flex btn btn-primary items-center justify-center w-full mt-8"
+            className="mt-8 w-full btn btn-primary"
           >
             Continue
-          </button>
+          </CButton>
         </div>
       </form>
     </motion.div>

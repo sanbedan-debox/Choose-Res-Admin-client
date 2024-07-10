@@ -32,8 +32,6 @@ type OnboardingStates = {
   //STEP 3
   ein: string;
   setein: (location: string) => void;
-  ssn: string;
-  setssn: (location: string) => void;
 };
 
 const useOnboardingStore = create<OnboardingStates>((set) => ({

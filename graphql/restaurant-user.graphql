@@ -101,7 +101,7 @@ type AddRestaurantUser {
 query getUserOnboardingDetails {
   getUserOnboardingDetails {
     ein
-    ssn
+    # ssn
     businessName
     address {
       addressLine1 {
@@ -156,12 +156,6 @@ query GetAdmins {
         value
       }
     }
-    visibility {
-      name {
-        value
-      }
-      status
-    }
     createdAt
     updatedAt
     status
@@ -183,4 +177,8 @@ query getUserRestaurants {
     }
     _id
   }
+}
+
+mutation restaurantOnboarding($input: UpdateRestaurantDetailsInput!) {
+  restaurantOnboarding(input: $input)
 }

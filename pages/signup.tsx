@@ -11,6 +11,8 @@ import useAuthStore from "@/store/auth";
 import Link from "next/link";
 import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
+import CButton from "@/components/common/button/button";
+import { ButtonType } from "@/components/common/button/interface";
 
 enum CommunicationType {
   Email = "EMAIL",
@@ -345,9 +347,9 @@ const Signup: FC = () => {
                   </Link>
                 </p>
                 <div className="flex justify-end">
-                  <button className="btn btn-primary" type="submit">
+                  <CButton variant={ButtonType.Primary} type="submit">
                     Sign Up
-                  </button>
+                  </CButton>
                 </div>
               </form>
               <p className="mt-6 text-sm text-center text-gray-600">
@@ -425,13 +427,14 @@ const Signup: FC = () => {
                 </span> */}
               </div>
               <div className="flex justify-end mt-4">
-                <button
+                <CButton
+                  variant={ButtonType.Primary}
                   type="submit"
                   className="btn btn-primary"
                   disabled={!otpEmail}
                 >
                   Submit
-                </button>
+                </CButton>
               </div>
             </div>
           </form>

@@ -9,6 +9,8 @@ import useOnboardingStore from "@/store/onboarding";
 import { useEffect } from "react";
 import { sdk } from "@/utils/graphqlClient";
 import useAuthStore from "@/store/auth";
+import CButton from "@/components/common/button/button";
+import { ButtonType } from "@/components/common/button/interface";
 
 interface IFormInput {
   addressLine1: string;
@@ -260,12 +262,13 @@ const UserLocation = () => {
         </div>
 
         <div className="col-span-2">
-          <button
+          <CButton
+            variant={ButtonType.Primary}
             type="submit"
             className="inline-flex btn btn-primary items-center justify-center w-full mt-8"
           >
             Continue
-          </button>
+          </CButton>
         </div>
       </form>
     </motion.div>

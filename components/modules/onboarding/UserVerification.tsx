@@ -6,6 +6,8 @@ import { useForm } from "react-hook-form";
 import useOnboardingStore from "@/store/onboarding";
 import useAuthStore from "@/store/auth";
 import { sdk } from "@/utils/graphqlClient";
+import CButton from "@/components/common/button/button";
+import { ButtonType } from "@/components/common/button/interface";
 
 interface IFormInput {
   ein: string;
@@ -24,9 +26,7 @@ const UserVerification = () => {
 
   const {
     ein,
-    ssn,
     setein,
-    setssn,
     addressLine1,
     addressLine2,
     businessName,
@@ -88,7 +88,7 @@ const UserVerification = () => {
     try {
       const response = await sdk.UpdateUserOnboarding({
         input: {
-          ssn: data.ssn,
+          // ssn: data.ssn,
           ein: data.ein,
         },
       });
@@ -161,7 +161,7 @@ const UserVerification = () => {
           )}
         </div>
 
-        <div className="col-span-2">
+        {/* <div className="col-span-2">
           <label className="block mb-2 text-sm font-medium text-left text-gray-700">
             SSN
           </label>
@@ -180,15 +180,16 @@ const UserVerification = () => {
               {errors.ssn.message}
             </p>
           )}
-        </div>
+        </div> */}
 
         <div className="col-span-2">
-          <button
+          <CButton
+            variant={ButtonType.Primary}
             type="submit"
             className="inline-flex btn btn-primary items-center justify-center w-full mt-8"
           >
             Submit
-          </button>
+          </CButton>
         </div>
       </form>
     </motion.div>

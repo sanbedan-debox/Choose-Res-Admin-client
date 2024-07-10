@@ -33,12 +33,13 @@ const Intro = () => {
           revolutionise the Restaurant space.
         </motion.p>
         <motion.div variants={STAGGER_CHILD_VARIANTS}>
-          <button
+          <CButton
+            variant={ButtonType.Primary}
             className="btn btn-primary"
             onClick={() => router.push("/onboarding/user/user-info")}
           >
             Get Started
-          </button>
+          </CButton>
         </motion.div>
       </motion.div>
     </motion.div>

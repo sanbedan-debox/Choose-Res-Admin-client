@@ -5,6 +5,8 @@ import { BiFoodMenu } from "react-icons/bi";
 import { FiMonitor } from "react-icons/fi";
 import { MdOutlinePointOfSale } from "react-icons/md";
 import useAuthStore from "@/store/auth";
+import CButton from "../button/button";
+import { ButtonType } from "../button/interface";
 
 interface Step {
   icon: JSX.Element;
@@ -51,9 +53,13 @@ const SetupGuide: React.FC<{ steps: Step[] }> = ({ steps }) => {
           <span className="text-sm font-semibold">Date</span>
           <span className="text-sm font-bold">{formattedDate}</span>
         </div>
-        <button onClick={handleShowSetup} className="btn btn-primary ">
+        <CButton
+          variant={ButtonType.Primary}
+          onClick={handleShowSetup}
+          className="btn btn-primary "
+        >
           I'll finish this later
-        </button>
+        </CButton>
       </div>
       <h2 className="text-xl font-semibold mb-4">
         Hello! Let’s get you set up.

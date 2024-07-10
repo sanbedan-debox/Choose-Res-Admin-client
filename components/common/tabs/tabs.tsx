@@ -1,35 +1,32 @@
-import React, { useState } from "react";
+import React from "react";
 
 interface TabItem {
   label: string;
-  component: React.ReactNode;
+  path: string;
 }
 
 interface TabsProps {
   items: TabItem[];
+  activeTab: number;
+  onTabClick: (index: number) => void;
 }
 
-const Tabs: React.FC<TabsProps> = ({ items }) => {
-  const [activeTab, setActiveTab] = useState(0);
-
+const Tabs: React.FC<TabsProps> = ({ items, activeTab, onTabClick }) => {
   return (
-    <div>
-      <div className="flex space-x-2 border-b">
-        {items.map((item, index) => (
-          <button
-            key={index}
-            className={`pb-2 px-2 text-sm ${
-              index === activeTab
-                ? "border-b-2 border-blue-500 text-primary"
-                : "text-black"
-            }`}
-            onClick={() => setActiveTab(index)}
-          >
-            {item.label}
-          </button>
-        ))}
-      </div>
-      <div className="mt-4">{items[activeTab].component}</div>
+    <div className="flex space-x-2 border-b">
+      {items.map((item, index) => (
+        <button
+          key={index}
+          className={`pb-2 px-2 text-sm ${
+            index === activeTab
+              ? "border-b-2 border-primary text-primary"
+              : "text-black"
+          }`}
+          onClick={() => onTabClick(index)} // Ensure onTabClick is invoked correctly on click
+        >
+          {item.label}
+        </button>
+      ))}
     </div>
   );
 };
