@@ -112,9 +112,12 @@ const Signup: FC = () => {
         setToastData({ message: "Verification Successful", type: "success" });
         router.replace("/onboarding/user/intro");
       }
-    } catch (error) {
-      console.error("Verification failed:", error);
-      setOtpError("Invalid OTP");
+    } catch (error: any) {
+      const errorMessage = extractErrorMessage(error);
+      setToastData({
+        type: "error",
+        message: errorMessage,
+      });
     }
   };
 

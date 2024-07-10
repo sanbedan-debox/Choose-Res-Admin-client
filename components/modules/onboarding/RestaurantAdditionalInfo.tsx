@@ -10,6 +10,7 @@ import { MeatType, FoodType, BeverageCategory } from "@/generated/graphql";
 import useRestaurantInfoStore from "@/store/restaurantOnboarding";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
+import { extractErrorMessage } from "@/utils/utilFUncs";
 
 interface IFormInput {
   instagramLink?: string;
