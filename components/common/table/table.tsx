@@ -1,51 +1,98 @@
-import React, { ReactNode } from "react";
+// components/CBTable.tsx
+import React from "react";
 
-interface TableProps {
-  headings: string[];
-  data: { [key: string]: any }[];
-  children: (item: { [key: string]: any }) => ReactNode;
+interface Heading {
+  title: string;
+  dataKey: string;
+  render?: (value: any, rowData: any) => React.ReactNode;
 }
 
-const ReusableTable: React.FC<TableProps> = ({ headings, data, children }) => {
+interface CBTableProps {
+  headings: Heading[];
+  data: any[];
+  showAvailableSwitch?: boolean;
+  actions?: (rowData: any) => React.ReactNode;
+}
+
+const CBTable: React.FC<CBTableProps> = ({
+  headings,
+  data,
+  showAvailableSwitch,
+  actions,
+}) => {
+  const renderCell = (item: any, heading: Heading) => {
+    if (heading.render) {
+      return heading.render(item[heading.dataKey], item);
+    }
+    const keys = heading.dataKey.split(".");
+    let value = item;
+    keys.forEach((key) => {
+      value = value[key];
+    });
+    return value;
+  };
+
   return (
     <div className="overflow-x-auto">
-      <table className="min-w-full text-black bg-white border border-gray-200">
-        <thead className="border-b bg-gray-50">
+      <table className="min-w-full bg-white shadow-md rounded-lg w-full">
+        <thead className="bg-gray-50 w-full flex justify-between">
           <tr>
             {headings.map((heading, index) => (
-              <th key={index} className="py-2 px-4 text-left">
-                {heading}
+              <th
+                key={index}
+                className="py-3 px-6 text-left text-sm font-medium text-gray-700 border-b"
+              >
+                {heading.title}
               </th>
             ))}
-            <th className="py-2 px-4 text-left">Actions</th>
+          </tr>
+          <tr>
+            {showAvailableSwitch && (
+              <th className="py-3 px-6 text-left text-sm font-medium text-gray-700 border-b">
+                Available
+              </th>
+            )}
+            {actions && (
+              <th className="py-3 px-6 text-left text-sm font-medium text-gray-700 border-b">
+                Actions
+              </th>
+            )}
           </tr>
         </thead>
         <tbody>
-          {data.map((item, index) => (
-            <tr key={index} className="border-b">
-              {headings.map((heading, index) => (
-                <td key={index} className="py-2 px-4">
-                  {item[heading.toLowerCase()]}
+          {data.map((item, rowIndex) => (
+            <tr
+              key={rowIndex}
+              className="bg-white hover:bg-gray-100 transition-colors"
+            >
+              {headings.map((heading, colIndex) => (
+                <td
+                  key={colIndex}
+                  className="py-3 px-6 text-sm text-gray-700 border-b"
+                >
+                  {renderCell(item, heading)}
                 </td>
               ))}
-              <td className="py-2 px-4 flex space-x-4">{children(item)}</td>
+              {showAvailableSwitch && (
+                <td className="py-3 px-6 text-sm text-gray-700 border-b">
+                  <input
+                    type="checkbox"
+                    checked={item.active}
+                    onChange={() => console.log("Switch toggled for", item)}
+                  />
+                </td>
+              )}
+              {actions && (
+                <td className="py-3 px-6 text-sm text-gray-700 border-b">
+                  {actions(item)}
+                </td>
+              )}
             </tr>
           ))}
         </tbody>
       </table>
-      <div className="flex justify-between items-center mt-4">
-        <div>
-          Showing {data.length} of {data.length}
-        </div>
-        <div className="flex space-x-2">
-          <button className="text-gray-500 hover:text-gray-700">
-            Previous
-          </button>
-          <button className="text-gray-500 hover:text-gray-700">Next</button>
-        </div>
-      </div>
     </div>
   );
 };
 
-export default ReusableTable;
+export default CBTable;

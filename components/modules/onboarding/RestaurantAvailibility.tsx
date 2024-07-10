@@ -4,6 +4,8 @@ import { useRouter } from "next/router";
 import useGlobalStore from "@/store/global";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import Select, { SingleValue } from "react-select";
+import { DateTime } from "luxon";
+
 import {
   locationTypeOptions,
   stateOptions,
@@ -12,6 +14,7 @@ import {
 import { useEffect } from "react";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
+import { sdk } from "@/utils/graphqlClient";
 
 type Day =
   | "Monday"
@@ -224,19 +227,80 @@ const RestaurantAvailability = () => {
     }
   };
 
-  const onSubmit = (data: FormData) => {
-    const formattedData = Object.keys(data.regularHours).map((day) => ({
-      Day: day,
-      hours: data.regularHours[day]
-        .filter((slot) => slot.from && slot.to)
-        .map((slot) => ({
-          start: slot.from,
-          end: slot.to,
-        })),
-      active: data.activeDays[day],
-    }));
-    console.log(formattedData);
-    router.push("/onboarding-restaurant/restaurant-info");
+  const onSubmit = async (data: FormData) => {
+    try {
+      const formattedData = Object.keys(data.regularHours).map((day) => ({
+        Day: day,
+        hours: data.regularHours[day]
+          .filter((slot) => slot.from && slot.to)
+          .map((slot) => ({
+            start: slot.from,
+            end: slot.to,
+          })),
+        active: data.activeDays[day],
+      }));
+      console.log("Formatted Data:", formattedData);
+
+      const formatData = (formattedData: any[]): any[] => {
+        const currentDate = DateTime.now().toISO();
+
+        return formattedData.map((dayData) => {
+          const { Day, hours, active } = dayData;
+
+          const formattedHours = hours.map((hour: any) => {
+            let start = hour.start.value || currentDate;
+            let end = hour.end.value || currentDate;
+
+            return {
+              start,
+              end,
+            };
+          });
+
+          return {
+            day: Day,
+            hours: formattedHours,
+            active,
+          };
+        });
+      };
+
+      const formattedSampleInput = formatData(formattedData);
+      const response = await sdk.restaurantOnboarding({
+        input: {
+          address: {
+            addressLine1: {
+              value: data.addressLine1,
+            },
+            addressLine2: {
+              value: data?.addressLine2,
+            },
+            city: {
+              value: data.city,
+            },
+            state: { value: data?.state?.value },
+            postcode: {
+              value: data.postcode,
+            },
+            coordinate: {
+              coordinates: [22, 22],
+            },
+          },
+          timezone: data.timezone.value,
+          availability: formattedSampleInput,
+        },
+      });
+      setToastData({
+        message: "Restaurant details updated successfully!",
+        type: "success",
+      });
+      router.push("/onboarding-restaurant/restaurant-info");
+    } catch (error: any) {
+      setToastData({
+        message: `Failed to update restaurant details: ${error.message}`,
+        type: "error",
+      });
+    }
   };
 
   return (

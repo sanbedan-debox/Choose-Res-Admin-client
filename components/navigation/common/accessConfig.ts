@@ -8,7 +8,7 @@ export const modules = [
   {
     name: "Menu Management",
     roles: ["admin", "normal", "master"],
-    route: "/menu",
+    route: "/menu/menu",
     icon: "menu",
   },
   {

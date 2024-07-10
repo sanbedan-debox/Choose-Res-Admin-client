@@ -1,41 +1,46 @@
-// components/Menu.js
+// components/Menu.tsx
+import CBTable from "@/components/common/table/table";
 import React from "react";
+import { FaTrash, FaEdit, FaShieldAlt } from "react-icons/fa";
 
-const Menu = () => {
+const Menu: React.FC = () => {
   const menuItems = [
-    { name: "Burger", price: "$5.99" },
-    { name: "Pizza", price: "$8.99" },
-    { name: "Pasta", price: "$7.99" },
-    { name: "Salad", price: "$4.99" },
+    { name: "Burger", price: "$5.99", id: 1134, active: true },
+    { name: "Pizza", price: "$8.99", id: 131, active: false },
+    { name: "Pasta", price: "$7.99", id: 1123, active: false },
+    { name: "Salad", price: "$4.99", id: 13123, active: true },
   ];
 
+  const headings = [
+    { title: "Name", dataKey: "name" },
+    { title: "Price", dataKey: "price" },
+  ];
+
+  const renderActions = (rowData: { id: number }) => (
+    <div className="flex space-x-3">
+      <FaTrash
+        className="text-red-500 cursor-pointer"
+        onClick={() => console.log("Delete", rowData.id)}
+      />
+      <FaEdit
+        className="text-blue-500 cursor-pointer"
+        onClick={() => console.log("Edit", rowData.id)}
+      />
+      <FaShieldAlt
+        className="text-green-500 cursor-pointer"
+        onClick={() => console.log("Change Password", rowData.id)}
+      />
+    </div>
+  );
+
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Menu</h1>
-      <table className="min-w-full bg-white border border-gray-200">
-        <thead>
-          <tr>
-            <th className="py-2 px-4 border-b border-gray-200 text-left">
-              Item
-            </th>
-            <th className="py-2 px-4 border-b border-gray-200 text-left">
-              Price
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {menuItems.map((item, index) => (
-            <tr key={index} className="hover:bg-gray-100">
-              <td className="py-2 px-4 border-b border-gray-200">
-                {item.name}
-              </td>
-              <td className="py-2 px-4 border-b border-gray-200">
-                {item.price}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="p-4">
+      <CBTable
+        headings={headings}
+        data={menuItems}
+        showAvailableSwitch
+        actions={renderActions}
+      />
     </div>
   );
 };
