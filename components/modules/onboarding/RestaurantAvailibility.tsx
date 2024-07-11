@@ -200,6 +200,7 @@ const RestaurantAvailability = () => {
     cords,
     place,
     timeZone,
+    availabilityHours,
     setAddressLine1,
     setAddressLine2,
     setCity,
@@ -208,7 +209,72 @@ const RestaurantAvailability = () => {
     setTimeZone,
     setPostcode,
     setPlace,
+    setAvailabilityHours,
   } = RestaurantOnboardingStore();
+
+  function reformatAvailability(data: any[]): any {
+    const defaultValues: any = {
+      regularHours: {
+        Monday: [
+          { from: { label: "", value: "" }, to: { label: "", value: "" } },
+        ],
+        Tuesday: [
+          { from: { label: "", value: "" }, to: { label: "", value: "" } },
+        ],
+        Wednesday: [
+          { from: { label: "", value: "" }, to: { label: "", value: "" } },
+        ],
+        Thursday: [
+          { from: { label: "", value: "" }, to: { label: "", value: "" } },
+        ],
+        Friday: [
+          { from: { label: "", value: "" }, to: { label: "", value: "" } },
+        ],
+        Saturday: [
+          { from: { label: "", value: "" }, to: { label: "", value: "" } },
+        ],
+        Sunday: [
+          { from: { label: "", value: "" }, to: { label: "", value: "" } },
+        ],
+      },
+      activeDays: {
+        Monday: false,
+        Tuesday: false,
+        Wednesday: false,
+        Thursday: false,
+        Friday: false,
+        Saturday: false,
+        Sunday: false,
+      },
+    };
+
+    const reformattedData: any = { ...defaultValues };
+
+    data.forEach((item) => {
+      const day = item.day;
+      const hours = item.hours;
+      const active = item.active;
+
+      reformattedData.regularHours[day] = hours.map((hour: any) => ({
+        from: {
+          label:
+            timeOptions.find((option) => option.value === hour.start)?.label ||
+            "",
+          value: hour.start,
+        },
+        to: {
+          label:
+            timeOptions.find((option) => option.value === hour.end)?.label ||
+            "",
+          value: hour.end,
+        },
+      }));
+
+      reformattedData.activeDays[day] = active;
+    });
+
+    return reformattedData;
+  }
 
   useEffect(() => {
     setValue("addressLine1", addressLine1);
@@ -226,6 +292,9 @@ const RestaurantAvailability = () => {
         setCoords(cords);
       }
     }
+    const originalFormat = reformatAvailability(availabilityHours);
+    setValue("regularHours", originalFormat.regularHours);
+    setValue("activeDays", originalFormat.activeDays);
   }, [
     setValue,
     addressLine1,
@@ -333,6 +402,8 @@ const RestaurantAvailability = () => {
       };
 
       const formattedSampleInput = formatData(formattedData);
+      setAvailabilityHours(formattedSampleInput);
+
       const response = await sdk.restaurantOnboarding({
         input: {
           address: {

@@ -33,6 +33,7 @@ type HomePageProps = {
     dineInCapacity: any;
     socialInfo: any;
     website: any;
+    availability: any;
   };
 };
 const OnboardingPage = ({ repo }: HomePageProps) => {
@@ -56,13 +57,14 @@ const OnboardingPage = ({ repo }: HomePageProps) => {
     setState,
     setTimeZone,
     setTwitterLink,
+    setAvailabilityHours,
   } = RestaurantOnboardingStore();
   useEffect(() => {
     setRestaurantName(repo?.name?.value);
     setRestaurantType(repo?.type);
     setRestaurantCategory(repo?.category);
     setRestaurantWebsite(repo?.website);
-    setDineInCapacity(repo?.dineInCapacity.value);
+    setDineInCapacity(repo?.dineInCapacity?.value);
     setBeverageCategory(repo?.beverageCategory as BeverageCategory);
     setFoodType(repo?.foodType as FoodType);
     setMeatType(repo?.meatType as MeatType);
@@ -77,6 +79,7 @@ const OnboardingPage = ({ repo }: HomePageProps) => {
     setInstagramLink(repo?.socialInfo?.instagram);
     setTimeZone(repo?.timezone);
     setTwitterLink(repo?.socialInfo?.twitter);
+    setAvailabilityHours(repo?.availability);
   }, [repo]);
 
   let childComponent;
@@ -153,11 +156,10 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
         dineInCapacity,
         socialInfo,
         website,
+        availability,
       } = response.getRestaurantOnboardingData;
 
-      console.log(response.getRestaurantOnboardingData);
-      console.log("ADDRESSS SSS");
-      console.log(response.getRestaurantOnboardingData.address);
+      console.log(response.getRestaurantOnboardingData.availability);
 
       return {
         props: {
@@ -175,6 +177,7 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
             dineInCapacity,
             socialInfo,
             website,
+            availability,
           },
         },
       };

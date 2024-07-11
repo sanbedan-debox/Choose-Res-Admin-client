@@ -320,6 +320,14 @@ query getRestaurantOnboardingData {
       twitter
     }
     website
+    availability {
+      day
+      hours {
+        start
+        end
+      }
+      active
+    }
     timezone
     category
     beverageCategory
@@ -331,7 +339,6 @@ query getRestaurantOnboardingData {
     }
   }
 }
-
 query getActiveStates {
   getActiveStates {
     value

@@ -14,6 +14,7 @@ import { parseCookies } from "nookies";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import { extractErrorMessage } from "@/utils/utilFUncs";
+import CustomSwitch from "@/components/common/customSwitch/customSwitch";
 
 enum CommunicationType {
   Email = "EMAIL",
@@ -155,6 +156,14 @@ const Signup: FC = () => {
     setOtpEmail("");
     setOtpWhatsApp("");
     setTimer(120);
+  };
+
+  const toggleCommunicationPref = (type: CommunicationType) => {
+    if (commPref.includes(type)) {
+      setCommPref((prev) => prev.filter((pref) => pref !== type));
+    } else {
+      setCommPref((prev) => [...prev, type]);
+    }
   };
 
   return (
@@ -337,6 +346,36 @@ const Signup: FC = () => {
                     </label>
                   </div>
                 </div>
+                {/* <div className="col-span-2">
+                  <label
+                    htmlFor="commPref"
+                    className="block mb-2 text-sm font-medium text-black"
+                  >
+                    Communication Preferences
+                  </label>
+                  <div className="flex gap-4">
+                    <div className="flex items-center space-x-1">
+                      <CustomSwitch
+                        checked={commPref.includes(CommunicationType.Email)}
+                        onChange={() =>
+                          toggleCommunicationPref(CommunicationType.Email)
+                        }
+                        label="Email"
+                      />
+                      <p>Email</p>
+                    </div>
+                    <div className="flex  items-center space-x-1">
+                      <CustomSwitch
+                        checked={commPref.includes(CommunicationType.WhatsApp)}
+                        onChange={() =>
+                          toggleCommunicationPref(CommunicationType.WhatsApp)
+                        }
+                        label="WhatsApp"
+                      />
+                      <p>Whatsapp</p>
+                    </div>
+                  </div>
+                </div> */}
                 <p className="text-sm text-gray-800">
                   {`By logging in, you agree to CHOOSE's`}{" "}
                   <Link

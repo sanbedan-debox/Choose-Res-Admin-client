@@ -82,7 +82,7 @@ const OnboardingRestaurantLayout = ({ children }: Props) => {
   const progressPercentage = ((currentStepIndex + 1) / steps.length) * 100;
 
   return (
-    <div className="bg-white  text-black flex flex-col">
+    <div className="bg-white min-h-screen  text-black flex flex-col">
       <div className="flex items-center justify-between px-4 py-2 border-b">
         {showBackButton && (
           <button

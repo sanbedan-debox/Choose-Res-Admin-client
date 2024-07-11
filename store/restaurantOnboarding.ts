@@ -1,5 +1,16 @@
-import { BeverageCategory, FoodType, MeatType } from "@/generated/graphql";
+import {
+  BeverageCategory,
+  FoodType,
+  MeatType,
+  RestaurantCategory,
+} from "@/generated/graphql";
 import { create } from "zustand";
+
+type AvailabilityHour = {
+  day: string;
+  hours: { start: string; end: string }[];
+  active: boolean;
+};
 
 type RestaurantOnboardingStates = {
   id: string;
@@ -12,8 +23,8 @@ type RestaurantOnboardingStates = {
   setRestaurantWebsite: (website: string) => void;
   restaurantType: string;
   setRestaurantType: (type: string) => void;
-  restaurantCategory: [];
-  setRestaurantCategory: (category: []) => void;
+  restaurantCategory: RestaurantCategory[];
+  setRestaurantCategory: (category: RestaurantCategory[]) => void;
   dineInCapacity: string;
   setDineInCapacity: (capacity: string) => void;
 
@@ -34,6 +45,8 @@ type RestaurantOnboardingStates = {
   setCords: (coords: [number, number]) => void;
   timeZone: string;
   setTimeZone: (state: string) => void;
+  availabilityHours: AvailabilityHour[];
+  setAvailabilityHours: (hours: AvailabilityHour[]) => void;
 
   //STEP 3
   instagramLink: string;
@@ -83,6 +96,8 @@ const RestaurantOnboardingStore = create<RestaurantOnboardingStates>((set) => ({
   setCords: (cords) => set({ cords }),
   timeZone: "",
   setTimeZone: (timeZone) => set({ timeZone }),
+  availabilityHours: [],
+  setAvailabilityHours: (hours) => set({ availabilityHours: hours }),
 
   //STEP 3
   instagramLink: "",

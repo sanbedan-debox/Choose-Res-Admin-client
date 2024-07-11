@@ -384,11 +384,15 @@ const RestaurantBasicInformation = () => {
                 classNamePrefix="react-select"
                 placeholder="Select restaurant category"
                 value={restaurantCategoryOptions.filter((option) =>
-                  restaurantCategory.includes(option.value)
+                  (restaurantCategory ?? []).includes(
+                    option.value as RestaurantCategory
+                  )
                 )}
                 onChange={(options) => {
                   const selectedOptions = options
-                    ? options.map((option) => option.value)
+                    ? options.map(
+                        (option) => option.value as RestaurantCategory
+                      )
                     : [];
                   setValue("restaurantCategory", selectedOptions);
                   setRestaurantCategory(selectedOptions);
@@ -404,26 +408,27 @@ const RestaurantBasicInformation = () => {
           )}
         </div>
 
-        {(restaurantCategory.includes(RestaurantCategory.DineIn) ||
-          restaurantCategory.includes(RestaurantCategory.PremiumDineIn)) && (
-          <div className="col-span-2">
-            <label
-              htmlFor="dineInCapacity"
-              className="block mb-2 text-sm font-medium text-left text-gray-700"
-            >
-              Dine-In Capacity
-            </label>
-            <input
-              type="text"
-              {...register("dineInCapacity")}
-              id="dineInCapacity"
-              className="input input-primary"
-              placeholder="Enter dine-in capacity"
-              value={dineInCapacity}
-              onChange={(e) => setDineInCapacity(e.target.value)}
-            />
-          </div>
-        )}
+        {restaurantCategory &&
+          (restaurantCategory.includes(RestaurantCategory.DineIn) ||
+            restaurantCategory.includes(RestaurantCategory.PremiumDineIn)) && (
+            <div className="col-span-2">
+              <label
+                htmlFor="dineInCapacity"
+                className="block mb-2 text-sm font-medium text-left text-gray-700"
+              >
+                Dine-In Capacity
+              </label>
+              <input
+                type="text"
+                {...register("dineInCapacity")}
+                id="dineInCapacity"
+                className="input input-primary"
+                placeholder="Enter dine-in capacity"
+                value={dineInCapacity}
+                onChange={(e) => setDineInCapacity(e.target.value)}
+              />
+            </div>
+          )}
 
         <div className="col-span-2">
           <CButton

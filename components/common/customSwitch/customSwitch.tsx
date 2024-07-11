@@ -4,10 +4,12 @@ const CustomSwitch = ({
   checked,
   onChange,
   label,
+  className,
 }: {
   checked: boolean;
   onChange: () => void;
   label: string;
+  className?: string;
 }) => {
   const handleKeyDown: React.KeyboardEventHandler<HTMLDivElement> = (e) => {
     if (e.key === "Enter" || e.key === " ") {
@@ -18,7 +20,9 @@ const CustomSwitch = ({
 
   return (
     <div
-      className={`switch ${checked ? "switch-primary checked" : ""}`}
+      className={`${className} switch ${
+        checked ? "switch-primary checked" : ""
+      }`}
       onClick={onChange}
       onKeyDown={handleKeyDown}
       role="switch"
