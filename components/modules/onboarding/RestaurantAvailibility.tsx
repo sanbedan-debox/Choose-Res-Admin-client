@@ -250,29 +250,68 @@ const RestaurantAvailability = () => {
 
     const reformattedData: any = { ...defaultValues };
 
-    data.forEach((item) => {
-      const day = item.day;
-      const hours = item.hours;
-      const active = item.active;
+    // Function to generate time options
+    const generateTimeOptions = () => {
+      const options: { value: string; label: string }[] = [];
+      const periods = ["AM", "PM"];
 
-      reformattedData.regularHours[day] = hours.map((hour: any) => ({
-        from: {
-          label:
-            timeOptions.find((option) => option.value === hour.start)?.label ||
-            "",
-          value: hour.start,
-        },
-        to: {
-          label:
-            timeOptions.find((option) => option.value === hour.end)?.label ||
-            "",
-          value: hour.end,
-        },
-      }));
+      for (let hour = 0; hour < 24; hour++) {
+        for (let minute = 0; minute < 60; minute += 15) {
+          const period = periods[Math.floor(hour / 12)];
+          const displayHour = hour % 12 === 0 ? 12 : hour % 12;
+          const displayMinute = minute === 0 ? "00" : minute.toString();
+          const time = `${displayHour}:${displayMinute} ${period}`;
 
-      reformattedData.activeDays[day] = active;
-    });
+          const date = new Date();
+          date.setHours(hour, minute, 0, 0);
 
+          const isoTime = date.toISOString();
+
+          options.push({ value: isoTime, label: time });
+        }
+      }
+      return options;
+    };
+
+    const timeOptions = generateTimeOptions();
+
+    data &&
+      data.forEach((item) => {
+        const day = item.day;
+        const hours = item.hours;
+        const active = item.active;
+
+        reformattedData.regularHours[day] = hours.map((hour: any) => ({
+          from: {
+            label:
+              timeOptions.find((option) => {
+                const optionDate = new Date(option.value);
+                const hourStartDate = new Date(hour.start);
+                return (
+                  optionDate.getHours() === hourStartDate.getHours() &&
+                  optionDate.getMinutes() === hourStartDate.getMinutes()
+                );
+              })?.label || "",
+            value: hour.start,
+          },
+          to: {
+            label:
+              timeOptions.find((option) => {
+                const optionDate = new Date(option.value);
+                const hourEndDate = new Date(hour.end);
+                return (
+                  optionDate.getHours() === hourEndDate.getHours() &&
+                  optionDate.getMinutes() === hourEndDate.getMinutes()
+                );
+              })?.label || "",
+            value: hour.end,
+          },
+        }));
+
+        reformattedData.activeDays[day] = active;
+      });
+
+    console.log("Reformatted data", reformattedData);
     return reformattedData;
   }
 
