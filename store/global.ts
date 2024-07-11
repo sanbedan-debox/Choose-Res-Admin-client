@@ -5,7 +5,7 @@ import { create } from "zustand";
 type ToastData = {
   message: string;
   type: "success" | "error" | "warning";
-  title?: string; // Make title property optional
+  title?: string;
 };
 
 type MenuState = {

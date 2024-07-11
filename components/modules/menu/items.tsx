@@ -12,14 +12,11 @@ const Items: React.FC = () => {
   const { setToastData } = useGlobalStore();
   const { setisAddItemModalOpen } = useMenuStore();
 
-  const { selectedRestaurantId } = useRestaurantsStore();
   useEffect(() => {
     const fetchRestaurantUsers = async () => {
       // setLoading(true);
       try {
-        const response = await sdk.getItems({
-          id: selectedRestaurantId,
-        });
+        const response = await sdk.getItems();
         if (response && response.getItems) {
           // const formattedRestaurant = response.getAllMenus.map((res) => ({
           //   ...res,

@@ -5,11 +5,9 @@ import { sdk } from "@/utils/graphqlClient";
 import useRestaurantsStore from "@/store/restaurant";
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { setRestaurants, setSelectedRestaurant, setSelectedRestaurantId } =
-    useRestaurantsStore();
+  const { setRestaurants, setSelectedRestaurant } = useRestaurantsStore();
   useEffect(() => {
     const fetchRestaurantUsers = async () => {
-      // setLoading(true);
       try {
         const response = await sdk.getUserRestaurants();
         if (response && response.getUserRestaurants) {
@@ -20,7 +18,13 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           );
           setRestaurants(formattedRestaurant);
           setSelectedRestaurant(formattedRestaurant[0]?.name?.value);
-          setSelectedRestaurantId(formattedRestaurant[0]?._id);
+          try {
+            const res = await sdk.setRestaurantIdAsCookie({
+              id: formattedRestaurant[0]?._id,
+            });
+          } catch (error) {
+            console.error("Failed to fetch restaurant users:", error);
+          }
         }
       } catch (error) {
         console.error("Failed to fetch restaurant users:", error);

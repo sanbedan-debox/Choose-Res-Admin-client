@@ -10,14 +10,11 @@ const Categories: React.FC = () => {
   const [cats, setCats] = useState();
   const { setToastData } = useGlobalStore();
 
-  const { selectedRestaurantId } = useRestaurantsStore();
   useEffect(() => {
     const fetchRestaurantUsers = async () => {
       // setLoading(true);
       try {
-        const response = await sdk.getCategories({
-          id: selectedRestaurantId,
-        });
+        const response = await sdk.getCategories();
         if (response && response.getCategories) {
           // const formattedRestaurant = response.getAllMenus.map((res) => ({
           //   ...res,

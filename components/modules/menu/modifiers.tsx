@@ -8,16 +8,13 @@ import { FaTrash, FaEdit, FaShieldAlt } from "react-icons/fa";
 
 const Modifiers: React.FC = () => {
   const [modifier, setModifier] = useState();
-  const { selectedRestaurantId } = useRestaurantsStore();
   const { setToastData } = useGlobalStore();
 
   useEffect(() => {
     const fetchRestaurantUsers = async () => {
       // setLoading(true);
       try {
-        const response = await sdk.getModifiers({
-          id: selectedRestaurantId,
-        });
+        const response = await sdk.getModifiers();
         if (response && response.getModifiers) {
           // const formattedRestaurant = response.getAllMenus.map((res) => ({
           //   ...res,

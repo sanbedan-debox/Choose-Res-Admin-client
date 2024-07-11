@@ -170,10 +170,6 @@ mutation AddRestaurant($input: AddRestaurantInput!) {
   addRestaurant(input: $input)
 }
 
-query ChangeUserToActive {
-  changeUserToActive
-}
-
 query getUserRestaurants {
   getUserRestaurants {
     name {
@@ -220,8 +216,8 @@ query getAllMenus {
   }
 }
 
-query getCategories($id: String!) {
-  getCategories(restaurantId: $id) {
+query getCategories {
+  getCategories {
     _id
     name {
       value
@@ -241,8 +237,8 @@ query getCategories($id: String!) {
   }
 }
 
-query getItems($id: String!) {
-  getItems(restaurantId: $id) {
+query getItems {
+  getItems {
     _id
     name {
       value
@@ -265,8 +261,8 @@ query getItems($id: String!) {
   }
 }
 
-query getModifiers($id: String!) {
-  getModifiers(restaurantId: $id) {
+query getModifiers {
+  getModifiers {
     _id
     name {
       value
@@ -277,8 +273,8 @@ query getModifiers($id: String!) {
   }
 }
 
-query getModifierGroups($id: String!) {
-  getModifierGroups(restaurantId: $id) {
+query getModifierGroups {
+  getModifierGroups {
     _id
     name {
       value
@@ -355,4 +351,8 @@ query getActiveTimezones {
     gmtOffset
     _id
   }
+}
+
+query setRestaurantIdAsCookie($id: String!) {
+  setRestaurantIdAsCookie(id: $id)
 }
