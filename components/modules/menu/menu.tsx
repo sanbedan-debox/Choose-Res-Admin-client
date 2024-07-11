@@ -1,10 +1,12 @@
 import CBTable from "@/components/common/table/table";
+import useMenuStore from "@/store/menu";
 import { sdk } from "@/utils/graphqlClient";
 import React, { useEffect, useState } from "react";
 import { FaTrash, FaEdit, FaShieldAlt } from "react-icons/fa";
 
 const Menu: React.FC = () => {
-  const [menu, setMenu] = useState();
+  const [menu, setMenu] = useState<any>();
+  const { setisAddMenuModalOpen } = useMenuStore();
 
   useEffect(() => {
     const fetchRestaurantUsers = async () => {
@@ -28,7 +30,7 @@ const Menu: React.FC = () => {
     fetchRestaurantUsers();
   }, []);
 
-  const headings = [{ title: "Name", dataKey: "name" }];
+  const headings = [{ title: "Name", dataKey: "name.value" }];
 
   const renderActions = (rowData: { id: number }) => (
     <div className="flex space-x-3">
@@ -49,7 +51,7 @@ const Menu: React.FC = () => {
   const mainActions = [
     {
       label: "Add Menu",
-      onClick: () => console.log(true),
+      onClick: () => setisAddMenuModalOpen(true),
     },
   ];
   return (

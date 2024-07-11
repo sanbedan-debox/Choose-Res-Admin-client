@@ -2,6 +2,9 @@ import ReusableModal from "@/components/common/modal/modal";
 import NotFound from "@/components/common/notFound/notFound";
 import MenuLayout from "@/components/layouts/MenuLayout";
 import Categories from "@/components/modules/menu/category";
+import AddCategoryForm from "@/components/modules/menu/forms/addCategoryForm";
+import AddItemForm from "@/components/modules/menu/forms/addItemForm";
+import AddMenuForm from "@/components/modules/menu/forms/addMenuForm";
 import Items from "@/components/modules/menu/items";
 import Menu from "@/components/modules/menu/menu";
 import ModifiersGroup from "@/components/modules/menu/modifierGroups";
@@ -9,6 +12,7 @@ import Modifiers from "@/components/modules/menu/modifiers";
 import useMenuStore from "@/store/menu";
 
 import { GetServerSideProps } from "next";
+import { useState } from "react";
 
 type MenuPageProps = {
   repo: {
@@ -17,11 +21,51 @@ type MenuPageProps = {
 };
 
 const MenuPage = ({ repo: { pagePath } }: MenuPageProps) => {
-  const { isAddItemModalOpen, setisAddItemModalOpen } = useMenuStore();
+  const {
+    isAddItemModalOpen,
+    setisAddItemModalOpen,
+    isAddCategoryModalOpen,
+    isAddMenuModalOpen,
+    setisAddCategoryModalOpen,
+    setisAddMenuModalOpen,
+  } = useMenuStore();
 
   const handleAddMenuItemClose = () => {
     setisAddItemModalOpen(false);
   };
+  const handleAddMenuCategoryClose = () => {
+    setisAddCategoryModalOpen(false);
+  };
+  const handleAddMenuClose = () => {
+    setisAddMenuModalOpen(false);
+  };
+
+  const [name, setName] = useState("");
+  const [desc, setDesc] = useState("");
+  const [image, setImage] = useState("");
+  const [price, setPrice] = useState(0);
+  const [status, setStatus] = useState("");
+  const [applySalesTax, setApplySalesTax] = useState(false);
+  const [popularItem, setPopularItem] = useState(false);
+  const [upSellItem, setUpSellItem] = useState(false);
+  const [availability, setAvailability] = useState([]);
+
+  const handleSubmit = () => {
+    // Handle form submission
+    console.log({
+      name,
+      desc,
+      image,
+      price,
+      status,
+      applySalesTax,
+      popularItem,
+      upSellItem,
+      availability,
+    });
+    handleAddMenuItemClose();
+  };
+
   let childComponent;
 
   switch (pagePath) {
@@ -50,11 +94,34 @@ const MenuPage = ({ repo: { pagePath } }: MenuPageProps) => {
     <>
       <MenuLayout>{childComponent}</MenuLayout>
       <ReusableModal
+        width="xl"
         isOpen={isAddItemModalOpen}
-        title="Add Menu Item"
+        title="Items"
         onClose={handleAddMenuItemClose}
       >
-        HEllo add menu
+        <div className="flex justify-center">
+          <AddItemForm />
+        </div>
+      </ReusableModal>
+      <ReusableModal
+        width="xl"
+        isOpen={isAddCategoryModalOpen}
+        title="Category"
+        onClose={handleAddMenuCategoryClose}
+      >
+        <div className="flex justify-center">
+          <AddCategoryForm />
+        </div>
+      </ReusableModal>
+      <ReusableModal
+        width="xl"
+        isOpen={isAddMenuModalOpen}
+        title="Menu"
+        onClose={handleAddMenuClose}
+      >
+        <div className="flex justify-center">
+          <AddMenuForm />
+        </div>
       </ReusableModal>
     </>
   );

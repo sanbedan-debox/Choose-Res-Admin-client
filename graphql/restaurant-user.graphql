@@ -356,3 +356,15 @@ query getActiveTimezones {
 query setRestaurantIdAsCookie($id: String!) {
   setRestaurantIdAsCookie(id: $id)
 }
+
+mutation addItem($input: AddItemInput!) {
+  addItem(input: $input)
+}
+
+mutation addCategory($input: AddCategoryInput!) {
+  addCategory(input: $input)
+}
+
+mutation addMenu($input: AddMenuInput!) {
+  addMenu(input: $input)
+}

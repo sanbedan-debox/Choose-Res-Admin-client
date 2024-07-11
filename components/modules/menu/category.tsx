@@ -1,5 +1,6 @@
 import CBTable from "@/components/common/table/table";
 import useGlobalStore from "@/store/global";
+import useMenuStore from "@/store/menu";
 import useRestaurantsStore from "@/store/restaurant";
 import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
@@ -7,8 +8,9 @@ import React, { useEffect, useState } from "react";
 import { FaTrash, FaEdit, FaShieldAlt } from "react-icons/fa";
 
 const Categories: React.FC = () => {
-  const [cats, setCats] = useState();
+  const [cats, setCats] = useState<any>();
   const { setToastData } = useGlobalStore();
+  const { setisAddCategoryModalOpen } = useMenuStore();
 
   useEffect(() => {
     const fetchRestaurantUsers = async () => {
@@ -36,7 +38,7 @@ const Categories: React.FC = () => {
     fetchRestaurantUsers();
   }, []);
 
-  const headings = [{ title: "Name", dataKey: "name" }];
+  const headings = [{ title: "Name", dataKey: "name.value" }];
 
   const renderActions = (rowData: { id: number }) => (
     <div className="flex space-x-3">
@@ -57,7 +59,7 @@ const Categories: React.FC = () => {
   const mainActions = [
     {
       label: "Add Category",
-      onClick: () => console.log(true),
+      onClick: () => setisAddCategoryModalOpen(true),
     },
   ];
   return (

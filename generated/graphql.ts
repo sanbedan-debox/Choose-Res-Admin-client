@@ -1640,6 +1640,27 @@ export type SetRestaurantIdAsCookieQueryVariables = Exact<{
 
 export type SetRestaurantIdAsCookieQuery = { __typename?: 'Query', setRestaurantIdAsCookie: boolean };
 
+export type AddItemMutationVariables = Exact<{
+  input: AddItemInput;
+}>;
+
+
+export type AddItemMutation = { __typename?: 'Mutation', addItem: boolean };
+
+export type AddCategoryMutationVariables = Exact<{
+  input: AddCategoryInput;
+}>;
+
+
+export type AddCategoryMutation = { __typename?: 'Mutation', addCategory: boolean };
+
+export type AddMenuMutationVariables = Exact<{
+  input: AddMenuInput;
+}>;
+
+
+export type AddMenuMutation = { __typename?: 'Mutation', addMenu: boolean };
+
 
 export const LogoutDocument = gql`
     query Logout {
@@ -1969,6 +1990,21 @@ export const SetRestaurantIdAsCookieDocument = gql`
   setRestaurantIdAsCookie(id: $id)
 }
     `;
+export const AddItemDocument = gql`
+    mutation addItem($input: AddItemInput!) {
+  addItem(input: $input)
+}
+    `;
+export const AddCategoryDocument = gql`
+    mutation addCategory($input: AddCategoryInput!) {
+  addCategory(input: $input)
+}
+    `;
+export const AddMenuDocument = gql`
+    mutation addMenu($input: AddMenuInput!) {
+  addMenu(input: $input)
+}
+    `;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string, variables?: any) => Promise<T>;
 
@@ -2054,6 +2090,15 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     setRestaurantIdAsCookie(variables: SetRestaurantIdAsCookieQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<SetRestaurantIdAsCookieQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<SetRestaurantIdAsCookieQuery>(SetRestaurantIdAsCookieDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'setRestaurantIdAsCookie', 'query', variables);
+    },
+    addItem(variables: AddItemMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddItemMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<AddItemMutation>(AddItemDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'addItem', 'mutation', variables);
+    },
+    addCategory(variables: AddCategoryMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddCategoryMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<AddCategoryMutation>(AddCategoryDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'addCategory', 'mutation', variables);
+    },
+    addMenu(variables: AddMenuMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddMenuMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<AddMenuMutation>(AddMenuDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'addMenu', 'mutation', variables);
     }
   };
 }

@@ -42,13 +42,14 @@ const ReusableModal: React.FC<ModalProps> = ({
     md: "w-1/3",
     ml: "w-1/2",
     lg: "w-3/4",
-    xl: "w-full",
+    xl: "w-[95vw]",
+    dxl: "w-full",
   };
 
   return ReactDOM.createPortal(
     <div className="modal-overlay fixed inset-0 bg-black bg-opacity-45 flex items-center justify-center z-50">
       <div
-        className={`rounded shadow-lg bg-white ${widthClasses[width]} z-10`}
+        className={`rounded shadow-lg bg-white ${widthClasses[width]} max-h-[92vh] overflow-auto z-10`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="py-5 px-6">
