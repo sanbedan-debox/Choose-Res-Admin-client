@@ -1,9 +1,13 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { useRouter } from "next/router";
 import { AnimatePresence } from "framer-motion";
 import { ArrowLeft as ArrowLeftIcon } from "lucide-react";
 import Image from "next/image";
 import logo1 from "../../assets/logo/logoDark.png";
+import useGlobalStore from "@/store/global";
+import useMasterStore from "@/store/masters";
+import { sdk } from "@/utils/graphqlClient";
+import { extractErrorMessage } from "@/utils/utilFUncs";
 
 type Props = {
   children: ReactNode;
@@ -20,6 +24,51 @@ const OnboardingRestaurantLayout = ({ children }: Props) => {
   const router = useRouter();
   const { pathname, query } = router;
   const { onBoardingRoute } = query;
+  const { setToastData } = useGlobalStore();
+
+  const { setMasterStates, setMasterTimezones } = useMasterStore();
+
+  useEffect(() => {
+    const fetch = async () => {
+      // setLoading(true);
+      try {
+        const resstates = await sdk.getActiveStates();
+        if (resstates && resstates.getActiveStates) {
+          const formattedStates = resstates.getActiveStates.map((state) => ({
+            value: state._id,
+            label: state.value,
+          }));
+          setMasterStates(formattedStates);
+        }
+        const resTimeZones = await sdk.getActiveTimezones();
+        if (resTimeZones && resTimeZones.getActiveTimezones) {
+          const formattedTimeZones = resTimeZones.getActiveTimezones.map(
+            (timeZone) => {
+              const gmtOffsetHours = timeZone.gmtOffset / 3600;
+              const sign = gmtOffsetHours >= 0 ? "+" : "-";
+              const formattedLabel = `${timeZone.value} (GMT ${sign} ${Math.abs(
+                gmtOffsetHours
+              )})`;
+              return {
+                value: timeZone._id,
+                label: formattedLabel,
+              };
+            }
+          );
+          setMasterTimezones(formattedTimeZones);
+        }
+      } catch (error: any) {
+        const errorMessage = extractErrorMessage(error);
+        setToastData({
+          type: "error",
+          message: errorMessage,
+        });
+      } finally {
+        // setLoading(false);
+      }
+    };
+    fetch();
+  }, []);
 
   const handleBackClick = () => {
     router.back();
@@ -33,7 +82,7 @@ const OnboardingRestaurantLayout = ({ children }: Props) => {
   const progressPercentage = ((currentStepIndex + 1) / steps.length) * 100;
 
   return (
-    <div className="bg-white text-black min-h-screen flex flex-col">
+    <div className="bg-white  text-black flex flex-col">
       <div className="flex items-center justify-between px-4 py-2 border-b">
         {showBackButton && (
           <button

@@ -14,6 +14,7 @@ import { ButtonType } from "@/components/common/button/interface";
 import AsyncSelect from "react-select/async";
 import debounce from "lodash.debounce";
 import { extractErrorMessage } from "@/utils/utilFUncs";
+import useMasterStore from "@/store/masters";
 
 interface IFormInput {
   addressLine1: string;
@@ -46,6 +47,7 @@ const loadOptions = (
 const UserLocation = () => {
   const { setToastData } = useGlobalStore();
   const router = useRouter();
+  const { statesOptions } = useMasterStore();
   const {
     register,
     handleSubmit,
@@ -245,11 +247,11 @@ const UserLocation = () => {
                 <Select
                   {...field}
                   id="state"
-                  options={stateOptions}
+                  options={statesOptions}
                   className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
                   classNamePrefix="react-select"
                   placeholder="Select State"
-                  value={stateOptions.find((option) => option.value === state)}
+                  value={statesOptions.find((option) => option.value === state)}
                   onChange={(option) => {
                     setValue("state", option?.value || "");
                     setState(option?.value || "");

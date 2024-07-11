@@ -4,16 +4,38 @@ import { create } from "zustand";
 type RestaurantOnboardingStates = {
   id: string;
   setId: (name: string) => void;
+
+  //STEP 1
   restaurantName: string;
   setRestaurantName: (name: string) => void;
   restaurantWebsite: string;
   setRestaurantWebsite: (website: string) => void;
   restaurantType: string;
   setRestaurantType: (type: string) => void;
-  restaurantCategory: string;
-  setRestaurantCategory: (category: string) => void;
+  restaurantCategory: [];
+  setRestaurantCategory: (category: []) => void;
   dineInCapacity: string;
   setDineInCapacity: (capacity: string) => void;
+
+  //STEP 2
+  addressLine1: string;
+  setAddressLine1: (address: string) => void;
+  addressLine2: string;
+  setAddressLine2: (address: string) => void;
+  city: string;
+  setCity: (city: string) => void;
+  state: string;
+  setState: (state: string) => void;
+  postcode: string;
+  setPostcode: (postcode: string) => void;
+  place: { displayName: string; placeId: string };
+  setPlace: (place: { displayName: string; placeId: string }) => void;
+  cords: [number, number];
+  setCords: (coords: [number, number]) => void;
+  timeZone: string;
+  setTimeZone: (state: string) => void;
+
+  //STEP 3
   instagramLink: string;
   setInstagramLink: (link: string) => void;
   facebookLink: string;
@@ -29,18 +51,40 @@ type RestaurantOnboardingStates = {
 };
 
 const RestaurantOnboardingStore = create<RestaurantOnboardingStates>((set) => ({
-  restaurantName: "",
-  setRestaurantName: (name) => set({ restaurantName: name }),
   id: "",
   setId: (_id) => set({ id: _id }),
+
+  //STEP 1
+  restaurantName: "",
+  setRestaurantName: (name) => set({ restaurantName: name }),
   restaurantWebsite: "",
   setRestaurantWebsite: (website) => set({ restaurantWebsite: website }),
   restaurantType: "",
   setRestaurantType: (type) => set({ restaurantType: type }),
-  restaurantCategory: "",
+  restaurantCategory: [],
   setRestaurantCategory: (category) => set({ restaurantCategory: category }),
   dineInCapacity: "",
   setDineInCapacity: (capacity) => set({ dineInCapacity: capacity }),
+
+  //STEP 2
+  addressLine1: "",
+  setAddressLine1: (address) => set({ addressLine1: address }),
+  addressLine2: "",
+  setAddressLine2: (address) => set({ addressLine2: address }),
+  city: "",
+  setCity: (city) => set({ city }),
+  state: "",
+  setState: (state) => set({ state }),
+  postcode: "",
+  setPostcode: (postcode) => set({ postcode }),
+  place: { displayName: "", placeId: "" },
+  setPlace: (place) => set({ place }),
+  cords: [0, 0],
+  setCords: (cords) => set({ cords }),
+  timeZone: "",
+  setTimeZone: (timeZone) => set({ timeZone }),
+
+  //STEP 3
   instagramLink: "",
   setInstagramLink: (link) => set({ instagramLink: link }),
   facebookLink: "",

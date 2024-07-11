@@ -284,8 +284,8 @@ query getModifierGroups($id: String!) {
   }
 }
 
-query getRestaurantOnboardingData($id: String!) {
-  getRestaurantOnboardingData(id: $id) {
+query getRestaurantOnboardingData {
+  getRestaurantOnboardingData {
     name {
       value
     }
@@ -329,5 +329,21 @@ query getRestaurantOnboardingData($id: String!) {
     dineInCapacity {
       value
     }
+  }
+}
+
+query getActiveStates {
+  getActiveStates {
+    value
+    abbreviation
+    _id
+  }
+}
+
+query getActiveTimezones {
+  getActiveTimezones {
+    value
+    gmtOffset
+    _id
   }
 }

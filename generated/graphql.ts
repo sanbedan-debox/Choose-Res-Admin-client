@@ -82,6 +82,7 @@ export type AddItemInput = {
   name: MasterCommonInput;
   popularItem: Scalars['Boolean']['input'];
   price: MasterCommonInputNumber;
+  restaurantId: Scalars['String']['input'];
   status: StatusEnum;
   upSellItem: Scalars['Boolean']['input'];
 };
@@ -353,6 +354,12 @@ export type EmailCampaignsObject = {
   usersCount: Scalars['Float']['output'];
 };
 
+export type EmailTemplateTitles = {
+  __typename?: 'EmailTemplateTitles';
+  _id: Scalars['ID']['output'];
+  title: Scalars['String']['output'];
+};
+
 export type EmailTemplatesObject = {
   __typename?: 'EmailTemplatesObject';
   _id: Scalars['ID']['output'];
@@ -372,6 +379,17 @@ export enum EstimatedRevenueEnum {
   From50Kto200K = 'From50Kto200K',
   From200Kto500K = 'From200Kto500K',
   From500Kto1M = 'From500Kto1M'
+}
+
+/** Apply filter operators while fetching the data  */
+export enum FilterOperatorsEnum {
+  Any = 'any',
+  EqualTo = 'equalTo',
+  GreaterThan = 'greaterThan',
+  GreaterThanOrEqualTo = 'greaterThanOrEqualTo',
+  LessThan = 'lessThan',
+  LessThanOrEqualTo = 'lessThanOrEqualTo',
+  NotEqualTo = 'notEqualTo'
 }
 
 /** Restaurant food type enum. */
@@ -646,7 +664,6 @@ export type MutationAddCuisineArgs = {
 
 export type MutationAddItemArgs = {
   input: AddItemInput;
-  restaurantId: Scalars['String']['input'];
 };
 
 
@@ -819,8 +836,7 @@ export type MutationDeleteTaxRateFromRestaurantArgs = {
 
 
 export type MutationGetItemByCategoryArgs = {
-  itemId: Scalars['String']['input'];
-  modifierGroupId: Scalars['String']['input'];
+  categoryId: Scalars['String']['input'];
 };
 
 
@@ -932,6 +948,12 @@ export type MutationVerifyUserDetailsArgs = {
   input: VerifyUserDetails;
 };
 
+export type PaginatedFilter = {
+  field: Scalars['String']['input'];
+  operator: FilterOperatorsEnum;
+  value?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type PlaceDetail = {
   __typename?: 'PlaceDetail';
   latitude: Scalars['Float']['output'];
@@ -991,8 +1013,9 @@ export type Query = {
   getCategories: Array<Category>;
   getCategory: Category;
   getCategoryByMenu: Category;
+  getEmailTemplateTitles: Array<EmailTemplateTitles>;
   getItem: Item;
-  getItems: Item;
+  getItems: Array<Item>;
   getMenu: Menu;
   getMenusByType: Array<Menu>;
   getModifier: Modifier;
@@ -1051,7 +1074,15 @@ export type QueryGenerateOtpForNumberVerificationArgs = {
 };
 
 
+export type QueryGetAllEmailTemplatesArgs = {
+  filter?: InputMaybe<PaginatedFilter>;
+  page?: Scalars['Float']['input'];
+};
+
+
 export type QueryGetCategoriesArgs = {
+  filter?: InputMaybe<PaginatedFilter>;
+  page?: Scalars['Float']['input'];
   restaurantId: Scalars['String']['input'];
 };
 
@@ -1072,6 +1103,8 @@ export type QueryGetItemArgs = {
 
 
 export type QueryGetItemsArgs = {
+  filter?: InputMaybe<PaginatedFilter>;
+  page?: Scalars['Float']['input'];
   restaurantId: Scalars['String']['input'];
 };
 
@@ -1123,11 +1156,6 @@ export type QueryGetRestaurantDetailsArgs = {
 };
 
 
-export type QueryGetRestaurantOnboardingDataArgs = {
-  id: Scalars['String']['input'];
-};
-
-
 export type QueryGetTaxRateArgs = {
   id: Scalars['String']['input'];
 };
@@ -1168,23 +1196,23 @@ export type RejectRecord = {
 export type Restaurant = {
   __typename?: 'Restaurant';
   _id: Scalars['ID']['output'];
-  address: AddressInfo;
-  availability: Array<Availability>;
-  beverageCategory: Array<BeverageCategory>;
-  brandingLogo: Scalars['String']['output'];
-  category: Array<RestaurantCategory>;
+  address?: Maybe<AddressInfo>;
+  availability?: Maybe<Array<Availability>>;
+  beverageCategory?: Maybe<Array<BeverageCategory>>;
+  brandingLogo?: Maybe<Scalars['String']['output']>;
+  category?: Maybe<Array<RestaurantCategory>>;
   createdAt: Scalars['DateTimeISO']['output'];
   dineInCapacity?: Maybe<MasterCommonNumber>;
-  foodType: Array<FoodType>;
+  foodType?: Maybe<Array<FoodType>>;
   integrations?: Maybe<Array<Integration>>;
-  meatType: MeatType;
-  menus: Array<MenuInfo>;
+  meatType?: Maybe<MeatType>;
+  menus?: Maybe<Array<MenuInfo>>;
   name: MasterCommon;
   socialInfo?: Maybe<SocialInfo>;
   status: RestaurantStatus;
-  taxRates: Array<TaxRateInfo>;
-  timezone: Scalars['String']['output'];
-  type: RestaurantType;
+  taxRates?: Maybe<Array<TaxRateInfo>>;
+  timezone?: Maybe<Scalars['String']['output']>;
+  type?: Maybe<RestaurantType>;
   updatedAt: Scalars['DateTimeISO']['output'];
   user: User;
   website?: Maybe<Scalars['String']['output']>;
@@ -1395,7 +1423,7 @@ export type UpdateUserOnboardingInput = {
   address?: InputMaybe<AddressInfoInput>;
   businessName?: InputMaybe<Scalars['String']['input']>;
   businessType?: InputMaybe<BusinessTypeEnum>;
-  dob?: InputMaybe<Scalars['String']['input']>;
+  dob?: InputMaybe<Scalars['DateTimeISO']['input']>;
   ein?: InputMaybe<Scalars['String']['input']>;
   employeeSize?: InputMaybe<StaffCountEnum>;
   establishedAt?: InputMaybe<Scalars['String']['input']>;
@@ -1602,7 +1630,7 @@ export type GetItemsQueryVariables = Exact<{
 }>;
 
 
-export type GetItemsQuery = { __typename?: 'Query', getItems: { __typename?: 'Item', _id: string, status: StatusEnum, name: { __typename?: 'MasterCommon', value: string }, desc: { __typename?: 'MasterCommon', value: string }, modifierGroup: Array<{ __typename?: 'ModifierGroupInfo', _id: string, name: { __typename?: 'MasterCommon', value: string } }>, price: { __typename?: 'MasterCommonNumber', value: number } } };
+export type GetItemsQuery = { __typename?: 'Query', getItems: Array<{ __typename?: 'Item', _id: string, status: StatusEnum, name: { __typename?: 'MasterCommon', value: string }, desc: { __typename?: 'MasterCommon', value: string }, modifierGroup: Array<{ __typename?: 'ModifierGroupInfo', _id: string, name: { __typename?: 'MasterCommon', value: string } }>, price: { __typename?: 'MasterCommonNumber', value: number } }> };
 
 export type GetModifiersQueryVariables = Exact<{
   id: Scalars['String']['input'];
@@ -1618,12 +1646,20 @@ export type GetModifierGroupsQueryVariables = Exact<{
 
 export type GetModifierGroupsQuery = { __typename?: 'Query', getModifierGroups: Array<{ __typename?: 'ModifierGroup', _id: string, name: { __typename?: 'MasterCommon', value: string } }> };
 
-export type GetRestaurantOnboardingDataQueryVariables = Exact<{
-  id: Scalars['String']['input'];
-}>;
+export type GetRestaurantOnboardingDataQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetRestaurantOnboardingDataQuery = { __typename?: 'Query', getRestaurantOnboardingData: { __typename?: 'Restaurant', brandingLogo: string, website?: string | null, timezone: string, category: Array<RestaurantCategory>, beverageCategory: Array<BeverageCategory>, foodType: Array<FoodType>, meatType: MeatType, type: RestaurantType, name: { __typename?: 'MasterCommon', value: string }, address: { __typename?: 'AddressInfo', addressLine1: { __typename?: 'MasterCommon', value: string }, addressLine2?: { __typename?: 'MasterCommon', value: string } | null, state: { __typename?: 'MasterCommon', value: string }, city: { __typename?: 'MasterCommon', value: string }, postcode: { __typename?: 'MasterCommon', value: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string, placeId: string } | null }, socialInfo?: { __typename?: 'SocialInfo', facebook?: string | null, instagram?: string | null, twitter?: string | null } | null, dineInCapacity?: { __typename?: 'MasterCommonNumber', value: number } | null } };
+export type GetRestaurantOnboardingDataQuery = { __typename?: 'Query', getRestaurantOnboardingData: { __typename?: 'Restaurant', brandingLogo?: string | null, website?: string | null, timezone?: string | null, category?: Array<RestaurantCategory> | null, beverageCategory?: Array<BeverageCategory> | null, foodType?: Array<FoodType> | null, meatType?: MeatType | null, type?: RestaurantType | null, name: { __typename?: 'MasterCommon', value: string }, address?: { __typename?: 'AddressInfo', addressLine1: { __typename?: 'MasterCommon', value: string }, addressLine2?: { __typename?: 'MasterCommon', value: string } | null, state: { __typename?: 'MasterCommon', value: string }, city: { __typename?: 'MasterCommon', value: string }, postcode: { __typename?: 'MasterCommon', value: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string, placeId: string } | null } | null, socialInfo?: { __typename?: 'SocialInfo', facebook?: string | null, instagram?: string | null, twitter?: string | null } | null, dineInCapacity?: { __typename?: 'MasterCommonNumber', value: number } | null } };
+
+export type GetActiveStatesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetActiveStatesQuery = { __typename?: 'Query', getActiveStates: Array<{ __typename?: 'State', value: string, abbreviation?: string | null, _id: string }> };
+
+export type GetActiveTimezonesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetActiveTimezonesQuery = { __typename?: 'Query', getActiveTimezones: Array<{ __typename?: 'Timezone', value: string, gmtOffset: number, _id: string }> };
 
 
 export const LogoutDocument = gql`
@@ -1878,8 +1914,8 @@ export const GetModifierGroupsDocument = gql`
 }
     `;
 export const GetRestaurantOnboardingDataDocument = gql`
-    query getRestaurantOnboardingData($id: String!) {
-  getRestaurantOnboardingData(id: $id) {
+    query getRestaurantOnboardingData {
+  getRestaurantOnboardingData {
     name {
       value
     }
@@ -1923,6 +1959,24 @@ export const GetRestaurantOnboardingDataDocument = gql`
     dineInCapacity {
       value
     }
+  }
+}
+    `;
+export const GetActiveStatesDocument = gql`
+    query getActiveStates {
+  getActiveStates {
+    value
+    abbreviation
+    _id
+  }
+}
+    `;
+export const GetActiveTimezonesDocument = gql`
+    query getActiveTimezones {
+  getActiveTimezones {
+    value
+    gmtOffset
+    _id
   }
 }
     `;
@@ -2003,8 +2057,14 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     getModifierGroups(variables: GetModifierGroupsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetModifierGroupsQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetModifierGroupsQuery>(GetModifierGroupsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getModifierGroups', 'query', variables);
     },
-    getRestaurantOnboardingData(variables: GetRestaurantOnboardingDataQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetRestaurantOnboardingDataQuery> {
+    getRestaurantOnboardingData(variables?: GetRestaurantOnboardingDataQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetRestaurantOnboardingDataQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetRestaurantOnboardingDataQuery>(GetRestaurantOnboardingDataDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getRestaurantOnboardingData', 'query', variables);
+    },
+    getActiveStates(variables?: GetActiveStatesQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetActiveStatesQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetActiveStatesQuery>(GetActiveStatesDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getActiveStates', 'query', variables);
+    },
+    getActiveTimezones(variables?: GetActiveTimezonesQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetActiveTimezonesQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetActiveTimezonesQuery>(GetActiveTimezonesDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getActiveTimezones', 'query', variables);
     }
   };
 }

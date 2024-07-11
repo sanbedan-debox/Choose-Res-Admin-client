@@ -8,17 +8,13 @@ import AsyncSelect from "react-select/async";
 import { DateTime } from "luxon";
 import debounce from "lodash.debounce";
 
-import {
-  locationTypeOptions,
-  stateOptions,
-  timeZoneOptions,
-} from "./interface/interface";
 import { useEffect, useState } from "react";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import RestaurantOnboardingStore from "@/store/restaurantOnboarding";
+import useMasterStore from "@/store/masters";
 
 type Day =
   | "Monday"
@@ -47,10 +43,10 @@ interface FormData {
   addressLine2: string;
   city: string;
   location: PlacesType;
-  state: { value: string; label: string };
+  state: string;
   postcode: string;
   locationType: { value: string; label: string };
-  timezone: { value: string; label: string };
+  timezone: string;
   regularHours: {
     Monday: {
       from: { label: string; value: string };
@@ -135,7 +131,6 @@ const loadOptions = (
 };
 
 const RestaurantAvailability = () => {
-  const { id } = RestaurantOnboardingStore();
   const { setToastData } = useGlobalStore();
   const router = useRouter();
   const {
@@ -193,8 +188,54 @@ const RestaurantAvailability = () => {
     Sunday: useFieldArray({ control, name: "regularHours.Sunday" }),
   };
   const [placesOptions, setPlacesOptions] = useState<PlacesType[]>([]);
-
+  const { statesOptions, timezonesOptions } = useMasterStore();
   const activeDays = watch("activeDays");
+
+  const {
+    addressLine1,
+    addressLine2,
+    city,
+    state,
+    postcode,
+    cords,
+    place,
+    timeZone,
+    setAddressLine1,
+    setAddressLine2,
+    setCity,
+    setCords,
+    setState,
+    setTimeZone,
+    setPostcode,
+    setPlace,
+  } = RestaurantOnboardingStore();
+
+  useEffect(() => {
+    setValue("addressLine1", addressLine1);
+    setValue("addressLine2", addressLine2);
+    setValue("city", city);
+    setValue("state", state);
+    setValue("postcode", postcode);
+    setValue("timezone", timeZone);
+    if (place?.displayName && place?.placeId) {
+      setSelectedPlace({ label: place.displayName, value: place.placeId });
+      setValue("location", { label: place.displayName, value: place.placeId });
+    }
+    if (cords) {
+      if (cords[0] !== 0 && cords[1] !== 0) {
+        setCoords(cords);
+      }
+    }
+  }, [
+    setValue,
+    addressLine1,
+    addressLine2,
+    city,
+    state,
+    postcode,
+    place,
+    cords,
+  ]);
 
   const checkOverlapForDay = (day: string) => {
     let hours: {
@@ -304,7 +345,7 @@ const RestaurantAvailability = () => {
             city: {
               value: data.city,
             },
-            state: { value: data?.state?.value },
+            state: { value: data.state },
             postcode: {
               value: data.postcode,
             },
@@ -316,7 +357,7 @@ const RestaurantAvailability = () => {
               coordinates: coords,
             },
           },
-          timezone: data.timezone.value,
+          timezone: data.timezone,
           availability: formattedSampleInput,
         },
       });
@@ -395,6 +436,7 @@ const RestaurantAvailability = () => {
             })}
             className="input input-primary"
             placeholder="Address Line 1"
+            onChange={(e) => setAddressLine1(e.target.value)}
           />
           {errors.addressLine1 && (
             <p className="text-red-500 text-sm text-start">
@@ -411,6 +453,7 @@ const RestaurantAvailability = () => {
             {...register("addressLine2", {})}
             className="input input-primary"
             placeholder="Address Line 2"
+            onChange={(e) => setAddressLine2(e.target.value)}
           />
           {errors.addressLine2 && (
             <p className="text-red-500 text-sm text-start">
@@ -430,6 +473,7 @@ const RestaurantAvailability = () => {
               })}
               className="input input-primary"
               placeholder="City"
+              onChange={(e) => setCity(e.target.value)}
             />
             {errors.city && (
               <p className="text-red-500 text-sm text-start">
@@ -453,10 +497,15 @@ const RestaurantAvailability = () => {
                 <Select
                   {...field}
                   id="state"
-                  options={stateOptions}
+                  options={statesOptions}
                   className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
                   classNamePrefix="react-select"
                   placeholder="Select State"
+                  value={statesOptions.find((option) => option.value === state)}
+                  onChange={(option) => {
+                    setValue("state", option?.value || "");
+                    setState(option?.value || "");
+                  }}
                 />
               )}
             />
@@ -479,6 +528,7 @@ const RestaurantAvailability = () => {
             })}
             className="input input-primary"
             placeholder="Zipcode"
+            onChange={(e) => setPostcode(e.target.value)}
           />
           {errors.postcode && (
             <p className="text-red-500 text-sm text-start">
@@ -508,10 +558,10 @@ const RestaurantAvailability = () => {
                 label: option?.label ?? "",
                 value: option?.value ?? "",
               });
-              // setPlace({
-              //   displayName: option?.label ?? "",
-              //   placeId: option?.value ?? "",
-              // });
+              setPlace({
+                displayName: option?.label ?? "",
+                placeId: option?.value ?? "",
+              });
               const d = await sdk.PlaceDetails({
                 placeId: option?.value ?? "",
               });
@@ -520,16 +570,15 @@ const RestaurantAvailability = () => {
                   d.getPlaceDetails.latitude,
                   d.getPlaceDetails.longitude,
                 ]);
-                // setCords([
-                //   d.getPlaceDetails.latitude,
-                //   d.getPlaceDetails.longitude,
-                // ]);
+                setCords([
+                  d.getPlaceDetails.latitude,
+                  d.getPlaceDetails.longitude,
+                ]);
               }
               setValue("location", {
                 value: option?.value ?? "",
                 label: option?.label ?? "",
               });
-              // setLocation(option?.value || "");
             }}
             // defaultOptions={[
             //   { value: "One", label: "One" },
@@ -564,10 +613,17 @@ const RestaurantAvailability = () => {
               <Select
                 {...field}
                 id="timezone"
-                options={timeZoneOptions}
+                options={timezonesOptions}
                 className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
                 classNamePrefix="react-select"
                 placeholder="Select Timezone"
+                value={timezonesOptions.find(
+                  (option) => option.value === timeZone
+                )}
+                onChange={(option) => {
+                  setValue("timezone", option?.value || "");
+                  setTimeZone(option?.value || "");
+                }}
               />
             )}
           />

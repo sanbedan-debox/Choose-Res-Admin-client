@@ -67,6 +67,7 @@ const useOnboardingStore = create<OnboardingStates>((set) => ({
   cords: [0, 0],
   setCords: (cords) => set({ cords }),
 
+  //STEP 3
   ein: "",
   setein: (ein) => set({ ein }),
 }));

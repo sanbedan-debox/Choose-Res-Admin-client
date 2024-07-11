@@ -19,7 +19,8 @@ interface IFormInput {
   restaurantName: string;
   restaurantWebsite: string;
   restaurantType: string;
-  restaurantCategory: string;
+  // restaurantCategory?: RestaurantCategory[];
+  restaurantCategory?: string[];
   dineInCapacity?: string;
   logo?: string;
 }
@@ -79,7 +80,6 @@ const RestaurantBasicInformation = () => {
     setRestaurantCategory,
     dineInCapacity,
     setDineInCapacity,
-    setId,
   } = RestaurantOnboardingStore();
 
   useEffect(() => {
@@ -142,12 +142,12 @@ const RestaurantBasicInformation = () => {
         },
         website: formattedWebsite,
         type: data.restaurantType as RestaurantType,
-        category: [data.restaurantCategory as RestaurantCategory],
+        category: data.restaurantCategory || [],
         brandingLogo: logoURL,
       };
       if (
-        data.restaurantCategory === RestaurantCategory.DineIn ||
-        data.restaurantCategory === RestaurantCategory.PremiumDineIn
+        data.restaurantCategory?.includes(RestaurantCategory.DineIn) ||
+        data.restaurantCategory?.includes(RestaurantCategory.PremiumDineIn)
       ) {
         input.dineInCapacity = {
           value: data.dineInCapacity ? parseInt(data.dineInCapacity) : 0,
@@ -373,32 +373,30 @@ const RestaurantBasicInformation = () => {
           <Controller
             name="restaurantCategory"
             control={control}
-            rules={{ required: "restaurantCategory is required" }}
+            rules={{ required: "Restaurant category is required" }}
             render={({ field }) => (
               <Select
                 {...field}
-                id="state"
+                isMulti
+                id="restaurantCategory"
                 options={restaurantCategoryOptions}
                 className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
                 classNamePrefix="react-select"
                 placeholder="Select restaurant category"
-                value={restaurantCategoryOptions.find(
-                  (option) => option.value === restaurantCategory
+                value={restaurantCategoryOptions.filter((option) =>
+                  restaurantCategory.includes(option.value)
                 )}
-                onChange={(option) => {
-                  setValue("restaurantCategory", option?.value || "");
-                  setRestaurantCategory(option?.value || "");
-
-                  if (
-                    option?.value === RestaurantCategory.DineIn ||
-                    option?.value === RestaurantCategory.PremiumDineIn
-                  ) {
-                    setDineInCapacity("");
-                  }
+                onChange={(options) => {
+                  const selectedOptions = options
+                    ? options.map((option) => option.value)
+                    : [];
+                  setValue("restaurantCategory", selectedOptions);
+                  setRestaurantCategory(selectedOptions);
                 }}
               />
             )}
           />
+
           {errors.restaurantCategory && (
             <p className="text-red-500 text-sm text-start">
               {errors.restaurantCategory.message}
@@ -406,8 +404,8 @@ const RestaurantBasicInformation = () => {
           )}
         </div>
 
-        {(restaurantCategory === RestaurantCategory.DineIn ||
-          restaurantCategory === RestaurantCategory.PremiumDineIn) && (
+        {(restaurantCategory.includes(RestaurantCategory.DineIn) ||
+          restaurantCategory.includes(RestaurantCategory.PremiumDineIn)) && (
           <div className="col-span-2">
             <label
               htmlFor="dineInCapacity"

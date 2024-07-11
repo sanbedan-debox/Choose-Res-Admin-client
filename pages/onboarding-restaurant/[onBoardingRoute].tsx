@@ -21,11 +21,12 @@ import {
 type HomePageProps = {
   repo: {
     pagePath: string;
-    beverageCategory: [BeverageCategory];
-    brandingLogo: string;
-    category: [RestaurantCategory];
-    foodType: [FoodType];
-    meatType: MeatType;
+    address: any;
+    beverageCategory: any;
+    brandingLogo: any;
+    category: any;
+    foodType: any;
+    meatType: any;
     name: any;
     timezone: any;
     type: any;
@@ -36,33 +37,47 @@ type HomePageProps = {
 };
 const OnboardingPage = ({ repo }: HomePageProps) => {
   const {
+    setAddressLine1,
+    setAddressLine2,
     setBeverageCategory,
+    setCity,
+    setCords,
     setDineInCapacity,
-    setFoodType,
     setFacebookLink,
+    setFoodType,
     setInstagramLink,
     setMeatType,
+    setPlace,
+    setPostcode,
     setRestaurantCategory,
     setRestaurantName,
     setRestaurantType,
     setRestaurantWebsite,
+    setState,
+    setTimeZone,
     setTwitterLink,
   } = RestaurantOnboardingStore();
-  // useEffect(() => {
-  //   setbusinessName(repo.businessName);
-  //   setbusinessType(repo.businessType);
-  //   setdob(repo.dob);
-  //   setein(repo.ein);
-  //   setemployeeSize(repo.employeeSize);
-  //   setestablishedAt(repo.establishedAt);
-  //   setestimatedRevenue(repo.estimatedRevenue);
-  //   setAddressLine1(repo.address?.addressLine1?.value);
-  //   setAddressLine2(repo.address?.addressLine2?.value);
-  //   setCity(repo.address?.city?.value);
-
-  //   setPostcode(repo.address?.postcode?.value);
-  //   setState(repo.address?.state?.value);
-  // }, [repo]);
+  useEffect(() => {
+    setRestaurantName(repo?.name?.value);
+    setRestaurantType(repo?.type);
+    setRestaurantCategory(repo?.category);
+    setRestaurantWebsite(repo?.website);
+    setDineInCapacity(repo?.dineInCapacity.value);
+    setBeverageCategory(repo?.beverageCategory as BeverageCategory);
+    setFoodType(repo?.foodType as FoodType);
+    setMeatType(repo?.meatType as MeatType);
+    setAddressLine1(repo?.address?.addressLine1?.value);
+    setAddressLine2(repo?.address?.addressLine1?.value);
+    setCity(repo.address?.city?.value);
+    setPostcode(repo.address?.postcode?.value);
+    setState(repo.address?.state?.value);
+    setCords(repo?.address?.coordinate?.coordinates ?? []);
+    setPlace(repo.address?.place);
+    setFacebookLink(repo?.socialInfo?.facebook);
+    setInstagramLink(repo?.socialInfo?.instagram);
+    setTimeZone(repo?.timezone);
+    setTwitterLink(repo?.socialInfo?.twitter);
+  }, [repo]);
 
   let childComponent;
 
@@ -96,16 +111,6 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
   context
 ) => {
   const cookies = parseCookies(context);
-  let id = "";
-
-  try {
-    const restaurantData = RestaurantOnboardingStore();
-    if (restaurantData) {
-      id = restaurantData.id; // Assign id from RestaurantOnboardingStore
-    }
-  } catch (error) {
-    console.error("Error retrieving restaurant data:", error);
-  }
 
   const token = cookies.accessToken;
   if (!token) {
@@ -118,7 +123,8 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
   }
 
   try {
-    if (!id) {
+    const res_id = cookies.restaurant_onboarding_id;
+    if (!res_id) {
       return {
         props: {
           repo: {
@@ -129,7 +135,7 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
     }
 
     const response = await sdk.getRestaurantOnboardingData(
-      { id },
+      { id: res_id },
       { cookie: context.req.headers.cookie?.toString() ?? "" }
     );
 
@@ -150,12 +156,13 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
       } = response.getRestaurantOnboardingData;
 
       console.log(response.getRestaurantOnboardingData);
+      console.log("ADDRESSS SSS");
+      console.log(response.getRestaurantOnboardingData.address);
 
       return {
         props: {
           repo: {
             pagePath: context.query["onBoardingRoute"]?.toString() ?? "",
-
             address,
             beverageCategory,
             brandingLogo,
@@ -172,7 +179,6 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
         },
       };
     } else {
-      // Handle case where response or required details are not available
       console.error("Failed to fetch user details:", response);
       return {
         redirect: {
