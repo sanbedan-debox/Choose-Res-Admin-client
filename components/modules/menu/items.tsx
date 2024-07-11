@@ -1,5 +1,6 @@
 import CBTable from "@/components/common/table/table";
 import useGlobalStore from "@/store/global";
+import useMenuStore from "@/store/menu";
 import useRestaurantsStore from "@/store/restaurant";
 import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
@@ -7,8 +8,9 @@ import React, { useEffect, useState } from "react";
 import { FaTrash, FaEdit, FaShieldAlt } from "react-icons/fa";
 
 const Items: React.FC = () => {
-  const [items, setItems] = useState();
+  const [items, setItems] = useState<any>();
   const { setToastData } = useGlobalStore();
+  const { setisAddItemModalOpen } = useMenuStore();
 
   const { selectedRestaurantId } = useRestaurantsStore();
   useEffect(() => {
@@ -60,7 +62,7 @@ const Items: React.FC = () => {
   const mainActions = [
     {
       label: "Add Item",
-      onClick: () => console.log(true),
+      onClick: () => setisAddItemModalOpen(true),
     },
   ];
   return (

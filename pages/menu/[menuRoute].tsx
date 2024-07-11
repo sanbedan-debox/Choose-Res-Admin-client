@@ -1,3 +1,4 @@
+import ReusableModal from "@/components/common/modal/modal";
 import NotFound from "@/components/common/notFound/notFound";
 import MenuLayout from "@/components/layouts/MenuLayout";
 import Categories from "@/components/modules/menu/category";
@@ -5,6 +6,7 @@ import Items from "@/components/modules/menu/items";
 import Menu from "@/components/modules/menu/menu";
 import ModifiersGroup from "@/components/modules/menu/modifierGroups";
 import Modifiers from "@/components/modules/menu/modifiers";
+import useMenuStore from "@/store/menu";
 
 import { GetServerSideProps } from "next";
 
@@ -15,6 +17,11 @@ type MenuPageProps = {
 };
 
 const MenuPage = ({ repo: { pagePath } }: MenuPageProps) => {
+  const { isAddItemModalOpen, setisAddItemModalOpen } = useMenuStore();
+
+  const handleAddMenuItemClose = () => {
+    setisAddItemModalOpen(false);
+  };
   let childComponent;
 
   switch (pagePath) {
@@ -39,7 +46,18 @@ const MenuPage = ({ repo: { pagePath } }: MenuPageProps) => {
       break;
   }
 
-  return <MenuLayout>{childComponent}</MenuLayout>;
+  return (
+    <>
+      <MenuLayout>{childComponent}</MenuLayout>
+      <ReusableModal
+        isOpen={isAddItemModalOpen}
+        title="Add Menu Item"
+        onClose={handleAddMenuItemClose}
+      >
+        HEllo add menu
+      </ReusableModal>
+    </>
+  );
 };
 
 export default MenuPage;

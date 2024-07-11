@@ -120,6 +120,7 @@ const CBTable: React.FC<CBTableProps> = ({
                   <td className="py-3 px-6 text-sm text-gray-700 ">
                     <input
                       type="checkbox"
+                      aria-label="check"
                       checked={item.active}
                       onChange={() => console.log("Switch toggled for", item)}
                     />

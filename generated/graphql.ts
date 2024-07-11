@@ -1630,7 +1630,7 @@ export type GetItemsQueryVariables = Exact<{
 }>;
 
 
-export type GetItemsQuery = { __typename?: 'Query', getItems: Array<{ __typename?: 'Item', _id: string, status: StatusEnum, name: { __typename?: 'MasterCommon', value: string }, desc: { __typename?: 'MasterCommon', value: string }, modifierGroup: Array<{ __typename?: 'ModifierGroupInfo', _id: string, name: { __typename?: 'MasterCommon', value: string } }>, price: { __typename?: 'MasterCommonNumber', value: number } }> };
+export type GetItemsQuery = { __typename?: 'Query', getItems: Array<{ __typename?: 'Item', _id: string, status: StatusEnum, name: { __typename?: 'MasterCommon', value: string }, desc: { __typename?: 'MasterCommon', value: string }, modifierGroup: Array<{ __typename?: 'ModifierGroupInfo', _id: string, name: { __typename?: 'MasterCommon', _id: string, value: string } }>, price: { __typename?: 'MasterCommonNumber', _id: string, value: number } }> };
 
 export type GetModifiersQueryVariables = Exact<{
   id: Scalars['String']['input'];
@@ -1879,12 +1879,14 @@ export const GetItemsDocument = gql`
     }
     status
     modifierGroup {
+      _id
       name {
+        _id
         value
       }
-      _id
     }
     price {
+      _id
       value
     }
   }

@@ -252,12 +252,14 @@ query getItems($id: String!) {
     }
     status
     modifierGroup {
+      _id
       name {
+        _id
         value
       }
-      _id
     }
     price {
+      _id
       value
     }
   }

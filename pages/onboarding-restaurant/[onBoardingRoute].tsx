@@ -138,7 +138,7 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
     }
 
     const response = await sdk.getRestaurantOnboardingData(
-      { id: res_id },
+      {},
       { cookie: context.req.headers.cookie?.toString() ?? "" }
     );
 

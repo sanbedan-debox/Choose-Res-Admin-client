@@ -55,12 +55,12 @@ type RestaurantOnboardingStates = {
   setFacebookLink: (link: string) => void;
   twitterLink: string;
   setTwitterLink: (link: string) => void;
-  beverageCategory: BeverageCategory | null;
-  setBeverageCategory: (category: BeverageCategory | null) => void;
-  foodType: FoodType | null;
-  setFoodType: (type: FoodType | null) => void;
-  meatType: MeatType | null;
-  setMeatType: (type: MeatType | null) => void;
+  beverageCategory: BeverageCategory[];
+  setBeverageCategory: (category: BeverageCategory[]) => void;
+  foodType: FoodType[];
+  setFoodType: (type: FoodType[]) => void;
+  meatType: string;
+  setMeatType: (type: string) => void;
 };
 
 const RestaurantOnboardingStore = create<RestaurantOnboardingStates>((set) => ({
@@ -106,11 +106,11 @@ const RestaurantOnboardingStore = create<RestaurantOnboardingStates>((set) => ({
   setFacebookLink: (link) => set({ facebookLink: link }),
   twitterLink: "",
   setTwitterLink: (link) => set({ twitterLink: link }),
-  beverageCategory: null,
+  beverageCategory: [],
   setBeverageCategory: (category) => set({ beverageCategory: category }),
-  foodType: null,
+  foodType: [],
   setFoodType: (type) => set({ foodType: type }),
-  meatType: null,
+  meatType: "",
   setMeatType: (type) => set({ meatType: type }),
 }));
 

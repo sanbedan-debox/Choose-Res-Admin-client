@@ -44,9 +44,9 @@ const Hello: NextPageWithLayout = () => {
         <div className="switch switch-secondary"></div>
         <div className="switch switch-warning"></div>
 
-        <input className="checkbox checkbox-primary" type="checkbox" />
+        {/* <input className="checkbox checkbox-primary" type="checkbox" />
         <input className="checkbox checkbox-secondary" type="checkbox" />
-        <input className="checkbox checkbox-warning" type="checkbox" />
+        <input className="checkbox checkbox-warning" type="checkbox" /> */}
 
         <div className="box-primary">
           <p>Primary Box</p>

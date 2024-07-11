@@ -18,7 +18,7 @@ interface IFormInput {
   twitterLink?: string;
   beverageCategory?: BeverageCategory[];
   foodType?: FoodType[];
-  meatType?: MeatType;
+  meatType?: string;
 }
 
 const formatMeatType = (value: MeatType) => {
@@ -280,14 +280,14 @@ const RestaurantAdditionalInformation = () => {
             render={({ field }) => (
               <Select
                 {...field}
+                isMulti
                 id="beverageCategory"
                 options={beverageCategoryOptions}
                 className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
                 classNamePrefix="react-select"
                 placeholder="Select beverage categories"
-                isMulti
                 value={beverageCategoryOptions.filter((option) =>
-                  (beverageCategory || []).includes(
+                  (beverageCategory ?? []).includes(
                     option.value as BeverageCategory
                   )
                 )}
@@ -369,7 +369,7 @@ const RestaurantAdditionalInformation = () => {
           />
         </div>
 
-        <CButton type="submit" variant={ButtonType.Primary}>
+        <CButton className="w-full" type="submit" variant={ButtonType.Primary}>
           Submit
         </CButton>
       </form>

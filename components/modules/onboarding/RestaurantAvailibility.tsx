@@ -15,6 +15,7 @@ import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import RestaurantOnboardingStore from "@/store/restaurantOnboarding";
 import useMasterStore from "@/store/masters";
+import { Day } from "@/generated/graphql";
 
 type Day =
   | "Monday"
@@ -250,7 +251,6 @@ const RestaurantAvailability = () => {
 
     const reformattedData: any = { ...defaultValues };
 
-    // Function to generate time options
     const generateTimeOptions = () => {
       const options: { value: string; label: string }[] = [];
       const periods = ["AM", "PM"];
@@ -352,25 +352,25 @@ const RestaurantAvailability = () => {
     }[] = [];
 
     switch (day) {
-      case "Monday":
+      case Day.Monday:
         hours = getValues(`regularHours.Monday`);
         break;
-      case "Tuesday":
+      case Day.Tuesday:
         hours = getValues(`regularHours.Tuesday`);
         break;
-      case "Wednesday":
+      case Day.Wednesday:
         hours = getValues(`regularHours.Wednesday`);
         break;
-      case "Thursday":
+      case Day.Thursday:
         hours = getValues(`regularHours.Thursday`);
         break;
-      case "Friday":
+      case Day.Friday:
         hours = getValues(`regularHours.Friday`);
         break;
-      case "Saturday":
+      case Day.Saturday:
         hours = getValues(`regularHours.Saturday`);
         break;
-      case "Sunday":
+      case Day.Sunday:
         hours = getValues(`regularHours.Sunday`);
         break;
       default:
@@ -779,9 +779,8 @@ const RestaurantAvailability = () => {
                                 isDisabled={
                                   !activeDays[day as keyof typeof activeDays]
                                 }
-                                className={`w-full ${
-                                  index === 0 ? "bg-gray-200" : ""
-                                }`}
+                                className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+                                classNamePrefix="react-select"
                                 placeholder="From"
                                 value={field.value || null}
                                 onChange={(e: any) => {
@@ -802,9 +801,8 @@ const RestaurantAvailability = () => {
                                 isDisabled={
                                   !activeDays[day as keyof typeof activeDays]
                                 }
-                                className={`w-full ${
-                                  index === 0 ? "bg-gray-200" : ""
-                                }`}
+                                className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+                                classNamePrefix="react-select"
                                 placeholder="To"
                                 value={field.value || null}
                                 onChange={(e: any) => {
