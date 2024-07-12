@@ -128,7 +128,7 @@ const RestaurantAdditionalInformation = () => {
           },
           beverageCategory: data.beverageCategory || [],
           foodType: data.foodType || [],
-          meatType: data.meatType,
+          meatType: data.meatType as MeatType,
         },
       });
       if (response.restaurantOnboarding) {

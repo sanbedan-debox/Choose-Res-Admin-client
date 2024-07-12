@@ -58,12 +58,13 @@ const SetupGuide: React.FC<{ steps: Step[] }> = ({ steps }) => {
           onClick={handleShowSetup}
           className="btn btn-primary "
         >
-          I'll finish this later
+          I&apos;ll finish this later
         </CButton>
       </div>
       <h2 className="text-xl font-semibold mb-4">
-        Hello! Let’s get you set up.
+        Hello! Let&rsquo;s get you set up.
       </h2>
+
       <div className="relative w-full bg-gray-200 h-2 mb-4">
         <div
           className="absolute bg-blue-600 h-full"

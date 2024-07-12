@@ -48,6 +48,7 @@ const Navbar: React.FC = () => {
       if (res.setRestaurantIdAsCookie) {
         setRefreshRestaurantChange(!refreshRestaurantChange);
         setSelectedRestaurant(restaurant?.name?.value);
+        router.reload();
       }
     } catch (error) {
       const errorMessage = extractErrorMessage(error);

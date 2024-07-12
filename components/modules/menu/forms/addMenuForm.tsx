@@ -15,7 +15,7 @@ interface IFormInput {
   name: string;
 }
 
-const menuTypeOptions = [
+const menuTypeOptions: any[] = [
   { value: MenuTypeEnum.OnlineOrdering, label: "Online Ordering" },
   { value: MenuTypeEnum.DineIn, label: "Dine In" },
   { value: MenuTypeEnum.Catering, label: "Catering" },
@@ -42,7 +42,7 @@ const AddMenuForm = () => {
 
       await sdk.addMenu({
         input: {
-          type: data.type,
+          type: data.type?.value,
           name: {
             value: data.name,
           },
@@ -106,9 +106,6 @@ const AddMenuForm = () => {
                 className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
                 classNamePrefix="react-select"
                 placeholder="Select menu type"
-                onChange={(option) => {
-                  setValue("type", option!.value as MenuTypeEnum);
-                }}
               />
             )}
           />

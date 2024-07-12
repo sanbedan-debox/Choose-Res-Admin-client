@@ -10,12 +10,15 @@ import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
 import { sdk } from "@/utils/graphqlClient";
 import { UserStatus } from "@/generated/graphql";
+import Link from "next/link";
+import useGlobalStore from "@/store/global";
 
 type NextPageWithLayout = React.FC & {
   getLayout?: (page: React.ReactNode) => React.ReactNode;
 };
 
 const PaymentPending: NextPageWithLayout = () => {
+  const { setisVerificationToRestaurantAdd } = useGlobalStore();
   return (
     <div className="text-black ">
       <h1 className="text-4xl font-bold text-gray-800 mb-2">
@@ -26,14 +29,18 @@ const PaymentPending: NextPageWithLayout = () => {
       </p>
       <p className="text-gray-600 mb-8"></p>
 
-      <button className="btn p-0  hover:scale-105 transition-all  mb-12">
+      <Link
+        onClick={() => setisVerificationToRestaurantAdd(true)}
+        href="/onboarding-restaurant/restaurant-welcome"
+        className="btn p-0  hover:scale-105 transition-all  mb-12"
+      >
         <div className="flex items-center space-x-2">
           <p className="text-lg text-primary ">Add restaurants </p>
           <div className="  text-primary ">
             <FaArrowRight />
           </div>
         </div>
-      </button>
+      </Link>
     </div>
   );
 };

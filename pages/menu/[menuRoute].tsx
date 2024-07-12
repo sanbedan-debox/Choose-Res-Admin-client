@@ -121,7 +121,6 @@ const MenuPage = ({ repo: { pagePath } }: MenuPageProps) => {
       </FullPageModal>
       <ReusableModal
         width="dxl"
-        hight="dxl"
         isOpen={isAddCategoryModalOpen}
         title="Category"
         onClose={handleAddMenuCategoryClose}
@@ -132,7 +131,6 @@ const MenuPage = ({ repo: { pagePath } }: MenuPageProps) => {
       </ReusableModal>
       <ReusableModal
         width="dxl"
-        hight="dxl"
         isOpen={isAddMenuModalOpen}
         title="Menu"
         onClose={handleAddMenuClose}

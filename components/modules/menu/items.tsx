@@ -39,7 +39,7 @@ const Items: React.FC = () => {
     };
 
     fetchMenuItems();
-  }, [fetchMenuDatas]);
+  }, [fetchMenuDatas, setToastData]);
 
   const renderActions = (rowData: { id: number }) => (
     <div className="flex space-x-2">

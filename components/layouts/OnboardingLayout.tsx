@@ -28,7 +28,6 @@ const OnboardingLayout = ({ children }: Props) => {
 
   useEffect(() => {
     const fetch = async () => {
-      // setLoading(true);
       try {
         const resstates = await sdk.getActiveStates();
         if (resstates && resstates.getActiveStates) {
@@ -54,12 +53,11 @@ const OnboardingLayout = ({ children }: Props) => {
           type: "error",
           message: errorMessage,
         });
-      } finally {
-        // setLoading(false);
       }
     };
+
     fetch();
-  }, []);
+  }, [setMasterStates, setMasterTimezones, setToastData]);
 
   const hideBackButtonPaths = ["/onboarding/user/intro"];
   const showBackButton =

@@ -17,14 +17,14 @@ import RestaurantOnboardingStore from "@/store/restaurantOnboarding";
 import useMasterStore from "@/store/masters";
 import { Day } from "@/generated/graphql";
 
-type Day =
-  | "Monday"
-  | "Tuesday"
-  | "Wednesday"
-  | "Thursday"
-  | "Friday"
-  | "Saturday"
-  | "Sunday";
+// type Day =
+//   | "Monday"
+//   | "Tuesday"
+//   | "Wednesday"
+//   | "Thursday"
+//   | "Friday"
+//   | "Saturday"
+//   | "Sunday";
 
 type TimeSlot = {
   from: { label: string; value: string };
@@ -343,6 +343,8 @@ const RestaurantAvailability = () => {
     postcode,
     place,
     cords,
+    timeZone,
+    availabilityHours,
   ]);
 
   const checkOverlapForDay = (day: string) => {

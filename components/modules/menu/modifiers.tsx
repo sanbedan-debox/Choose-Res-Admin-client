@@ -1,13 +1,13 @@
+import RoopTable from "@/components/common/table/table";
 import CBTable from "@/components/common/table/table";
 import useGlobalStore from "@/store/global";
-import useRestaurantsStore from "@/store/restaurant";
 import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import React, { useEffect, useState } from "react";
 import { FaTrash, FaEdit, FaShieldAlt } from "react-icons/fa";
 
 const Modifiers: React.FC = () => {
-  const [modifier, setModifier] = useState();
+  const [modifier, setModifier] = useState<any>();
   const { setToastData } = useGlobalStore();
 
   useEffect(() => {
@@ -62,11 +62,13 @@ const Modifiers: React.FC = () => {
   ];
   return (
     <div className="py-2">
-      <CBTable
+      <RoopTable
+        itemsPerPage={10}
         headings={headings}
         data={modifier}
-        showAvailableSwitch
-        actions={renderActions}
+        // data={menuItems}
+        // showAvailableSwitch
+        // actions={renderActions}
         mainActions={mainActions}
       />
     </div>

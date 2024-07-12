@@ -108,14 +108,12 @@ const RestaurantBasicInformation = () => {
       label: formatRestaurantCategory(val),
     })
   );
-  const handleLogoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null;
-    if (file) {
-      setLogoFile(file);
+  const handleLogoUpload = async () => {
+    if (logoFile) {
       setIsUploading(true);
 
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("file", logoFile);
       formData.append("upload_preset", "csv-data");
 
       const response = await fetch(
@@ -127,6 +125,19 @@ const RestaurantBasicInformation = () => {
       setPreviewUrl(cloudinaryUrl);
       setLogoURL(cloudinaryUrl);
       setIsUploading(false);
+      return cloudinaryUrl;
+    }
+  };
+  const handleLogoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    if (file) {
+      // Update state to store the selected file
+      setLogoFile(file);
+      setIsUploading(false); // Remove the initial set to true to delay upload
+
+      // Set the preview URL for the selected image
+      const objectUrl = URL.createObjectURL(file);
+      setPreviewUrl(objectUrl);
     }
   };
 
@@ -135,6 +146,7 @@ const RestaurantBasicInformation = () => {
       const formattedWebsite = formatWebsiteUrlClickable(
         data.restaurantWebsite
       );
+      const imgUrl = await handleLogoUpload();
 
       const input: any = {
         name: {
@@ -143,7 +155,7 @@ const RestaurantBasicInformation = () => {
         website: formattedWebsite,
         type: data.restaurantType as RestaurantType,
         category: data.restaurantCategory || [],
-        brandingLogo: logoURL,
+        brandingLogo: imgUrl,
       };
       if (
         data.restaurantCategory?.includes(RestaurantCategory.DineIn) ||
@@ -233,68 +245,75 @@ const RestaurantBasicInformation = () => {
             Branding
           </label>
           <div className="mb-4">
-            <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-              Logo(Optional)
-            </label>
-            <div className="border-2 border-dashed border-gray-300 p-6 text-center rounded-lg cursor-pointer hover:bg-gray-100 relative">
-              <input
-                type="file"
-                {...register("logo")}
-                onChange={handleLogoChange}
-                className="hidden"
-                id="logo-upload"
-              />
-              <label htmlFor="logo-upload" className="cursor-pointer">
-                {isUploading ? (
-                  <div className="text-gray-500">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      className="w-6 h-6 mx-auto animate-spin"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M3 7l3-3m0 0l3 3M6 4v12M21 11v7a2 2 0 01-2 2H5a2 2 0 01-2-2v-7M16 8l-3-3m0 0l-3 3m3-3v12"
-                      />
-                    </svg>
-                    <p className="mt-1 text-sm text-gray-500">Uploading...</p>
-                  </div>
-                ) : (
-                  <div className="text-gray-500">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      className="w-6 h-6 mx-auto"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M3 7l3-3m0 0l3 3M6 4v12M21 11v7a2 2 0 01-2 2H5a2 2 0 01-2-2v-7M16 8l-3-3m0 0l-3 3m3-3v12"
-                      />
-                    </svg>
-                    <p className="mt-1 text-sm text-gray-500">
-                      Drag and drop a logo or{" "}
-                      <span className="text-blue-600">browse file</span>
-                    </p>
-                  </div>
-                )}
-              </label>
-              {/* {previewUrl && (
+            {previewUrl ? (
+              <div className="flex items-center justify-between hover:bg-primary hover:bg-opacity-5 px-4 rounded-md">
                 <img
                   src={previewUrl}
                   alt="Preview"
-                  className="absolute top-0 left-0 w-full h-full opacity-20 object-cover"
+                  className="w-16 h-16 rounded-lg object-cover"
                 />
-              )} */}
-            </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLogoFile(null);
+                    setPreviewUrl(null);
+                  }}
+                  className="text-gray-500 hover:text-red-500 focus:outline-none"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+            ) : (
+              <label className="block mb-2 text-sm font-medium text-left text-gray-700">
+                Logo (Optional)
+                <div className="border-2 border-dashed border-gray-300 p-6 text-center rounded-lg cursor-pointer hover:bg-gray-100 relative">
+                  <input
+                    type="file"
+                    {...register("logo")}
+                    onChange={handleLogoChange}
+                    className="hidden"
+                    id="logo-upload"
+                  />
+                  <label htmlFor="logo-upload" className="cursor-pointer">
+                    <div className="text-gray-500">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        className="w-6 h-6 mx-auto"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M3 7l3-3m0 0l3 3M6 4v12M21 11v7a2 2 0 01-2 2H5a2 2 0 01-2-2v-7M16 8l-3-3m0 0l-3 3m3-3v12"
+                        />
+                      </svg>
+                      <p className="mt-1 text-sm text-gray-500">
+                        Drag and drop a logo or{" "}
+                        <span className="text-blue-600">browse file</span>
+                      </p>
+                    </div>
+                  </label>
+                </div>
+              </label>
+            )}
           </div>
+          ;
         </div>
 
         <div className="col-span-2">

@@ -29,6 +29,11 @@ interface IFormInput {
   commPref: CommunicationType[];
 }
 
+interface IOTPFormInput {
+  emailOtp: string;
+  numberOtp: string;
+}
+
 const Signup: FC = () => {
   const router = useRouter();
   const { setToastData } = useGlobalStore();
@@ -76,7 +81,19 @@ const Signup: FC = () => {
         setToastData({ message: "Signup Successful", type: "success" });
 
         setShowModal(true);
-        startTimer();
+        setTimer(20);
+        setShowResendButton(false);
+
+        const countdown = setInterval(() => {
+          setTimer((prev) => {
+            if (prev === 1) {
+              clearInterval(countdown);
+              setShowResendButton(true);
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
       }
     } catch (error: any) {
       const errorMessage = extractErrorMessage(error);
@@ -86,11 +103,11 @@ const Signup: FC = () => {
       });
     }
   };
+  const resendOtp = async () => {
+    await onSubmit({ firstName, lastName, email, phone, commPref });
+  };
 
-  const onSubmitOtp: SubmitHandler<{
-    emailOtp: string;
-    numberOtp: string;
-  }> = async (data) => {
+  const onSubmitOtp: SubmitHandler<IOTPFormInput> = async (data) => {
     const { emailOtp, numberOtp } = data;
 
     try {
@@ -120,20 +137,6 @@ const Signup: FC = () => {
         message: errorMessage,
       });
     }
-  };
-
-  const startTimer = () => {
-    let interval: NodeJS.Timeout;
-
-    if (timer > 0) {
-      interval = setInterval(() => {
-        setTimer((prevTimer) => prevTimer - 1);
-      }, 1000);
-    } else {
-      setShowResendButton(true);
-    }
-
-    return () => clearInterval(interval);
   };
 
   useEffect(() => {
@@ -346,36 +349,7 @@ const Signup: FC = () => {
                     </label>
                   </div>
                 </div>
-                {/* <div className="col-span-2">
-                  <label
-                    htmlFor="commPref"
-                    className="block mb-2 text-sm font-medium text-black"
-                  >
-                    Communication Preferences
-                  </label>
-                  <div className="flex gap-4">
-                    <div className="flex items-center space-x-1">
-                      <CustomSwitch
-                        checked={commPref.includes(CommunicationType.Email)}
-                        onChange={() =>
-                          toggleCommunicationPref(CommunicationType.Email)
-                        }
-                        label="Email"
-                      />
-                      <p>Email</p>
-                    </div>
-                    <div className="flex  items-center space-x-1">
-                      <CustomSwitch
-                        checked={commPref.includes(CommunicationType.WhatsApp)}
-                        onChange={() =>
-                          toggleCommunicationPref(CommunicationType.WhatsApp)
-                        }
-                        label="WhatsApp"
-                      />
-                      <p>Whatsapp</p>
-                    </div>
-                  </div>
-                </div> */}
+
                 <p className="text-sm text-gray-800">
                   {`By logging in, you agree to CHOOSE's`}{" "}
                   <Link
@@ -451,41 +425,37 @@ const Signup: FC = () => {
               <input
                 type="text"
                 id="otpEmail"
-                className="input input-primary"
+                className="input input-primary mb-1"
                 {...register("emailOtp", { required: true })}
                 value={otpEmail}
                 onChange={(e) => setOtpEmail(e.target.value)}
               />
+              {showResendButton ? (
+                <button
+                  type="button"
+                  className="text-primary text-start focus:outline-none focus:underline hover:underline text-sm mb-3"
+                  onClick={resendOtp}
+                >
+                  Resend OTP
+                </button>
+              ) : (
+                <p className="text-sm text-gray-500 mb-6">
+                  Resend OTP in {timer}s
+                </p>
+              )}
             </div>
             {otpError && (
               <p className="text-red-500 text-sm mt-2">{otpError}</p>
             )}
-            <div className="flex justify-between mt-4">
-              <div className="mt-5">
-                {/* {showResendButton && (
-                  <button
-                    // onClick={handleResendOtp}
-                    className="text-sm text-primary underline"
-                  >
-                    Resend OTP
-                  </button>
-                )} */}
-                {/* <span className="ml-2 text-warning">
-                  {showResendButton
-                    ? ""
-                    : `Resend OTP available after ${timer}s`}
-                </span> */}
-              </div>
-              <div className="flex justify-end mt-4 w-full">
-                <CButton
-                  variant={ButtonType.Primary}
-                  type="submit"
-                  className="w-full"
-                  disabled={!otpEmail}
-                >
-                  Submit
-                </CButton>
-              </div>
+            <div className="flex justify-end mt-4 w-full">
+              <CButton
+                variant={ButtonType.Primary}
+                type="submit"
+                className="w-full"
+                disabled={!otpEmail}
+              >
+                Submit
+              </CButton>
             </div>
           </form>
         </ReusableModal>

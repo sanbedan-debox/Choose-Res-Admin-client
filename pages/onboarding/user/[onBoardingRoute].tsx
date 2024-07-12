@@ -23,7 +23,6 @@ type HomePageProps = {
     employeeSize: any;
     establishedAt: any;
     estimatedRevenue: any;
-    ssn: any;
   };
 };
 
@@ -47,6 +46,24 @@ const OnboardingPage = ({ repo }: HomePageProps) => {
     setestimatedRevenue,
   } = useOnboardingStore();
 
+  // useEffect(() => {
+  //   setbusinessName(repo.businessName);
+  //   setbusinessType(repo.businessType);
+  //   setdob(repo.dob);
+  //   setein(repo.ein);
+  //   setemployeeSize(repo.employeeSize);
+  //   setestablishedAt(repo.establishedAt);
+  //   setestimatedRevenue(repo.estimatedRevenue);
+  //   setAddressLine1(repo.address?.addressLine1?.value);
+  //   setAddressLine2(repo.address?.addressLine2?.value);
+  //   setCity(repo.address?.city?.value);
+  //   setCords(repo?.address?.coordinate?.coordinates ?? []);
+  //   setPlace(repo?.address?.place);
+
+  //   setPostcode(repo.address?.postcode?.value);
+  //   setState(repo.address?.state?.value);
+  // }, [repo]);
+
   useEffect(() => {
     setbusinessName(repo.businessName);
     setbusinessType(repo.businessType);
@@ -60,10 +77,25 @@ const OnboardingPage = ({ repo }: HomePageProps) => {
     setCity(repo.address?.city?.value);
     setCords(repo?.address?.coordinate?.coordinates ?? []);
     setPlace(repo?.address?.place);
-
     setPostcode(repo.address?.postcode?.value);
     setState(repo.address?.state?.value);
-  }, [repo]);
+  }, [
+    repo,
+    setbusinessName,
+    setbusinessType,
+    setdob,
+    setein,
+    setemployeeSize,
+    setestablishedAt,
+    setestimatedRevenue,
+    setAddressLine1,
+    setAddressLine2,
+    setCity,
+    setCords,
+    setPlace,
+    setPostcode,
+    setState,
+  ]);
 
   let childComponent;
 

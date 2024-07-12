@@ -7,7 +7,7 @@ import React, { useEffect, useState } from "react";
 import { FaTrash, FaEdit, FaShieldAlt } from "react-icons/fa";
 
 const Modifiers: React.FC = () => {
-  const [modifierGroups, setModifierGroups] = useState();
+  const [modifierGroups, setModifierGroups] = useState<any>();
   const { setToastData } = useGlobalStore();
 
   useEffect(() => {

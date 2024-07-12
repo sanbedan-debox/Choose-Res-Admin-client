@@ -6,7 +6,6 @@ interface ModalProps {
   onClose: () => void;
   children: React.ReactNode;
   width?: "xs" | "sm" | "md" | "ml" | "lg" | "xl" | "dxl";
-  hight?: "xs" | "sm" | "md" | "ml" | "lg" | "xl" | "dxl";
   title: string;
   comments?: string;
 }
@@ -16,7 +15,6 @@ const ReusableModal: React.FC<ModalProps> = ({
   onClose,
   children,
   width = "md",
-  hight,
   title,
   comments,
 }) => {
@@ -60,7 +58,7 @@ const ReusableModal: React.FC<ModalProps> = ({
   return ReactDOM.createPortal(
     <div className="modal-overlay fixed inset-0 bg-black bg-opacity-45 flex items-center justify-center z-50">
       <div
-        className={`rounded shadow-lg bg-white ${widthClasses[width]} ${hightClasses[hight]} max-h-[100vh] overflow-auto z-10`}
+        className={`rounded shadow-lg bg-white ${widthClasses[width]}  max-h-[100vh] overflow-auto z-10`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="py-5 px-6">

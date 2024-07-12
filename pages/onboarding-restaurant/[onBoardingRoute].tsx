@@ -21,21 +21,22 @@ import {
 type HomePageProps = {
   repo: {
     pagePath: string;
-    address: any;
-    beverageCategory: any;
-    brandingLogo: any;
-    category: any;
-    foodType: any;
-    meatType: any;
-    name: any;
-    timezone: any;
-    type: any;
-    dineInCapacity: any;
-    socialInfo: any;
-    website: any;
-    availability: any;
+    address?: any;
+    beverageCategory?: any;
+    brandingLogo?: any;
+    category?: any;
+    foodType?: any;
+    meatType?: any;
+    name?: any;
+    timezone?: any;
+    type?: any;
+    dineInCapacity?: any;
+    socialInfo?: any;
+    website?: any;
+    availability?: any;
   };
 };
+
 const OnboardingPage = ({ repo }: HomePageProps) => {
   const {
     setAddressLine1,
@@ -59,14 +60,15 @@ const OnboardingPage = ({ repo }: HomePageProps) => {
     setTwitterLink,
     setAvailabilityHours,
   } = RestaurantOnboardingStore();
+
   useEffect(() => {
     setRestaurantName(repo?.name?.value);
     setRestaurantType(repo?.type);
     setRestaurantCategory(repo?.category);
     setRestaurantWebsite(repo?.website);
     setDineInCapacity(repo?.dineInCapacity?.value);
-    setBeverageCategory(repo?.beverageCategory as BeverageCategory);
-    setFoodType(repo?.foodType as FoodType);
+    setBeverageCategory(repo?.beverageCategory);
+    setFoodType(repo?.foodType);
     setMeatType(repo?.meatType as MeatType);
     setAddressLine1(repo?.address?.addressLine1?.value);
     setAddressLine2(repo?.address?.addressLine1?.value);
@@ -80,7 +82,29 @@ const OnboardingPage = ({ repo }: HomePageProps) => {
     setTimeZone(repo?.timezone);
     setTwitterLink(repo?.socialInfo?.twitter);
     setAvailabilityHours(repo?.availability);
-  }, [repo]);
+  }, [
+    repo,
+    setRestaurantName,
+    setRestaurantType,
+    setRestaurantCategory,
+    setRestaurantWebsite,
+    setDineInCapacity,
+    setBeverageCategory,
+    setFoodType,
+    setMeatType,
+    setAddressLine1,
+    setAddressLine2,
+    setCity,
+    setPostcode,
+    setState,
+    setCords,
+    setPlace,
+    setFacebookLink,
+    setInstagramLink,
+    setTimeZone,
+    setTwitterLink,
+    setAvailabilityHours,
+  ]);
 
   let childComponent;
 

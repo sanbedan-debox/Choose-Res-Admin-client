@@ -37,6 +37,8 @@ const Login: FC = () => {
   const [otpKey, setOtpKey] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [btnloading, setBtnLoading] = useState(false);
+  const [timer, setTimer] = useState<number>(20);
+  const [showResendButton, setShowResendButton] = useState<boolean>(false);
 
   const {
     register,
@@ -44,26 +46,20 @@ const Login: FC = () => {
     formState: { errors },
   } = useForm<IFormInput>();
 
-  // const handleResendOtp = async () => {
-  //   try {
-  //     const response = await sdk.GenerateOtpForLogin({ input: email });
-
-  //     if (response) {
-  //       setOtpKey(response.generateOtpForLogin);
-  //       setToastData({ message: "OTP resent successfully", type: "success" });
-  //     }
-  //   }  catch (error: any) {
-  //   const errorMessage = extractErrorMessage(error);
-  //   setToastData({
-  //     type: "error",
-  //     message: errorMessage,
-  //   });
-  // }
-  // };
-
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
     const { email } = data;
     setEmail(email);
+
+    const isPhoneNumber = /^\d{10}$/.test(email);
+    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+    if (!isPhoneNumber && !isEmail) {
+      setToastData({
+        type: "error",
+        message: "Please enter a valid email address or phone number",
+      });
+      return;
+    }
     try {
       setBtnLoading(true);
       const response = await sdk.GenerateOtpForLogin({ input: email });
@@ -73,6 +69,20 @@ const Login: FC = () => {
         setShowModal(true);
         setToastData({ message: "OTP sent successfully", type: "success" });
         setBtnLoading(false);
+
+        setTimer(20);
+        setShowResendButton(false);
+
+        const countdown = setInterval(() => {
+          setTimer((prev) => {
+            if (prev === 1) {
+              clearInterval(countdown);
+              setShowResendButton(true);
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
       }
     } catch (error: any) {
       setBtnLoading(false);
@@ -82,6 +92,10 @@ const Login: FC = () => {
         message: errorMessage,
       });
     }
+  };
+
+  const resendOtp = async () => {
+    await onSubmit({ email });
   };
 
   const onSubmitOtp: SubmitHandler<IFormInput> = async () => {
@@ -158,20 +172,15 @@ const Login: FC = () => {
                       htmlFor="email"
                       className="block mb-2 text-sm font-medium text-black"
                     >
-                      Email Address
+                      Email Address or Phone Number
                     </label>
                     <input
-                      type="email"
                       {...register("email", {
-                        required: "Email is required",
-                        pattern: {
-                          value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                          message: "Invalid email address",
-                        },
+                        required: "Email or Phone Number is required",
                       })}
                       id="email"
                       className="input input-primary"
-                      placeholder="Enter your Email Address"
+                      placeholder="Enter your Email Address or Phone Number"
                     />
                     {errors.email && (
                       <p className="text-red-500 text-sm text-start">
@@ -221,11 +230,11 @@ const Login: FC = () => {
           </div>
         </div>
       </div>
-      <ReusableModal
+      {/* <ReusableModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
         title="Enter OTP"
-        width="md"
+        width="sm"
       >
         <form onSubmit={handleSubmit(onSubmitOtp)}>
           <div className="flex flex-col ">
@@ -237,6 +246,46 @@ const Login: FC = () => {
               placeholder="Enter OTP"
             />
             {otpError && <p className="text-red-500">{otpError}</p>}
+
+            <CButton
+              loading={btnloading}
+              variant={ButtonType.Primary}
+              className="btn btn-primary"
+            >
+              Submit
+            </CButton>
+          </div>
+        </form>
+      </ReusableModal> */}
+      <ReusableModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        title="Enter OTP"
+        width="sm"
+      >
+        <form onSubmit={handleSubmit(onSubmitOtp)}>
+          <div className="flex flex-col">
+            <div className="flex flex-col mb-6">
+              <input
+                type="text"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                className="input input-primary mb-1"
+                placeholder="Enter OTP"
+              />
+              {otpError && <p className="text-red-500">{otpError}</p>}
+              {showResendButton ? (
+                <button
+                  type="button"
+                  className="text-primary text-start focus:outline-none focus:underline hover:underline text-sm"
+                  onClick={resendOtp}
+                >
+                  Resend OTP
+                </button>
+              ) : (
+                <p className="text-sm text-gray-500">Resend OTP in {timer}s</p>
+              )}
+            </div>
 
             <CButton
               loading={btnloading}

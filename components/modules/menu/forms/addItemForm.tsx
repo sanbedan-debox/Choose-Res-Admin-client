@@ -22,7 +22,7 @@ interface IFormInput {
   upSellItem: boolean;
 }
 
-const statusOptions = [
+const statusOptions: any[] = [
   { value: StatusEnum.Active, label: "Active" },
   { value: StatusEnum.Inactive, label: "Inactive" },
 ];
@@ -42,6 +42,8 @@ const AddItemForm = () => {
   const { setToastData } = useGlobalStore();
   const onSubmit = async (data: IFormInput) => {
     try {
+      const statusSub = data.status?.value;
+
       setBtnLoading(true);
       await sdk.addItem({
         input: {
@@ -55,7 +57,7 @@ const AddItemForm = () => {
           price: {
             value: parseFloat(data.price),
           },
-          status: data.status,
+          status: statusSub,
           applySalesTax: data.applySalesTax,
           popularItem: data.popularItem,
           upSellItem: data.upSellItem,
@@ -263,12 +265,10 @@ const AddItemForm = () => {
                     className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
                     classNamePrefix="react-select"
                     placeholder="Select status"
-                    onChange={(option) => {
-                      setValue("status", StatusEnum.Active);
-                    }}
                   />
                 )}
               />
+
               {errors.status && (
                 <p className="text-red-500 text-sm text-start">
                   {errors.status.message}

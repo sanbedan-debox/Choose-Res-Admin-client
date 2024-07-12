@@ -17,6 +17,7 @@
     "@graphql-codegen/typescript-operations": "^4.2.1",
     "@headlessui/react": "^2.1.1",
     "@next/font": "^14.2.4",
+    "@types/luxon": "^3.4.2",
     "@types/react-csv": "^1.1.10",
     "classnames": "^2.5.1",
     "codegen": "^0.1.0",

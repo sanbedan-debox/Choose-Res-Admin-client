@@ -27,10 +27,8 @@ const OnboardingRestaurantLayout = ({ children }: Props) => {
   const { setToastData } = useGlobalStore();
 
   const { setMasterStates, setMasterTimezones } = useMasterStore();
-
   useEffect(() => {
     const fetch = async () => {
-      // setLoading(true);
       try {
         const resstates = await sdk.getActiveStates();
         if (resstates && resstates.getActiveStates) {
@@ -63,12 +61,11 @@ const OnboardingRestaurantLayout = ({ children }: Props) => {
           type: "error",
           message: errorMessage,
         });
-      } finally {
-        // setLoading(false);
       }
     };
+
     fetch();
-  }, []);
+  }, [setMasterStates, setMasterTimezones, setToastData]);
 
   const handleBackClick = () => {
     router.back();

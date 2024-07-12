@@ -37,7 +37,7 @@ const Categories: React.FC = () => {
     };
 
     fetchRestaurantUsers();
-  }, [fetchMenuDatas]);
+  }, [fetchMenuDatas, setToastData]);
 
   const headings = [{ title: "Name", dataKey: "name.value" }];
 
