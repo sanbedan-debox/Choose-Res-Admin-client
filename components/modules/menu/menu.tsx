@@ -1,3 +1,4 @@
+import RoopTable from "@/components/common/table/table";
 import CBTable from "@/components/common/table/table";
 import useGlobalStore from "@/store/global";
 import useMenuStore from "@/store/menu";
@@ -54,6 +55,22 @@ const Menu: React.FC = () => {
       />
     </div>
   );
+  const renderSwitch = (rowData: { id: number }) => (
+    <div className="flex space-x-3">
+      <FaTrash
+        className="text-red-500 cursor-pointer"
+        onClick={() => console.log("Delete", rowData.id)}
+      />
+      <FaEdit
+        className="text-blue-500 cursor-pointer"
+        onClick={() => console.log("Edit", rowData.id)}
+      />
+      <FaShieldAlt
+        className="text-green-500 cursor-pointer"
+        onClick={() => console.log("Change Password", rowData.id)}
+      />
+    </div>
+  );
   const mainActions = [
     {
       label: "Add Menu",
@@ -62,12 +79,13 @@ const Menu: React.FC = () => {
   ];
   return (
     <div className="py-2">
-      <CBTable
+      <RoopTable
+        itemsPerPage={10}
         headings={headings}
         data={menu}
         // data={menuItems}
-        showAvailableSwitch
-        actions={renderActions}
+        // showAvailableSwitch
+        // actions={renderActions}
         mainActions={mainActions}
       />
     </div>

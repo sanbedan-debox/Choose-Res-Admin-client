@@ -1129,6 +1129,18 @@ export type QueryGetModifierGroupArgs = {
 };
 
 
+export type QueryGetModifierGroupsArgs = {
+  filter?: InputMaybe<PaginatedFilter>;
+  page?: Scalars['Float']['input'];
+};
+
+
+export type QueryGetModifiersArgs = {
+  filter?: InputMaybe<PaginatedFilter>;
+  page?: Scalars['Float']['input'];
+};
+
+
 export type QueryGetPlaceDetailsArgs = {
   placeId: Scalars['String']['input'];
 };

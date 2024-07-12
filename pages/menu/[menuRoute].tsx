@@ -1,3 +1,6 @@
+import CButton from "@/components/common/button/button";
+import { ButtonType } from "@/components/common/button/interface";
+import FullPageModal from "@/components/common/modal/fullPageModal";
 import ReusableModal from "@/components/common/modal/modal";
 import NotFound from "@/components/common/notFound/notFound";
 import MenuLayout from "@/components/layouts/MenuLayout";
@@ -93,18 +96,32 @@ const MenuPage = ({ repo: { pagePath } }: MenuPageProps) => {
   return (
     <>
       <MenuLayout>{childComponent}</MenuLayout>
-      <ReusableModal
-        width="xl"
+      {/* <ReusableModal
+        width="dxl"
         isOpen={isAddItemModalOpen}
         title="Items"
+        hight="dxl"
         onClose={handleAddMenuItemClose}
       >
         <div className="flex justify-center">
           <AddItemForm />
         </div>
-      </ReusableModal>
+      </ReusableModal> */}
+      <FullPageModal
+        isOpen={isAddItemModalOpen}
+        title="Items"
+        onClose={handleAddMenuItemClose}
+        actionButtonLabel="Save Item"
+        // onActionButtonClick={handleAddMenuItemClick}
+        onActionButtonClick={() => console.log("hello")}
+      >
+        <div className="flex justify-center">
+          <AddItemForm />
+        </div>
+      </FullPageModal>
       <ReusableModal
-        width="xl"
+        width="dxl"
+        hight="dxl"
         isOpen={isAddCategoryModalOpen}
         title="Category"
         onClose={handleAddMenuCategoryClose}
@@ -114,7 +131,8 @@ const MenuPage = ({ repo: { pagePath } }: MenuPageProps) => {
         </div>
       </ReusableModal>
       <ReusableModal
-        width="xl"
+        width="dxl"
+        hight="dxl"
         isOpen={isAddMenuModalOpen}
         title="Menu"
         onClose={handleAddMenuClose}

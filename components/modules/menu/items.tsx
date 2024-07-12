@@ -1,4 +1,7 @@
+import CustomSwitch from "@/components/common/customSwitch/customSwitch";
+import RoopTable from "@/components/common/table/table";
 import CBTable from "@/components/common/table/table";
+import { StatusEnum } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
 import useMenuStore from "@/store/menu";
 import useRestaurantsStore from "@/store/restaurant";
@@ -38,10 +41,8 @@ const Items: React.FC = () => {
     fetchMenuItems();
   }, [fetchMenuDatas]);
 
-  const headings = [{ title: "Name", dataKey: "name.value" }];
-
   const renderActions = (rowData: { id: number }) => (
-    <div className="flex space-x-3">
+    <div className="flex space-x-2">
       <FaTrash
         className="text-red-500 cursor-pointer"
         onClick={() => console.log("Delete", rowData.id)}
@@ -56,6 +57,26 @@ const Items: React.FC = () => {
       />
     </div>
   );
+
+  const renderSwitch = (rowData: { status: StatusEnum; id: string }) => (
+    <div>
+      <CustomSwitch
+        checked={rowData.status !== StatusEnum.Inactive}
+        // onChange={() => handleToggleSwitch(rowData)}
+        onChange={() => console.log(rowData)}
+        label={`Toggle switch for ${rowData.id}`}
+      />
+    </div>
+  );
+
+  const headings = [
+    { title: "Toggle Availibility", dataKey: "status", render: renderSwitch },
+    { title: "Name", dataKey: "name.value" },
+    // { title: "Description", dataKey: "desc.value" },
+    // { title: "Price", dataKey: "price" },
+    // { title: "Actions", dataKey: "name.value", render: renderActions },
+  ];
+
   const mainActions = [
     {
       label: "Add Item",
@@ -64,12 +85,10 @@ const Items: React.FC = () => {
   ];
   return (
     <div className="py-2">
-      <CBTable
+      <RoopTable
+        itemsPerPage={10}
         headings={headings}
         data={items}
-        // data={menuItems}
-        showAvailableSwitch
-        actions={renderActions}
         mainActions={mainActions}
       />
     </div>

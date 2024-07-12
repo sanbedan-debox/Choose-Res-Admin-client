@@ -103,8 +103,7 @@ const AddCategoryForm = () => {
           >
             Description
           </label>
-          <input
-            type="text"
+          <textarea
             {...register("description", {
               required: "Description is required",
             })}

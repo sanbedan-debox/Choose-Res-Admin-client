@@ -1,3 +1,4 @@
+import RoopTable from "@/components/common/table/table";
 import CBTable from "@/components/common/table/table";
 import useGlobalStore from "@/store/global";
 import useMenuStore from "@/store/menu";
@@ -64,12 +65,13 @@ const Categories: React.FC = () => {
   ];
   return (
     <div className="py-2">
-      <CBTable
+      <RoopTable
+        itemsPerPage={10}
         headings={headings}
         data={cats}
         // data={menuItems}
-        showAvailableSwitch
-        actions={renderActions}
+        // showAvailableSwitch
+        // actions={renderActions}
         mainActions={mainActions}
       />
     </div>
