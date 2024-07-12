@@ -5,7 +5,8 @@ type RestaurantStates = {
   setRestaurants: (res: any) => void;
   selectedRestaurant: string;
   setSelectedRestaurant: (location: string) => void;
-
+  refreshRestaurantChange: boolean;
+  setRefreshRestaurantChange: (res: boolean) => void;
 };
 
 const useRestaurantsStore = create<RestaurantStates>((set) => ({
@@ -14,6 +15,8 @@ const useRestaurantsStore = create<RestaurantStates>((set) => ({
   selectedRestaurantId: "",
   restaurants: [],
   setRestaurants: (res) => set({ restaurants: res }),
+  refreshRestaurantChange: false,
+  setRefreshRestaurantChange: (res) => set({ refreshRestaurantChange: res }),
 }));
 
 export default useRestaurantsStore;

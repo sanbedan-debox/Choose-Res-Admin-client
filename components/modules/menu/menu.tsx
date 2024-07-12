@@ -1,13 +1,15 @@
 import CBTable from "@/components/common/table/table";
+import useGlobalStore from "@/store/global";
 import useMenuStore from "@/store/menu";
 import { sdk } from "@/utils/graphqlClient";
+import { extractErrorMessage } from "@/utils/utilFUncs";
 import React, { useEffect, useState } from "react";
 import { FaTrash, FaEdit, FaShieldAlt } from "react-icons/fa";
 
 const Menu: React.FC = () => {
   const [menu, setMenu] = useState<any>();
-  const { setisAddMenuModalOpen } = useMenuStore();
-
+  const { setisAddMenuModalOpen, fetchMenuDatas } = useMenuStore();
+  const { setToastData } = useGlobalStore();
   useEffect(() => {
     const fetchRestaurantUsers = async () => {
       // setLoading(true);
@@ -20,15 +22,19 @@ const Menu: React.FC = () => {
           // setMenu(formattedRestaurant);
           setMenu(response.getAllMenus);
         }
-      } catch (error) {
-        console.error("Failed to fetch restaurant users:", error);
+      } catch (error: any) {
+        const errorMessage = extractErrorMessage(error);
+        setToastData({
+          type: "error",
+          message: errorMessage,
+        });
       } finally {
         // setLoading(false);
       }
     };
 
     fetchRestaurantUsers();
-  }, []);
+  }, [fetchMenuDatas]);
 
   const headings = [{ title: "Name", dataKey: "name.value" }];
 

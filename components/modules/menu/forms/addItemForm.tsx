@@ -7,12 +7,15 @@ import { ButtonType } from "@/components/common/button/interface";
 import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import { StatusEnum } from "@/generated/graphql";
+import useMenuStore from "@/store/menu";
+import useGlobalStore from "@/store/global";
+import { title } from "process";
 
 interface IFormInput {
   name: string;
   desc: string;
   image: string;
-  price: number;
+  price: string;
   status: StatusEnum;
   applySalesTax: boolean;
   popularItem: boolean;
@@ -33,8 +36,13 @@ const AddItemForm = () => {
     register,
   } = useForm<IFormInput>();
 
+  const { fetchMenuDatas, setfetchMenuDatas, setisAddItemModalOpen } =
+    useMenuStore();
+  const [btnLoading, setBtnLoading] = useState(false);
+  const { setToastData } = useGlobalStore();
   const onSubmit = async (data: IFormInput) => {
     try {
+      setBtnLoading(true);
       await sdk.addItem({
         input: {
           name: {
@@ -45,7 +53,7 @@ const AddItemForm = () => {
           },
           image: data.image,
           price: {
-            value: data.price,
+            value: parseFloat(data.price),
           },
           status: data.status,
           applySalesTax: data.applySalesTax,
@@ -53,11 +61,19 @@ const AddItemForm = () => {
           upSellItem: data.upSellItem,
         },
       });
-
-      console.log("Item added successfully:", data);
+      setBtnLoading(false);
+      setisAddItemModalOpen(false);
+      setfetchMenuDatas(!fetchMenuDatas);
+      setToastData({
+        type: "success",
+        message: "Item Added Successfully",
+      });
     } catch (error: any) {
       const errorMessage = extractErrorMessage(error);
-      console.error(errorMessage);
+      setToastData({
+        type: "error",
+        message: errorMessage,
+      });
     }
   };
 
@@ -243,7 +259,12 @@ const AddItemForm = () => {
           />
         </div>
 
-        <CButton variant={ButtonType.Primary} type="submit" className="w-full">
+        <CButton
+          loading={btnLoading}
+          variant={ButtonType.Primary}
+          type="submit"
+          className="w-full"
+        >
           Add Item
         </CButton>
       </form>

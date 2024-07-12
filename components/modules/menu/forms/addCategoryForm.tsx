@@ -5,6 +5,8 @@ import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
+import useGlobalStore from "@/store/global";
+import useMenuStore from "@/store/menu";
 
 interface IFormInput {
   name: string;
@@ -12,6 +14,10 @@ interface IFormInput {
 }
 
 const AddCategoryForm = () => {
+  const [btnLoading, setBtnLoading] = useState(false);
+  const { setToastData } = useGlobalStore();
+  const { fetchMenuDatas, setfetchMenuDatas, setisAddCategoryModalOpen } =
+    useMenuStore();
   const {
     handleSubmit,
     formState: { errors },
@@ -20,6 +26,8 @@ const AddCategoryForm = () => {
 
   const onSubmit = async (data: IFormInput) => {
     try {
+      setBtnLoading(true);
+
       await sdk.addCategory({
         input: {
           name: {
@@ -30,11 +38,19 @@ const AddCategoryForm = () => {
           },
         },
       });
-
-      console.log("Category added successfully:", data);
+      setToastData({
+        type: "success",
+        message: "Category Added Successfully",
+      });
+      setBtnLoading(false);
+      setisAddCategoryModalOpen(false);
+      setfetchMenuDatas(!fetchMenuDatas);
     } catch (error: any) {
       const errorMessage = extractErrorMessage(error);
-      console.error(errorMessage);
+      setToastData({
+        type: "error",
+        message: errorMessage,
+      });
     }
   };
 
@@ -103,7 +119,12 @@ const AddCategoryForm = () => {
           )}
         </div>
 
-        <CButton variant={ButtonType.Primary} type="submit" className="w-full">
+        <CButton
+          loading={btnLoading}
+          variant={ButtonType.Primary}
+          type="submit"
+          className="w-full"
+        >
           Add Category
         </CButton>
       </form>

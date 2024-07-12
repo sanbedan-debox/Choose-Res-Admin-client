@@ -286,13 +286,13 @@ const RestaurantBasicInformation = () => {
                   </div>
                 )}
               </label>
-              {previewUrl && (
+              {/* {previewUrl && (
                 <img
                   src={previewUrl}
                   alt="Preview"
                   className="absolute top-0 left-0 w-full h-full opacity-20 object-cover"
                 />
-              )}
+              )} */}
             </div>
           </div>
         </div>

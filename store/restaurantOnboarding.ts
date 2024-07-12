@@ -61,6 +61,7 @@ type RestaurantOnboardingStates = {
   setFoodType: (type: FoodType[]) => void;
   meatType: string;
   setMeatType: (type: string) => void;
+  reset: () => void;
 };
 
 const RestaurantOnboardingStore = create<RestaurantOnboardingStates>((set) => ({
@@ -112,6 +113,61 @@ const RestaurantOnboardingStore = create<RestaurantOnboardingStates>((set) => ({
   setFoodType: (type) => set({ foodType: type }),
   meatType: "",
   setMeatType: (type) => set({ meatType: type }),
+  reset: () => set(initialState),
 }));
+
+//INITIAL RESET VALUES
+const initialState: RestaurantOnboardingStates = {
+  id: "",
+  setId: (_id) => {},
+
+  //STEP 1
+  restaurantName: "",
+  setRestaurantName: (name) => {},
+  restaurantWebsite: "",
+  setRestaurantWebsite: (website) => {},
+  restaurantType: "",
+  setRestaurantType: (type) => {},
+  restaurantCategory: [],
+  setRestaurantCategory: (category) => {},
+  dineInCapacity: "",
+  setDineInCapacity: (capacity) => {},
+
+  //STEP 2
+  addressLine1: "",
+  setAddressLine1: (address) => {},
+  addressLine2: "",
+  setAddressLine2: (address) => {},
+  city: "",
+  setCity: (city) => {},
+  state: "",
+  setState: (state) => {},
+  postcode: "",
+  setPostcode: (postcode) => {},
+  place: { displayName: "", placeId: "" },
+  setPlace: (place) => {},
+  cords: [0, 0],
+  setCords: (cords) => {},
+  timeZone: "",
+  setTimeZone: (timeZone) => {},
+  availabilityHours: [],
+  setAvailabilityHours: (hours) => {},
+
+  //STEP 3
+  instagramLink: "",
+  setInstagramLink: (link) => {},
+  facebookLink: "",
+  setFacebookLink: (link) => {},
+  twitterLink: "",
+  setTwitterLink: (link) => {},
+  beverageCategory: [],
+  setBeverageCategory: (category) => {},
+  foodType: [],
+  setFoodType: (type) => {},
+  meatType: "",
+  setMeatType: (type) => {},
+
+  reset: () => {},
+};
 
 export default RestaurantOnboardingStore;

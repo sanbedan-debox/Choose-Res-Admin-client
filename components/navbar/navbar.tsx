@@ -15,19 +15,47 @@ import useRestaurantsStore from "@/store/restaurant";
 import CButton from "../common/button/button";
 import { ButtonType } from "../common/button/interface";
 import { extractErrorMessage } from "@/utils/utilFUncs";
+import RestaurantOnboardingStore from "@/store/restaurantOnboarding";
 
 const Navbar: React.FC = () => {
   const { firstName } = useAuthStore();
   const { restaurants, selectedRestaurant } = useRestaurantsStore();
+  const { reset } = RestaurantOnboardingStore();
   const { isSidebarExpanded, setisSidebarExpanded, setToastData } =
     useGlobalStore();
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isRestaurantDropdownOpen, setIsRestaurantDropdownOpen] =
     useState(false);
   const router = useRouter();
-
+  const {
+    setSelectedRestaurant,
+    setRefreshRestaurantChange,
+    refreshRestaurantChange,
+  } = useRestaurantsStore();
   const toggleSidebar = () => {
     setisSidebarExpanded(!isSidebarExpanded);
+  };
+
+  const resetRestaurantOnboardingDatas = () => {
+    // reset();
+  };
+
+  const setSelectedRestaurantFunc = async (restaurant: any) => {
+    try {
+      const res = await sdk.setRestaurantIdAsCookie({
+        id: restaurant?._id,
+      });
+      if (res.setRestaurantIdAsCookie) {
+        setRefreshRestaurantChange(!refreshRestaurantChange);
+        setSelectedRestaurant(restaurant?.name?.value);
+      }
+    } catch (error) {
+      const errorMessage = extractErrorMessage(error);
+      setToastData({
+        type: "error",
+        message: errorMessage,
+      });
+    }
   };
 
   const toggleProfileDropdown = () => {
@@ -53,6 +81,8 @@ const Navbar: React.FC = () => {
   const toggleRestaurantDropdown = () => {
     setIsRestaurantDropdownOpen(!isRestaurantDropdownOpen);
   };
+
+  console.log(restaurants);
 
   return (
     <nav
@@ -89,31 +119,49 @@ const Navbar: React.FC = () => {
               </button>
               {isRestaurantDropdownOpen && (
                 <div className="bg-white absolute mt-2 w-64 rounded-md shadow-lg py-2 text-black z-50">
-                  {restaurants.length > 0 ? (
-                    restaurants.map((restaurant) => (
-                      <div
-                        key={restaurant?.id}
+                  <div>
+                    {restaurants.length > 0 ? (
+                      restaurants.map((restaurant) => (
+                        <div
+                          onClick={() => setSelectedRestaurantFunc(restaurant)}
+                          key={restaurant?.id}
+                          className="block px-4 py-2 text-sm hover:bg-primary hover:text-white"
+                        >
+                          {restaurant?.name?.value}
+                        </div>
+                      ))
+                    ) : (
+                      <Link
                         className="block px-4 py-2 text-sm hover:bg-primary hover:text-white"
+                        href="/onboarding-restaurant/restaurant-basic-information"
                       >
-                        {restaurant?.name?.value}
-                      </div>
-                    ))
-                  ) : (
+                        <CButton
+                          onClick={resetRestaurantOnboardingDatas}
+                          variant={ButtonType.Primary}
+                        >
+                          Add Restaurant
+                        </CButton>
+                      </Link>
+                    )}
                     <Link
+                      onClick={resetRestaurantOnboardingDatas}
                       className="block px-4 py-2 text-sm hover:bg-primary hover:text-white"
-                      href="/add-restaurant"
+                      href="/onboarding-restaurant/restaurant-basic-information"
                     >
-                      <CButton variant={ButtonType.Primary}>
-                        Add Restaurant
-                      </CButton>
+                      Add Restaurant
                     </Link>
-                  )}
+                  </div>
                 </div>
               )}
             </div>
           ) : (
-            <Link href="/add-restaurant">
-              <CButton variant={ButtonType.Primary}>Add Restaurant</CButton>
+            <Link href="/onboarding-restaurant/restaurant-basic-information">
+              <CButton
+                onClick={resetRestaurantOnboardingDatas}
+                variant={ButtonType.Primary}
+              >
+                Add Restaurant
+              </CButton>
             </Link>
           )}
         </div>
@@ -133,6 +181,12 @@ const Navbar: React.FC = () => {
                   className="block px-4 py-2 text-sm text-black hover:text-white hover:bg-primary"
                 >
                   My account
+                </Link>
+                <Link
+                  href="/teams"
+                  className="block px-4 py-2 text-sm text-black hover:text-white hover:bg-primary"
+                >
+                  My Teams
                 </Link>
                 <button
                   onClick={handleLogout}

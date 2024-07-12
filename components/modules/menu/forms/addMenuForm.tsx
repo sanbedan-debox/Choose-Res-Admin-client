@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
@@ -7,12 +7,8 @@ import { ButtonType } from "@/components/common/button/interface";
 import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import { MenuTypeEnum } from "@/generated/graphql";
-
-// export enum MenuTypeEnum {
-//   OnlineOrdering = "OnlineOrdering",
-//   DineIn = "DineIn",
-//   Catering = "Catering",
-// }
+import useGlobalStore from "@/store/global";
+import useMenuStore from "@/store/menu";
 
 interface IFormInput {
   type: MenuTypeEnum;
@@ -26,6 +22,12 @@ const menuTypeOptions = [
 ];
 
 const AddMenuForm = () => {
+  const { fetchMenuDatas, setfetchMenuDatas, setisAddMenuModalOpen } =
+    useMenuStore();
+
+  const [btnLoading, setBtnLoading] = useState(false);
+  const { setToastData } = useGlobalStore();
+
   const {
     handleSubmit,
     formState: { errors },
@@ -36,6 +38,8 @@ const AddMenuForm = () => {
 
   const onSubmit = async (data: IFormInput) => {
     try {
+      setBtnLoading(true);
+
       await sdk.addMenu({
         input: {
           type: data.type,
@@ -45,10 +49,20 @@ const AddMenuForm = () => {
         },
       });
 
-      console.log("Menu added successfully:", data);
+      setToastData({
+        type: "success",
+        message: "Menu Added Successfully",
+      });
+      setBtnLoading(false);
+      setisAddMenuModalOpen(false);
+      setfetchMenuDatas(!fetchMenuDatas);
     } catch (error: any) {
+      setBtnLoading(false);
       const errorMessage = extractErrorMessage(error);
-      console.error(errorMessage);
+      setToastData({
+        type: "error",
+        message: errorMessage,
+      });
     }
   };
 
@@ -126,7 +140,12 @@ const AddMenuForm = () => {
           )}
         </div>
 
-        <CButton variant={ButtonType.Primary} type="submit" className="w-full">
+        <CButton
+          loading={btnLoading}
+          variant={ButtonType.Primary}
+          type="submit"
+          className="w-full"
+        >
           Add Menu
         </CButton>
       </form>

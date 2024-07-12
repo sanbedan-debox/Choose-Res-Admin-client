@@ -10,7 +10,7 @@ import { FaTrash, FaEdit, FaShieldAlt } from "react-icons/fa";
 const Categories: React.FC = () => {
   const [cats, setCats] = useState<any>();
   const { setToastData } = useGlobalStore();
-  const { setisAddCategoryModalOpen } = useMenuStore();
+  const { setisAddCategoryModalOpen, fetchMenuDatas } = useMenuStore();
 
   useEffect(() => {
     const fetchRestaurantUsers = async () => {
@@ -36,7 +36,7 @@ const Categories: React.FC = () => {
     };
 
     fetchRestaurantUsers();
-  }, []);
+  }, [fetchMenuDatas]);
 
   const headings = [{ title: "Name", dataKey: "name.value" }];
 

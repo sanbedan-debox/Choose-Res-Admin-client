@@ -5,7 +5,12 @@ import { sdk } from "@/utils/graphqlClient";
 import useRestaurantsStore from "@/store/restaurant";
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { setRestaurants, setSelectedRestaurant } = useRestaurantsStore();
+  const {
+    setRestaurants,
+    setSelectedRestaurant,
+    selectedRestaurant,
+    refreshRestaurantChange,
+  } = useRestaurantsStore();
   useEffect(() => {
     const fetchRestaurantUsers = async () => {
       try {
@@ -17,13 +22,15 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             })
           );
           setRestaurants(formattedRestaurant);
-          setSelectedRestaurant(formattedRestaurant[0]?.name?.value);
-          try {
-            const res = await sdk.setRestaurantIdAsCookie({
-              id: formattedRestaurant[0]?._id,
-            });
-          } catch (error) {
-            console.error("Failed to fetch restaurant users:", error);
+          if (!selectedRestaurant) {
+            setSelectedRestaurant(formattedRestaurant[0]?.name?.value);
+            try {
+              const res = await sdk.setRestaurantIdAsCookie({
+                id: formattedRestaurant[0]?._id,
+              });
+            } catch (error) {
+              console.error("Failed to fetch restaurant users:", error);
+            }
           }
         }
       } catch (error) {
@@ -34,7 +41,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     };
 
     fetchRestaurantUsers();
-  }, []);
+  }, [refreshRestaurantChange]);
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar />

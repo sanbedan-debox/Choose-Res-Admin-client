@@ -10,10 +10,10 @@ import { FaTrash, FaEdit, FaShieldAlt } from "react-icons/fa";
 const Items: React.FC = () => {
   const [items, setItems] = useState<any>();
   const { setToastData } = useGlobalStore();
-  const { setisAddItemModalOpen } = useMenuStore();
+  const { setisAddItemModalOpen, fetchMenuDatas } = useMenuStore();
 
   useEffect(() => {
-    const fetchRestaurantUsers = async () => {
+    const fetchMenuItems = async () => {
       // setLoading(true);
       try {
         const response = await sdk.getItems();
@@ -35,10 +35,10 @@ const Items: React.FC = () => {
       }
     };
 
-    fetchRestaurantUsers();
-  }, []);
+    fetchMenuItems();
+  }, [fetchMenuDatas]);
 
-  const headings = [{ title: "Name", dataKey: "name" }];
+  const headings = [{ title: "Name", dataKey: "name.value" }];
 
   const renderActions = (rowData: { id: number }) => (
     <div className="flex space-x-3">
