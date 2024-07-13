@@ -70,11 +70,11 @@ const Dashboard: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
 
   return (
     <div className="text-black">
-      {isShowSetupPanel && (
+      {/* {isShowSetupPanel && (
         <div>
           <SetupGuide />
         </div>
-      )}
+      )} */}
       <p>Welcome, {repo.firstName}!</p>
       <p>Welcome, {repo.email}!</p>
       <p>Your id: {repo._id}</p>

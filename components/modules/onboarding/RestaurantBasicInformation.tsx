@@ -313,7 +313,6 @@ const RestaurantBasicInformation = () => {
               </label>
             )}
           </div>
-          ;
         </div>
 
         <div className="col-span-2">

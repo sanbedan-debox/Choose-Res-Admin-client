@@ -58,6 +58,12 @@ const Signup: FC = () => {
     formState: { errors },
   } = useForm<IFormInput>();
 
+  const {
+    register: registerOtp,
+    handleSubmit: handleSubmitOtp,
+    formState: { errors: errorsOtp },
+  } = useForm<IOTPFormInput>();
+
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
     const { firstName, lastName, email, phone, commPref } = data;
     try {
@@ -414,7 +420,7 @@ const Signup: FC = () => {
           onClose={() => setShowModal(false)}
           isOpen={showModal}
         >
-          <form onSubmit={handleSubmit(onSubmitOtp)}>
+          <form onSubmit={handleSubmitOtp(onSubmitOtp)}>
             <div>
               <label
                 htmlFor="otpEmail"
@@ -426,7 +432,7 @@ const Signup: FC = () => {
                 type="text"
                 id="otpEmail"
                 className="input input-primary mb-1"
-                {...register("emailOtp", { required: true })}
+                {...registerOtp("emailOtp", { required: true })}
                 value={otpEmail}
                 onChange={(e) => setOtpEmail(e.target.value)}
               />

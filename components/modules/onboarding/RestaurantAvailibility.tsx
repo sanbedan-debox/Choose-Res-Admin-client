@@ -179,7 +179,7 @@ const RestaurantAvailability = () => {
     },
   });
 
-  const dayFieldArray = {
+  const dayFieldArray: any = {
     Monday: useFieldArray({ control, name: "regularHours.Monday" }),
     Tuesday: useFieldArray({ control, name: "regularHours.Tuesday" }),
     Wednesday: useFieldArray({ control, name: "regularHours.Wednesday" }),
@@ -311,7 +311,7 @@ const RestaurantAvailability = () => {
         reformattedData.activeDays[day] = active;
       });
 
-    console.log("Reformatted data", reformattedData);
+    // console.log("Reformatted data", reformattedData);
     return reformattedData;
   }
 
@@ -404,19 +404,19 @@ const RestaurantAvailability = () => {
     }
   };
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: any) => {
     try {
-      const formattedData = Object.keys(data.regularHours).map((day) => ({
+      const formattedData = Object.keys(data.regularHours).map((day: any) => ({
         Day: day,
         hours: data.regularHours[day]
-          .filter((slot) => slot.from && slot.to)
-          .map((slot) => ({
+          .filter((slot: any) => slot.from && slot.to)
+          .map((slot: any) => ({
             start: slot.from,
             end: slot.to,
           })),
         active: data.activeDays[day],
       }));
-      console.log("Formatted Data:", formattedData);
+      // console.log("Formatted Data:", formattedData);
 
       const formatData = (formattedData: any[]): any[] => {
         const currentDate = DateTime.now().toISO();
@@ -760,71 +760,73 @@ const RestaurantAvailability = () => {
                   <div className="flex w-full">
                     <input
                       type="checkbox"
-                      {...register(`activeDays.${day}` as const)}
+                      {...register(`activeDays.${day}` as any)}
                       className="rounded text-primary-500 mr-2"
                       // onChange={(e) => onChange(e.target.checked)}
                     />
 
                     <div className="space-y-2 w-full">
-                      {dayFieldArray[day].fields.map((item, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center space-x-2"
-                        >
-                          <Controller
-                            control={control}
-                            name={`regularHours.${day}.${index}.from` as const}
-                            render={({ field }) => (
-                              <Select
-                                {...field}
-                                options={timeOptions}
-                                isDisabled={
-                                  !activeDays[day as keyof typeof activeDays]
-                                }
-                                className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
-                                classNamePrefix="react-select"
-                                placeholder="From"
-                                value={field.value || null}
-                                onChange={(e: any) => {
-                                  field.onChange(e);
-                                  checkOverlapForDay(day);
-                                }}
-                              />
-                            )}
-                          />
+                      {dayFieldArray[day].fields.map(
+                        (item: any, index: any) => (
+                          <div
+                            key={index}
+                            className="flex items-center space-x-2"
+                          >
+                            <Controller
+                              control={control}
+                              name={`regularHours.${day}.${index}.from` as any}
+                              render={({ field }) => (
+                                <Select
+                                  {...field}
+                                  options={timeOptions}
+                                  isDisabled={
+                                    !activeDays[day as keyof typeof activeDays]
+                                  }
+                                  className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+                                  classNamePrefix="react-select"
+                                  placeholder="From"
+                                  value={field.value || null}
+                                  onChange={(e: any) => {
+                                    field.onChange(e);
+                                    checkOverlapForDay(day);
+                                  }}
+                                />
+                              )}
+                            />
 
-                          <Controller
-                            control={control}
-                            name={`regularHours.${day}.${index}.to` as const}
-                            render={({ field }) => (
-                              <Select
-                                {...field}
-                                options={timeOptions}
-                                isDisabled={
-                                  !activeDays[day as keyof typeof activeDays]
-                                }
-                                className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
-                                classNamePrefix="react-select"
-                                placeholder="To"
-                                value={field.value || null}
-                                onChange={(e: any) => {
-                                  field.onChange(e);
-                                  checkOverlapForDay(day);
-                                }}
-                              />
+                            <Controller
+                              control={control}
+                              name={`regularHours.${day}.${index}.to` as any}
+                              render={({ field }) => (
+                                <Select
+                                  {...field}
+                                  options={timeOptions}
+                                  isDisabled={
+                                    !activeDays[day as keyof typeof activeDays]
+                                  }
+                                  className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+                                  classNamePrefix="react-select"
+                                  placeholder="To"
+                                  value={field.value || null}
+                                  onChange={(e: any) => {
+                                    field.onChange(e);
+                                    checkOverlapForDay(day);
+                                  }}
+                                />
+                              )}
+                            />
+                            {index > 0 && (
+                              <button
+                                type="button"
+                                className="m-2 text-lg text-red-500"
+                                onClick={() => dayFieldArray[day].remove(index)}
+                              >
+                                -
+                              </button>
                             )}
-                          />
-                          {index > 0 && (
-                            <button
-                              type="button"
-                              className="m-2 text-lg text-red-500"
-                              onClick={() => dayFieldArray[day].remove(index)}
-                            >
-                              -
-                            </button>
-                          )}
-                        </div>
-                      ))}
+                          </div>
+                        )
+                      )}
                     </div>
 
                     <button

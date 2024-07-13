@@ -16,7 +16,7 @@ interface IFormInput {
   desc: string;
   image: string;
   price: string;
-  status: StatusEnum;
+  status: { value: string; label: string };
   applySalesTax: boolean;
   popularItem: boolean;
   upSellItem: boolean;
@@ -42,7 +42,7 @@ const AddItemForm = () => {
   const { setToastData } = useGlobalStore();
   const onSubmit = async (data: IFormInput) => {
     try {
-      const statusSub = data.status?.value;
+      const statusSub = data.status.value as StatusEnum;
 
       setBtnLoading(true);
       await sdk.addItem({
@@ -61,6 +61,11 @@ const AddItemForm = () => {
           applySalesTax: data.applySalesTax,
           popularItem: data.popularItem,
           upSellItem: data.upSellItem,
+          hasNuts: false,
+          isGlutenFree: false,
+          isHalal: false,
+          isSpicy: false,
+          isVegan: false,
         },
       });
       setBtnLoading(false);

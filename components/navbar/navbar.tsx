@@ -83,7 +83,7 @@ const Navbar: React.FC = () => {
     setIsRestaurantDropdownOpen(!isRestaurantDropdownOpen);
   };
 
-  console.log(restaurants);
+  // console.log(restaurants);
 
   return (
     <nav

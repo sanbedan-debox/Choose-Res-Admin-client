@@ -9,7 +9,9 @@ import React, { useEffect, useState } from "react";
 import { FaTrash, FaEdit, FaShieldAlt } from "react-icons/fa";
 
 const Categories: React.FC = () => {
-  const [cats, setCats] = useState<any>();
+  const [cats, setCats] = useState<
+    { name: string; desc: string; items: number }[]
+  >([]);
   const { setToastData } = useGlobalStore();
   const { setisAddCategoryModalOpen, fetchMenuDatas } = useMenuStore();
 
@@ -23,7 +25,13 @@ const Categories: React.FC = () => {
           //   ...res,
           // }));
           // setMenu(formattedRestaurant);
-          setCats(response.getCategories);
+          setCats(
+            response.getCategories.map((el) => ({
+              desc: el.desc.value,
+              items: el.items.length,
+              name: el.name.value,
+            }))
+          );
         }
       } catch (error: any) {
         const errorMessage = extractErrorMessage(error);
@@ -39,7 +47,11 @@ const Categories: React.FC = () => {
     fetchRestaurantUsers();
   }, [fetchMenuDatas, setToastData]);
 
-  const headings = [{ title: "Name", dataKey: "name.value" }];
+  const headings = [
+    { title: "Name", dataKey: "name" },
+    { title: "Desc", dataKey: "desc" },
+    { title: "Items", dataKey: "items" },
+  ];
 
   const renderActions = (rowData: { id: number }) => (
     <div className="flex space-x-3">

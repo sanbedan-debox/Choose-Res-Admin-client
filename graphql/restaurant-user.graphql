@@ -26,6 +26,9 @@ query MeUser {
       whatsApp
       email
     }
+    restaurants {
+      _id
+    }
   }
 }
 

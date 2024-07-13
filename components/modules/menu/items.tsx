@@ -11,7 +11,9 @@ import React, { useEffect, useState } from "react";
 import { FaTrash, FaEdit, FaShieldAlt } from "react-icons/fa";
 
 const Items: React.FC = () => {
-  const [items, setItems] = useState<any>();
+  const [items, setItems] = useState<
+    { name: string; desc: string; status: string; price: number }[]
+  >([]);
   const { setToastData } = useGlobalStore();
   const { setisAddItemModalOpen, fetchMenuDatas } = useMenuStore();
 
@@ -25,7 +27,14 @@ const Items: React.FC = () => {
           //   ...res,
           // }));
           // setMenu(formattedRestaurant);
-          setItems(response.getItems);
+          setItems(
+            response.getItems.map((el) => ({
+              name: el.name.value,
+              desc: el.desc.value,
+              status: el.status,
+              price: el.price.value,
+            }))
+          );
         }
       } catch (error: any) {
         const errorMessage = extractErrorMessage(error);
@@ -71,7 +80,9 @@ const Items: React.FC = () => {
 
   const headings = [
     { title: "Toggle Availibility", dataKey: "status", render: renderSwitch },
-    { title: "Name", dataKey: "name.value" },
+    { title: "Name", dataKey: "name" },
+    { title: "Desc", dataKey: "desc" },
+    { title: "Price", dataKey: "price" },
     // { title: "Description", dataKey: "desc.value" },
     // { title: "Price", dataKey: "price" },
     // { title: "Actions", dataKey: "name.value", render: renderActions },

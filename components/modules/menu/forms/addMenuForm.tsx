@@ -11,7 +11,7 @@ import useGlobalStore from "@/store/global";
 import useMenuStore from "@/store/menu";
 
 interface IFormInput {
-  type: MenuTypeEnum;
+  type: { value: string; label: string };
   name: string;
 }
 
@@ -42,7 +42,7 @@ const AddMenuForm = () => {
 
       await sdk.addMenu({
         input: {
-          type: data.type?.value,
+          type: data.type.value as MenuTypeEnum,
           name: {
             value: data.name,
           },

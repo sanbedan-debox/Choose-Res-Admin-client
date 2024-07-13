@@ -55,17 +55,17 @@ const MenuPage = ({ repo: { pagePath } }: MenuPageProps) => {
 
   const handleSubmit = () => {
     // Handle form submission
-    console.log({
-      name,
-      desc,
-      image,
-      price,
-      status,
-      applySalesTax,
-      popularItem,
-      upSellItem,
-      availability,
-    });
+    // console.log({
+    //   name,
+    //   desc,
+    //   image,
+    //   price,
+    //   status,
+    //   applySalesTax,
+    //   popularItem,
+    //   upSellItem,
+    //   availability,
+    // });
     handleAddMenuItemClose();
   };
 
@@ -119,7 +119,19 @@ const MenuPage = ({ repo: { pagePath } }: MenuPageProps) => {
           <AddItemForm />
         </div>
       </FullPageModal>
-      <ReusableModal
+      <FullPageModal
+        isOpen={isAddCategoryModalOpen}
+        title="Category"
+        onClose={handleAddMenuCategoryClose}
+        actionButtonLabel="Save Category"
+        // onActionButtonClick={handleAddMenuItemClick}
+        onActionButtonClick={() => console.log("hello")}
+      >
+        <div className="flex justify-center">
+          <AddCategoryForm />
+        </div>
+      </FullPageModal>
+      {/* <ReusableModal
         width="dxl"
         isOpen={isAddCategoryModalOpen}
         title="Category"
@@ -128,8 +140,20 @@ const MenuPage = ({ repo: { pagePath } }: MenuPageProps) => {
         <div className="flex justify-center">
           <AddCategoryForm />
         </div>
-      </ReusableModal>
-      <ReusableModal
+      </ReusableModal> */}
+      <FullPageModal
+        isOpen={isAddMenuModalOpen}
+        title="Menu"
+        onClose={handleAddMenuClose}
+        actionButtonLabel="Save Menu"
+        // onActionButtonClick={handleAddMenuItemClick}
+        onActionButtonClick={() => console.log("hello")}
+      >
+        <div className="flex justify-center">
+          <AddMenuForm />
+        </div>
+      </FullPageModal>
+      {/* <ReusableModal
         width="dxl"
         isOpen={isAddMenuModalOpen}
         title="Menu"
@@ -138,7 +162,7 @@ const MenuPage = ({ repo: { pagePath } }: MenuPageProps) => {
         <div className="flex justify-center">
           <AddMenuForm />
         </div>
-      </ReusableModal>
+      </ReusableModal> */}
     </>
   );
 };

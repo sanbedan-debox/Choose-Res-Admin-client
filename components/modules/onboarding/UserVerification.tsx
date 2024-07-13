@@ -147,6 +147,9 @@ const UserVerification = () => {
             defaultValue={ein}
             onChange={(e) => setein(e.target.value)}
           />
+          <p className="text-gray-400 text-xs text-start mt-1">
+            Enter your 9-digits EIN number in this format XX-XXXXXXX
+          </p>
           {errors.ein && (
             <p className="text-red-500 text-sm text-start">
               {errors.ein.message}

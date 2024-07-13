@@ -75,8 +75,13 @@ export type AddEmailTemplateInput = {
 export type AddItemInput = {
   applySalesTax: Scalars['Boolean']['input'];
   availability?: InputMaybe<Array<AvailabilityInput>>;
-  desc: MasterCommonInput;
-  image: Scalars['String']['input'];
+  desc?: InputMaybe<MasterCommonInput>;
+  hasNuts: Scalars['Boolean']['input'];
+  image?: InputMaybe<Scalars['String']['input']>;
+  isGlutenFree: Scalars['Boolean']['input'];
+  isHalal: Scalars['Boolean']['input'];
+  isSpicy: Scalars['Boolean']['input'];
+  isVegan: Scalars['Boolean']['input'];
   name: MasterCommonInput;
   popularItem: Scalars['Boolean']['input'];
   price: MasterCommonInputNumber;
@@ -451,7 +456,7 @@ export type Item = {
   createdAt: Scalars['DateTimeISO']['output'];
   desc: MasterCommon;
   hasNuts: Scalars['Boolean']['output'];
-  image: Scalars['String']['output'];
+  image?: Maybe<Scalars['String']['output']>;
   isGlutenFree: Scalars['Boolean']['output'];
   isHalal: Scalars['Boolean']['output'];
   isSpicy: Scalars['Boolean']['output'];
@@ -1353,7 +1358,12 @@ export type UpdateItemInput = {
   applySalesTax?: InputMaybe<Scalars['Boolean']['input']>;
   availability?: InputMaybe<Array<AvailabilityInput>>;
   desc?: InputMaybe<MasterCommonInput>;
+  hasNuts?: InputMaybe<Scalars['Boolean']['input']>;
   image?: InputMaybe<Scalars['String']['input']>;
+  isGlutenFree?: InputMaybe<Scalars['Boolean']['input']>;
+  isHalal?: InputMaybe<Scalars['Boolean']['input']>;
+  isSpicy?: InputMaybe<Scalars['Boolean']['input']>;
+  isVegan?: InputMaybe<Scalars['Boolean']['input']>;
   name?: InputMaybe<MasterCommonInput>;
   popularItem?: InputMaybe<Scalars['Boolean']['input']>;
   price?: InputMaybe<MasterCommonInputNumber>;
@@ -1513,7 +1523,7 @@ export type GenerateOtpForLoginQuery = { __typename?: 'Query', generateOtpForLog
 export type MeUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MeUserQuery = { __typename?: 'Query', meUser: { __typename?: 'User', _id: string, firstName: string, lastName: string, status: UserStatus, email: string, phone: string, businessName?: string | null, establishedAt?: string | null, accountPreferences?: { __typename?: 'AccountPreference', whatsApp: boolean, email: boolean } | null } };
+export type MeUserQuery = { __typename?: 'Query', meUser: { __typename?: 'User', _id: string, firstName: string, lastName: string, status: UserStatus, email: string, phone: string, businessName?: string | null, establishedAt?: string | null, accountPreferences?: { __typename?: 'AccountPreference', whatsApp: boolean, email: boolean } | null, restaurants?: Array<{ __typename?: 'RestaurantInfo', _id: string }> | null } };
 
 export type VerifyOtpForLoginQueryVariables = Exact<{
   key: Scalars['String']['input'];
@@ -1698,6 +1708,9 @@ export const MeUserDocument = gql`
     accountPreferences {
       whatsApp
       email
+    }
+    restaurants {
+      _id
     }
   }
 }

@@ -12,12 +12,15 @@ import { sdk } from "@/utils/graphqlClient";
 import { UserStatus } from "@/generated/graphql";
 import Link from "next/link";
 import useGlobalStore from "@/store/global";
+import { useRouter } from "next/router";
 
 type NextPageWithLayout = React.FC & {
   getLayout?: (page: React.ReactNode) => React.ReactNode;
 };
 
-const PaymentPending: NextPageWithLayout = () => {
+const PaymentPending: NextPageWithLayout = (props: any) => {
+  const resto = props.restaurants;
+  const router = useRouter();
   const { setisVerificationToRestaurantAdd } = useGlobalStore();
   return (
     <div className="text-black ">
@@ -25,22 +28,42 @@ const PaymentPending: NextPageWithLayout = () => {
         Verification Pending
       </h1>
       <p className="text-gray-600 whitespace-pre-line">
-        {`Your account verification is pending. Please check your email for further instructions.\nTill we Verify your account please proceed by adding restaurants`}
+        {`Your account verification is pending. Please check your email for further instructions.\n${
+          resto <= 0
+            ? "Till we Verify your account please proceed by adding restaurants"
+            : ""
+        }`}
       </p>
       <p className="text-gray-600 mb-8"></p>
 
-      <Link
-        onClick={() => setisVerificationToRestaurantAdd(true)}
-        href="/onboarding-restaurant/restaurant-welcome"
-        className="btn p-0  hover:scale-105 transition-all  mb-12"
-      >
-        <div className="flex items-center space-x-2">
-          <p className="text-lg text-primary ">Add restaurants </p>
-          <div className="  text-primary ">
-            <FaArrowRight />
+      {resto <= 0 ? (
+        <Link
+          onClick={() => setisVerificationToRestaurantAdd(true)}
+          href="/onboarding-restaurant/restaurant-welcome"
+          className="btn p-0  hover:scale-105 transition-all  mb-12"
+        >
+          <div className="flex items-center space-x-2">
+            <p className="text-lg text-primary ">Add restaurants </p>
+            <div className="  text-primary ">
+              <FaArrowRight />
+            </div>
+          </div>
+        </Link>
+      ) : (
+        <div
+          onClick={() => {
+            router.reload();
+          }}
+          className="btn p-0  hover:scale-105 transition-all  mb-12 cursor-pointer"
+        >
+          <div className="flex items-center space-x-2">
+            <p className="text-lg text-primary ">Refresh Status</p>
+            <div className="  text-primary ">
+              <FaArrowRight />
+            </div>
           </div>
         </div>
-      </Link>
+      )}
     </div>
   );
 };
@@ -103,13 +126,19 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             permanent: false,
           },
         };
+      } else if (status === UserStatus.Active) {
+        return {
+          redirect: {
+            destination: "/dashboard",
+            permanent: false,
+          },
+        };
       }
 
       return {
         props: {
-          repo: {
-            status,
-          },
+          status,
+          restaurants: (response.meUser.restaurants ?? []).length,
         },
       };
     } else {
