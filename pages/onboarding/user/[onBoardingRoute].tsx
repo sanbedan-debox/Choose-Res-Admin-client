@@ -155,10 +155,7 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
         establishedAt,
         estimatedRevenue,
       } = response.getUserOnboardingDetails;
-      // console.log(response.getUserOnboardingDetails);
-      // console.log("ADDRESSS");
 
-      // console.log(response.getUserOnboardingDetails.address);
       return {
         props: {
           repo: {

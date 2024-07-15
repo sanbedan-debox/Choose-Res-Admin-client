@@ -1,0 +1,174 @@
+query AllPlaces($input: String!) {
+  getPlacesList(input: $input) {
+    placeId
+    displayName
+  }
+}
+
+query PlaceDetails($placeId: String!) {
+  getPlaceDetails(placeId: $placeId) {
+    latitude
+    longitude
+  }
+}
+# Mutation to update the restaurant user's profile
+mutation UpdateRestaurantUserProfile($input: UpdateUserProfileInput!) {
+  updateUserProfile(input: $input)
+}
+
+# Mutation to update user onboarding details
+mutation UpdateUserOnboarding($input: UpdateUserOnboardingInput!) {
+  updateUserOnboarding(input: $input)
+}
+# Inputs
+
+mutation completeUserOnboarding {
+  completeUserOnboarding
+}
+
+# Object types
+
+# Response for adding a restaurant user
+type AddRestaurantUser {
+  emailOtpVerifyKey: String!
+  numberOtpVerifyKey: String!
+}
+
+query getUserOnboardingDetails {
+  getUserOnboardingDetails {
+    ein
+    # ssn
+    businessName
+    address {
+      addressLine1 {
+        value
+      }
+      addressLine2 {
+        value
+      }
+      state {
+        value
+      }
+      city {
+        value
+      }
+      postcode {
+        value
+      }
+      coordinate {
+        coordinates
+      }
+      place {
+        displayName
+        placeId
+      }
+    }
+    employeeSize
+    dob
+    establishedAt
+    businessType
+    estimatedRevenue
+  }
+}
+
+mutation restaurantOnboarding($input: UpdateRestaurantDetailsInput!) {
+  restaurantOnboarding(input: $input)
+}
+
+query completeRestaurantOnboarding($flag: Boolean!) {
+  completeRestaurantOnboarding(isCompleted: $flag)
+}
+# Input for adding a new restaurant user
+input AddRestaurantUserInput {
+  name: String!
+  email: String!
+  phone: String!
+  communication: CommunicationPreferenceInput!
+}
+
+# Input for verifying restaurant user details
+input VerifyRestaurantUserDetails {
+  email: String!
+  phone: String!
+  emailOtp: String!
+  numberOtp: String!
+  emailOtpVerifyKey: String!
+  numberOtpVerifyKey: String!
+  name: String!
+  communication: CommunicationPreferenceInput!
+}
+
+# Input for updating user profile
+input UpdateUserProfileInput {
+  name: String
+  communication: [CommunicationPreferenceInput]
+  restaurantIds: [String]
+}
+
+# Input for communication preferences
+input CommunicationPreferenceInput {
+  whatsApp: Boolean!
+  email: Boolean!
+}
+
+type Mutation {
+  createRestaurantUser(input: AddRestaurantUserInput!): AddRestaurantUser
+  verifyRestaurantUserDetails(input: VerifyRestaurantUserDetails!): Boolean
+  updateRestaurantUserProfile(input: UpdateUserProfileInput!): Boolean
+}
+
+query getRestaurantOnboardingData {
+  getRestaurantOnboardingData {
+    name {
+      value
+    }
+    address {
+      addressLine1 {
+        value
+      }
+      addressLine2 {
+        value
+      }
+      state {
+        value
+      }
+      city {
+        value
+      }
+      postcode {
+        value
+      }
+      coordinate {
+        coordinates
+      }
+      place {
+        displayName
+        placeId
+      }
+    }
+    brandingLogo
+    socialInfo {
+      facebook
+      instagram
+      twitter
+    }
+    website
+    availability {
+      day
+      hours {
+        start
+        end
+      }
+      active
+    }
+    timezone
+    category
+    beverageCategory
+    foodType
+    meatType
+    type
+    dineInCapacity {
+      value
+    }
+  }
+}

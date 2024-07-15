@@ -311,7 +311,6 @@ const RestaurantAvailability = () => {
         reformattedData.activeDays[day] = active;
       });
 
-    // console.log("Reformatted data", reformattedData);
     return reformattedData;
   }
 
@@ -416,7 +415,6 @@ const RestaurantAvailability = () => {
           })),
         active: data.activeDays[day],
       }));
-      // console.log("Formatted Data:", formattedData);
 
       const formatData = (formattedData: any[]): any[] => {
         const currentDate = DateTime.now().toISO();

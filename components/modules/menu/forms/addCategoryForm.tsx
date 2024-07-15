@@ -13,20 +13,20 @@ import { MenuTypeEnum } from "@/generated/graphql";
 interface IFormInput {
   name: string;
   description: string;
-  items: string[];
+  // items: string[];
+  items: string;
 }
 
 const AddCategoryForm = () => {
-  const menuTypeOptions: any[] = [
-    { value: MenuTypeEnum.OnlineOrdering, label: "Online Ordering" },
-    { value: MenuTypeEnum.DineIn, label: "Dine In" },
-    { value: MenuTypeEnum.Catering, label: "Catering" },
-  ];
   const [btnLoading, setBtnLoading] = useState(false);
   const [itemsOption, setItemsOption] = useState<any[]>([]);
   const { setToastData } = useGlobalStore();
-  const { fetchMenuDatas, setfetchMenuDatas, setisAddCategoryModalOpen } =
-    useMenuStore();
+  const {
+    fetchMenuDatas,
+    setfetchMenuDatas,
+    setisAddCategoryModalOpen,
+    setisAddItemModalOpen,
+  } = useMenuStore();
   const {
     handleSubmit,
     formState: { errors },
@@ -38,7 +38,7 @@ const AddCategoryForm = () => {
     try {
       setBtnLoading(true);
 
-      await sdk.addCategory({
+      const res = await sdk.addCategory({
         input: {
           name: {
             value: data.name,
@@ -48,13 +48,20 @@ const AddCategoryForm = () => {
           },
         },
       });
-      setToastData({
-        type: "success",
-        message: "Category Added Successfully",
-      });
-      setBtnLoading(false);
-      setisAddCategoryModalOpen(false);
-      setfetchMenuDatas(!fetchMenuDatas);
+
+      if (res?.addCategory) {
+        // const addItemstoCatres = await sdk.addItemToCategory({
+        //   categoryId: res?.addCategory,
+        //   itemId: data.items,
+        // });
+        setToastData({
+          type: "success",
+          message: "Category Added Successfully",
+        });
+        setBtnLoading(false);
+        setisAddCategoryModalOpen(false);
+        setfetchMenuDatas(!fetchMenuDatas);
+      }
     } catch (error: any) {
       const errorMessage = extractErrorMessage(error);
       setToastData({
@@ -84,7 +91,11 @@ const AddCategoryForm = () => {
       }
     };
     fetch();
-  }, []);
+  }, [fetchMenuDatas]);
+
+  const handleAddItem = () => {
+    setisAddItemModalOpen(true);
+  };
 
   return (
     <motion.div
@@ -149,30 +160,51 @@ const AddCategoryForm = () => {
             </p>
           )}
         </div>
+
         <div className="col-span-2">
-          <label
-            htmlFor="type"
-            className="block mb-2 text-sm font-medium text-left text-gray-700"
-          >
-            Type
-          </label>
-          <Controller
-            name="items"
-            control={control}
-            rules={{ required: "Type is required" }}
-            render={({ field }) => (
-              <Select
-                {...field}
-                id="type"
-                isMulti
-                // options={itemsOption}
-                options={itemsOption}
-                className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
-                classNamePrefix="react-select"
-                placeholder="Select menu type"
-              />
-            )}
-          />
+          {itemsOption.length === 0 ? (
+            <CButton
+              className="w-full"
+              onClick={handleAddItem}
+              variant={ButtonType.Primary}
+            >
+              Items
+            </CButton>
+          ) : (
+            <>
+              <label
+                htmlFor="type"
+                className="block mb-2 text-sm font-medium text-left text-gray-700"
+              >
+                Items
+              </label>
+              <div className="flex justify-between space-x-2 ">
+                <Controller
+                  name="items"
+                  control={control}
+                  rules={{ required: "Type is required" }}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      id="type"
+                      // isMulti
+                      options={itemsOption}
+                      className="mt-1 w-3/4 text-sm rounded-lg focus:outline-none text-left"
+                      classNamePrefix="react-select"
+                      placeholder="Select menu type"
+                    />
+                  )}
+                />
+                <CButton
+                  className="w-1/4 h-10"
+                  onClick={handleAddItem}
+                  variant={ButtonType.Primary}
+                >
+                  Create Items
+                </CButton>
+              </div>
+            </>
+          )}
         </div>
 
         <CButton

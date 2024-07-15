@@ -1,0 +1,8 @@
+query getModifierGroups {
+  getModifierGroups {
+    _id
+    name {
+      value
+    }
+  }
+}

@@ -1,0 +1,50 @@
+# Query to log out the currently logged-in user
+query Logout {
+  logout
+}
+
+# Query to generate OTP for login
+query GenerateOtpForLogin($input: String!) {
+  generateOtpForLogin(input: $input)
+}
+
+# Query to fetch user's profile
+
+query MeUser {
+  meUser {
+    _id
+    firstName
+    lastName
+    status
+    email
+    phone
+    businessName
+    establishedAt
+    accountPreferences {
+      whatsApp
+      email
+    }
+    restaurants {
+      _id
+    }
+  }
+}
+
+# Query to verify OTP for login
+query VerifyOtpForLogin($key: String!, $input: String!, $otp: String!) {
+  verifyOtpForLogin(key: $key, input: $input, otp: $otp)
+}
+
+mutation addUser($input: AddUserInput!) {
+  addUser(input: $input)
+}
+# Mutation to verify restaurant user details
+mutation verifyUserDetails($input: VerifyUserDetails!) {
+  verifyUserDetails(input: $input)
+}
+
+# Input for communication preferences
+input CommunicationPreferenceInput {
+  whatsApp: Boolean!
+  email: Boolean!
+}

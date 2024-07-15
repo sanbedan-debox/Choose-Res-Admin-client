@@ -1,0 +1,26 @@
+query getAllMenus {
+  getAllMenus {
+    _id
+    name {
+      value
+    }
+    type
+    categories {
+      name {
+        value
+      }
+    }
+  }
+}
+
+mutation addItem($input: AddItemInput!) {
+  addItem(input: $input)
+}
+
+mutation addCategory($input: AddCategoryInput!) {
+  addCategory(input: $input)
+}
+
+mutation addMenu($input: AddMenuInput!) {
+  addMenu(input: $input)
+}

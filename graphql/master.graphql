@@ -1,0 +1,15 @@
+query getActiveStates {
+  getActiveStates {
+    value
+    abbreviation
+    _id
+  }
+}
+
+query getActiveTimezones {
+  getActiveTimezones {
+    value
+    gmtOffset
+    _id
+  }
+}

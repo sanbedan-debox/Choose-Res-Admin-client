@@ -183,8 +183,6 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
         availability,
       } = response.getRestaurantOnboardingData;
 
-      // console.log(response.getRestaurantOnboardingData.availability);
-
       return {
         props: {
           repo: {

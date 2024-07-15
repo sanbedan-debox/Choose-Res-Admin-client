@@ -1,0 +1,39 @@
+mutation changeCategoryStatus($id: String!) {
+  changeCategoryStatus(id: $id)
+}
+
+mutation addItemToCategory($categoryId: String!, $itemId: String!) {
+  addItemToCategory(categoryId: $categoryId, itemId: $itemId)
+}
+mutation deleteCategory($id: String!) {
+  deleteCategory(id: $id)
+}
+query getCategories {
+  getCategories {
+    _id
+    name {
+      value
+    }
+    desc {
+      value
+    }
+    status
+    items {
+      _id {
+        _id
+      }
+      name {
+        value
+      }
+    }
+  }
+}
+
+query getItemsForCategoryDropdown {
+  getItems {
+    _id
+    name {
+      value
+    }
+  }
+}

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   FaUser,
   FaQuestionCircle,
@@ -41,6 +41,33 @@ const Navbar: React.FC = () => {
     // reset();
     setIsRestaurantCompleted(true);
   };
+  const profileDropdownRef = useRef<HTMLDivElement>(null);
+  const restaurantDropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        profileDropdownRef.current &&
+        !profileDropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsProfileDropdownOpen(false);
+      }
+      if (
+        restaurantDropdownRef.current &&
+        !restaurantDropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsRestaurantDropdownOpen(false);
+      }
+    };
+
+    // Add event listener
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Clean up event listener
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const setSelectedRestaurantFunc = async (restaurant: any) => {
     try {
@@ -86,8 +113,6 @@ const Navbar: React.FC = () => {
     setIsRestaurantDropdownOpen(!isRestaurantDropdownOpen);
   };
 
-  // console.log(restaurants);
-
   return (
     <nav
       className={`text-black p-4 bg-white fixed top-0 z-10 transition-all duration-300 ${
@@ -113,7 +138,7 @@ const Navbar: React.FC = () => {
           </button>
 
           {restaurants.length > 0 ? (
-            <div className="relative">
+            <div ref={restaurantDropdownRef} className="relative">
               <button
                 onClick={toggleRestaurantDropdown}
                 className="flex items-center space-x-2 hover:bg-primary hover:text-white px-2 py-2 rounded group"
@@ -170,7 +195,7 @@ const Navbar: React.FC = () => {
           )}
         </div>
         <div className="flex items-center space-x-1 relative">
-          <div className="relative">
+          <div ref={profileDropdownRef} className="relative">
             <button
               onClick={toggleProfileDropdown}
               className="hover:bg-primary hover:text-white px-3 py-2 rounded flex items-center group focus:outline-none"

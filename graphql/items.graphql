@@ -1,0 +1,30 @@
+mutation changeItemStatus($id: String!) {
+  changeItemStatus(id: $id)
+}
+
+mutation deleteItem($id: String!) {
+  deleteItem(id: $id)
+}
+query getItems {
+  getItems {
+    _id
+    name {
+      value
+    }
+    desc {
+      value
+    }
+    status
+    modifierGroup {
+      _id
+      name {
+        _id
+        value
+      }
+    }
+    price {
+      _id
+      value
+    }
+  }
+}

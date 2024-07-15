@@ -1,0 +1,11 @@
+query getModifiers {
+  getModifiers {
+    _id
+    name {
+      value
+    }
+    price {
+      value
+    }
+  }
+}

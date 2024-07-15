@@ -31,16 +31,23 @@ const MenuPage = ({ repo: { pagePath } }: MenuPageProps) => {
     isAddMenuModalOpen,
     setisAddCategoryModalOpen,
     setisAddMenuModalOpen,
+    fetchMenuDatas,
+    setfetchMenuDatas,
   } = useMenuStore();
 
   const handleAddMenuItemClose = () => {
     setisAddItemModalOpen(false);
+    setisAddMenuModalOpen(false);
+    setfetchMenuDatas(!fetchMenuDatas);
   };
   const handleAddMenuCategoryClose = () => {
     setisAddCategoryModalOpen(false);
+    setisAddMenuModalOpen(false);
+    setfetchMenuDatas(!fetchMenuDatas);
   };
   const handleAddMenuClose = () => {
     setisAddMenuModalOpen(false);
+    setfetchMenuDatas(!fetchMenuDatas);
   };
 
   const [name, setName] = useState("");
