@@ -269,7 +269,7 @@ const QrCard = () => (
         alt="QR Code"
         className="w-24 h-24 mx-auto"
       />
-      <p className="mt-2">Toast Now, the free mobile operator application</p>
+      <p className="mt-2">Choose Now, the free mobile operator application</p>
       <div className="flex space-x-2 mt-4">
         <button className="btn btn-primary">Skip</button>
         <button className="btn btn-secondary">Learn more</button>
