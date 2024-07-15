@@ -54,18 +54,6 @@ const MenuPage = ({ repo: { pagePath } }: MenuPageProps) => {
   const [availability, setAvailability] = useState([]);
 
   const handleSubmit = () => {
-    // Handle form submission
-    // console.log({
-    //   name,
-    //   desc,
-    //   image,
-    //   price,
-    //   status,
-    //   applySalesTax,
-    //   popularItem,
-    //   upSellItem,
-    //   availability,
-    // });
     handleAddMenuItemClose();
   };
 
@@ -131,16 +119,7 @@ const MenuPage = ({ repo: { pagePath } }: MenuPageProps) => {
           <AddCategoryForm />
         </div>
       </FullPageModal>
-      {/* <ReusableModal
-        width="dxl"
-        isOpen={isAddCategoryModalOpen}
-        title="Category"
-        onClose={handleAddMenuCategoryClose}
-      >
-        <div className="flex justify-center">
-          <AddCategoryForm />
-        </div>
-      </ReusableModal> */}
+
       <FullPageModal
         isOpen={isAddMenuModalOpen}
         title="Menu"
@@ -153,16 +132,6 @@ const MenuPage = ({ repo: { pagePath } }: MenuPageProps) => {
           <AddMenuForm />
         </div>
       </FullPageModal>
-      {/* <ReusableModal
-        width="dxl"
-        isOpen={isAddMenuModalOpen}
-        title="Menu"
-        onClose={handleAddMenuClose}
-      >
-        <div className="flex justify-center">
-          <AddMenuForm />
-        </div>
-      </ReusableModal> */}
     </>
   );
 };

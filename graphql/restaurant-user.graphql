@@ -179,6 +179,7 @@ query getUserRestaurants {
       value
     }
     _id
+    status
   }
 }
 
@@ -186,8 +187,8 @@ mutation restaurantOnboarding($input: UpdateRestaurantDetailsInput!) {
   restaurantOnboarding(input: $input)
 }
 
-query CompleteRestaurantOnboarding {
-  completeRestaurantOnboarding
+query completeRestaurantOnboarding($flag: Boolean!) {
+  completeRestaurantOnboarding(isCompleted: $flag)
 }
 
 query AllPlaces($input: String!) {
@@ -259,6 +260,15 @@ query getItems {
     }
     price {
       _id
+      value
+    }
+  }
+}
+
+query getItemsForCategoryDropdown {
+  getItems {
+    _id
+    name {
       value
     }
   }
@@ -356,8 +366,8 @@ query getActiveTimezones {
   }
 }
 
-query setRestaurantIdAsCookie($id: String!) {
-  setRestaurantIdAsCookie(id: $id)
+query setRestaurantIdAsCookie($flag: Boolean!, $id: String!) {
+  setRestaurantIdAsCookie(isCompleted: $flag, id: $id)
 }
 
 mutation addItem($input: AddItemInput!) {
@@ -370,4 +380,19 @@ mutation addCategory($input: AddCategoryInput!) {
 
 mutation addMenu($input: AddMenuInput!) {
   addMenu(input: $input)
+}
+
+mutation changeItemStatus($id: String!) {
+  changeItemStatus(id: $id)
+}
+
+mutation deleteItem($id: String!) {
+  deleteItem(id: $id)
+}
+mutation deleteCategory($id: String!) {
+  deleteCategory(id: $id)
+}
+
+mutation changeCategoryStatus($id: String!) {
+  changeCategoryStatus(id: $id)
 }

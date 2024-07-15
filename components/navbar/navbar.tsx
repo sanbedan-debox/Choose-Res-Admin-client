@@ -31,6 +31,7 @@ const Navbar: React.FC = () => {
     setSelectedRestaurant,
     setRefreshRestaurantChange,
     refreshRestaurantChange,
+    setIsRestaurantCompleted,
   } = useRestaurantsStore();
   const toggleSidebar = () => {
     setisSidebarExpanded(!isSidebarExpanded);
@@ -38,12 +39,14 @@ const Navbar: React.FC = () => {
 
   const resetRestaurantOnboardingDatas = () => {
     // reset();
+    setIsRestaurantCompleted(true);
   };
 
   const setSelectedRestaurantFunc = async (restaurant: any) => {
     try {
       const res = await sdk.setRestaurantIdAsCookie({
         id: restaurant?._id,
+        flag: restaurant?.status === "active" ? false : true,
       });
       if (res.setRestaurantIdAsCookie) {
         setRefreshRestaurantChange(!refreshRestaurantChange);

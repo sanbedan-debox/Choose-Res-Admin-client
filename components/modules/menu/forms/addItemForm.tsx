@@ -10,6 +10,7 @@ import { StatusEnum } from "@/generated/graphql";
 import useMenuStore from "@/store/menu";
 import useGlobalStore from "@/store/global";
 import { title } from "process";
+import CustomSwitch from "@/components/common/customSwitch/customSwitch";
 
 interface IFormInput {
   name: string;
@@ -20,6 +21,11 @@ interface IFormInput {
   applySalesTax: boolean;
   popularItem: boolean;
   upSellItem: boolean;
+  isSpicy: boolean;
+  hasNuts: boolean;
+  isGlutenFree: boolean;
+  isHalal: boolean;
+  isVegan: boolean;
 }
 
 const statusOptions: any[] = [
@@ -58,14 +64,15 @@ const AddItemForm = () => {
             value: parseFloat(data.price),
           },
           status: statusSub,
-          applySalesTax: data.applySalesTax,
-          popularItem: data.popularItem,
-          upSellItem: data.upSellItem,
-          hasNuts: false,
-          isGlutenFree: false,
-          isHalal: false,
-          isSpicy: false,
-          isVegan: false,
+          applySalesTax: data.applySalesTax ? true : false,
+          popularItem: data.popularItem ? true : false,
+          upSellItem: data.upSellItem ? true : false,
+          hasNuts: data.hasNuts ? true : false,
+          isGlutenFree: data.isGlutenFree ? true : false,
+          isHalal: data.isHalal ? true : false,
+          isVegan: data.isVegan ? true : false,
+          isSpicy: data.isSpicy ? true : false,
+          // availability: [],
         },
       });
       setBtnLoading(false);
@@ -285,40 +292,38 @@ const AddItemForm = () => {
               <label className="block mb-2 text-lg font-medium text-left text-gray-700">
                 Options
               </label>
-              <div className="grid grid-cols-3 gap-4">
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    {...register("applySalesTax")}
-                    id="applySalesTax"
-                    className="input input-primary"
-                  />
-                  <label className="ml-2 text-gray-700 whitespace-nowrap">
-                    Apply Sales Tax
-                  </label>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    {...register("popularItem")}
-                    id="popularItem"
-                    className="input input-primary"
-                  />
-                  <label className="ml-2 text-gray-700 whitespace-nowrap">
-                    Popular Name
-                  </label>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    {...register("upSellItem")}
-                    id="upSellItem"
-                    className="input input-primary"
-                  />
-                  <label className="ml-2 text-gray-700 whitespace-nowrap ">
-                    Up-sell Item
-                  </label>
-                </div>
+              <div className="grid grid-cols-1 gap-4">
+                {[
+                  { id: "applySalesTax", label: "Apply Sales Tax" },
+                  { id: "popularItem", label: "Popular Item" },
+                  { id: "upSellItem", label: "Up-sell Item" },
+                  { id: "isSpicy", label: "Is Spicy" },
+                  { id: "hasNuts", label: "Has Nuts" },
+                  { id: "isGlutenFree", label: "Is Gluten Free" },
+                  { id: "isHalal", label: "Is Halal" },
+                  { id: "isVegan", label: "Is Vegan" },
+                ].map((option) => (
+                  <div
+                    className="flex justify-between items-center"
+                    key={option.id}
+                  >
+                    <label htmlFor={option.id} className="text-gray-700">
+                      {option.label}
+                    </label>
+                    <Controller
+                      name={option.id as keyof IFormInput}
+                      control={control}
+                      render={({ field }) => (
+                        <CustomSwitch
+                          checked={field.value as boolean}
+                          onChange={() => field.onChange(!field.value)}
+                          label={option.label}
+                          className="switch"
+                        />
+                      )}
+                    />
+                  </div>
+                ))}
               </div>
             </div>
           </div>

@@ -1,20 +1,29 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import useGlobalStore from "@/store/global";
 import useMenuStore from "@/store/menu";
+import Select from "react-select";
+import { MenuTypeEnum } from "@/generated/graphql";
 
 interface IFormInput {
   name: string;
   description: string;
+  items: string[];
 }
 
 const AddCategoryForm = () => {
+  const menuTypeOptions: any[] = [
+    { value: MenuTypeEnum.OnlineOrdering, label: "Online Ordering" },
+    { value: MenuTypeEnum.DineIn, label: "Dine In" },
+    { value: MenuTypeEnum.Catering, label: "Catering" },
+  ];
   const [btnLoading, setBtnLoading] = useState(false);
+  const [itemsOption, setItemsOption] = useState<any[]>([]);
   const { setToastData } = useGlobalStore();
   const { fetchMenuDatas, setfetchMenuDatas, setisAddCategoryModalOpen } =
     useMenuStore();
@@ -22,6 +31,7 @@ const AddCategoryForm = () => {
     handleSubmit,
     formState: { errors },
     register,
+    control,
   } = useForm<IFormInput>();
 
   const onSubmit = async (data: IFormInput) => {
@@ -53,6 +63,28 @@ const AddCategoryForm = () => {
       });
     }
   };
+
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        const items = await sdk.getItemsForCategoryDropdown();
+        if (items && items.getItems) {
+          const formattedItemsList = items.getItems.map((item) => ({
+            value: item._id,
+            label: item?.name?.value,
+          }));
+          setItemsOption(formattedItemsList);
+        }
+      } catch (error: any) {
+        const errorMessage = extractErrorMessage(error);
+        setToastData({
+          type: "error",
+          message: errorMessage,
+        });
+      }
+    };
+    fetch();
+  }, []);
 
   return (
     <motion.div
@@ -116,6 +148,31 @@ const AddCategoryForm = () => {
               {errors.description.message}
             </p>
           )}
+        </div>
+        <div className="col-span-2">
+          <label
+            htmlFor="type"
+            className="block mb-2 text-sm font-medium text-left text-gray-700"
+          >
+            Type
+          </label>
+          <Controller
+            name="items"
+            control={control}
+            rules={{ required: "Type is required" }}
+            render={({ field }) => (
+              <Select
+                {...field}
+                id="type"
+                isMulti
+                // options={itemsOption}
+                options={itemsOption}
+                className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+                classNamePrefix="react-select"
+                placeholder="Select menu type"
+              />
+            )}
+          />
         </div>
 
         <CButton

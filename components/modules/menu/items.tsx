@@ -1,6 +1,8 @@
+import CButton from "@/components/common/button/button";
+import { ButtonType } from "@/components/common/button/interface";
 import CustomSwitch from "@/components/common/customSwitch/customSwitch";
+import ReusableModal from "@/components/common/modal/modal";
 import RoopTable from "@/components/common/table/table";
-import CBTable from "@/components/common/table/table";
 import { StatusEnum } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
 import useMenuStore from "@/store/menu";
@@ -14,66 +16,89 @@ const Items: React.FC = () => {
   const [items, setItems] = useState<
     { name: string; desc: string; status: string; price: number }[]
   >([]);
+
+  const [showStatusConfirmationModal, setShowStatusConfirmationModal] =
+    useState(false);
+  const [showDeleteConfirmationModal, setshowDeleteConfirmationModal] =
+    useState(false);
+  const [availableCaption, setAvailableCaption] = useState(
+    "are you sure you want to block the user."
+  );
+
   const { setToastData } = useGlobalStore();
   const { setisAddItemModalOpen, fetchMenuDatas } = useMenuStore();
+  const [selectedItemId, setSelectedItemId] = useState<string>("");
+  const fetchMenuItems = async () => {
+    // setLoading(true);
+    try {
+      const response = await sdk.getItems();
+      if (response && response.getItems) {
+        // const formattedRestaurant = response.getAllMenus.map((res) => ({
+        //   ...res,
+        // }));
+        // setMenu(formattedRestaurant);
+        setItems(
+          response.getItems.map((el) => ({
+            _id: el._id,
+            name: el.name.value,
+            desc: el.desc.value,
+            status: el.status,
+            price: el.price.value,
+          }))
+        );
+      }
+    } catch (error: any) {
+      const errorMessage = extractErrorMessage(error);
+      setToastData({
+        type: "error",
+        message: errorMessage,
+      });
+    } finally {
+      // setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchMenuItems = async () => {
-      // setLoading(true);
-      try {
-        const response = await sdk.getItems();
-        if (response && response.getItems) {
-          // const formattedRestaurant = response.getAllMenus.map((res) => ({
-          //   ...res,
-          // }));
-          // setMenu(formattedRestaurant);
-          setItems(
-            response.getItems.map((el) => ({
-              name: el.name.value,
-              desc: el.desc.value,
-              status: el.status,
-              price: el.price.value,
-            }))
-          );
-        }
-      } catch (error: any) {
-        const errorMessage = extractErrorMessage(error);
-        setToastData({
-          type: "error",
-          message: errorMessage,
-        });
-      } finally {
-        // setLoading(false);
-      }
-    };
-
     fetchMenuItems();
   }, [fetchMenuDatas, setToastData]);
 
-  const renderActions = (rowData: { id: number }) => (
-    <div className="flex space-x-2">
+  const renderActions = (rowData: { _id: string }) => (
+    <div className="flex space-x-2 justify-center">
       <FaTrash
         className="text-red-500 cursor-pointer"
-        onClick={() => console.log("Delete", rowData.id)}
+        onClick={() => handleDeleteItem(rowData._id)}
       />
       <FaEdit
         className="text-blue-500 cursor-pointer"
-        onClick={() => console.log("Edit", rowData.id)}
+        onClick={() => console.log("Edit", rowData._id)}
       />
       <FaShieldAlt
         className="text-green-500 cursor-pointer"
-        onClick={() => console.log("Change Password", rowData.id)}
+        onClick={() => console.log("Change Password", rowData._id)}
       />
     </div>
   );
+  const handleToggleSwitch = (rowData: { status: string; _id: string }) => {
+    setShowStatusConfirmationModal(true);
+    setSelectedItemId(rowData._id);
+    setAvailableCaption(
+      rowData.status === StatusEnum.Inactive
+        ? "are you sure you want to activate the item?"
+        : "are you sure you want to block the item?"
+    );
+  };
+  const handleDeleteItem = (_id: string) => {
+    setshowDeleteConfirmationModal(true);
+    setSelectedItemId(_id);
+    setAvailableCaption("are you sure you want to delete this item?");
+  };
 
-  const renderSwitch = (rowData: { status: StatusEnum; id: string }) => (
+  const renderSwitch = (rowData: { status: StatusEnum; _id: string }) => (
     <div>
       <CustomSwitch
         checked={rowData.status !== StatusEnum.Inactive}
-        // onChange={() => handleToggleSwitch(rowData)}
-        onChange={() => console.log(rowData)}
-        label={`Toggle switch for ${rowData.id}`}
+        onChange={() => handleToggleSwitch(rowData)}
+        label={`Toggle switch for ${rowData._id}`}
       />
     </div>
   );
@@ -83,9 +108,8 @@ const Items: React.FC = () => {
     { title: "Name", dataKey: "name" },
     { title: "Desc", dataKey: "desc" },
     { title: "Price", dataKey: "price" },
-    // { title: "Description", dataKey: "desc.value" },
-    // { title: "Price", dataKey: "price" },
-    // { title: "Actions", dataKey: "name.value", render: renderActions },
+    // { title: "Description", dataKey: "desc" },
+    { title: "Actions", dataKey: "name.value", render: renderActions },
   ];
 
   const mainActions = [
@@ -94,6 +118,45 @@ const Items: React.FC = () => {
       onClick: () => setisAddItemModalOpen(true),
     },
   ];
+
+  const handleStatusConfirmation = async () => {
+    setShowStatusConfirmationModal(false);
+    try {
+      const response = await sdk.changeItemStatus({ id: selectedItemId });
+      if (response && response.changeItemStatus) {
+        fetchMenuItems();
+      }
+    } catch (error: any) {
+      const errorMessage = extractErrorMessage(error);
+      setToastData({
+        type: "error",
+        message: errorMessage,
+      });
+    }
+  };
+  const handleDeleteConfirmation = async () => {
+    setshowDeleteConfirmationModal(false);
+    try {
+      const response = await sdk.deleteItem({ id: selectedItemId });
+      if (response && response.deleteItem) {
+        fetchMenuItems();
+      }
+    } catch (error: any) {
+      const errorMessage = extractErrorMessage(error);
+      setToastData({
+        type: "error",
+        message: errorMessage,
+      });
+    }
+  };
+  const handleStatusCloseConfirmationModal = () => {
+    setShowStatusConfirmationModal(false);
+    setSelectedItemId("");
+  };
+  const handleDeleteCloseConfirmationModal = () => {
+    setshowDeleteConfirmationModal(false);
+    setSelectedItemId("");
+  };
   return (
     <div className="py-2">
       <RoopTable
@@ -102,6 +165,42 @@ const Items: React.FC = () => {
         data={items}
         mainActions={mainActions}
       />
+
+      {/* STATUS CHANGE MODAL */}
+      <ReusableModal
+        isOpen={showStatusConfirmationModal}
+        onClose={handleStatusCloseConfirmationModal}
+        title="Are you sure ?"
+        comments={availableCaption}
+      >
+        <div className="flex justify-end space-x-4">
+          <CButton
+            variant={ButtonType.Primary}
+            // className=""
+            onClick={handleStatusConfirmation}
+          >
+            Yes
+          </CButton>
+        </div>
+      </ReusableModal>
+
+      {/* DELETE ITEM MODAL */}
+      <ReusableModal
+        isOpen={showDeleteConfirmationModal}
+        onClose={handleDeleteCloseConfirmationModal}
+        title="Are you sure ?"
+        comments={availableCaption}
+      >
+        <div className="flex justify-end space-x-4">
+          <CButton
+            variant={ButtonType.Primary}
+            // className=""
+            onClick={handleDeleteConfirmation}
+          >
+            Yes
+          </CButton>
+        </div>
+      </ReusableModal>
     </div>
   );
 };

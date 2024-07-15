@@ -11,37 +11,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     selectedRestaurant,
     refreshRestaurantChange,
   } = useRestaurantsStore();
-  // useEffect(() => {
-  //   const fetchRestaurantUsers = async () => {
-  //     try {
-  //       const response = await sdk.getUserRestaurants();
-  //       if (response && response.getUserRestaurants) {
-  //         const formattedRestaurant = response.getUserRestaurants.map(
-  //           (res) => ({
-  //             ...res,
-  //           })
-  //         );
-  //         setRestaurants(formattedRestaurant);
-  //         if (!selectedRestaurant) {
-  //           setSelectedRestaurant(formattedRestaurant[0]?.name?.value);
-  //           try {
-  //             const res = await sdk.setRestaurantIdAsCookie({
-  //               id: formattedRestaurant[0]?._id,
-  //             });
-  //           } catch (error) {
-  //             console.error("Failed to fetch restaurant users:", error);
-  //           }
-  //         }
-  //       }
-  //     } catch (error) {
-  //       console.error("Failed to fetch restaurant users:", error);
-  //     } finally {
-  //       // setLoading(false);
-  //     }
-  //   };
-
-  //   fetchRestaurantUsers();
-  // }, [refreshRestaurantChange]);
+  const { isRestaurantCompleted } = useRestaurantsStore();
   useEffect(() => {
     const fetchRestaurantUsers = async () => {
       try {
@@ -54,11 +24,15 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           );
           setRestaurants(formattedRestaurant);
           if (!selectedRestaurant) {
-            setSelectedRestaurant(formattedRestaurant[0]?.name?.value);
             try {
               const res = await sdk.setRestaurantIdAsCookie({
                 id: formattedRestaurant[0]?._id,
+                flag:
+                  formattedRestaurant[0]?.status === "active" ? true : false,
               });
+              if (res) {
+                setSelectedRestaurant(formattedRestaurant[0]?.name?.value);
+              }
             } catch (error) {
               console.error("Failed to fetch restaurant users:", error);
             }

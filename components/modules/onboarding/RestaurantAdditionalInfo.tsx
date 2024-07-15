@@ -11,6 +11,7 @@ import useRestaurantInfoStore from "@/store/restaurantOnboarding";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import { extractErrorMessage } from "@/utils/utilFUncs";
+import useRestaurantsStore from "@/store/restaurant";
 
 interface IFormInput {
   instagramLink?: string;
@@ -117,6 +118,8 @@ const RestaurantAdditionalInformation = () => {
     label: formatMeatType(val),
   }));
 
+  const { isRestaurantCompleted } = useRestaurantsStore();
+
   const onSubmit = async (data: IFormInput) => {
     try {
       const response = await sdk.restaurantOnboarding({
@@ -132,7 +135,9 @@ const RestaurantAdditionalInformation = () => {
         },
       });
       if (response.restaurantOnboarding) {
-        const res = await sdk.CompleteRestaurantOnboarding();
+        const res = await sdk.completeRestaurantOnboarding({
+          flag: isRestaurantCompleted,
+        });
         if (res.completeRestaurantOnboarding) {
           setToastData({
             message: "Restaurant Added successfully!",
