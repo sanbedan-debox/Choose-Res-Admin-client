@@ -30,7 +30,7 @@ const MenuLayout = ({ children }: Props) => {
               key={index}
               className={`pb-2 px-2 text-sm ${
                 item.route === menuRoute
-                  ? "border-b-2 border-blue-500 text-primary"
+                  ? "border-b-2 border-primary text-primary"
                   : "text-black"
               }`}
               onClick={() => router.push(item.route)}

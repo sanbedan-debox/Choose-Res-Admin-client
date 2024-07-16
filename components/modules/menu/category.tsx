@@ -3,22 +3,21 @@ import { ButtonType } from "@/components/common/button/interface";
 import CustomSwitch from "@/components/common/customSwitch/customSwitch";
 import ReusableModal from "@/components/common/modal/modal";
 import RoopTable from "@/components/common/table/table";
-import CBTable from "@/components/common/table/table";
 import { StatusEnum } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
-import useMenuStore from "@/store/menu";
-import useRestaurantsStore from "@/store/restaurant";
+import useMenuCategoryStore from "@/store/menuCategory";
+import useMenuOptionsStore from "@/store/menuOptions";
 import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import React, { useEffect, useState } from "react";
-import { FaTrash, FaEdit, FaShieldAlt } from "react-icons/fa";
+import { FaTrash, FaEdit, FaCopy } from "react-icons/fa";
 
 const Categories: React.FC = () => {
   const [cats, setCats] = useState<
     { name: string; desc: string; items: number; _id: string }[]
   >([]);
   const { setToastData } = useGlobalStore();
-  const { setisAddCategoryModalOpen, fetchMenuDatas } = useMenuStore();
+  const { setisAddCategoryModalOpen, fetchMenuDatas } = useMenuOptionsStore();
   const [showDeleteConfirmationModal, setshowDeleteConfirmationModal] =
     useState(false);
   const fetchCategories = async () => {
@@ -26,10 +25,6 @@ const Categories: React.FC = () => {
     try {
       const response = await sdk.getCategories();
       if (response && response.getCategories) {
-        // const formattedRestaurant = response.getAllMenus.map((res) => ({
-        //   ...res,
-        // }));
-        // setMenu(formattedRestaurant);
         setCats(
           response.getCategories.map((el) => ({
             desc: el.desc.value,
@@ -55,9 +50,7 @@ const Categories: React.FC = () => {
   const [showStatusConfirmationModal, setShowStatusConfirmationModal] =
     useState(false);
   const [selectedItemId, setSelectedItemId] = useState<string>("");
-  const [availableCaption, setAvailableCaption] = useState(
-    "are you sure you want to block the user."
-  );
+  const [availableCaption, setAvailableCaption] = useState("");
 
   const handleToggleSwitch = (rowData: { status: string; _id: string }) => {
     setShowStatusConfirmationModal(true);
@@ -65,20 +58,27 @@ const Categories: React.FC = () => {
 
     setAvailableCaption(
       rowData.status === StatusEnum.Inactive
-        ? "are you sure you want to activate the item?"
-        : "are you sure you want to block the item?"
+        ? "are you sure you want to activate the Category?"
+        : "are you sure you want to deactivate the Category?"
     );
   };
 
   const renderSwitch = (rowData: { status: StatusEnum; _id: string }) => (
     <div>
       <CustomSwitch
-        checked={rowData.status !== StatusEnum.Inactive}
+        checked={rowData.status === StatusEnum.Active}
         onChange={() => handleToggleSwitch(rowData)}
         label={`Toggle switch for ${rowData._id}`}
       />
     </div>
   );
+
+  const { seteditCatsId, setisEditCats } = useMenuCategoryStore();
+  const handleEditCategory = (_id: string) => {
+    setisAddCategoryModalOpen(true);
+    seteditCatsId(_id);
+    setisEditCats(true);
+  };
   const renderActions = (rowData: { _id: string }) => (
     <div className="flex space-x-2 justify-center">
       <FaTrash
@@ -87,11 +87,11 @@ const Categories: React.FC = () => {
       />
       <FaEdit
         className="text-blue-500 cursor-pointer"
-        onClick={() => console.log("Edit", rowData._id)}
+        onClick={() => handleEditCategory(rowData._id)}
       />
-      <FaShieldAlt
+      <FaCopy
         className="text-green-500 cursor-pointer"
-        onClick={() => console.log("Change Password", rowData._id)}
+        onClick={() => console.log("Duplicate", rowData._id)}
       />
     </div>
   );
@@ -99,7 +99,7 @@ const Categories: React.FC = () => {
   const handleDeleteItem = (_id: string) => {
     setshowDeleteConfirmationModal(true);
     setSelectedItemId(_id);
-    setAvailableCaption("are you sure you want to delete this item?");
+    setAvailableCaption("are you sure you want to delete this Category?");
   };
 
   const headings = [

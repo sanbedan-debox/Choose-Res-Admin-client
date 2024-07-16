@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
@@ -6,9 +6,9 @@ import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
-import { MenuTypeEnum } from "@/generated/graphql";
+import { FilterOperatorsEnum, MenuTypeEnum } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
-import useMenuStore from "@/store/menu";
+import useMenuOptionsStore from "@/store/menuOptions";
 
 interface IFormInput {
   type: { value: string; label: string };
@@ -23,7 +23,7 @@ const menuTypeOptions: any[] = [
 
 const AddMenuForm = () => {
   const { fetchMenuDatas, setfetchMenuDatas, setisAddMenuModalOpen } =
-    useMenuStore();
+    useMenuOptionsStore();
 
   const [btnLoading, setBtnLoading] = useState(false);
   const { setToastData } = useGlobalStore();
@@ -65,6 +65,33 @@ const AddMenuForm = () => {
       });
     }
   };
+
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        const res = await sdk.getCategoriesForMenuDropdown({
+          field: "status",
+          operator: FilterOperatorsEnum.Any,
+          value: "active",
+        });
+        console.log(res);
+        // if (res && res.getCategories) {
+        //   const formattedItemsList = res.getItems.map((item) => ({
+        //     value: item._id,
+        //     label: item?.name?.value,
+        //   }));
+        //   // setItemsOption(formattedItemsList);
+        // }
+      } catch (error: any) {
+        const errorMessage = extractErrorMessage(error);
+        setToastData({
+          type: "error",
+          message: errorMessage,
+        });
+      }
+    };
+    fetch();
+  }, [fetchMenuDatas]);
 
   return (
     <motion.div

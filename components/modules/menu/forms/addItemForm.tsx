@@ -7,16 +7,18 @@ import { ButtonType } from "@/components/common/button/interface";
 import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import { StatusEnum } from "@/generated/graphql";
-import useMenuStore from "@/store/menu";
 import useGlobalStore from "@/store/global";
 import { title } from "process";
 import CustomSwitch from "@/components/common/customSwitch/customSwitch";
+import useMenuOptionsStore from "@/store/menuOptions";
+import useMenuItemsStore from "@/store/menuItems";
+import CustomSwitchCard from "@/components/common/customSwitchCard/customSwitchCard";
 
 interface IFormInput {
   name: string;
   desc: string;
   image: string;
-  price: string;
+  price: number;
   status: { value: string; label: string };
   applySalesTax: boolean;
   popularItem: boolean;
@@ -39,45 +41,112 @@ const AddItemForm = () => {
     formState: { errors },
     control,
     setValue,
+    watch,
     register,
   } = useForm<IFormInput>();
 
   const { fetchMenuDatas, setfetchMenuDatas, setisAddItemModalOpen } =
-    useMenuStore();
+    useMenuOptionsStore();
+  const { editItemId, isEditItem, setEditItemId, setisEditItem } =
+    useMenuItemsStore();
   const [btnLoading, setBtnLoading] = useState(false);
   const { setToastData } = useGlobalStore();
+
+  useEffect(() => {
+    const fetchItemData = async () => {
+      if (editItemId) {
+        try {
+          const response = await sdk.getItem({ id: editItemId });
+          const item = response.getItem;
+          setValue("name", item.name.value);
+          setValue("desc", item.desc.value);
+          setValue("status", { value: item.status, label: item.status });
+          setValue("price", item.price.value);
+          setValue("applySalesTax", item.applySalesTax);
+          setValue("popularItem", item.popularItem);
+          setValue("upSellItem", item.upSellItem);
+          setValue("isSpicy", item.isSpicy);
+          setValue("hasNuts", item.hasNuts);
+          setValue("isGlutenFree", item.isGlutenFree);
+          setValue("isHalal", item.isHalal);
+          setValue("isVegan", item.isVegan);
+          setPreviewUrl(item.image || "");
+        } catch (error) {
+          const errorMessage = extractErrorMessage(error);
+          setToastData({
+            type: "error",
+            message: errorMessage,
+          });
+        }
+      }
+    };
+
+    fetchItemData();
+  }, [editItemId, setValue, setToastData]);
+
   const onSubmit = async (data: IFormInput) => {
     try {
       const statusSub = data.status.value as StatusEnum;
+      const parsedPrice = parseFloat(data.price.toString());
 
       setBtnLoading(true);
-      await sdk.addItem({
-        input: {
-          name: {
-            value: data.name,
-          },
-          desc: {
-            value: data.desc,
-          },
-          image: previewUrl,
-          price: {
-            value: parseFloat(data.price),
-          },
-          status: statusSub,
-          applySalesTax: data.applySalesTax ? true : false,
-          popularItem: data.popularItem ? true : false,
-          upSellItem: data.upSellItem ? true : false,
-          hasNuts: data.hasNuts ? true : false,
-          isGlutenFree: data.isGlutenFree ? true : false,
-          isHalal: data.isHalal ? true : false,
-          isVegan: data.isVegan ? true : false,
-          isSpicy: data.isSpicy ? true : false,
-          // availability: [],
-        },
-      });
+      !isEditItem
+        ? // ADD ITEM API
+          await sdk.addItem({
+            input: {
+              name: {
+                value: data.name,
+              },
+              desc: {
+                value: data.desc,
+              },
+              image: previewUrl,
+              price: {
+                value: parsedPrice,
+              },
+              status: statusSub,
+              applySalesTax: data.applySalesTax ? true : false,
+              popularItem: data.popularItem ? true : false,
+              upSellItem: data.upSellItem ? true : false,
+              hasNuts: data.hasNuts ? true : false,
+              isGlutenFree: data.isGlutenFree ? true : false,
+              isHalal: data.isHalal ? true : false,
+              isVegan: data.isVegan ? true : false,
+              isSpicy: data.isSpicy ? true : false,
+              // availability: [],
+            },
+          })
+        : // EDIT/UPDATE ITEM API
+          await sdk.updateItem({
+            input: {
+              _id: editItemId || "",
+              name: {
+                value: data.name,
+              },
+              desc: {
+                value: data.desc,
+              },
+              image: previewUrl,
+              price: {
+                value: parsedPrice,
+              },
+              status: statusSub,
+              applySalesTax: data.applySalesTax ? true : false,
+              popularItem: data.popularItem ? true : false,
+              upSellItem: data.upSellItem ? true : false,
+              hasNuts: data.hasNuts ? true : false,
+              isGlutenFree: data.isGlutenFree ? true : false,
+              isHalal: data.isHalal ? true : false,
+              isVegan: data.isVegan ? true : false,
+              isSpicy: data.isSpicy ? true : false,
+              // availability: [],
+            },
+          });
       setBtnLoading(false);
       setisAddItemModalOpen(false);
       setfetchMenuDatas(!fetchMenuDatas);
+      setisEditItem(false);
+      setEditItemId(null);
       setToastData({
         type: "success",
         message: "Item Added Successfully",
@@ -123,20 +192,70 @@ const AddItemForm = () => {
     >
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="max-w-4xl mx-auto p-6 bg-white rounded-md "
+        className="max-w-4xl mx-auto p-6 w-full bg-white rounded-md "
       >
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-semibold">Edit/Add Item</h2>
-          <CButton
-            variant={ButtonType.Primary}
-            type="submit"
-            // className="px-6 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
-          >
-            Save Item
-          </CButton>
+          <h2 className="text-2xl font-semibold">
+            {!isEditItem ? "ADD ITEM" : "EDIT ITEM"}
+          </h2>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="col-span-2 grid grid-cols-1 gap-6">
+          <div className="mb-1">
+            <label
+              htmlFor="name"
+              className="block mb-2 text-sm font-medium text-left text-gray-700"
+            >
+              Name
+            </label>
+            <input
+              type="text"
+              {...register("name", { required: "Name is required" })}
+              id="name"
+              className="input input-primary"
+              placeholder="Enter item name"
+            />
+            {errors.name && (
+              <p className="text-red-500 text-sm text-start">
+                {errors.name.message}
+              </p>
+            )}
+          </div>
+          <div className="mb-1">
+            <label className="block mb-2 text-sm font-medium text-left text-gray-700">
+              Description
+            </label>
+            <textarea
+              {...register("desc", { required: "Description is required" })}
+              id="desc"
+              className="input input-primary"
+              placeholder="Enter item description"
+            />
+            {errors.desc && (
+              <p className="text-red-500 text-sm text-start">
+                {errors.desc.message}
+              </p>
+            )}
+          </div>
+          <div className="mb-1">
+            <label
+              htmlFor="price"
+              className="block mb-2 text-sm font-medium text-left text-gray-700"
+            >
+              Price
+            </label>
+            <input
+              type="number"
+              {...register("price", { required: "Price is required" })}
+              id="price"
+              className="input input-primary"
+              placeholder="Enter item price"
+            />
+            {errors.price && (
+              <p className="text-red-500 text-sm text-start">
+                {errors.price.message}
+              </p>
+            )}
+          </div>
           <div className="col-span-1">
             <label className="block mb-2 text-lg font-medium text-left text-gray-700">
               Photo
@@ -200,133 +319,147 @@ const AddItemForm = () => {
               </div>
             </div>
           </div>
+          <div className="mb-1">
+            <label
+              htmlFor="status"
+              className="block mb-2 text-sm font-medium text-left text-gray-700"
+            >
+              Status
+            </label>
+            <Controller
+              name="status"
+              control={control}
+              rules={{ required: "Status is required" }}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  id="status"
+                  options={statusOptions}
+                  className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+                  classNamePrefix="react-select"
+                  placeholder="Select status"
+                />
+              )}
+            />
 
-          <div className="col-span-2 grid grid-cols-1 gap-6">
-            <div className="mb-1">
-              <label
-                htmlFor="name"
-                className="block mb-2 text-sm font-medium text-left text-gray-700"
-              >
-                Name
-              </label>
-              <input
-                type="text"
-                {...register("name", { required: "Name is required" })}
-                id="name"
-                className="input input-primary"
-                placeholder="Enter item name"
-              />
-              {errors.name && (
-                <p className="text-red-500 text-sm text-start">
-                  {errors.name.message}
-                </p>
-              )}
-            </div>
-            <div className="mb-1">
-              <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-                Description
-              </label>
-              <textarea
-                {...register("desc", { required: "Description is required" })}
-                id="desc"
-                className="input input-primary"
-                placeholder="Enter item description"
-              />
-              {errors.desc && (
-                <p className="text-red-500 text-sm text-start">
-                  {errors.desc.message}
-                </p>
-              )}
-            </div>
-            <div className="mb-1">
-              <label
-                htmlFor="price"
-                className="block mb-2 text-sm font-medium text-left text-gray-700"
-              >
-                Price
-              </label>
-              <input
-                type="number"
-                {...register("price", { required: "Price is required" })}
-                id="price"
-                className="input input-primary"
-                placeholder="Enter item price"
-              />
-              {errors.price && (
-                <p className="text-red-500 text-sm text-start">
-                  {errors.price.message}
-                </p>
-              )}
-            </div>
-            <div className="mb-1">
-              <label
-                htmlFor="status"
-                className="block mb-2 text-sm font-medium text-left text-gray-700"
-              >
-                Status
-              </label>
-              <Controller
-                name="status"
-                control={control}
-                rules={{ required: "Status is required" }}
-                render={({ field }) => (
-                  <Select
-                    {...field}
-                    id="status"
-                    options={statusOptions}
-                    className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
-                    classNamePrefix="react-select"
-                    placeholder="Select status"
-                  />
-                )}
-              />
-
-              {errors.status && (
-                <p className="text-red-500 text-sm text-start">
-                  {errors.status.message}
-                </p>
-              )}
-            </div>
-
-            <div className="mb-1">
-              <label className="block mb-2 text-lg font-medium text-left text-gray-700">
-                Options
-              </label>
-              <div className="grid grid-cols-1 gap-4">
-                {[
-                  { id: "applySalesTax", label: "Apply Sales Tax" },
-                  { id: "popularItem", label: "Popular Item" },
-                  { id: "upSellItem", label: "Up-sell Item" },
-                  { id: "isSpicy", label: "Is Spicy" },
-                  { id: "hasNuts", label: "Has Nuts" },
-                  { id: "isGlutenFree", label: "Is Gluten Free" },
-                  { id: "isHalal", label: "Is Halal" },
-                  { id: "isVegan", label: "Is Vegan" },
-                ].map((option) => (
-                  <div
-                    className="flex justify-between items-center"
-                    key={option.id}
-                  >
-                    <label htmlFor={option.id} className="text-gray-700">
-                      {option.label}
-                    </label>
-                    <Controller
-                      name={option.id as keyof IFormInput}
-                      control={control}
-                      render={({ field }) => (
-                        <CustomSwitch
-                          checked={field.value as boolean}
-                          onChange={() => field.onChange(!field.value)}
-                          label={option.label}
-                          className="switch"
-                        />
-                      )}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
+            {errors.status && (
+              <p className="text-red-500 text-sm text-start">
+                {errors.status.message}
+              </p>
+            )}
           </div>
+
+          <div className="mb-1 flex-col space-y-4">
+            <CustomSwitchCard
+              label="sales Tax"
+              title="Apply Sales Tax"
+              caption="This item is subject to sales tax."
+              switchChecked={watch("applySalesTax")}
+              onSwitchChange={() =>
+                setValue("applySalesTax", !watch("applySalesTax"))
+              }
+            />
+            <CustomSwitchCard
+              label="is it a popular item"
+              title="Popular Item"
+              caption="Mark this item as popular."
+              switchChecked={watch("popularItem")}
+              onSwitchChange={() =>
+                setValue("popularItem", !watch("popularItem"))
+              }
+            />
+            <CustomSwitchCard
+              label="do you want to up-sell it"
+              title="Up-sell Item"
+              caption="Suggest this item to customers."
+              switchChecked={watch("upSellItem")}
+              onSwitchChange={() =>
+                setValue("upSellItem", !watch("upSellItem"))
+              }
+            />
+            <CustomSwitchCard
+              label="does this item contain nuts"
+              title="Contains Nuts"
+              caption="This item contains nuts."
+              switchChecked={watch("hasNuts")}
+              onSwitchChange={() => setValue("hasNuts", !watch("hasNuts"))}
+            />
+            <CustomSwitchCard
+              label="is the item gluten-free"
+              title="Gluten-Free"
+              caption="This item is gluten-free."
+              switchChecked={watch("isGlutenFree")}
+              onSwitchChange={() =>
+                setValue("isGlutenFree", !watch("isGlutenFree"))
+              }
+            />
+            <CustomSwitchCard
+              label="is it halal"
+              title="Halal"
+              caption="This item is halal."
+              switchChecked={watch("isHalal")}
+              onSwitchChange={() => setValue("isHalal", !watch("isHalal"))}
+            />
+            <CustomSwitchCard
+              label="is it vegan"
+              title="Vegan"
+              caption="This item is vegan."
+              switchChecked={watch("isVegan")}
+              onSwitchChange={() => setValue("isVegan", !watch("isVegan"))}
+            />
+            <CustomSwitchCard
+              label="is it spicy"
+              title="Spicy"
+              caption="This item is spicy."
+              switchChecked={watch("isSpicy")}
+              onSwitchChange={() => setValue("isSpicy", !watch("isSpicy"))}
+            />
+          </div>
+          {/* <div className="mb-1">
+            <label className="block mb-2 text-lg font-medium text-left text-gray-700">
+              Options
+            </label>
+            <div className="grid grid-cols-1 gap-4">
+              {[
+                { id: "applySalesTax", label: "Apply Sales Tax" },
+                { id: "popularItem", label: "Popular Item" },
+                { id: "upSellItem", label: "Up-sell Item" },
+                { id: "isSpicy", label: "Is Spicy" },
+                { id: "hasNuts", label: "Has Nuts" },
+                { id: "isGlutenFree", label: "Is Gluten Free" },
+                { id: "isHalal", label: "Is Halal" },
+                { id: "isVegan", label: "Is Vegan" },
+              ].map((option) => (
+                <div
+                  className="flex justify-between items-center"
+                  key={option.id}
+                >
+                  <label htmlFor={option.id} className="text-gray-700">
+                    {option.label}
+                  </label>
+                  <Controller
+                    name={option.id as keyof IFormInput}
+                    control={control}
+                    render={({ field }) => (
+                      <CustomSwitch
+                        checked={field.value as boolean}
+                        onChange={() => field.onChange(!field.value)}
+                        label={option.label}
+                        className="switch"
+                      />
+                    )}
+                  />
+                </div>
+              ))}
+            </div>
+          </div> */}
+          <CButton
+            variant={ButtonType.Primary}
+            type="submit"
+            // className="px-6 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
+          >
+            Save Item
+          </CButton>
         </div>
       </form>
     </motion.div>

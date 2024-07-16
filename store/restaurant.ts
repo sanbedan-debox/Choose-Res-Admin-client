@@ -3,7 +3,7 @@ import { create } from "zustand";
 type RestaurantStates = {
   restaurants: any[];
   setRestaurants: (res: any) => void;
-  selectedRestaurant: string | null;
+  selectedRestaurant: string;
   setSelectedRestaurant: (location: string) => void;
   refreshRestaurantChange: boolean;
   setRefreshRestaurantChange: (res: boolean) => void;
@@ -12,7 +12,7 @@ type RestaurantStates = {
 };
 
 const useRestaurantsStore = create<RestaurantStates>((set) => ({
-  selectedRestaurant: null,
+  selectedRestaurant: "",
   setSelectedRestaurant: (selectedRestaurant) => set({ selectedRestaurant }),
   selectedRestaurantId: "",
   restaurants: [],

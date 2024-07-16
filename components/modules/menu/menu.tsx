@@ -1,7 +1,7 @@
 import RoopTable from "@/components/common/table/table";
 import CBTable from "@/components/common/table/table";
 import useGlobalStore from "@/store/global";
-import useMenuStore from "@/store/menu";
+import useMenuOptionsStore from "@/store/menuOptions";
 import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import React, { useEffect, useState } from "react";
@@ -11,7 +11,7 @@ const Menu: React.FC = () => {
   const [menu, setMenu] = useState<
     { name: string; type: string; categories: number; status: string }[]
   >([]);
-  const { setisAddMenuModalOpen, fetchMenuDatas } = useMenuStore();
+  const { setisAddMenuModalOpen, fetchMenuDatas } = useMenuOptionsStore();
   const { setToastData } = useGlobalStore();
   useEffect(() => {
     const fetchRestaurantUsers = async () => {

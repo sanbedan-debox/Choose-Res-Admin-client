@@ -13,14 +13,23 @@ query getAllMenus {
   }
 }
 
-mutation addItem($input: AddItemInput!) {
-  addItem(input: $input)
-}
-
-mutation addCategory($input: AddCategoryInput!) {
-  addCategory(input: $input)
-}
-
 mutation addMenu($input: AddMenuInput!) {
   addMenu(input: $input)
+}
+
+query getCategoriesForMenuDropdown(
+  $field: String!
+  $operator: FilterOperatorsEnum!
+  $value: String
+) {
+  getCategories(filter: { field: $field, operator: $operator, value: $value }) {
+    _id
+    name {
+      value
+    }
+    desc {
+      value
+    }
+    status
+  }
 }

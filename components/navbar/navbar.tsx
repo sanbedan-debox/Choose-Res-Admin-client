@@ -16,6 +16,7 @@ import CButton from "../common/button/button";
 import { ButtonType } from "../common/button/interface";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import RestaurantOnboardingStore from "@/store/restaurantOnboarding";
+import { RestaurantStatus } from "@/generated/graphql";
 
 const Navbar: React.FC = () => {
   const { firstName } = useAuthStore();
@@ -71,13 +72,12 @@ const Navbar: React.FC = () => {
 
   const setSelectedRestaurantFunc = async (restaurant: any) => {
     try {
+      console.log("Restaurant status", restaurant?.status);
+      console.log("Restaurant status", restaurant?._id);
       const res = await sdk.setRestaurantIdAsCookie({
         id: restaurant?._id,
-        flag: restaurant?.status === "active" ? false : true,
       });
       if (res.setRestaurantIdAsCookie) {
-        setRefreshRestaurantChange(!refreshRestaurantChange);
-        setSelectedRestaurant(restaurant?.name?.value);
         router.reload();
       }
     } catch (error) {

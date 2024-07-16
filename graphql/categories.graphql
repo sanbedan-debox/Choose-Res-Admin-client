@@ -29,11 +29,19 @@ query getCategories {
   }
 }
 
-query getItemsForCategoryDropdown {
-  getItems {
+query getItemsForCategoryDropdown(
+  $field: String!
+  $operator: FilterOperatorsEnum!
+  $value: String
+) {
+  getItems(filter: { field: $field, operator: $operator, value: $value }) {
     _id
     name {
       value
     }
   }
+}
+
+mutation addCategory($input: AddCategoryInput!) {
+  addCategory(input: $input)
 }

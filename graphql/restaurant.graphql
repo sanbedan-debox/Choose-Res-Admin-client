@@ -33,6 +33,17 @@ query getUserRestaurants {
   }
 }
 
-query setRestaurantIdAsCookie($flag: Boolean!, $id: String!) {
-  setRestaurantIdAsCookie(isCompleted: $flag, id: $id)
+query setRestaurantIdAsCookie($id: String!) {
+  setRestaurantIdAsCookie(id: $id)
+}
+
+query getRestaurantDetails {
+  getRestaurantDetails {
+    _id
+    name {
+      value
+    }
+    brandingLogo
+    website
+  }
 }

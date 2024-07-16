@@ -28,3 +28,46 @@ query getItems {
     }
   }
 }
+
+query getItem($id: String!) {
+  getItem(id: $id) {
+    _id
+    name {
+      value
+    }
+    desc {
+      value
+    }
+    status
+    modifierGroup {
+      name {
+        value
+      }
+      pricingType
+      _id
+    }
+    image
+    price {
+      value
+    }
+    applySalesTax
+    popularItem
+    upSellItem
+    isSpicy
+    isVegan
+    isHalal
+    isGlutenFree
+    hasNuts
+    # availability
+    createdAt
+    updatedAt
+  }
+}
+
+mutation addItem($input: AddItemInput!) {
+  addItem(input: $input)
+}
+
+mutation updateItem($input: UpdateItemInput!) {
+  updateItem(input: $input)
+}

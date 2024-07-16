@@ -161,7 +161,10 @@ query getRestaurantOnboardingData {
       }
       active
     }
-    timezone
+    timezone {
+      value
+      _id
+    }
     category
     beverageCategory
     foodType

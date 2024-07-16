@@ -12,7 +12,8 @@ import Items from "@/components/modules/menu/items";
 import Menu from "@/components/modules/menu/menu";
 import ModifiersGroup from "@/components/modules/menu/modifierGroups";
 import Modifiers from "@/components/modules/menu/modifiers";
-import useMenuStore from "@/store/menu";
+import useMenuItemsStore from "@/store/menuItems";
+import useMenuOptionsStore from "@/store/menuOptions";
 
 import { GetServerSideProps } from "next";
 import { useState } from "react";
@@ -33,16 +34,17 @@ const MenuPage = ({ repo: { pagePath } }: MenuPageProps) => {
     setisAddMenuModalOpen,
     fetchMenuDatas,
     setfetchMenuDatas,
-  } = useMenuStore();
+  } = useMenuOptionsStore();
 
+  const { setEditItemId, setisEditItem } = useMenuItemsStore();
   const handleAddMenuItemClose = () => {
     setisAddItemModalOpen(false);
-    setisAddMenuModalOpen(false);
     setfetchMenuDatas(!fetchMenuDatas);
+    setisEditItem(false);
+    setEditItemId(null);
   };
   const handleAddMenuCategoryClose = () => {
     setisAddCategoryModalOpen(false);
-    setisAddMenuModalOpen(false);
     setfetchMenuDatas(!fetchMenuDatas);
   };
   const handleAddMenuClose = () => {

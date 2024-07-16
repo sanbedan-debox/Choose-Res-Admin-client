@@ -5,8 +5,9 @@ import ReusableModal from "@/components/common/modal/modal";
 import RoopTable from "@/components/common/table/table";
 import { StatusEnum } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
-import useMenuStore from "@/store/menu";
-import useRestaurantsStore from "@/store/restaurant";
+import useMenuItemsStore from "@/store/menuItems";
+import useMenuOptionsStore from "@/store/menuOptions";
+
 import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import React, { useEffect, useState } from "react";
@@ -26,17 +27,13 @@ const Items: React.FC = () => {
   );
 
   const { setToastData } = useGlobalStore();
-  const { setisAddItemModalOpen, fetchMenuDatas } = useMenuStore();
+  const { setisAddItemModalOpen, fetchMenuDatas } = useMenuOptionsStore();
   const [selectedItemId, setSelectedItemId] = useState<string>("");
   const fetchMenuItems = async () => {
     // setLoading(true);
     try {
       const response = await sdk.getItems();
       if (response && response.getItems) {
-        // const formattedRestaurant = response.getAllMenus.map((res) => ({
-        //   ...res,
-        // }));
-        // setMenu(formattedRestaurant);
         setItems(
           response.getItems.map((el) => ({
             _id: el._id,
@@ -70,7 +67,7 @@ const Items: React.FC = () => {
       />
       <FaEdit
         className="text-blue-500 cursor-pointer"
-        onClick={() => console.log("Edit", rowData._id)}
+        onClick={() => handleEditItem(rowData._id)}
       />
       <FaShieldAlt
         className="text-green-500 cursor-pointer"
@@ -93,10 +90,18 @@ const Items: React.FC = () => {
     setAvailableCaption("are you sure you want to delete this item?");
   };
 
+  const { setEditItemId, setisEditItem } = useMenuItemsStore();
+
+  const handleEditItem = (_id: string) => {
+    setisAddItemModalOpen(true);
+    setEditItemId(_id);
+    setisEditItem(true);
+  };
+
   const renderSwitch = (rowData: { status: StatusEnum; _id: string }) => (
     <div>
       <CustomSwitch
-        checked={rowData.status !== StatusEnum.Inactive}
+        checked={rowData.status === StatusEnum.Active}
         onChange={() => handleToggleSwitch(rowData)}
         label={`Toggle switch for ${rowData._id}`}
       />
@@ -176,7 +181,6 @@ const Items: React.FC = () => {
         <div className="flex justify-end space-x-4">
           <CButton
             variant={ButtonType.Primary}
-            // className=""
             onClick={handleStatusConfirmation}
           >
             Yes

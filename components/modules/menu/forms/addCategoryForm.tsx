@@ -6,9 +6,10 @@ import { ButtonType } from "@/components/common/button/interface";
 import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import useGlobalStore from "@/store/global";
-import useMenuStore from "@/store/menu";
 import Select from "react-select";
-import { MenuTypeEnum } from "@/generated/graphql";
+import { FilterOperatorsEnum, MenuTypeEnum } from "@/generated/graphql";
+import useMenuOptionsStore from "@/store/menuOptions";
+import useMenuCategoryStore from "@/store/menuCategory";
 
 interface IFormInput {
   name: string;
@@ -26,41 +27,93 @@ const AddCategoryForm = () => {
     setfetchMenuDatas,
     setisAddCategoryModalOpen,
     setisAddItemModalOpen,
-  } = useMenuStore();
+  } = useMenuOptionsStore();
+  const { editCatsId, isEditCats, seteditCatsId, setisEditCats } =
+    useMenuCategoryStore();
   const {
     handleSubmit,
     formState: { errors },
     register,
+    setValue,
     control,
   } = useForm<IFormInput>();
+
+  useEffect(() => {
+    const fetchItemData = async () => {
+      if (editCatsId) {
+        try {
+          const response = await sdk.getItem({ id: editCatsId });
+          const item = response.getItem;
+          setValue("name", item.name.value);
+          setValue("description", item.desc.value);
+        } catch (error) {
+          const errorMessage = extractErrorMessage(error);
+          setToastData({
+            type: "error",
+            message: errorMessage,
+          });
+        }
+      }
+    };
+
+    fetchItemData();
+  }, [editCatsId, setValue, setToastData]);
 
   const onSubmit = async (data: IFormInput) => {
     try {
       setBtnLoading(true);
-
-      const res = await sdk.addCategory({
-        input: {
-          name: {
-            value: data.name,
+      if (!isEditCats) {
+        // ADD CATEGORIES/NEW CATEGORIES
+        const res = await sdk.addCategory({
+          input: {
+            name: {
+              value: data.name,
+            },
+            desc: {
+              value: data.description,
+            },
           },
-          desc: {
-            value: data.description,
-          },
-        },
-      });
-
-      if (res?.addCategory) {
-        // const addItemstoCatres = await sdk.addItemToCategory({
-        //   categoryId: res?.addCategory,
-        //   itemId: data.items,
-        // });
-        setToastData({
-          type: "success",
-          message: "Category Added Successfully",
         });
-        setBtnLoading(false);
-        setisAddCategoryModalOpen(false);
-        setfetchMenuDatas(!fetchMenuDatas);
+
+        if (res?.addCategory) {
+          // const addItemstoCatres = await sdk.addItemToCategory({
+          //   categoryId: res?.addCategory,
+          //   itemId: data.items,
+          // });
+          setToastData({
+            type: "success",
+            message: "Category Added Successfully",
+          });
+          setBtnLoading(false);
+          setisAddCategoryModalOpen(false);
+          setfetchMenuDatas(!fetchMenuDatas);
+        }
+      } else {
+        // EDIT CATEGORIES
+        const res = await sdk.addCategory({
+          input: {
+            name: {
+              value: data.name,
+            },
+            desc: {
+              value: data.description,
+            },
+          },
+        });
+
+        if (res?.addCategory) {
+          // const addItemstoCatres = await sdk.addItemToCategory({
+          //   categoryId: res?.addCategory,
+          //   itemId: data.items,
+          // });
+          setToastData({
+            type: "success",
+            message: "Category Added Successfully",
+          });
+          setBtnLoading(false);
+          setisAddCategoryModalOpen(false);
+          setfetchMenuDatas(!fetchMenuDatas);
+        }
       }
     } catch (error: any) {
       const errorMessage = extractErrorMessage(error);
@@ -74,7 +127,11 @@ const AddCategoryForm = () => {
   useEffect(() => {
     const fetch = async () => {
       try {
-        const items = await sdk.getItemsForCategoryDropdown();
+        const items = await sdk.getItemsForCategoryDropdown({
+          field: "status",
+          operator: FilterOperatorsEnum.Any,
+          value: "active",
+        });
         if (items && items.getItems) {
           const formattedItemsList = items.getItems.map((item) => ({
             value: item._id,
@@ -107,7 +164,7 @@ const AddCategoryForm = () => {
     >
       <div className="flex flex-col items-center space-y-5 text-center">
         <h1 className="font-display max-w-2xl font-semibold text-2xl">
-          Add a new category
+          {!isEditCats ? "ADD Category" : "EDIT Category"}
         </h1>
         <p className="max-w-md text-accent-foreground/80 text-sm">
           Fill in the details to add a new category.
@@ -182,7 +239,7 @@ const AddCategoryForm = () => {
                 <Controller
                   name="items"
                   control={control}
-                  rules={{ required: "Type is required" }}
+                  // rules={{ required: "Items is required" }}
                   render={({ field }) => (
                     <Select
                       {...field}
@@ -196,6 +253,7 @@ const AddCategoryForm = () => {
                   )}
                 />
                 <CButton
+                  type="button"
                   className="w-1/4 h-10"
                   onClick={handleAddItem}
                   variant={ButtonType.Primary}

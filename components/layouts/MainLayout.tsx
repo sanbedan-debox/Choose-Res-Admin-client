@@ -3,6 +3,8 @@ import Navbar from "../navbar/navbar";
 import Sidebar from "../navigation/sidebar";
 import { sdk } from "@/utils/graphqlClient";
 import useRestaurantsStore from "@/store/restaurant";
+import { RestaurantStatus, StatusEnum } from "@/generated/graphql";
+import { parseCookies } from "nookies";
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const {
@@ -11,6 +13,8 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     selectedRestaurant,
     refreshRestaurantChange,
   } = useRestaurantsStore();
+  const cookies = parseCookies();
+  const selectedRestaurantId = cookies.restaurantId;
   const { isRestaurantCompleted } = useRestaurantsStore();
   useEffect(() => {
     const fetchRestaurantUsers = async () => {
@@ -23,12 +27,12 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             })
           );
           setRestaurants(formattedRestaurant);
-          if (!selectedRestaurant) {
+
+          const res = await sdk.getRestaurantDetails();
+          if (!res) {
             try {
               const res = await sdk.setRestaurantIdAsCookie({
                 id: formattedRestaurant[0]?._id,
-                flag:
-                  formattedRestaurant[0]?.status === "active" ? true : false,
               });
               if (res) {
                 setSelectedRestaurant(formattedRestaurant[0]?.name?.value);
@@ -36,6 +40,8 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             } catch (error) {
               console.error("Failed to fetch restaurant users:", error);
             }
+          } else {
+            setSelectedRestaurant(res?.getRestaurantDetails?.name?.value);
           }
         }
       } catch (error) {
@@ -46,12 +52,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     };
 
     fetchRestaurantUsers();
-  }, [
-    refreshRestaurantChange,
-    selectedRestaurant,
-    setRestaurants,
-    setSelectedRestaurant,
-  ]);
+  }, []);
 
   return (
     <div className="flex h-screen overflow-hidden">

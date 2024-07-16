@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-type MenuState = {
+type MenuOptionsState = {
   isAddItemModalOpen: boolean;
   setisAddItemModalOpen: (open: boolean) => void;
   isAddCategoryModalOpen: boolean;
@@ -11,7 +11,7 @@ type MenuState = {
   setfetchMenuDatas: (open: boolean) => void;
 };
 
-const useMenuStore = create<MenuState>((set) => ({
+const useMenuOptionsStore = create<MenuOptionsState>((set) => ({
   isAddItemModalOpen: false,
   setisAddItemModalOpen: (open: boolean) => set({ isAddItemModalOpen: open }),
   isAddCategoryModalOpen: false,
@@ -23,4 +23,4 @@ const useMenuStore = create<MenuState>((set) => ({
   setfetchMenuDatas: (fetch: boolean) => set({ fetchMenuDatas: fetch }),
 }));
 
-export default useMenuStore;
+export default useMenuOptionsStore;
