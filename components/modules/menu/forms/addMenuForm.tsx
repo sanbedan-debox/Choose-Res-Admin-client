@@ -9,6 +9,8 @@ import { extractErrorMessage } from "@/utils/utilFUncs";
 import { FilterOperatorsEnum, MenuTypeEnum } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
 import useMenuOptionsStore from "@/store/menuOptions";
+import FormAddTable from "@/components/common/table/formTable";
+import { FaEdit, FaShieldAlt, FaTrash } from "react-icons/fa";
 
 interface IFormInput {
   type: { value: string; label: string };
@@ -92,6 +94,58 @@ const AddMenuForm = () => {
     };
     fetch();
   }, [fetchMenuDatas]);
+  const data = [
+    {
+      id: "1",
+      name: "Kerala Style Fish Curry",
+      desc: "A delicious fish curry",
+      price: "$15.99",
+      image: "/path-to-image1.png",
+      status: "Available",
+    },
+    {
+      id: "2",
+      name: "Goat Mandi",
+      desc: "A tasty goat dish",
+      price: "$39.99",
+      image: "/path-to-image2.png",
+      status: "Available",
+    },
+  ];
+
+  const renderActions = (rowData: { id: string }) => (
+    <div className="flex space-x-2 justify-center">
+      <FaTrash
+        className="text-red-500 cursor-pointer"
+        onClick={() => handleDeleteItem(rowData.id)}
+      />
+      <FaEdit
+        className="text-blue-500 cursor-pointer"
+        onClick={() => handleEditItem(rowData.id)}
+      />
+      <FaShieldAlt
+        className="text-green-500 cursor-pointer"
+        onClick={() => console.log("Change Password", rowData.id)}
+      />
+    </div>
+  );
+
+  const headings = [
+    { title: "Price", dataKey: "price" },
+    { title: "Actions", dataKey: "name", render: renderActions },
+  ];
+
+  const handleAddClick = () => {
+    console.log("Add button clicked");
+  };
+
+  const handleDeleteItem = (id: string) => {
+    console.log(`Delete item with id ${id}`);
+  };
+
+  const handleEditItem = (id: string) => {
+    console.log(`Edit item with id ${id}`);
+  };
 
   return (
     <motion.div
@@ -163,6 +217,14 @@ const AddMenuForm = () => {
             </p>
           )}
         </div>
+        <FormAddTable
+          data={data}
+          headings={headings}
+          title="Items"
+          emptyMessage="No items available"
+          buttonText="Add Items"
+          onAddClick={handleAddClick}
+        />
 
         <CButton
           loading={btnLoading}

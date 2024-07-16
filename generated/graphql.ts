@@ -1599,7 +1599,7 @@ export type GetItemsForCategoryDropdownQueryVariables = Exact<{
 }>;
 
 
-export type GetItemsForCategoryDropdownQuery = { __typename?: 'Query', getItems: Array<{ __typename?: 'Item', _id: string, name: { __typename?: 'MasterCommon', value: string } }> };
+export type GetItemsForCategoryDropdownQuery = { __typename?: 'Query', getItems: Array<{ __typename?: 'Item', _id: string, name: { __typename?: 'MasterCommon', value: string }, price: { __typename?: 'MasterCommonNumber', value: number } }> };
 
 export type AddCategoryMutationVariables = Exact<{
   input: AddCategoryInput;
@@ -1857,6 +1857,9 @@ export const GetItemsForCategoryDropdownDocument = gql`
   getItems(filter: {field: $field, operator: $operator, value: $value}) {
     _id
     name {
+      value
+    }
+    price {
       value
     }
   }

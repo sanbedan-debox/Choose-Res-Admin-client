@@ -10,17 +10,23 @@ import Select from "react-select";
 import { FilterOperatorsEnum, MenuTypeEnum } from "@/generated/graphql";
 import useMenuOptionsStore from "@/store/menuOptions";
 import useMenuCategoryStore from "@/store/menuCategory";
+import FormAddTable from "@/components/common/table/formTable";
+import { FaEdit, FaTrash } from "react-icons/fa";
+import ReusableModal from "@/components/common/modal/modal";
 
 interface IFormInput {
   name: string;
   description: string;
-  // items: string[];
-  items: string;
+  items: string[];
 }
 
 const AddCategoryForm = () => {
   const [btnLoading, setBtnLoading] = useState(false);
   const [itemsOption, setItemsOption] = useState<any[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedItems, setSelectedItems] = useState<any[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+
   const { setToastData } = useGlobalStore();
   const {
     fetchMenuDatas,
@@ -62,6 +68,7 @@ const AddCategoryForm = () => {
   const onSubmit = async (data: IFormInput) => {
     try {
       setBtnLoading(true);
+      const selectedItemsIds = selectedItems.map((item) => item._id);
       if (!isEditCats) {
         // ADD CATEGORIES/NEW CATEGORIES
         const res = await sdk.addCategory({
@@ -76,10 +83,6 @@ const AddCategoryForm = () => {
         });
 
         if (res?.addCategory) {
-          // const addItemstoCatres = await sdk.addItemToCategory({
-          //   categoryId: res?.addCategory,
-          //   itemId: data.items,
-          // });
           setToastData({
             type: "success",
             message: "Category Added Successfully",
@@ -102,13 +105,9 @@ const AddCategoryForm = () => {
         });
 
         if (res?.addCategory) {
-          // const addItemstoCatres = await sdk.addItemToCategory({
-          //   categoryId: res?.addCategory,
-          //   itemId: data.items,
-          // });
           setToastData({
             type: "success",
-            message: "Category Added Successfully",
+            message: "Category Updated Successfully",
           });
           setBtnLoading(false);
           setisAddCategoryModalOpen(false);
@@ -134,8 +133,9 @@ const AddCategoryForm = () => {
         });
         if (items && items.getItems) {
           const formattedItemsList = items.getItems.map((item) => ({
-            value: item._id,
-            label: item?.name?.value,
+            _id: item._id,
+            name: item?.name?.value,
+            price: item?.price?.value,
           }));
           setItemsOption(formattedItemsList);
         }
@@ -150,9 +150,67 @@ const AddCategoryForm = () => {
     fetch();
   }, [fetchMenuDatas]);
 
+  const handleItemClick = (item: any) => {
+    setSelectedItems((prevSelected) =>
+      prevSelected.includes(item)
+        ? prevSelected.filter((i) => i !== item)
+        : [...prevSelected, item]
+    );
+  };
+
+  const handleAddItems = () => {
+    // Logic to push the list of selected items to the data passed to FormAddTable
+    setIsModalOpen(false);
+  };
+
   const handleAddItem = () => {
     setisAddItemModalOpen(true);
   };
+
+  const handleSearch = (event: any) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const filteredItems = itemsOption.filter((item) =>
+    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const renderActions = (rowData: { id: string }) => (
+    <div className="flex space-x-2 justify-center">
+      <FaTrash
+        className="text-red-500 cursor-pointer"
+        onClick={() => handleDeleteItem(rowData.id)}
+      />
+      <FaEdit
+        className="text-blue-500 cursor-pointer"
+        onClick={() => handleEditItem(rowData.id)}
+      />
+    </div>
+  );
+
+  const data = selectedItems.map((item) => ({
+    ...item,
+    actions: renderActions(item),
+  }));
+
+  const handleAddClick = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteItem = (id: string) => {
+    setSelectedItems((prevSelected) =>
+      prevSelected.filter((item) => item._id !== id)
+    );
+  };
+
+  const handleEditItem = (id: string) => {
+    console.log(`Edit item with id ${id}`);
+  };
+
+  const headings = [
+    { title: "Price", dataKey: "price" },
+    { title: "Actions", dataKey: "name", render: renderActions },
+  ];
 
   return (
     <motion.div
@@ -218,52 +276,14 @@ const AddCategoryForm = () => {
           )}
         </div>
 
-        <div className="col-span-2">
-          {itemsOption.length === 0 ? (
-            <CButton
-              className="w-full"
-              onClick={handleAddItem}
-              variant={ButtonType.Primary}
-            >
-              Items
-            </CButton>
-          ) : (
-            <>
-              <label
-                htmlFor="type"
-                className="block mb-2 text-sm font-medium text-left text-gray-700"
-              >
-                Items
-              </label>
-              <div className="flex justify-between space-x-2 ">
-                <Controller
-                  name="items"
-                  control={control}
-                  // rules={{ required: "Items is required" }}
-                  render={({ field }) => (
-                    <Select
-                      {...field}
-                      id="type"
-                      // isMulti
-                      options={itemsOption}
-                      className="mt-1 w-3/4 text-sm rounded-lg focus:outline-none text-left"
-                      classNamePrefix="react-select"
-                      placeholder="Select menu type"
-                    />
-                  )}
-                />
-                <CButton
-                  type="button"
-                  className="w-1/4 h-10"
-                  onClick={handleAddItem}
-                  variant={ButtonType.Primary}
-                >
-                  Create Items
-                </CButton>
-              </div>
-            </>
-          )}
-        </div>
+        <FormAddTable
+          data={data}
+          headings={headings}
+          title="Items"
+          emptyMessage="No items available"
+          buttonText="Add Items"
+          onAddClick={handleAddClick}
+        />
 
         <CButton
           loading={btnLoading}
@@ -274,6 +294,46 @@ const AddCategoryForm = () => {
           Add Category
         </CButton>
       </form>
+
+      <ReusableModal
+        title="Add Items"
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      >
+        <div className="space-y-4">
+          <input
+            type="text"
+            placeholder="Search items..."
+            value={searchTerm}
+            onChange={handleSearch}
+            className="input input-primary w-full"
+          />
+          <ul>
+            {filteredItems.map((item) => (
+              <li
+                key={item._id}
+                className={`cursor-pointer p-2 ${
+                  selectedItems.includes(item) ? "bg-blue-500 text-white" : ""
+                }`}
+                onClick={() => handleItemClick(item)}
+              >
+                {item.name}
+              </li>
+            ))}
+          </ul>
+          <div className="flex space-x-2 justify-end">
+            <CButton
+              onClick={() => setIsModalOpen(false)}
+              variant={ButtonType.Outlined}
+            >
+              Create New Item
+            </CButton>
+            <CButton onClick={handleAddItems} variant={ButtonType.Primary}>
+              Add Selected Items
+            </CButton>
+          </div>
+        </div>
+      </ReusableModal>
     </motion.div>
   );
 };

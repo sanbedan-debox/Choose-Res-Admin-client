@@ -29,6 +29,8 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           setRestaurants(formattedRestaurant);
 
           const res = await sdk.getRestaurantDetails();
+          console.log("TESTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT");
+          console.log(res);
           if (!res) {
             try {
               const res = await sdk.setRestaurantIdAsCookie({

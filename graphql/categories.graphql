@@ -39,6 +39,9 @@ query getItemsForCategoryDropdown(
     name {
       value
     }
+    price {
+      value
+    }
   }
 }
 
