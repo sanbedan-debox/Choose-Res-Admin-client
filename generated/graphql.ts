@@ -46,6 +46,7 @@ export type AddAdminInput = {
 export type AddCategoryInput = {
   availability?: InputMaybe<Array<AvailabilityInput>>;
   desc: MasterCommonInput;
+  items?: InputMaybe<Array<Scalars['String']['input']>>;
   name: MasterCommonInput;
 };
 
@@ -1608,6 +1609,20 @@ export type AddCategoryMutationVariables = Exact<{
 
 export type AddCategoryMutation = { __typename?: 'Mutation', addCategory: boolean };
 
+export type GetCategoryQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type GetCategoryQuery = { __typename?: 'Query', getCategory: { __typename?: 'Category', _id: string, status: StatusEnum, createdAt: any, updatedAt: any, name: { __typename?: 'MasterCommon', value: string }, desc: { __typename?: 'MasterCommon', value: string }, items: Array<{ __typename?: 'ItemInfo', status: StatusEnum, name?: { __typename?: 'MasterCommon', value: string } | null, _id: { __typename?: 'Item', _id: string, image?: string | null }, price: { __typename?: 'MasterCommonNumber', value: number } }> } };
+
+export type UpdateCategoryMutationVariables = Exact<{
+  input: UpdateCategoryInput;
+}>;
+
+
+export type UpdateCategoryMutation = { __typename?: 'Mutation', updateCategory: boolean };
+
 export type ChangeItemStatusMutationVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
@@ -1868,6 +1883,40 @@ export const GetItemsForCategoryDropdownDocument = gql`
 export const AddCategoryDocument = gql`
     mutation addCategory($input: AddCategoryInput!) {
   addCategory(input: $input)
+}
+    `;
+export const GetCategoryDocument = gql`
+    query getCategory($id: String!) {
+  getCategory(id: $id) {
+    _id
+    name {
+      value
+    }
+    desc {
+      value
+    }
+    status
+    items {
+      name {
+        value
+      }
+      _id {
+        _id
+        image
+      }
+      price {
+        value
+      }
+      status
+    }
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export const UpdateCategoryDocument = gql`
+    mutation updateCategory($input: UpdateCategoryInput!) {
+  updateCategory(input: $input)
 }
     `;
 export const ChangeItemStatusDocument = gql`
@@ -2261,6 +2310,12 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     addCategory(variables: AddCategoryMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddCategoryMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<AddCategoryMutation>(AddCategoryDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'addCategory', 'mutation', variables);
+    },
+    getCategory(variables: GetCategoryQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetCategoryQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetCategoryQuery>(GetCategoryDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getCategory', 'query', variables);
+    },
+    updateCategory(variables: UpdateCategoryMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UpdateCategoryMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<UpdateCategoryMutation>(UpdateCategoryDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'updateCategory', 'mutation', variables);
     },
     changeItemStatus(variables: ChangeItemStatusMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<ChangeItemStatusMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<ChangeItemStatusMutation>(ChangeItemStatusDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'changeItemStatus', 'mutation', variables);

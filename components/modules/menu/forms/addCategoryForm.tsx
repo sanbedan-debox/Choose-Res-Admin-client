@@ -1,18 +1,19 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import useGlobalStore from "@/store/global";
-import Select from "react-select";
-import { FilterOperatorsEnum, MenuTypeEnum } from "@/generated/graphql";
+import { FilterOperatorsEnum } from "@/generated/graphql";
 import useMenuOptionsStore from "@/store/menuOptions";
 import useMenuCategoryStore from "@/store/menuCategory";
 import FormAddTable from "@/components/common/table/formTable";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import ReusableModal from "@/components/common/modal/modal";
+import { MdArrowOutward } from "react-icons/md";
+import AddFormDropdown from "@/components/common/addFormDropDown/addFormDropdown";
 
 interface IFormInput {
   name: string;
@@ -20,20 +21,28 @@ interface IFormInput {
   items: string[];
 }
 
+interface ItemsDropDownType {
+  _id: string;
+  name: string;
+  price: number;
+}
+
 const AddCategoryForm = () => {
   const [btnLoading, setBtnLoading] = useState(false);
   const [itemsOption, setItemsOption] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedItems, setSelectedItems] = useState<any[]>([]);
+  const [prevItemsbfrEdit, setprevItemsbfrEdit] = useState<ItemsDropDownType[]>(
+    []
+  );
   const [searchTerm, setSearchTerm] = useState("");
+  const [tempSelectedItems, setTempSelectedItems] = useState<
+    ItemsDropDownType[]
+  >([]);
 
   const { setToastData } = useGlobalStore();
-  const {
-    fetchMenuDatas,
-    setfetchMenuDatas,
-    setisAddCategoryModalOpen,
-    setisAddItemModalOpen,
-  } = useMenuOptionsStore();
+  const { fetchMenuDatas, setfetchMenuDatas, setisAddCategoryModalOpen } =
+    useMenuOptionsStore();
   const { editCatsId, isEditCats, seteditCatsId, setisEditCats } =
     useMenuCategoryStore();
   const {
@@ -48,10 +57,18 @@ const AddCategoryForm = () => {
     const fetchItemData = async () => {
       if (editCatsId) {
         try {
-          const response = await sdk.getItem({ id: editCatsId });
-          const item = response.getItem;
+          const response = await sdk.getCategory({ id: editCatsId });
+          const item = response.getCategory;
           setValue("name", item.name.value);
           setValue("description", item.desc.value);
+          setSelectedItems(item?.items);
+          const formateditemlist = item?.items.map((el) => ({
+            _id: el._id._id,
+            name: el?.name?.value ?? "",
+            price: el?.price?.value ?? "",
+          }));
+          setTempSelectedItems(formateditemlist);
+          setprevItemsbfrEdit(formateditemlist);
         } catch (error) {
           const errorMessage = extractErrorMessage(error);
           setToastData({
@@ -79,6 +96,7 @@ const AddCategoryForm = () => {
             desc: {
               value: data.description,
             },
+            items: selectedItemsIds,
           },
         });
 
@@ -93,8 +111,9 @@ const AddCategoryForm = () => {
         }
       } else {
         // EDIT CATEGORIES
-        const res = await sdk.addCategory({
+        const res = await sdk.updateCategory({
           input: {
+            _id: editCatsId || "",
             name: {
               value: data.name,
             },
@@ -104,7 +123,14 @@ const AddCategoryForm = () => {
           },
         });
 
-        if (res?.addCategory) {
+        if (res?.updateCategory) {
+          if (prevItemsbfrEdit === selectedItems) {
+            const res = await sdk.addItemToCategory({
+              categoryId: editCatsId || "",
+              itemId: selectedItemsIds[0],
+            });
+          }
+
           setToastData({
             type: "success",
             message: "Category Updated Successfully",
@@ -148,23 +174,21 @@ const AddCategoryForm = () => {
       }
     };
     fetch();
-  }, [fetchMenuDatas]);
+  }, [fetchMenuDatas, setToastData]);
 
   const handleItemClick = (item: any) => {
-    setSelectedItems((prevSelected) =>
-      prevSelected.includes(item)
-        ? prevSelected.filter((i) => i !== item)
+    console.log(item);
+    setTempSelectedItems((prevSelected) =>
+      prevSelected.some((selectedItem) => selectedItem._id === item._id)
+        ? prevSelected.filter((i) => i._id !== item._id)
         : [...prevSelected, item]
     );
   };
 
   const handleAddItems = () => {
-    // Logic to push the list of selected items to the data passed to FormAddTable
+    setSelectedItems([]);
+    setSelectedItems(tempSelectedItems);
     setIsModalOpen(false);
-  };
-
-  const handleAddItem = () => {
-    setisAddItemModalOpen(true);
   };
 
   const handleSearch = (event: any) => {
@@ -175,15 +199,15 @@ const AddCategoryForm = () => {
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const renderActions = (rowData: { id: string }) => (
+  const renderActions = (rowData: { _id: string }) => (
     <div className="flex space-x-2 justify-center">
       <FaTrash
-        className="text-red-500 cursor-pointer"
-        onClick={() => handleDeleteItem(rowData.id)}
+        className="text-red-600 cursor-pointer"
+        onClick={() => handleRemoveItem(rowData._id)}
       />
-      <FaEdit
-        className="text-blue-500 cursor-pointer"
-        onClick={() => handleEditItem(rowData.id)}
+      <MdArrowOutward
+        className="text-primary cursor-pointer"
+        onClick={() => handleEditItem(rowData._id)}
       />
     </div>
   );
@@ -197,8 +221,12 @@ const AddCategoryForm = () => {
     setIsModalOpen(true);
   };
 
-  const handleDeleteItem = (id: string) => {
+  const handleRemoveItem = (id: string) => {
     setSelectedItems((prevSelected) =>
+      prevSelected.filter((item) => item._id !== id)
+    );
+
+    setTempSelectedItems((prevSelected) =>
       prevSelected.filter((item) => item._id !== id)
     );
   };
@@ -210,6 +238,21 @@ const AddCategoryForm = () => {
   const headings = [
     { title: "Price", dataKey: "price" },
     { title: "Actions", dataKey: "name", render: renderActions },
+  ];
+  const headingsDropdown = [
+    { title: "Price", dataKey: "price" },
+    {
+      title: "Actions",
+      dataKey: "name",
+      render: (item: { _id: string }) => (
+        <div className="flex space-x-2 justify-center">
+          <MdArrowOutward
+            className="text-primary cursor-pointer"
+            onClick={() => handleEditItem(item._id)}
+          />
+        </div>
+      ),
+    },
   ];
 
   return (
@@ -295,45 +338,19 @@ const AddCategoryForm = () => {
         </CButton>
       </form>
 
-      <ReusableModal
+      <AddFormDropdown
         title="Add Items"
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-      >
-        <div className="space-y-4">
-          <input
-            type="text"
-            placeholder="Search items..."
-            value={searchTerm}
-            onChange={handleSearch}
-            className="input input-primary w-full"
-          />
-          <ul>
-            {filteredItems.map((item) => (
-              <li
-                key={item._id}
-                className={`cursor-pointer p-2 ${
-                  selectedItems.includes(item) ? "bg-blue-500 text-white" : ""
-                }`}
-                onClick={() => handleItemClick(item)}
-              >
-                {item.name}
-              </li>
-            ))}
-          </ul>
-          <div className="flex space-x-2 justify-end">
-            <CButton
-              onClick={() => setIsModalOpen(false)}
-              variant={ButtonType.Outlined}
-            >
-              Create New Item
-            </CButton>
-            <CButton onClick={handleAddItems} variant={ButtonType.Primary}>
-              Add Selected Items
-            </CButton>
-          </div>
-        </div>
-      </ReusableModal>
+        searchTerm={searchTerm}
+        handleSearch={handleSearch}
+        filteredItems={filteredItems}
+        tempSelectedItems={tempSelectedItems}
+        handleItemClick={handleItemClick}
+        handleAddItems={handleAddItems}
+        headings={headingsDropdown}
+        renderActions={renderActions}
+      />
     </motion.div>
   );
 };

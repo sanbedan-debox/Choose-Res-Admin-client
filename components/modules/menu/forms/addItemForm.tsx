@@ -415,44 +415,6 @@ const AddItemForm = () => {
               onSwitchChange={() => setValue("isSpicy", !watch("isSpicy"))}
             />
           </div>
-          {/* <div className="mb-1">
-            <label className="block mb-2 text-lg font-medium text-left text-gray-700">
-              Options
-            </label>
-            <div className="grid grid-cols-1 gap-4">
-              {[
-                { id: "applySalesTax", label: "Apply Sales Tax" },
-                { id: "popularItem", label: "Popular Item" },
-                { id: "upSellItem", label: "Up-sell Item" },
-                { id: "isSpicy", label: "Is Spicy" },
-                { id: "hasNuts", label: "Has Nuts" },
-                { id: "isGlutenFree", label: "Is Gluten Free" },
-                { id: "isHalal", label: "Is Halal" },
-                { id: "isVegan", label: "Is Vegan" },
-              ].map((option) => (
-                <div
-                  className="flex justify-between items-center"
-                  key={option.id}
-                >
-                  <label htmlFor={option.id} className="text-gray-700">
-                    {option.label}
-                  </label>
-                  <Controller
-                    name={option.id as keyof IFormInput}
-                    control={control}
-                    render={({ field }) => (
-                      <CustomSwitch
-                        checked={field.value as boolean}
-                        onChange={() => field.onChange(!field.value)}
-                        label={option.label}
-                        className="switch"
-                      />
-                    )}
-                  />
-                </div>
-              ))}
-            </div>
-          </div> */}
           <CButton
             variant={ButtonType.Primary}
             type="submit"

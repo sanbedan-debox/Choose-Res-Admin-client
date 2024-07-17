@@ -14,7 +14,7 @@ import { FaTrash, FaEdit, FaCopy } from "react-icons/fa";
 
 const Categories: React.FC = () => {
   const [cats, setCats] = useState<
-    { name: string; desc: string; items: number; _id: string }[]
+    { name: string; desc: string; items: number; _id: string; status: string }[]
   >([]);
   const { setToastData } = useGlobalStore();
   const { setisAddCategoryModalOpen, fetchMenuDatas } = useMenuOptionsStore();
@@ -31,6 +31,7 @@ const Categories: React.FC = () => {
             items: el.items.length,
             name: el.name.value,
             _id: el._id,
+            status: el.status,
           }))
         );
       }
@@ -55,6 +56,8 @@ const Categories: React.FC = () => {
   const handleToggleSwitch = (rowData: { status: string; _id: string }) => {
     setShowStatusConfirmationModal(true);
     setSelectedItemId(rowData._id);
+
+    console.log(rowData.status, rowData._id);
 
     setAvailableCaption(
       rowData.status === StatusEnum.Inactive

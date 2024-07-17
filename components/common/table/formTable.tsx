@@ -15,7 +15,7 @@ interface DataItem {
 
 interface FormAddTableProps {
   data?: DataItem[];
-  headings: Heading[];
+  headings: Heading[] | any[];
   title: string;
   emptyMessage: string;
   buttonText: string;
@@ -34,7 +34,9 @@ const FormAddTable: React.FC<FormAddTableProps> = ({
 }) => {
   return (
     <div className="w-full">
-      <h2 className="text-xl font-semibold mb-4">{title}</h2>
+      <h2 className="block mb-2 text-sm font-medium text-left text-gray-700">
+        {title}
+      </h2>
       {data?.length === 0 ? (
         <div className="text-center p-4 border rounded-md">
           <p>{emptyMessage}</p>
@@ -47,21 +49,21 @@ const FormAddTable: React.FC<FormAddTableProps> = ({
               className="flex justify-between items-center p-2 border rounded-md"
             >
               <div className="flex items-center space-x-2">
-                {isShowImage && ( // Check if isShowImage prop is true
+                {isShowImage && (
                   <img
-                    src={item.image || "/default-image.png"} // Use default image if item.image is falsy
-                    alt={item.name}
+                    src={item._id.image || "/default-image.png"}
+                    alt={item.name.value}
                     className="w-10 h-10 rounded-md"
                   />
                 )}
-                <span>{item.name}</span>
+                <span>{item?.name?.value || item?.name}</span>
               </div>
               <div className="flex items-center space-x-4">
                 {headings.map((heading) => (
                   <span key={heading.dataKey}>
                     {heading.render
                       ? heading.render(item)
-                      : item[heading.dataKey]}
+                      : item[heading.dataKey]?.value || item[heading.dataKey]}
                   </span>
                 ))}
               </div>
@@ -73,7 +75,7 @@ const FormAddTable: React.FC<FormAddTableProps> = ({
         type="button"
         variant={ButtonType.Primary}
         onClick={onAddClick}
-        className=" w-full mt-2"
+        className="w-full mt-2"
       >
         {buttonText}
       </CButton>

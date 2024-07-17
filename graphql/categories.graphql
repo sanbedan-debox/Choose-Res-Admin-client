@@ -48,3 +48,36 @@ query getItemsForCategoryDropdown(
 mutation addCategory($input: AddCategoryInput!) {
   addCategory(input: $input)
 }
+
+query getCategory($id: String!) {
+  getCategory(id: $id) {
+    _id
+    name {
+      value
+    }
+    desc {
+      value
+    }
+    status
+    items {
+      name {
+        value
+      }
+      _id {
+        _id
+        image
+      }
+      price {
+        value
+      }
+      status
+    }
+    # availability
+    createdAt
+    updatedAt
+  }
+}
+
+mutation updateCategory($input: UpdateCategoryInput!) {
+  updateCategory(input: $input)
+}

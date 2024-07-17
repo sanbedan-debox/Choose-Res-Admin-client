@@ -12,6 +12,7 @@ import Items from "@/components/modules/menu/items";
 import Menu from "@/components/modules/menu/menu";
 import ModifiersGroup from "@/components/modules/menu/modifierGroups";
 import Modifiers from "@/components/modules/menu/modifiers";
+import useMenuCategoryStore from "@/store/menuCategory";
 import useMenuItemsStore from "@/store/menuItems";
 import useMenuOptionsStore from "@/store/menuOptions";
 
@@ -36,6 +37,7 @@ const MenuPage = ({ repo: { pagePath } }: MenuPageProps) => {
     setfetchMenuDatas,
   } = useMenuOptionsStore();
 
+  const { seteditCatsId, setisEditCats } = useMenuCategoryStore();
   const { setEditItemId, setisEditItem } = useMenuItemsStore();
   const handleAddMenuItemClose = () => {
     setisAddItemModalOpen(false);
@@ -46,21 +48,13 @@ const MenuPage = ({ repo: { pagePath } }: MenuPageProps) => {
   const handleAddMenuCategoryClose = () => {
     setisAddCategoryModalOpen(false);
     setfetchMenuDatas(!fetchMenuDatas);
+    setisEditCats(false);
+    seteditCatsId(null);
   };
   const handleAddMenuClose = () => {
     setisAddMenuModalOpen(false);
     setfetchMenuDatas(!fetchMenuDatas);
   };
-
-  const [name, setName] = useState("");
-  const [desc, setDesc] = useState("");
-  const [image, setImage] = useState("");
-  const [price, setPrice] = useState(0);
-  const [status, setStatus] = useState("");
-  const [applySalesTax, setApplySalesTax] = useState(false);
-  const [popularItem, setPopularItem] = useState(false);
-  const [upSellItem, setUpSellItem] = useState(false);
-  const [availability, setAvailability] = useState([]);
 
   const handleSubmit = () => {
     handleAddMenuItemClose();
