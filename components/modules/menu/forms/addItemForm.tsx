@@ -11,7 +11,6 @@ import useGlobalStore from "@/store/global";
 import useMenuOptionsStore from "@/store/menuOptions";
 import useMenuItemsStore from "@/store/menuItems";
 import CustomSwitchCard from "@/components/common/customSwitchCard/customSwitchCard";
-
 interface IFormInput {
   name: string;
   desc: string;
@@ -27,11 +26,6 @@ interface IFormInput {
   isHalal: boolean;
   isVegan: boolean;
 }
-
-// const statusOptions: any[] = [
-//   { value: StatusEnum.Active, label: "Active" },
-//   { value: StatusEnum.Inactive, label: "Inactive" },
-// ];
 
 const AddItemForm = () => {
   const {

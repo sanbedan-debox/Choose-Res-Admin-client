@@ -10,8 +10,7 @@ import { FilterOperatorsEnum } from "@/generated/graphql";
 import useMenuOptionsStore from "@/store/menuOptions";
 import useMenuCategoryStore from "@/store/menuCategory";
 import FormAddTable from "@/components/common/table/formTable";
-import { FaEdit, FaTrash } from "react-icons/fa";
-import ReusableModal from "@/components/common/modal/modal";
+import { FaTrash } from "react-icons/fa";
 import { MdArrowOutward } from "react-icons/md";
 import AddFormDropdown from "@/components/common/addFormDropDown/addFormDropdown";
 
