@@ -10,11 +10,20 @@ import { FilterOperatorsEnum, MenuTypeEnum } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
 import useMenuOptionsStore from "@/store/menuOptions";
 import FormAddTable from "@/components/common/table/formTable";
-import { FaEdit, FaShieldAlt, FaTrash } from "react-icons/fa";
+import { FaTrash } from "react-icons/fa";
+import AddFormDropdown from "@/components/common/addFormDropDown/addFormDropdown";
+import { MdArrowOutward } from "react-icons/md";
+import useMenuMenuStore from "@/store/menumenu";
 
 interface IFormInput {
   type: { value: string; label: string };
   name: string;
+}
+
+interface ItemsDropDownType {
+  _id: string;
+  name: string;
+  price: number;
 }
 
 const menuTypeOptions: any[] = [
@@ -22,13 +31,53 @@ const menuTypeOptions: any[] = [
   { value: MenuTypeEnum.DineIn, label: "Dine In" },
   { value: MenuTypeEnum.Catering, label: "Catering" },
 ];
-
 const AddMenuForm = () => {
   const { fetchMenuDatas, setfetchMenuDatas, setisAddMenuModalOpen } =
     useMenuOptionsStore();
 
   const [btnLoading, setBtnLoading] = useState(false);
   const { setToastData } = useGlobalStore();
+  const [itemsOption, setItemsOption] = useState<any[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedItems, setSelectedItems] = useState<any[]>([]);
+  const [prevItemsbfrEdit, setprevItemsbfrEdit] = useState<ItemsDropDownType[]>(
+    []
+  );
+  const [searchTerm, setSearchTerm] = useState("");
+  const [tempSelectedItems, setTempSelectedItems] = useState<
+    ItemsDropDownType[]
+  >([]);
+  const { editMenuId, isEditMenu, seteditMenuId, setisEditMenu } =
+    useMenuMenuStore();
+
+  // useEffect(() => {
+  //   const fetchItemData = async () => {
+  //     if (editMenuId) {
+  //       try {
+  //         const response = await sdk.getMenusByType({ id: editMenuId });
+  //         const menu = response.getMenusByType;
+  //         setValue("name", menu?.name?.value | "");
+  //         setValue("type", menu?.type;
+  //         setSelectedItems(item?.items);
+  //         const formateditemlist = item?.items.map((el) => ({
+  //           _id: el._id._id,
+  //           name: el?.name?.value ?? "",
+  //           price: el?.price?.value ?? "",
+  //         }));
+  //         setTempSelectedItems(formateditemlist);
+  //         setprevItemsbfrEdit(formateditemlist);
+  //       } catch (error) {
+  //         const errorMessage = extractErrorMessage(error);
+  //         setToastData({
+  //           type: "error",
+  //           message: errorMessage,
+  //         });
+  //       }
+  //     }
+  //   };
+
+  //   fetchItemData();
+  // }, [, setValue, setToastData]);
 
   const {
     handleSubmit,
@@ -51,6 +100,10 @@ const AddMenuForm = () => {
         },
       });
 
+      // const addItems = sdk.addCategoryToMenu({
+
+      // })
+
       setToastData({
         type: "success",
         message: "Menu Added Successfully",
@@ -71,19 +124,19 @@ const AddMenuForm = () => {
   useEffect(() => {
     const fetch = async () => {
       try {
-        const res = await sdk.getCategoriesForMenuDropdown({
+        const categories = await sdk.getCategoriesForMenuDropdown({
           field: "status",
           operator: FilterOperatorsEnum.Any,
           value: "active",
         });
-        console.log(res);
-        // if (res && res.getCategories) {
-        //   const formattedItemsList = res.getItems.map((item) => ({
-        //     value: item._id,
-        //     label: item?.name?.value,
-        //   }));
-        //   // setItemsOption(formattedItemsList);
-        // }
+        if (categories && categories.getCategories) {
+          const formattedItemsList = categories.getCategories.map((cats) => ({
+            _id: cats._id,
+            name: cats?.name?.value,
+            items: cats?.items?.length,
+          }));
+          setItemsOption(formattedItemsList);
+        }
       } catch (error: any) {
         const errorMessage = extractErrorMessage(error);
         setToastData({
@@ -93,58 +146,84 @@ const AddMenuForm = () => {
       }
     };
     fetch();
-  }, [fetchMenuDatas]);
-  const data = [
-    {
-      id: "1",
-      name: "Kerala Style Fish Curry",
-      desc: "A delicious fish curry",
-      price: "$15.99",
-      image: "/path-to-image1.png",
-      status: "Available",
-    },
-    {
-      id: "2",
-      name: "Goat Mandi",
-      desc: "A tasty goat dish",
-      price: "$39.99",
-      image: "/path-to-image2.png",
-      status: "Available",
-    },
-  ];
+  }, [fetchMenuDatas, setToastData]);
 
-  const renderActions = (rowData: { id: string }) => (
+  const handleRemoveCategory = (id: string) => {
+    setSelectedItems((prevSelected) =>
+      prevSelected.filter((item) => item._id !== id)
+    );
+
+    setTempSelectedItems((prevSelected) =>
+      prevSelected.filter((item) => item._id !== id)
+    );
+  };
+  const handleEditCategory = (id: string) => {
+    console.log(`Edit item with id ${id}`);
+  };
+
+  const renderActions = (rowData: { _id: string }) => (
     <div className="flex space-x-2 justify-center">
       <FaTrash
-        className="text-red-500 cursor-pointer"
-        onClick={() => handleDeleteItem(rowData.id)}
+        className="text-red-600 cursor-pointer"
+        onClick={() => handleRemoveCategory(rowData._id)}
       />
-      <FaEdit
-        className="text-blue-500 cursor-pointer"
-        onClick={() => handleEditItem(rowData.id)}
-      />
-      <FaShieldAlt
-        className="text-green-500 cursor-pointer"
-        onClick={() => console.log("Change Password", rowData.id)}
+      <MdArrowOutward
+        className="text-primary cursor-pointer"
+        onClick={() => handleEditCategory(rowData._id)}
       />
     </div>
   );
+  const data = selectedItems.map((item) => ({
+    ...item,
+    actions: renderActions(item),
+  }));
+
+  const handleAddItems = () => {
+    setSelectedItems([]);
+    setSelectedItems(tempSelectedItems);
+    setIsModalOpen(false);
+  };
+
+  const handleSearch = (event: any) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const filteredItems = itemsOption.filter((item) =>
+    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const headingsDropdown = [
+    { title: "Items", dataKey: "items" },
+    {
+      title: "Actions",
+      dataKey: "name",
+      render: (item: { _id: string }) => (
+        <div className="flex space-x-2 justify-center">
+          <MdArrowOutward
+            className="text-primary cursor-pointer"
+            onClick={() => handleEditCategory(item._id)}
+          />
+        </div>
+      ),
+    },
+  ];
 
   const headings = [
-    { title: "Price", dataKey: "price" },
+    { title: "Items", dataKey: "items" },
     { title: "Actions", dataKey: "name", render: renderActions },
   ];
 
   const handleAddClick = () => {
-    console.log("Add button clicked");
+    setIsModalOpen(true);
   };
 
-  const handleDeleteItem = (id: string) => {
-    console.log(`Delete item with id ${id}`);
-  };
-
-  const handleEditItem = (id: string) => {
-    console.log(`Edit item with id ${id}`);
+  const handleItemClick = (item: any) => {
+    console.log(item);
+    setTempSelectedItems((prevSelected) =>
+      prevSelected.some((selectedItem) => selectedItem._id === item._id)
+        ? prevSelected.filter((i) => i._id !== item._id)
+        : [...prevSelected, item]
+    );
   };
 
   return (
@@ -220,9 +299,9 @@ const AddMenuForm = () => {
         <FormAddTable
           data={data}
           headings={headings}
-          title="Items"
-          emptyMessage="No items available"
-          buttonText="Add Items"
+          title="Categories"
+          emptyMessage="No Categories selected"
+          buttonText="Add Categories"
           onAddClick={handleAddClick}
         />
 
@@ -235,6 +314,21 @@ const AddMenuForm = () => {
           Add Menu
         </CButton>
       </form>
+      <AddFormDropdown
+        title="Add Categories"
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        searchTerm={searchTerm}
+        handleSearch={handleSearch}
+        filteredItems={filteredItems}
+        tempSelectedItems={tempSelectedItems}
+        handleItemClick={handleItemClick}
+        handleAddItems={handleAddItems}
+        headings={headingsDropdown}
+        renderActions={renderActions}
+        createNewItemButtonLabel="Create new category"
+        addSelectedItemsButtonLabel="Add selected categories"
+      />
     </motion.div>
   );
 };

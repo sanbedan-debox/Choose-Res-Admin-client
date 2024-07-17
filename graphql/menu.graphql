@@ -10,6 +10,7 @@ query getAllMenus {
         value
       }
     }
+    status
   }
 }
 
@@ -31,5 +32,35 @@ query getCategoriesForMenuDropdown(
       value
     }
     status
+    items {
+      name {
+        value
+      }
+    }
+  }
+}
+
+mutation changeMenuStatus($id: String!) {
+  changeMenuStatus(id: $id)
+}
+
+mutation deleteMenu($id: String!) {
+  deleteMenu(id: $id)
+}
+
+mutation addCategoryToMenu($categoryId: [String!]!, $menuId: String!) {
+  addCategoryToMenu(categoryId: $categoryId, menuId: $menuId)
+}
+
+query getMenusByType($id: String!) {
+  getMenusByType(id: $id) {
+    _id
+    name {
+      value
+    }
+    status
+    createdAt
+    updatedAt
+    type
   }
 }

@@ -8,8 +8,6 @@ import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import { StatusEnum } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
-import { title } from "process";
-import CustomSwitch from "@/components/common/customSwitch/customSwitch";
 import useMenuOptionsStore from "@/store/menuOptions";
 import useMenuItemsStore from "@/store/menuItems";
 import CustomSwitchCard from "@/components/common/customSwitchCard/customSwitchCard";
@@ -19,7 +17,7 @@ interface IFormInput {
   desc: string;
   image: string;
   price: number;
-  status: { value: string; label: string };
+  status: boolean;
   applySalesTax: boolean;
   popularItem: boolean;
   upSellItem: boolean;
@@ -30,10 +28,10 @@ interface IFormInput {
   isVegan: boolean;
 }
 
-const statusOptions: any[] = [
-  { value: StatusEnum.Active, label: "Active" },
-  { value: StatusEnum.Inactive, label: "Inactive" },
-];
+// const statusOptions: any[] = [
+//   { value: StatusEnum.Active, label: "Active" },
+//   { value: StatusEnum.Inactive, label: "Inactive" },
+// ];
 
 const AddItemForm = () => {
   const {
@@ -60,7 +58,7 @@ const AddItemForm = () => {
           const item = response.getItem;
           setValue("name", item.name.value);
           setValue("desc", item.desc.value);
-          setValue("status", { value: item.status, label: item.status });
+          setValue("status", item.status === StatusEnum.Active ? true : false);
           setValue("price", item.price.value);
           setValue("applySalesTax", item.applySalesTax);
           setValue("popularItem", item.popularItem);
@@ -86,7 +84,8 @@ const AddItemForm = () => {
 
   const onSubmit = async (data: IFormInput) => {
     try {
-      const statusSub = data.status.value as StatusEnum;
+      const statusSub = data.status ? StatusEnum.Active : StatusEnum.Inactive;
+
       const parsedPrice = parseFloat(data.price.toString());
 
       setBtnLoading(true);
@@ -249,6 +248,17 @@ const AddItemForm = () => {
               id="price"
               className="input input-primary"
               placeholder="Enter item price"
+              style={{
+                appearance: "textfield",
+              }}
+              inputMode="numeric"
+              pattern="[0-9]*"
+              onWheel={(e) => e.preventDefault()}
+              onKeyDown={(e) => {
+                if (e.key === "e" || e.key === "-" || e.key === "+") {
+                  e.preventDefault();
+                }
+              }}
             />
             {errors.price && (
               <p className="text-red-500 text-sm text-start">
@@ -326,20 +336,13 @@ const AddItemForm = () => {
             >
               Status
             </label>
-            <Controller
-              name="status"
-              control={control}
-              rules={{ required: "Status is required" }}
-              render={({ field }) => (
-                <Select
-                  {...field}
-                  id="status"
-                  options={statusOptions}
-                  className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
-                  classNamePrefix="react-select"
-                  placeholder="Select status"
-                />
-              )}
+
+            <CustomSwitchCard
+              label="Status"
+              title="Status"
+              caption="If its checked ,you can use this item in Categories and Menus"
+              switchChecked={watch("status")}
+              onSwitchChange={() => setValue("status", !watch("status"))}
             />
 
             {errors.status && (
@@ -349,72 +352,81 @@ const AddItemForm = () => {
             )}
           </div>
 
-          <div className="mb-1 flex-col space-y-4">
-            <CustomSwitchCard
-              label="sales Tax"
-              title="Apply Sales Tax"
-              caption="This item is subject to sales tax."
-              switchChecked={watch("applySalesTax")}
-              onSwitchChange={() =>
-                setValue("applySalesTax", !watch("applySalesTax"))
-              }
-            />
-            <CustomSwitchCard
-              label="is it a popular item"
-              title="Popular Item"
-              caption="Mark this item as popular."
-              switchChecked={watch("popularItem")}
-              onSwitchChange={() =>
-                setValue("popularItem", !watch("popularItem"))
-              }
-            />
-            <CustomSwitchCard
-              label="do you want to up-sell it"
-              title="Up-sell Item"
-              caption="Suggest this item to customers."
-              switchChecked={watch("upSellItem")}
-              onSwitchChange={() =>
-                setValue("upSellItem", !watch("upSellItem"))
-              }
-            />
-            <CustomSwitchCard
-              label="does this item contain nuts"
-              title="Contains Nuts"
-              caption="This item contains nuts."
-              switchChecked={watch("hasNuts")}
-              onSwitchChange={() => setValue("hasNuts", !watch("hasNuts"))}
-            />
-            <CustomSwitchCard
-              label="is the item gluten-free"
-              title="Gluten-Free"
-              caption="This item is gluten-free."
-              switchChecked={watch("isGlutenFree")}
-              onSwitchChange={() =>
-                setValue("isGlutenFree", !watch("isGlutenFree"))
-              }
-            />
-            <CustomSwitchCard
-              label="is it halal"
-              title="Halal"
-              caption="This item is halal."
-              switchChecked={watch("isHalal")}
-              onSwitchChange={() => setValue("isHalal", !watch("isHalal"))}
-            />
-            <CustomSwitchCard
-              label="is it vegan"
-              title="Vegan"
-              caption="This item is vegan."
-              switchChecked={watch("isVegan")}
-              onSwitchChange={() => setValue("isVegan", !watch("isVegan"))}
-            />
-            <CustomSwitchCard
-              label="is it spicy"
-              title="Spicy"
-              caption="This item is spicy."
-              switchChecked={watch("isSpicy")}
-              onSwitchChange={() => setValue("isSpicy", !watch("isSpicy"))}
-            />
+          <div>
+            <label
+              htmlFor="Options"
+              className="block mb-2 text-sm font-medium text-left text-gray-700"
+            >
+              Options
+            </label>
+            <div className="mb-1 grid grid-cols-2 gap-4">
+              <CustomSwitchCard
+                label="sales Tax"
+                title="Apply Sales Tax"
+                caption="This item is subject to sales tax."
+                switchChecked={watch("applySalesTax")}
+                onSwitchChange={() =>
+                  setValue("applySalesTax", !watch("applySalesTax"))
+                }
+              />
+              <CustomSwitchCard
+                label="is it a popular item"
+                title="Popular Item"
+                caption="Mark this item as popular."
+                switchChecked={watch("popularItem")}
+                onSwitchChange={() =>
+                  setValue("popularItem", !watch("popularItem"))
+                }
+              />
+              <CustomSwitchCard
+                label="do you want to up-sell it"
+                title="Up-sell Item"
+                caption="Suggest this item to customers."
+                switchChecked={watch("upSellItem")}
+                onSwitchChange={() =>
+                  setValue("upSellItem", !watch("upSellItem"))
+                }
+              />
+              <CustomSwitchCard
+                label="does this item contain nuts"
+                title="Contains Nuts"
+                caption="This item contains nuts."
+                switchChecked={watch("hasNuts")}
+                onSwitchChange={() => setValue("hasNuts", !watch("hasNuts"))}
+              />
+              <CustomSwitchCard
+                label="is the item gluten-free"
+                title="Gluten-Free"
+                caption="This item is gluten-free."
+                switchChecked={watch("isGlutenFree")}
+                onSwitchChange={() =>
+                  setValue("isGlutenFree", !watch("isGlutenFree"))
+                }
+              />
+              <CustomSwitchCard
+                label="is it halal"
+                title="Halal"
+                caption="This item is halal."
+                switchChecked={watch("isHalal")}
+                onSwitchChange={() => setValue("isHalal", !watch("isHalal"))}
+              />
+              <CustomSwitchCard
+                label="is it vegan"
+                title="Vegan"
+                caption="This item is vegan."
+                switchChecked={watch("isVegan")}
+                onSwitchChange={() => setValue("isVegan", !watch("isVegan"))}
+              />
+              <CustomSwitchCard
+                label="is it spicy"
+                title="Spicy"
+                caption="This item is spicy."
+                switchChecked={watch("isSpicy")}
+                onSwitchChange={() => setValue("isSpicy", !watch("isSpicy"))}
+              />
+            </div>
           </div>
+
           <CButton
             variant={ButtonType.Primary}
             type="submit"
