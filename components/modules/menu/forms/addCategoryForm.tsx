@@ -321,6 +321,7 @@ const AddCategoryForm = () => {
 
         <FormAddTable
           data={data}
+          isShowImage
           headings={headings}
           title="Items"
           emptyMessage="No items available"

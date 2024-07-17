@@ -1,16 +1,19 @@
-query getAllMenus {
-  getAllMenus {
+query getMenuByRestaurant {
+  getMenuByRestaurant {
     _id
     name {
       value
     }
+    status
+    createdAt
+    updatedAt
     type
+
     categories {
       name {
         value
       }
     }
-    status
   }
 }
 

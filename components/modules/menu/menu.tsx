@@ -34,10 +34,10 @@ const Menu: React.FC = () => {
   const fetchAllMenus = async () => {
     // setLoading(true);
     try {
-      const response = await sdk.getAllMenus();
-      if (response && response.getAllMenus) {
+      const response = await sdk.getMenuByRestaurant();
+      if (response && response.getMenuByRestaurant) {
         setMenu(
-          response.getAllMenus.map((el) => ({
+          response.getMenuByRestaurant.map((el) => ({
             name: el.name.value,
             categories: el.categories.length,
             status: el.status,

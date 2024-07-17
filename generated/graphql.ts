@@ -1130,8 +1130,8 @@ export type QueryGetItemsArgs = {
 
 
 export type QueryGetMenuArgs = {
-  id: Scalars['String']['input'];
-  type: MenuTypeEnum;
+  id?: InputMaybe<Scalars['String']['input']>;
+  type?: InputMaybe<MenuTypeEnum>;
 };
 
 
@@ -1673,10 +1673,10 @@ export type GetActiveTimezonesQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetActiveTimezonesQuery = { __typename?: 'Query', getActiveTimezones: Array<{ __typename?: 'Timezone', value: string, gmtOffset: number, _id: string }> };
 
-export type GetAllMenusQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetMenuByRestaurantQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllMenusQuery = { __typename?: 'Query', getAllMenus: Array<{ __typename?: 'Menu', _id: string, type: MenuTypeEnum, status: StatusEnum, name: { __typename?: 'MasterCommon', value: string }, categories: Array<{ __typename?: 'CategoryInfo', name?: { __typename?: 'MasterCommon', value: string } | null }> }> };
+export type GetMenuByRestaurantQuery = { __typename?: 'Query', getMenuByRestaurant: Array<{ __typename?: 'Menu', _id: string, status: StatusEnum, createdAt: any, updatedAt: any, type: MenuTypeEnum, name: { __typename?: 'MasterCommon', value: string }, categories: Array<{ __typename?: 'CategoryInfo', name?: { __typename?: 'MasterCommon', value: string } | null }> }> };
 
 export type AddMenuMutationVariables = Exact<{
   input: AddMenuInput;
@@ -2046,20 +2046,22 @@ export const GetActiveTimezonesDocument = gql`
   }
 }
     `;
-export const GetAllMenusDocument = gql`
-    query getAllMenus {
-  getAllMenus {
+export const GetMenuByRestaurantDocument = gql`
+    query getMenuByRestaurant {
+  getMenuByRestaurant {
     _id
     name {
       value
     }
+    status
+    createdAt
+    updatedAt
     type
     categories {
       name {
         value
       }
     }
-    status
   }
 }
     `;
@@ -2405,8 +2407,8 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     getActiveTimezones(variables?: GetActiveTimezonesQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetActiveTimezonesQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetActiveTimezonesQuery>(GetActiveTimezonesDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getActiveTimezones', 'query', variables);
     },
-    getAllMenus(variables?: GetAllMenusQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetAllMenusQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<GetAllMenusQuery>(GetAllMenusDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getAllMenus', 'query', variables);
+    getMenuByRestaurant(variables?: GetMenuByRestaurantQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetMenuByRestaurantQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetMenuByRestaurantQuery>(GetMenuByRestaurantDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getMenuByRestaurant', 'query', variables);
     },
     addMenu(variables: AddMenuMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddMenuMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<AddMenuMutation>(AddMenuDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'addMenu', 'mutation', variables);

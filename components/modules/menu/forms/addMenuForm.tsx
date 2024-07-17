@@ -50,35 +50,6 @@ const AddMenuForm = () => {
   const { editMenuId, isEditMenu, seteditMenuId, setisEditMenu } =
     useMenuMenuStore();
 
-  // useEffect(() => {
-  //   const fetchItemData = async () => {
-  //     if (editMenuId) {
-  //       try {
-  //         const response = await sdk.getMenusByType({ id: editMenuId });
-  //         const menu = response.getMenusByType;
-  //         setValue("name", menu?.name?.value | "");
-  //         setValue("type", menu?.type;
-  //         setSelectedItems(item?.items);
-  //         const formateditemlist = item?.items.map((el) => ({
-  //           _id: el._id._id,
-  //           name: el?.name?.value ?? "",
-  //           price: el?.price?.value ?? "",
-  //         }));
-  //         setTempSelectedItems(formateditemlist);
-  //         setprevItemsbfrEdit(formateditemlist);
-  //       } catch (error) {
-  //         const errorMessage = extractErrorMessage(error);
-  //         setToastData({
-  //           type: "error",
-  //           message: errorMessage,
-  //         });
-  //       }
-  //     }
-  //   };
-
-  //   fetchItemData();
-  // }, [, setValue, setToastData]);
-
   const {
     handleSubmit,
     formState: { errors },
@@ -86,6 +57,35 @@ const AddMenuForm = () => {
     setValue,
     register,
   } = useForm<IFormInput>();
+
+  useEffect(() => {
+    const fetchMenuData = async () => {
+      if (editMenuId) {
+        try {
+          const response = await sdk.getMenusByType({ id: editMenuId });
+          const item = response.getMenusByType;
+          // setValue("name", item?.name.value);
+          // setValue("type", item?.type);
+          // setSelectedItems(item?.items);
+          // const formateditemlist = item?.items.map((el) => ({
+          //   _id: el._id._id,
+          //   name: el?.name?.value ?? "",
+          //   price: el?.price?.value ?? "",
+          // }));
+          // setTempSelectedItems(formateditemlist);
+          // setprevItemsbfrEdit(formateditemlist);
+        } catch (error) {
+          const errorMessage = extractErrorMessage(error);
+          setToastData({
+            type: "error",
+            message: errorMessage,
+          });
+        }
+      }
+    };
+
+    fetchMenuData();
+  }, [editMenuId, setValue, setToastData]);
 
   const onSubmit = async (data: IFormInput) => {
     try {
