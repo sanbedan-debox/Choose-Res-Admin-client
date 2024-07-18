@@ -15,9 +15,10 @@ const Modifiers: React.FC = () => {
   const { setToastData } = useGlobalStore();
   const { setisAddModifierGroupModalOpen, fetchMenuDatas } =
     useMenuOptionsStore();
+  const [tableLoading, setTableLoading] = useState(false);
 
   const fetchModifierGroups = async () => {
-    // setLoading(true);
+    setTableLoading(true);
     try {
       const response = await sdk.getModifierGroups();
       if (response && response.getModifierGroups) {
@@ -35,7 +36,7 @@ const Modifiers: React.FC = () => {
         message: errorMessage,
       });
     } finally {
-      // setLoading(false);
+      setTableLoading(false);
     }
   };
 
@@ -115,6 +116,7 @@ const Modifiers: React.FC = () => {
   return (
     <div className="py-2">
       <RoopTable
+        loading={tableLoading}
         itemsPerPage={20}
         headings={headings}
         data={modifierGroups}

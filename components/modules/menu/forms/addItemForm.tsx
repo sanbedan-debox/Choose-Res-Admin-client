@@ -671,9 +671,10 @@ const AddItemForm = () => {
           <FormAddTable
             data={data}
             headings={headings}
-            title="Items"
-            emptyMessage="No items available"
-            buttonText="Add Items"
+            title="Modifier Groups"
+            emptyCaption="You can add Modifier Group for items here"
+            emptyMessage="No Modifier Groups available"
+            buttonText="Add Modifier Groups"
             onAddClick={handleAddClick}
           />
           <AvailabilityForm

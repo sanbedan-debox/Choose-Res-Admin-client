@@ -341,6 +341,7 @@ const AddMenuForm = () => {
           data={data}
           headings={headings}
           title="Categories"
+          emptyCaption="Add Categories to your menu"
           emptyMessage="No Categories selected"
           buttonText="Add Categories"
           onAddClick={handleAddClick}

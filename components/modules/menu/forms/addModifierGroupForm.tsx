@@ -232,11 +232,6 @@ const AddModifierGroupForm = () => {
     setValue("maxSelections", count);
   };
   const [selectedItems, setSelectedItems] = useState<any[]>([]);
-
-  const data = selectedItems.map((item) => ({
-    ...item,
-    actions: renderActions(item),
-  }));
   const renderActions = (rowData: { _id: string }) => (
     <div className="flex space-x-2 justify-center">
       <FaTrash
@@ -245,6 +240,10 @@ const AddModifierGroupForm = () => {
       />
     </div>
   );
+  const data = selectedItems.map((item) => ({
+    ...item,
+    actions: renderActions(item),
+  }));
 
   const handleRemoveItem = (id: string) => {
     setSelectedItems((prevSelected) =>
@@ -372,6 +371,7 @@ const AddModifierGroupForm = () => {
             isShowImage
             headings={headings}
             title="Modifiers"
+            emptyCaption="No Modifiers added,Add Now"
             emptyMessage="No Modifiers available"
             buttonText="Add Modifiers"
             onAddClick={handleAddClick}

@@ -29,8 +29,10 @@ const Items: React.FC = () => {
   const { setToastData } = useGlobalStore();
   const { setisAddItemModalOpen, fetchMenuDatas } = useMenuOptionsStore();
   const [selectedItemId, setSelectedItemId] = useState<string>("");
+  const [tableLoading, setTableLoading] = useState(false);
+
   const fetchMenuItems = async () => {
-    // setLoading(true);
+    setTableLoading(true);
     try {
       const response = await sdk.getItems();
       if (response && response.getItems) {
@@ -51,7 +53,7 @@ const Items: React.FC = () => {
         message: errorMessage,
       });
     } finally {
-      // setLoading(false);
+      setTableLoading(false);
     }
   };
 
@@ -173,6 +175,7 @@ const Items: React.FC = () => {
     <div className="py-2">
       <RoopTable
         itemsPerPage={20}
+        loading={tableLoading}
         headings={headings}
         data={items}
         mainActions={mainActions}

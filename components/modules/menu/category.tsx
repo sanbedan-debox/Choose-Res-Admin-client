@@ -20,9 +20,11 @@ const Categories: React.FC = () => {
   const { setisAddCategoryModalOpen, fetchMenuDatas } = useMenuOptionsStore();
   const [showDeleteConfirmationModal, setshowDeleteConfirmationModal] =
     useState(false);
+
+  const [tableLoading, setTableLoading] = useState(false);
   const fetchCategories = async () => {
-    // setLoading(true);
     try {
+      setTableLoading(true);
       const response = await sdk.getCategories();
       if (response && response.getCategories) {
         setCats(
@@ -42,7 +44,7 @@ const Categories: React.FC = () => {
         message: errorMessage,
       });
     } finally {
-      // setLoading(false);
+      setTableLoading(false);
     }
   };
   useEffect(() => {
@@ -140,7 +142,7 @@ const Categories: React.FC = () => {
         message: errorMessage,
       });
     } finally {
-      setBtnLoading(false);
+      setBtnLoading(true);
     }
   };
 
@@ -170,6 +172,7 @@ const Categories: React.FC = () => {
   return (
     <div className="py-2">
       <RoopTable
+        loading={tableLoading}
         itemsPerPage={10}
         headings={headings}
         data={cats}

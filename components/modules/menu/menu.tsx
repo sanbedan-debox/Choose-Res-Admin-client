@@ -31,8 +31,10 @@ const Menu: React.FC = () => {
   const [showDeleteConfirmationModal, setshowDeleteConfirmationModal] =
     useState(false);
   const { setToastData } = useGlobalStore();
+  const [tableLoading, setTableLoading] = useState(false);
+
   const fetchAllMenus = async () => {
-    // setLoading(true);
+    setTableLoading(true);
     try {
       const response = await sdk.getMenuByRestaurant();
       if (response && response.getMenuByRestaurant) {
@@ -53,7 +55,7 @@ const Menu: React.FC = () => {
         message: errorMessage,
       });
     } finally {
-      // setLoading(false);
+      setTableLoading(false);
     }
   };
   useEffect(() => {
@@ -177,6 +179,7 @@ const Menu: React.FC = () => {
   return (
     <div className="py-2">
       <RoopTable
+        loading={tableLoading}
         itemsPerPage={10}
         headings={headings}
         data={menu}

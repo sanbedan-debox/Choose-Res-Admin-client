@@ -352,6 +352,7 @@ const AddCategoryForm = () => {
           isShowImage
           headings={headings}
           title="Items"
+          emptyCaption="Add Items to the Category to activate it"
           emptyMessage="No items available"
           buttonText="Add Items"
           onAddClick={handleAddClick}
