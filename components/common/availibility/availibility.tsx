@@ -1,285 +1,221 @@
-// // import React, { useState } from "react";
-// // import CustomSwitch from "../customSwitch/customSwitch";
-// // import ReusableModal from "../modal/modal";
-// // import CButton from "../button/button";
+import { useFieldArray, Controller } from "react-hook-form";
+import Select from "react-select";
+import { Day } from "@/generated/graphql";
 
-// // const daysOfWeek = [
-// //   "Sunday",
-// //   "Monday",
-// //   "Tuesday",
-// //   "Wednesday",
-// //   "Thursday",
-// //   "Friday",
-// //   "Saturday",
-// // ];
+const generateTimeOptions = () => {
+  const options: { value: string; label: string }[] = [];
+  const periods = ["AM", "PM"];
 
-// // interface AvailabilityState {
-// //   [key: string]: boolean;
-// // }
+  for (let hour = 0; hour < 24; hour++) {
+    for (let minute = 0; minute < 60; minute += 15) {
+      const period = periods[Math.floor(hour / 12)];
+      const displayHour = hour % 12 === 0 ? 12 : hour % 12;
+      const displayMinute = minute === 0 ? "00" : minute.toString();
+      const time = `${displayHour}:${displayMinute} ${period}`;
 
-// // const handleStatusCloseConfirmationModal = () => {
-// //   setShowStatusConfirmationModal(false);
-// //   setSelectedItemId("");
-// // };
+      const date = new Date();
+      date.setHours(hour, minute, 0, 0);
 
-// // const DaysAvailability: React.FC = () => {
-// //   const [availability, setAvailability] = useState<AvailabilityState>(
-// //     daysOfWeek.reduce((acc, day) => {
-// //       acc[day] = true; // Assume all days are available by default
-// //       return acc;
-// //     }, {} as AvailabilityState)
-// //   );
+      const isoTime = date.toISOString();
 
-// //   const handleToggle = (day: string) => {
-// //     setAvailability((prev) => {
-// //       const newAvailability = { ...prev, [day]: !prev[day] };
-// //       if (newAvailability[day]) {
-// //         console.log("available all day pressed");
-// //       }
-// //       return newAvailability;
-// //     });
-// //   };
+      options.push({ value: isoTime, label: time });
+    }
+  }
+  return options;
+};
 
-// //   return (
-// //     <div className="p-4 bg-white shadow-md rounded-lg">
-// //       {daysOfWeek.map((day) => (
-// //         <div
-// //           key={day}
-// //           className="flex items-center justify-between py-2 border-b last:border-none"
-// //         >
-// //           <div className="flex flex-col text-start ">
-// //             <span className="font-medium text-gray-700">{day}</span>
-// //             <span
-// //               onClick={() => console.log(day)}
-// //               className="text-gray-500 cursor-pointer"
-// //             >
-// //               Available as per restaurant timings
-// //             </span>
-// //           </div>
-// //           <CustomSwitch
-// //             checked={availability[day]}
-// //             onChange={() => handleToggle(day)}
-// //             label={`Toggle ${day} availability`}
-// //           />
-// //         </div>
-// //       ))}
+const timeOptions = generateTimeOptions();
 
-// //       <ReusableModal
-// //         isOpen={showAddHourModal}
-// //         onClose={handleCloseHourModal}
-// //         title={`Add Hours for `}
-// //         comments="this menu will be available according all day according to the Restaurant Timings unless you add hours"
-// //       >
-// //         <div className="flex justify-end space-x-4">
-// //           <CButton
-// //             variant={ButtonType.Primary}
-// //             onClick={handleStatusConfirmation}
-// //           >
-// //             Yes
-// //           </CButton>
-// //         </div>
-// //       </ReusableModal>
-// //     </div>
-// //   );
-// // };
+const days = Object.values(Day);
 
-// // export default DaysAvailability;
-// import { useFieldArray, Controller } from "react-hook-form";
-// import Select from "react-select";
-// import { Day } from "@/generated/graphql";
+type TimeSlot = {
+  from: { label: string; value: string };
+  to: { label: string; value: string };
+};
 
-// const generateTimeOptions = () => {
-//   const options: { value: string; label: string }[] = [];
-//   const periods = ["AM", "PM"];
+type RegularHours = {
+  [key in Day]: TimeSlot[];
+};
 
-//   for (let hour = 0; hour < 24; hour++) {
-//     for (let minute = 0; minute < 60; minute += 15) {
-//       const period = periods[Math.floor(hour / 12)];
-//       const displayHour = hour % 12 === 0 ? 12 : hour % 12;
-//       const displayMinute = minute === 0 ? "00" : minute.toString();
-//       const time = `${displayHour}:${displayMinute} ${period}`;
+type ActiveDays = {
+  [key in Day]: boolean;
+};
 
-//       const date = new Date();
-//       date.setHours(hour, minute, 0, 0);
+interface AvailabilityFormProps {
+  control: any;
+  setValue: any;
+  getValues: any;
+  errors: any;
+  watch: any;
+  register: any;
+}
 
-//       const isoTime = date.toISOString();
+const AvailabilityForm: React.FC<AvailabilityFormProps> = ({
+  control,
+  setValue,
+  getValues,
+  errors,
+  watch,
+  register,
+}) => {
+  const dayFieldArray: any = {
+    Monday: useFieldArray({ control, name: "regularHours.Monday" }),
+    Tuesday: useFieldArray({ control, name: "regularHours.Tuesday" }),
+    Wednesday: useFieldArray({ control, name: "regularHours.Wednesday" }),
+    Thursday: useFieldArray({ control, name: "regularHours.Thursday" }),
+    Friday: useFieldArray({ control, name: "regularHours.Friday" }),
+    Saturday: useFieldArray({ control, name: "regularHours.Saturday" }),
+    Sunday: useFieldArray({ control, name: "regularHours.Sunday" }),
+  };
 
-//       options.push({ value: isoTime, label: time });
-//     }
-//   }
-//   return options;
-// };
+  const activeDays = watch("activeDays");
 
-// const timeOptions = generateTimeOptions();
+  const checkOverlapForDay = (day: string) => {
+    let hours: TimeSlot[] = [];
 
-// const days = Object.values(Day);
+    switch (day) {
+      case Day.Monday:
+        hours = getValues(`regularHours.Monday`);
+        break;
+      case Day.Tuesday:
+        hours = getValues(`regularHours.Tuesday`);
+        break;
+      case Day.Wednesday:
+        hours = getValues(`regularHours.Wednesday`);
+        break;
+      case Day.Thursday:
+        hours = getValues(`regularHours.Thursday`);
+        break;
+      case Day.Friday:
+        hours = getValues(`regularHours.Friday`);
+        break;
+      case Day.Saturday:
+        hours = getValues(`regularHours.Saturday`);
+        break;
+      case Day.Sunday:
+        hours = getValues(`regularHours.Sunday`);
+        break;
+      default:
+        hours = [];
+        break;
+    }
 
-// type TimeSlot = {
-//   from: { label: string; value: string };
-//   to: { label: string; value: string };
-// };
+    for (let i = 0; i < hours.length; i++) {
+      const currentSession = hours[i];
+      const fromTime = new Date(currentSession.from.value);
+      const toTime = new Date(currentSession.to.value);
 
-// type RegularHours = {
-//   [key in Day]: TimeSlot[];
-// };
+      if (toTime <= fromTime) {
+        alert(
+          `Invalid session times: "to" time cannot be less than or equal to "from" time.`
+        );
+      }
 
-// type ActiveDays = {
-//   [key in Day]: boolean;
-// };
+      if (i > 0) {
+        const previousSession = hours[i - 1];
+        const previousToTime = new Date(previousSession.to.value);
 
-// interface AvailabilityFormProps {
-//   control: any;
-//   setValue: any;
-//   getValues: any;
-//   errors: any;
-//   watch: any;
-//   register: any;
-// }
+        if (fromTime <= previousToTime) {
+          alert(
+            `Invalid session times: Start time overlaps with or is before previous session's end time.`
+          );
+        }
+      }
+    }
+  };
 
-// const AvailabilityForm: React.FC<AvailabilityFormProps> = ({
-//   control,
-//   setValue,
-//   getValues,
-//   errors,
-//   watch,
-//   register,
-// }) => {
-//   const dayFieldArray: any = {
-//     Monday: useFieldArray({ control, name: "regularHours.Monday" }),
-//     Tuesday: useFieldArray({ control, name: "regularHours.Tuesday" }),
-//     Wednesday: useFieldArray({ control, name: "regularHours.Wednesday" }),
-//     Thursday: useFieldArray({ control, name: "regularHours.Thursday" }),
-//     Friday: useFieldArray({ control, name: "regularHours.Friday" }),
-//     Saturday: useFieldArray({ control, name: "regularHours.Saturday" }),
-//     Sunday: useFieldArray({ control, name: "regularHours.Sunday" }),
-//   };
+  return (
+    <div>
+      <div className="space-y-4">
+        {Object.keys(dayFieldArray).map((day, index) => (
+          <div key={index} className="flex items-center space-x-2">
+            <div className="flex flex-col w-full">
+              <span className="flex font-medium text-gray-700 justify-start mb-1">
+                {day}
+              </span>
+              <div className="flex w-full">
+                <input
+                  type="checkbox"
+                  {...register(`activeDays.${day}` as any)}
+                  className="rounded text-primary-500 mr-2"
+                  // onChange={(e) => onChange(e.target.checked)}
+                />
 
-//   const activeDays = watch("activeDays");
+                <div className="space-y-2 w-full">
+                  {dayFieldArray[day].fields.map((item: any, index: any) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <Controller
+                        control={control}
+                        name={`regularHours.${day}.${index}.from` as any}
+                        render={({ field }) => (
+                          <Select
+                            {...field}
+                            options={timeOptions}
+                            isDisabled={
+                              !activeDays[day as keyof typeof activeDays]
+                            }
+                            className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+                            classNamePrefix="react-select"
+                            placeholder="From"
+                            value={field.value || null}
+                            onChange={(e: any) => {
+                              field.onChange(e);
+                              checkOverlapForDay(day);
+                            }}
+                          />
+                        )}
+                      />
 
-//   const checkOverlapForDay = (day: string) => {
-//     let hours: TimeSlot[] = [];
+                      <Controller
+                        control={control}
+                        name={`regularHours.${day}.${index}.to` as any}
+                        render={({ field }) => (
+                          <Select
+                            {...field}
+                            options={timeOptions}
+                            isDisabled={
+                              !activeDays[day as keyof typeof activeDays]
+                            }
+                            className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+                            classNamePrefix="react-select"
+                            placeholder="To"
+                            value={field.value || null}
+                            onChange={(e: any) => {
+                              field.onChange(e);
+                              checkOverlapForDay(day);
+                            }}
+                          />
+                        )}
+                      />
+                      {index > 0 && (
+                        <button
+                          type="button"
+                          className="m-2 text-lg text-red-500"
+                          onClick={() => dayFieldArray[day].remove(index)}
+                        >
+                          -
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
 
-//     switch (day) {
-//       case Day.Monday:
-//         hours = getValues(`regularHours.Monday`);
-//         break;
-//       case Day.Tuesday:
-//         hours = getValues(`regularHours.Tuesday`);
-//         break;
-//       case Day.Wednesday:
-//         hours = getValues(`regularHours.Wednesday`);
-//         break;
-//       case Day.Thursday:
-//         hours = getValues(`regularHours.Thursday`);
-//         break;
-//       case Day.Friday:
-//         hours = getValues(`regularHours.Friday`);
-//         break;
-//       case Day.Saturday:
-//         hours = getValues(`regularHours.Saturday`);
-//         break;
-//       case Day.Sunday:
-//         hours = getValues(`regularHours.Sunday`);
-//         break;
-//       default:
-//         hours = [];
-//         break;
-//     }
+                <button
+                  type="button"
+                  className="m-2 text-lg  text-primary"
+                  onClick={() =>
+                    dayFieldArray[day].append({ from: "", to: "" })
+                  }
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
-//     for (let i = 0; i < hours.length; i++) {
-//       const currentSession = hours[i];
-//       const fromTime = new Date(currentSession.from.value);
-//       const toTime = new Date(currentSession.to.value);
-
-//       if (toTime <= fromTime) {
-//         alert(
-//           `Invalid session times: "to" time cannot be less than or equal to "from" time.`
-//         );
-//       }
-
-//       if (i > 0) {
-//         const previousSession = hours[i - 1];
-//         const previousToTime = new Date(previousSession.to.value);
-
-//         if (fromTime <= previousToTime) {
-//           alert(
-//             `Invalid session times: Start time overlaps with or is before previous session's end time.`
-//           );
-//         }
-//       }
-//     }
-//   };
-
-//   return (
-//     <>
-//       {days.map((day) => (
-//         <div key={day}>
-//           <label>
-//             <input
-//               type="checkbox"
-//               {...register(`activeDays.${day}`)}
-//               checked={activeDays[day]}
-//               onChange={() => setValue(`activeDays.${day}`, !activeDays[day])}
-//             />
-//             {day}
-//           </label>
-//           {activeDays[day] && (
-//             <>
-//               {dayFieldArray[day].fields.map((field: any, index: number) => (
-//                 <div key={field.id}>
-//                   <Controller
-//                     name={`regularHours.${day}[${index}].from`}
-//                     control={control}
-//                     render={({ field }) => (
-//                       <Select
-//                         {...field}
-//                         options={timeOptions}
-//                         onChange={(selectedOption) => {
-//                           field.onChange(selectedOption);
-//                           checkOverlapForDay(day);
-//                         }}
-//                       />
-//                     )}
-//                   />
-//                   <Controller
-//                     name={`regularHours.${day}[${index}].to`}
-//                     control={control}
-//                     render={({ field }) => (
-//                       <Select
-//                         {...field}
-//                         options={timeOptions}
-//                         onChange={(selectedOption) => {
-//                           field.onChange(selectedOption);
-//                           checkOverlapForDay(day);
-//                         }}
-//                       />
-//                     )}
-//                   />
-//                   <button
-//                     type="button"
-//                     onClick={() => dayFieldArray[day].remove(index)}
-//                   >
-//                     Remove
-//                   </button>
-//                 </div>
-//               ))}
-//               <button
-//                 type="button"
-//                 onClick={() =>
-//                   dayFieldArray[day].append({
-//                     from: { label: "", value: "" },
-//                     to: { label: "", value: "" },
-//                   })
-//                 }
-//               >
-//                 Add Time Slot
-//               </button>
-//             </>
-//           )}
-//         </div>
-//       ))}
-//     </>
-//   );
-// };
-
-// export default AvailabilityForm;
+export default AvailabilityForm;

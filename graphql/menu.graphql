@@ -65,5 +65,19 @@ query getMenusByType($id: String!) {
     createdAt
     updatedAt
     type
+    categories {
+      name {
+        value
+        _id
+      }
+      status
+      _id {
+        _id
+      }
+    }
   }
+}
+
+mutation updateMenu($input: UpdateMenuInput!) {
+  updateMenu(input: $input)
 }

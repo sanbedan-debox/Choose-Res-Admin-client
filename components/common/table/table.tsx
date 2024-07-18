@@ -13,6 +13,8 @@ import useGlobalStore from "@/store/global";
 import ReusableModal from "../modal/modal";
 import noDataImage from "../../../assets/svg/noData.svg";
 import Image from "next/image";
+import CButton from "../button/button";
+import { ButtonType } from "../button/interface";
 
 interface TableProps {
   data: any[];
@@ -238,13 +240,14 @@ const RoopTable: React.FC<TableProps> = ({
 
         <div className="flex">
           {mainActions.map((action, index) => (
-            <button
+            <CButton
+              variant={ButtonType.Primary}
               key={index}
-              className="btn btn-primary mr-2"
+              className="mr-2"
               onClick={action.onClick}
             >
               {action.label}
-            </button>
+            </CButton>
           ))}
           {data.length > 0 && csvExport && (
             <div className="flex space-x-2">

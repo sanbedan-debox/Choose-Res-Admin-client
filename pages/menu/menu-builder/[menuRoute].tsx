@@ -1,13 +1,12 @@
-import CButton from "@/components/common/button/button";
-import { ButtonType } from "@/components/common/button/interface";
 import FullPageModal from "@/components/common/modal/fullPageModal";
-import ReusableModal from "@/components/common/modal/modal";
 import NotFound from "@/components/common/notFound/notFound";
 import MenuLayout from "@/components/layouts/MenuLayout";
 import Categories from "@/components/modules/menu/category";
 import AddCategoryForm from "@/components/modules/menu/forms/addCategoryForm";
 import AddItemForm from "@/components/modules/menu/forms/addItemForm";
 import AddMenuForm from "@/components/modules/menu/forms/addMenuForm";
+import AddModifierGroupForm from "@/components/modules/menu/forms/addModifierGroupForm";
+import AddModifierForm from "@/components/modules/menu/forms/addModifiersForm";
 import Items from "@/components/modules/menu/items";
 import Menu from "@/components/modules/menu/menu";
 import ModifiersGroup from "@/components/modules/menu/modifierGroups";
@@ -17,7 +16,6 @@ import useMenuItemsStore from "@/store/menuItems";
 import useMenuOptionsStore from "@/store/menuOptions";
 
 import { GetServerSideProps } from "next";
-import { useState } from "react";
 
 type MenuPageProps = {
   repo: {
@@ -35,6 +33,10 @@ const MenuPage = ({ repo: { pagePath } }: MenuPageProps) => {
     setisAddMenuModalOpen,
     fetchMenuDatas,
     setfetchMenuDatas,
+    isAddModifierGroupModalOpen,
+    setisAddModifierGroupModalOpen,
+    isAddModifierModalOpen,
+    setisAddModifierModalOpen,
   } = useMenuOptionsStore();
 
   const { seteditCatsId, setisEditCats } = useMenuCategoryStore();
@@ -55,9 +57,13 @@ const MenuPage = ({ repo: { pagePath } }: MenuPageProps) => {
     setisAddMenuModalOpen(false);
     setfetchMenuDatas(!fetchMenuDatas);
   };
-
-  const handleSubmit = () => {
-    handleAddMenuItemClose();
+  const handleAddModifierGroupClose = () => {
+    setisAddModifierGroupModalOpen(false);
+    setfetchMenuDatas(!fetchMenuDatas);
+  };
+  const handleAddModifierClose = () => {
+    setisAddModifierModalOpen(false);
+    setfetchMenuDatas(!fetchMenuDatas);
   };
 
   let childComponent;
@@ -87,17 +93,7 @@ const MenuPage = ({ repo: { pagePath } }: MenuPageProps) => {
   return (
     <>
       <MenuLayout>{childComponent}</MenuLayout>
-      {/* <ReusableModal
-        width="dxl"
-        isOpen={isAddItemModalOpen}
-        title="Items"
-        hight="dxl"
-        onClose={handleAddMenuItemClose}
-      >
-        <div className="flex justify-center">
-          <AddItemForm />
-        </div>
-      </ReusableModal> */}
+
       <FullPageModal
         isOpen={isAddItemModalOpen}
         title="Items"
@@ -123,6 +119,7 @@ const MenuPage = ({ repo: { pagePath } }: MenuPageProps) => {
         </div>
       </FullPageModal>
 
+      {/*ADD  MENU*/}
       <FullPageModal
         isOpen={isAddMenuModalOpen}
         title="Menu"
@@ -133,6 +130,34 @@ const MenuPage = ({ repo: { pagePath } }: MenuPageProps) => {
       >
         <div className="flex justify-center">
           <AddMenuForm />
+        </div>
+      </FullPageModal>
+
+      {/*ADD MODIFIERS GROUP */}
+      <FullPageModal
+        isOpen={isAddModifierGroupModalOpen}
+        title="Modifiers Group"
+        onClose={handleAddModifierGroupClose}
+        actionButtonLabel="Save Modifier Group"
+        // onActionButtonClick={handleAddMenuItemClick}
+        onActionButtonClick={() => console.log("hello")}
+      >
+        <div className="flex justify-center">
+          <AddModifierGroupForm />
+        </div>
+      </FullPageModal>
+
+      {/*ADD MODIFIERS */}
+      <FullPageModal
+        isOpen={isAddModifierModalOpen}
+        title="Modifiers"
+        onClose={handleAddModifierClose}
+        actionButtonLabel="Save Modifier"
+        // onActionButtonClick={handleAddMenuItemClick}
+        onActionButtonClick={() => console.log("hello")}
+      >
+        <div className="flex justify-center">
+          <AddModifierForm />
         </div>
       </FullPageModal>
     </>

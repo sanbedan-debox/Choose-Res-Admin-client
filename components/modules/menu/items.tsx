@@ -165,7 +165,7 @@ const Items: React.FC = () => {
   return (
     <div className="py-2">
       <RoopTable
-        itemsPerPage={10}
+        itemsPerPage={20}
         headings={headings}
         data={items}
         mainActions={mainActions}

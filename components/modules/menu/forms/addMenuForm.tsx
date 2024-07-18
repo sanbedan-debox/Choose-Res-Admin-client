@@ -23,7 +23,7 @@ interface IFormInput {
 interface ItemsDropDownType {
   _id: string;
   name: string;
-  price: number;
+  length: number;
 }
 
 const menuTypeOptions: any[] = [
@@ -62,18 +62,23 @@ const AddMenuForm = () => {
     const fetchMenuData = async () => {
       if (editMenuId) {
         try {
+          console.log(editMenuId);
           const response = await sdk.getMenusByType({ id: editMenuId });
-          const item = response.getMenusByType;
-          // setValue("name", item?.name.value);
-          // setValue("type", item?.type);
-          // setSelectedItems(item?.items);
-          // const formateditemlist = item?.items.map((el) => ({
-          //   _id: el._id._id,
-          //   name: el?.name?.value ?? "",
-          //   price: el?.price?.value ?? "",
-          // }));
-          // setTempSelectedItems(formateditemlist);
-          // setprevItemsbfrEdit(formateditemlist);
+          const menu = response.getMenusByType;
+          setValue("name", menu[0].name.value);
+          const selectedMenuType = menuTypeOptions.find(
+            (option) => option.value === menu[0]?.type
+          );
+          setValue("type", selectedMenuType);
+
+          const formateditemlist = menu[0]?.categories.map((el) => ({
+            _id: el._id._id,
+            name: el?.name?.value ?? "",
+            length: 0,
+          }));
+          setSelectedItems(menu[0].categories);
+          setTempSelectedItems(formateditemlist);
+          setprevItemsbfrEdit(formateditemlist);
         } catch (error) {
           const errorMessage = extractErrorMessage(error);
           setToastData({
@@ -90,19 +95,45 @@ const AddMenuForm = () => {
   const onSubmit = async (data: IFormInput) => {
     try {
       setBtnLoading(true);
-
-      await sdk.addMenu({
-        input: {
-          type: data.type.value as MenuTypeEnum,
-          name: {
-            value: data.name,
+      const selectedItemsIds = selectedItems.map((item) => item._id);
+      if (!isEditMenu) {
+        await sdk.addMenu({
+          input: {
+            type: data.type.value as MenuTypeEnum,
+            name: {
+              value: data.name,
+            },
+            categories: selectedItemsIds,
           },
-        },
-      });
+        });
+      } else {
+        //Edit Menu
+        const res = await sdk.updateMenu({
+          input: {
+            _id: editMenuId || "",
+            type: data.type.value as MenuTypeEnum,
+            name: {
+              value: data.name,
+            },
+          },
+        });
+        if (res?.updateMenu) {
+          if (prevItemsbfrEdit === selectedItems) {
+            const res = await sdk.addCategoryToMenu({
+              menuId: editMenuId || "",
+              categoryId: selectedItemsIds,
+            });
+          }
 
-      // const addItems = sdk.addCategoryToMenu({
-
-      // })
+          setToastData({
+            type: "success",
+            message: "Category Updated Successfully",
+          });
+          setBtnLoading(false);
+          setisAddCategoryModalOpen(false);
+          setfetchMenuDatas(!fetchMenuDatas);
+        }
+      }
 
       setToastData({
         type: "success",
@@ -127,7 +158,7 @@ const AddMenuForm = () => {
         const categories = await sdk.getCategoriesForMenuDropdown({
           field: "status",
           operator: FilterOperatorsEnum.Any,
-          value: "active",
+          value: "",
         });
         if (categories && categories.getCategories) {
           const formattedItemsList = categories.getCategories.map((cats) => ({
@@ -224,6 +255,10 @@ const AddMenuForm = () => {
         ? prevSelected.filter((i) => i._id !== item._id)
         : [...prevSelected, item]
     );
+  };
+  const { setisAddCategoryModalOpen } = useMenuOptionsStore();
+  const handelCreateCategory = () => {
+    setisAddCategoryModalOpen(true);
   };
 
   return (
@@ -328,6 +363,7 @@ const AddMenuForm = () => {
         renderActions={renderActions}
         createNewItemButtonLabel="Create new category"
         addSelectedItemsButtonLabel="Add selected categories"
+        onClickCreatebtn={handelCreateCategory}
       />
     </motion.div>
   );

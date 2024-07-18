@@ -92,6 +92,7 @@ export type AddItemInput = {
 
 export type AddMenuInput = {
   availability?: InputMaybe<Array<AvailabilityInput>>;
+  categories?: InputMaybe<Array<Scalars['String']['input']>>;
   name: MasterCommonInput;
   taxRateId?: InputMaybe<Scalars['String']['input']>;
   type: MenuTypeEnum;
@@ -1721,17 +1722,43 @@ export type GetMenusByTypeQueryVariables = Exact<{
 }>;
 
 
-export type GetMenusByTypeQuery = { __typename?: 'Query', getMenusByType: Array<{ __typename?: 'Menu', _id: string, status: StatusEnum, createdAt: any, updatedAt: any, type: MenuTypeEnum, name: { __typename?: 'MasterCommon', value: string } }> };
+export type GetMenusByTypeQuery = { __typename?: 'Query', getMenusByType: Array<{ __typename?: 'Menu', _id: string, status: StatusEnum, createdAt: any, updatedAt: any, type: MenuTypeEnum, name: { __typename?: 'MasterCommon', value: string }, categories: Array<{ __typename?: 'CategoryInfo', status: StatusEnum, name?: { __typename?: 'MasterCommon', value: string, _id: string } | null, _id: { __typename?: 'Category', _id: string } }> }> };
+
+export type UpdateMenuMutationVariables = Exact<{
+  input: UpdateMenuInput;
+}>;
+
+
+export type UpdateMenuMutation = { __typename?: 'Mutation', updateMenu: boolean };
 
 export type GetModifierGroupsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetModifierGroupsQuery = { __typename?: 'Query', getModifierGroups: Array<{ __typename?: 'ModifierGroup', _id: string, name: { __typename?: 'MasterCommon', value: string } }> };
 
+export type AddModifierGroupMutationVariables = Exact<{
+  input: AddModifierGroupInput;
+}>;
+
+
+export type AddModifierGroupMutation = { __typename?: 'Mutation', addModifierGroup: boolean };
+
+export type GetModifiersforGroupDropDownQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetModifiersforGroupDropDownQuery = { __typename?: 'Query', getModifiers: Array<{ __typename?: 'Modifier', _id: string, name: { __typename?: 'MasterCommon', value: string }, price: { __typename?: 'MasterCommonNumber', value: number } }> };
+
 export type GetModifiersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetModifiersQuery = { __typename?: 'Query', getModifiers: Array<{ __typename?: 'Modifier', _id: string, name: { __typename?: 'MasterCommon', value: string }, price: { __typename?: 'MasterCommonNumber', value: number } }> };
+
+export type AddModifierMutationVariables = Exact<{
+  input: AddModifierInput;
+}>;
+
+
+export type AddModifierMutation = { __typename?: 'Mutation', addModifier: boolean };
 
 export type AllPlacesQueryVariables = Exact<{
   input: Scalars['String']['input'];
@@ -2115,7 +2142,22 @@ export const GetMenusByTypeDocument = gql`
     createdAt
     updatedAt
     type
+    categories {
+      name {
+        value
+        _id
+      }
+      status
+      _id {
+        _id
+      }
+    }
   }
+}
+    `;
+export const UpdateMenuDocument = gql`
+    mutation updateMenu($input: UpdateMenuInput!) {
+  updateMenu(input: $input)
 }
     `;
 export const GetModifierGroupsDocument = gql`
@@ -2123,6 +2165,24 @@ export const GetModifierGroupsDocument = gql`
   getModifierGroups {
     _id
     name {
+      value
+    }
+  }
+}
+    `;
+export const AddModifierGroupDocument = gql`
+    mutation addModifierGroup($input: AddModifierGroupInput!) {
+  addModifierGroup(input: $input)
+}
+    `;
+export const GetModifiersforGroupDropDownDocument = gql`
+    query getModifiersforGroupDropDown {
+  getModifiers {
+    _id
+    name {
+      value
+    }
+    price {
       value
     }
   }
@@ -2139,6 +2199,11 @@ export const GetModifiersDocument = gql`
       value
     }
   }
+}
+    `;
+export const AddModifierDocument = gql`
+    mutation addModifier($input: AddModifierInput!) {
+  addModifier(input: $input)
 }
     `;
 export const AllPlacesDocument = gql`
@@ -2428,11 +2493,23 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     getMenusByType(variables: GetMenusByTypeQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetMenusByTypeQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetMenusByTypeQuery>(GetMenusByTypeDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getMenusByType', 'query', variables);
     },
+    updateMenu(variables: UpdateMenuMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UpdateMenuMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<UpdateMenuMutation>(UpdateMenuDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'updateMenu', 'mutation', variables);
+    },
     getModifierGroups(variables?: GetModifierGroupsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetModifierGroupsQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetModifierGroupsQuery>(GetModifierGroupsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getModifierGroups', 'query', variables);
     },
+    addModifierGroup(variables: AddModifierGroupMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddModifierGroupMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<AddModifierGroupMutation>(AddModifierGroupDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'addModifierGroup', 'mutation', variables);
+    },
+    getModifiersforGroupDropDown(variables?: GetModifiersforGroupDropDownQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetModifiersforGroupDropDownQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetModifiersforGroupDropDownQuery>(GetModifiersforGroupDropDownDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getModifiersforGroupDropDown', 'query', variables);
+    },
     getModifiers(variables?: GetModifiersQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetModifiersQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetModifiersQuery>(GetModifiersDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getModifiers', 'query', variables);
+    },
+    addModifier(variables: AddModifierMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddModifierMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<AddModifierMutation>(AddModifierDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'addModifier', 'mutation', variables);
     },
     AllPlaces(variables: AllPlacesQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AllPlacesQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<AllPlacesQuery>(AllPlacesDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'AllPlaces', 'query', variables);

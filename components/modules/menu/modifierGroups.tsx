@@ -1,6 +1,6 @@
-import CBTable from "@/components/common/table/table";
+import RoopTable from "@/components/common/table/table";
 import useGlobalStore from "@/store/global";
-import useRestaurantsStore from "@/store/restaurant";
+import useMenuOptionsStore from "@/store/menuOptions";
 import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import React, { useEffect, useState } from "react";
@@ -9,6 +9,8 @@ import { FaTrash, FaEdit, FaShieldAlt } from "react-icons/fa";
 const Modifiers: React.FC = () => {
   const [modifierGroups, setModifierGroups] = useState<any>();
   const { setToastData } = useGlobalStore();
+  const { setisAddModifierGroupModalOpen, fetchMenuDatas } =
+    useMenuOptionsStore();
 
   useEffect(() => {
     const fetchRestaurantUsers = async () => {
@@ -16,11 +18,12 @@ const Modifiers: React.FC = () => {
       try {
         const response = await sdk.getModifierGroups();
         if (response && response.getModifierGroups) {
-          // const formattedRestaurant = response.getAllMenus.map((res) => ({
-          //   ...res,
-          // }));
-          // setMenu(formattedRestaurant);
-          setModifierGroups(response.getModifierGroups);
+          setModifierGroups(
+            response.getModifierGroups.map((el) => ({
+              _id: el._id,
+              name: el.name.value,
+            }))
+          );
         }
       } catch (error: any) {
         const errorMessage = extractErrorMessage(error);
@@ -56,20 +59,18 @@ const Modifiers: React.FC = () => {
   );
   const mainActions = [
     {
-      label: "Add Modifiers",
-      onClick: () => console.log(true),
+      label: "Add Modifiers Groups",
+      onClick: () => setisAddModifierGroupModalOpen(true),
     },
   ];
   return (
     <div className="py-2">
-      {/* <CBTable
+      <RoopTable
+        itemsPerPage={20}
         headings={headings}
-        data={modifierGroups ? modifierGroups : []}
-        showAvailableSwitch
-        actions={renderActions}
+        data={modifierGroups}
         mainActions={mainActions}
-      /> */}
-      Hello
+      />
     </div>
   );
 };

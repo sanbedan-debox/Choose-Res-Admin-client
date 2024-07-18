@@ -9,3 +9,7 @@ query getModifiers {
     }
   }
 }
+
+mutation addModifier($input: AddModifierInput!) {
+  addModifier(input: $input)
+}

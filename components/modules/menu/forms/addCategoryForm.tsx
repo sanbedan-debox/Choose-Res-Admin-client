@@ -13,6 +13,7 @@ import FormAddTable from "@/components/common/table/formTable";
 import { FaTrash } from "react-icons/fa";
 import { MdArrowOutward } from "react-icons/md";
 import AddFormDropdown from "@/components/common/addFormDropDown/addFormDropdown";
+import useMenuItemsStore from "@/store/menuItems";
 
 interface IFormInput {
   name: string;
@@ -40,8 +41,12 @@ const AddCategoryForm = () => {
   >([]);
 
   const { setToastData } = useGlobalStore();
-  const { fetchMenuDatas, setfetchMenuDatas, setisAddCategoryModalOpen } =
-    useMenuOptionsStore();
+  const {
+    fetchMenuDatas,
+    setfetchMenuDatas,
+    setisAddCategoryModalOpen,
+    setisAddItemModalOpen,
+  } = useMenuOptionsStore();
   const { editCatsId, isEditCats, seteditCatsId, setisEditCats } =
     useMenuCategoryStore();
   const {
@@ -204,10 +209,6 @@ const AddCategoryForm = () => {
         className="text-red-600 cursor-pointer"
         onClick={() => handleRemoveItem(rowData._id)}
       />
-      <MdArrowOutward
-        className="text-primary cursor-pointer"
-        onClick={() => handleEditItem(rowData._id)}
-      />
     </div>
   );
 
@@ -230,8 +231,17 @@ const AddCategoryForm = () => {
     );
   };
 
+  const { setEditItemId, setisEditItem } = useMenuItemsStore();
+
   const handleEditItem = (id: string) => {
     console.log(`Edit item with id ${id}`);
+    setisAddItemModalOpen(true);
+    setEditItemId(id);
+    setisEditItem(true);
+  };
+
+  const handleAddItem = () => {
+    setisAddItemModalOpen(true);
   };
 
   const headings = [
@@ -350,6 +360,7 @@ const AddCategoryForm = () => {
         handleAddItems={handleAddItems}
         headings={headingsDropdown}
         renderActions={renderActions}
+        onClickCreatebtn={handleAddItem}
       />
     </motion.div>
   );

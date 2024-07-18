@@ -6,3 +6,19 @@ query getModifierGroups {
     }
   }
 }
+
+mutation addModifierGroup($input: AddModifierGroupInput!) {
+  addModifierGroup(input: $input)
+}
+
+query getModifiersforGroupDropDown {
+  getModifiers {
+    _id
+    name {
+      value
+    }
+    price {
+      value
+    }
+  }
+}

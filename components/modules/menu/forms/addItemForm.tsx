@@ -11,6 +11,8 @@ import useGlobalStore from "@/store/global";
 import useMenuOptionsStore from "@/store/menuOptions";
 import useMenuItemsStore from "@/store/menuItems";
 import CustomSwitchCard from "@/components/common/customSwitchCard/customSwitchCard";
+import AvailabilityForm from "@/components/common/availibility/availibility";
+import { DateTime } from "luxon";
 interface IFormInput {
   name: string;
   desc: string;
@@ -25,6 +27,45 @@ interface IFormInput {
   isGlutenFree: boolean;
   isHalal: boolean;
   isVegan: boolean;
+  regularHours: {
+    Monday: {
+      from: { label: string; value: string };
+      to: { label: string; value: string };
+    }[];
+    Tuesday: {
+      from: { label: string; value: string };
+      to: { label: string; value: string };
+    }[];
+    Wednesday: {
+      from: { label: string; value: string };
+      to: { label: string; value: string };
+    }[];
+    Thursday: {
+      from: { label: string; value: string };
+      to: { label: string; value: string };
+    }[];
+    Friday: {
+      from: { label: string; value: string };
+      to: { label: string; value: string };
+    }[];
+    Saturday: {
+      from: { label: string; value: string };
+      to: { label: string; value: string };
+    }[];
+    Sunday: {
+      from: { label: string; value: string };
+      to: { label: string; value: string };
+    }[];
+  };
+  activeDays: {
+    Monday: boolean;
+    Tuesday: boolean;
+    Wednesday: boolean;
+    Thursday: boolean;
+    Friday: boolean;
+    Saturday: boolean;
+    Sunday: boolean;
+  };
 }
 
 const AddItemForm = () => {
@@ -35,7 +76,42 @@ const AddItemForm = () => {
     setValue,
     watch,
     register,
-  } = useForm<IFormInput>();
+  } = useForm<IFormInput>({
+    defaultValues: {
+      regularHours: {
+        Monday: [
+          { from: { label: "", value: "" }, to: { label: "", value: "" } },
+        ],
+        Tuesday: [
+          { from: { label: "", value: "" }, to: { label: "", value: "" } },
+        ],
+        Wednesday: [
+          { from: { label: "", value: "" }, to: { label: "", value: "" } },
+        ],
+        Thursday: [
+          { from: { label: "", value: "" }, to: { label: "", value: "" } },
+        ],
+        Friday: [
+          { from: { label: "", value: "" }, to: { label: "", value: "" } },
+        ],
+        Saturday: [
+          { from: { label: "", value: "" }, to: { label: "", value: "" } },
+        ],
+        Sunday: [
+          { from: { label: "", value: "" }, to: { label: "", value: "" } },
+        ],
+      },
+      activeDays: {
+        Monday: true,
+        Tuesday: true,
+        Wednesday: true,
+        Thursday: true,
+        Friday: true,
+        Saturday: true,
+        Sunday: true,
+      },
+    },
+  });
 
   const { fetchMenuDatas, setfetchMenuDatas, setisAddItemModalOpen } =
     useMenuOptionsStore();
@@ -81,6 +157,41 @@ const AddItemForm = () => {
       const statusSub = data.status ? StatusEnum.Active : StatusEnum.Inactive;
 
       const parsedPrice = parseFloat(data.price.toString());
+      const formattedData = Object.keys(data.regularHours).map((day: any) => ({
+        Day: day,
+        hours: data.regularHours[day]
+          .filter((slot: any) => slot.from && slot.to)
+          .map((slot: any) => ({
+            start: slot.from,
+            end: slot.to,
+          })),
+        active: data.activeDays[day],
+      }));
+      const formatData = (formattedData: any[]): any[] => {
+        const currentDate = DateTime.now().toISO();
+        const endcurrentDate = DateTime.now().plus({ minutes: 90 }).toISO();
+        return formattedData.map((dayData) => {
+          const { Day, hours, active } = dayData;
+
+          const formattedHours = hours.map((hour: any) => {
+            let start = hour.start.value || currentDate;
+            let end = hour.end.value || endcurrentDate;
+
+            return {
+              start,
+              end,
+            };
+          });
+
+          return {
+            day: Day,
+            hours: formattedHours,
+            active,
+          };
+        });
+      };
+      const formattedSampleInput = formatData(formattedData);
+      // setAvailabilityHours(formattedSampleInput);
 
       setBtnLoading(true);
       !isEditItem
@@ -106,7 +217,7 @@ const AddItemForm = () => {
               isHalal: data.isHalal ? true : false,
               isVegan: data.isVegan ? true : false,
               isSpicy: data.isSpicy ? true : false,
-              // availability: [],
+              availability: formattedSampleInput,
             },
           })
         : // EDIT/UPDATE ITEM API
@@ -420,6 +531,16 @@ const AddItemForm = () => {
               />
             </div>
           </div>
+
+          <AvailabilityForm
+            control={control}
+            errors={errors}
+            getValues={null}
+            register={register}
+            setValue={setValue}
+            watch={watch}
+            key={null}
+          />
 
           <CButton
             variant={ButtonType.Primary}

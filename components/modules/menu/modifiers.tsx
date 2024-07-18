@@ -1,6 +1,7 @@
 import RoopTable from "@/components/common/table/table";
 import CBTable from "@/components/common/table/table";
 import useGlobalStore from "@/store/global";
+import useMenuOptionsStore from "@/store/menuOptions";
 import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import React, { useEffect, useState } from "react";
@@ -9,7 +10,7 @@ import { FaTrash, FaEdit, FaShieldAlt } from "react-icons/fa";
 const Modifiers: React.FC = () => {
   const [modifier, setModifier] = useState<any>();
   const { setToastData } = useGlobalStore();
-
+  const { setisAddModifierModalOpen } = useMenuOptionsStore();
   useEffect(() => {
     const fetchRestaurantUsers = async () => {
       // setLoading(true);
@@ -36,7 +37,7 @@ const Modifiers: React.FC = () => {
     fetchRestaurantUsers();
   }, []);
 
-  const headings = [{ title: "Name", dataKey: "name" }];
+  const headings = [{ title: "Name", dataKey: "name.value" }];
 
   const renderActions = (rowData: { id: number }) => (
     <div className="flex space-x-3">
@@ -57,7 +58,7 @@ const Modifiers: React.FC = () => {
   const mainActions = [
     {
       label: "Add Modifiers",
-      onClick: () => console.log(true),
+      onClick: () => setisAddModifierModalOpen(true),
     },
   ];
   return (
@@ -66,9 +67,6 @@ const Modifiers: React.FC = () => {
         itemsPerPage={10}
         headings={headings}
         data={modifier}
-        // data={menuItems}
-        // showAvailableSwitch
-        // actions={renderActions}
         mainActions={mainActions}
       />
     </div>

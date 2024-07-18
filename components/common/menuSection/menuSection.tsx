@@ -9,30 +9,30 @@ const MenuSection: React.FC<MenuSectionProps> = ({ contentList }) => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const sectionRefs = useRef<HTMLElement[]>([]);
 
-  useEffect(() => {
-    const handleScroll = (entries: IntersectionObserverEntry[]) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          setActiveId(entry.target.id);
-          window.history.replaceState(null, "", `#${entry.target.id}`);
-        }
-      });
-    };
+  // useEffect(() => {
+  //   const handleScroll = (entries: IntersectionObserverEntry[]) => {
+  //     entries.forEach((entry) => {
+  //       if (entry.isIntersecting) {
+  //         setActiveId(entry.target.id);
+  //         window.history.replaceState(null, "", `?section=${entry.target.id}`);
+  //       }
+  //     });
+  //   };
 
-    const observer = new IntersectionObserver(handleScroll, {
-      root: null,
-      rootMargin: "0px",
-      threshold: 0.6,
-    });
+  //   const observer = new IntersectionObserver(handleScroll, {
+  //     root: null,
+  //     rootMargin: "0px",
+  //     threshold: 0.6,
+  //   });
 
-    sectionRefs.current.forEach((section) => {
-      observer.observe(section);
-    });
+  //   sectionRefs.current.forEach((section) => {
+  //     observer.observe(section);
+  //   });
 
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
+  //   return () => {
+  //     observer.disconnect();
+  //   };
+  // }, []);
 
   const handleNavLinkClick = (id: string) => {
     const targetSection = document.getElementById(id);
@@ -49,7 +49,7 @@ const MenuSection: React.FC<MenuSectionProps> = ({ contentList }) => {
             {contentList.map((content) => (
               <li className="mb-1" key={content.id}>
                 <a
-                  href={`#${content.id}`}
+                  href={`?section=${content.id}`}
                   className={`block p-2 text-black text-sm rounded border border-transparent  hover:text-primary relative ${
                     activeId === content.id ? "border-primary text-primary" : ""
                   }`}

@@ -1,6 +1,10 @@
 import { create } from "zustand";
 
 type MenuOptionsState = {
+  isAddModifierModalOpen: boolean;
+  setisAddModifierModalOpen: (open: boolean) => void;
+  isAddModifierGroupModalOpen: boolean;
+  setisAddModifierGroupModalOpen: (open: boolean) => void;
   isAddItemModalOpen: boolean;
   setisAddItemModalOpen: (open: boolean) => void;
   isAddCategoryModalOpen: boolean;
@@ -12,6 +16,12 @@ type MenuOptionsState = {
 };
 
 const useMenuOptionsStore = create<MenuOptionsState>((set) => ({
+  isAddModifierModalOpen: false,
+  setisAddModifierModalOpen: (open: boolean) =>
+    set({ isAddModifierModalOpen: open }),
+  isAddModifierGroupModalOpen: false,
+  setisAddModifierGroupModalOpen: (open: boolean) =>
+    set({ isAddModifierGroupModalOpen: open }),
   isAddItemModalOpen: false,
   setisAddItemModalOpen: (open: boolean) => set({ isAddItemModalOpen: open }),
   isAddCategoryModalOpen: false,
