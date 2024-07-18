@@ -166,6 +166,7 @@ const AddCategoryForm = () => {
             _id: item._id,
             name: item?.name?.value,
             price: item?.price?.value,
+            image: item?.image,
           }));
           setItemsOption(formattedItemsList);
         }
@@ -263,6 +264,24 @@ const AddCategoryForm = () => {
       ),
     },
   ];
+  const [selectAll, setSelectAll] = useState(false);
+  const handleSelectAll = () => {
+    setSelectAll(!selectAll);
+    if (!selectAll) {
+      const allItems = filteredItems.filter(
+        (item) =>
+          !tempSelectedItems.some(
+            (selectedItem) => selectedItem._id === item._id
+          )
+      );
+      setTempSelectedItems((prevSelectedItems) => [
+        ...prevSelectedItems,
+        ...allItems,
+      ]);
+    } else {
+      setTempSelectedItems([]);
+    }
+  };
 
   return (
     <motion.div
@@ -361,6 +380,8 @@ const AddCategoryForm = () => {
         headings={headingsDropdown}
         renderActions={renderActions}
         onClickCreatebtn={handleAddItem}
+        // handleSelectAll={handleSelectAll}
+        // selectAll={selectAll}
       />
     </motion.div>
   );

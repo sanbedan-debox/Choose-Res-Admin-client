@@ -1,7 +1,7 @@
 import React from "react";
 import CButton from "../button/button";
 import { ButtonType } from "../button/interface";
-
+import NoImage from "../../../assets/svg/noImage.svg";
 interface Heading {
   title: string;
   dataKey: string;
@@ -32,6 +32,7 @@ const FormAddTable: React.FC<FormAddTableProps> = ({
   onAddClick,
   isShowImage = false,
 }) => {
+  console.log("roop", data);
   return (
     <div className="w-full">
       <h2 className="block mb-2 text-sm font-medium text-left text-gray-700">
@@ -51,7 +52,7 @@ const FormAddTable: React.FC<FormAddTableProps> = ({
               <div className="flex items-center space-x-2">
                 {isShowImage && (
                   <img
-                    src={item._id.image || "/default-image.png"}
+                    src={item?.image?.trim() ? item.image : NoImage}
                     alt={item.name.value}
                     className="w-10 h-10 rounded-md"
                   />
