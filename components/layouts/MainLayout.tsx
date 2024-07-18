@@ -5,6 +5,8 @@ import { sdk } from "@/utils/graphqlClient";
 import useRestaurantsStore from "@/store/restaurant";
 import { RestaurantStatus, StatusEnum } from "@/generated/graphql";
 import { parseCookies } from "nookies";
+import ReusableModal from "../common/modal/modal";
+import useGlobalStore from "@/store/global";
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const {
@@ -55,7 +57,10 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
     fetchRestaurantUsers();
   }, []);
-
+  const { isShowTaxSettings, setisShowTaxSettings } = useGlobalStore();
+  const handleCloseTaxSettings = () => {
+    setisShowTaxSettings(false);
+  };
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar />
@@ -63,6 +68,13 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         <Navbar />
         <div className="flex-1 h-auto overflow-y-auto p-6 mt-16 children scrollbar-hide ">
           {children}
+          <ReusableModal
+            title="Tax Rate"
+            isOpen={isShowTaxSettings}
+            onClose={handleCloseTaxSettings}
+          >
+            TaxSettings
+          </ReusableModal>
           <div />
         </div>
       </div>

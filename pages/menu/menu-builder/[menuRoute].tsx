@@ -11,22 +11,34 @@ import Items from "@/components/modules/menu/items";
 import Menu from "@/components/modules/menu/menu";
 import ModifiersGroup from "@/components/modules/menu/modifierGroups";
 import Modifiers from "@/components/modules/menu/modifiers";
+import { UserStatus } from "@/generated/graphql";
+import useAuthStore from "@/store/auth";
+import useGlobalStore from "@/store/global";
 import useMenuCategoryStore from "@/store/menuCategory";
 import useMenuItemsStore from "@/store/menuItems";
 import useMenuMenuStore from "@/store/menumenu";
 import useMenuOptionsStore from "@/store/menuOptions";
 import useModGroupStore from "@/store/modifierGroup";
 import useModStore from "@/store/modifiers";
+import { sdk } from "@/utils/graphqlClient";
 
 import { GetServerSideProps } from "next";
+import { parseCookies } from "nookies";
+import { useEffect } from "react";
 
-type MenuPageProps = {
-  repo: {
-    pagePath: string;
-  };
+type UserRepo = {
+  pagePath: string;
+
+  _id: string;
+  email: string;
+  phone: string;
+  firstName: string;
+  lastName: string;
+  status: string;
+  businessName: string;
+  establishedAt: string;
 };
-
-const MenuPage = ({ repo: { pagePath } }: MenuPageProps) => {
+const MenuPage = ({ repo }: { repo?: UserRepo }) => {
   const {
     isAddItemModalOpen,
     setisAddItemModalOpen,
@@ -46,6 +58,39 @@ const MenuPage = ({ repo: { pagePath } }: MenuPageProps) => {
   const { seteditCatsId, setisEditCats } = useMenuCategoryStore();
   const { setEditModId, setisEditMod } = useModStore();
   const { setEditMenuId, setisEditMenu } = useMenuMenuStore();
+
+  const {
+    setBusinessName,
+    setEmail,
+    setEstablishedAt,
+    setFirstName,
+    setLastName,
+    setPhone,
+    setStatus,
+    setUserId,
+    firstName,
+  } = useAuthStore();
+
+  useEffect(() => {
+    setUserId(repo?._id ?? "");
+    setEmail(repo?.email ?? "");
+    setPhone(repo?.phone ?? "");
+    setFirstName(repo?.firstName ?? "");
+    setLastName(repo?.lastName ?? "");
+    setStatus(repo?.status ?? "");
+    setBusinessName(repo?.businessName ?? "");
+    setEstablishedAt(repo?.establishedAt ?? "");
+  }, [
+    repo,
+    setBusinessName,
+    setEmail,
+    setEstablishedAt,
+    setFirstName,
+    setLastName,
+    setPhone,
+    setStatus,
+    setUserId,
+  ]);
 
   const { setEditItemId, setisEditItem } = useMenuItemsStore();
   const handleAddMenuItemClose = () => {
@@ -81,7 +126,7 @@ const MenuPage = ({ repo: { pagePath } }: MenuPageProps) => {
 
   let childComponent;
 
-  switch (pagePath) {
+  switch (repo?.pagePath) {
     case "menu":
       childComponent = <Menu />;
       break;
@@ -179,14 +224,106 @@ const MenuPage = ({ repo: { pagePath } }: MenuPageProps) => {
 
 export default MenuPage;
 
-export const getServerSideProps: GetServerSideProps<MenuPageProps> = async (
-  context
-) => {
-  return {
-    props: {
-      repo: {
-        pagePath: context.query["menuRoute"]?.toString() ?? "",
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const cookies = parseCookies(context);
+  const token = cookies.accessToken;
+
+  if (!token) {
+    return {
+      redirect: {
+        destination: "/login",
+        permanent: false,
       },
-    },
-  };
+    };
+  }
+
+  try {
+    const response = await sdk.MeUser(
+      {},
+      {
+        cookie: context.req.headers.cookie?.toString() ?? "",
+      }
+    );
+
+    if (response && response.meUser) {
+      const {
+        _id,
+        email,
+        firstName,
+        status,
+        lastName,
+        phone,
+        businessName,
+        establishedAt,
+      } = response.meUser;
+
+      if (status === UserStatus.Blocked) {
+        return {
+          redirect: {
+            destination: "/account/blocked",
+            permanent: false,
+          },
+        };
+      } else if (status === UserStatus.OnboardingPending) {
+        return {
+          redirect: {
+            destination: "/onboarding/user/intro",
+            permanent: false,
+          },
+        };
+      } else if (status === UserStatus.PaymentPending) {
+        return {
+          redirect: {
+            destination: "/account/payment-pending",
+            permanent: false,
+          },
+        };
+      } else if (status === UserStatus.RestaurantOnboardingPending) {
+        return {
+          redirect: {
+            destination: "/onboarding-restaurant/restaurant-welcome",
+            permanent: false,
+          },
+        };
+      } else if (status === "internalVerificationPending") {
+        return {
+          redirect: {
+            destination: "/account/verification-pending",
+            permanent: false,
+          },
+        };
+      }
+
+      return {
+        props: {
+          repo: {
+            pagePath: context.query["menuRoute"]?.toString() ?? "",
+            _id,
+            email,
+            phone,
+            firstName,
+            lastName,
+            status,
+            businessName,
+            establishedAt,
+          },
+        },
+      };
+    } else {
+      return {
+        redirect: {
+          destination: "/login",
+          permanent: false,
+        },
+      };
+    }
+  } catch (error) {
+    console.error("Failed to fetch user details:", error);
+    return {
+      redirect: {
+        destination: "/login",
+        permanent: false,
+      },
+    };
+  }
 };

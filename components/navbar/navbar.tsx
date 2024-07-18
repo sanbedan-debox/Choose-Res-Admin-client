@@ -108,7 +108,11 @@ const Navbar: React.FC = () => {
       });
     }
   };
+  const { setisShowTaxSettings } = useGlobalStore();
 
+  const handleShowTaxRate = () => {
+    setisShowTaxSettings(true);
+  };
   const toggleRestaurantDropdown = () => {
     setIsRestaurantDropdownOpen(!isRestaurantDropdownOpen);
   };
@@ -217,6 +221,12 @@ const Navbar: React.FC = () => {
                 >
                   My Teams
                 </Link>
+                <button
+                  onClick={handleShowTaxRate}
+                  className="block px-4 py-2 w-full text-left text-sm text-black hover:text-white hover:bg-primary"
+                >
+                  Tax Rate
+                </button>
                 <button
                   onClick={handleLogout}
                   className="block px-4 py-2 w-full text-left text-sm text-black hover:text-white hover:bg-primary"
