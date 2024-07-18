@@ -47,7 +47,8 @@ const AddCategoryForm = () => {
     setisAddCategoryModalOpen,
     setisAddItemModalOpen,
   } = useMenuOptionsStore();
-  const { editCatsId, isEditCats } = useMenuCategoryStore();
+  const { editCatsId, isEditCats, seteditCatsId, setisEditCats } =
+    useMenuCategoryStore();
   const {
     handleSubmit,
     formState: { errors },

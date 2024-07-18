@@ -13,3 +13,23 @@ query getModifiers {
 mutation addModifier($input: AddModifierInput!) {
   addModifier(input: $input)
 }
+
+mutation deleteModifier($id: String!) {
+  deleteModifier(id: $id)
+}
+
+query getModifier($id: String!) {
+  getModifier(id: $id) {
+    _id
+    name {
+      value
+    }
+    price {
+      value
+    }
+  }
+}
+
+mutation deleteModifier($id: String!) {
+  deleteModifier(id: $id)
+}

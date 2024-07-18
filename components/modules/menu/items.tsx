@@ -145,7 +145,6 @@ const Items: React.FC = () => {
   };
   const handleDeleteConfirmation = async () => {
     setBtnLoading(true);
-    setshowDeleteConfirmationModal(false);
     try {
       const response = await sdk.deleteItem({ id: selectedItemId });
       if (response && response.deleteItem) {
@@ -159,6 +158,7 @@ const Items: React.FC = () => {
       });
     } finally {
       setBtnLoading(false);
+      setshowDeleteConfirmationModal(false);
     }
   };
   const handleStatusCloseConfirmationModal = () => {

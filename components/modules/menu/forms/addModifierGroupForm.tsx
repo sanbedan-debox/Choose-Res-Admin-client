@@ -8,7 +8,6 @@ import { extractErrorMessage } from "@/utils/utilFUncs";
 import { PriceTypeEnum } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
 import useMenuOptionsStore from "@/store/menuOptions";
-import useMenuItemsStore from "@/store/menuItems";
 import CustomSwitchCard from "@/components/common/customSwitchCard/customSwitchCard";
 import CountSelector from "@/components/common/countSelector/countSelector";
 import { sdk } from "@/utils/graphqlClient";
@@ -17,6 +16,7 @@ import { FaTrash } from "react-icons/fa";
 import AddFormDropdown from "@/components/common/addFormDropDown/addFormDropdown";
 import { MdArrowOutward } from "react-icons/md";
 import useModGroupStore from "@/store/modifierGroup";
+import useModStore from "@/store/modifiers";
 
 interface IFormInput {
   name: string;
@@ -41,8 +41,12 @@ const AddModifierGroupForm = () => {
     price: number;
   }
 
-  const { fetchMenuDatas, setfetchMenuDatas, setisAddModifierGroupModalOpen } =
-    useMenuOptionsStore();
+  const {
+    fetchMenuDatas,
+    setfetchMenuDatas,
+    setisAddModifierGroupModalOpen,
+    setisAddModifierModalOpen,
+  } = useMenuOptionsStore();
   const {
     editModGroupId,
     isEditModGroup,
@@ -86,6 +90,35 @@ const AddModifierGroupForm = () => {
     };
     fetch();
   }, [fetchMenuDatas, setToastData]);
+  useEffect(() => {
+    const fetchItemData = async () => {
+      if (editModGroupId) {
+        try {
+          const response = await sdk.getModifierGroup({ id: editModGroupId });
+          const item = response.getModifierGroup;
+          setValue("name", item.name.value || "");
+          setValue("maxSelections", item.maxSelections?.value || 1);
+          // setValue("minSelections", item.maxSelections?.value || 0);
+          setValue("optional", item.optional || false);
+          const selectedPriceType = PricingTypeOptions.find(
+            (option) => option.value === item?.pricingType
+          );
+          setValue(
+            "pricingType",
+            selectedPriceType || PriceTypeEnum.FreeOfCharge
+          );
+        } catch (error) {
+          const errorMessage = extractErrorMessage(error);
+          setToastData({
+            type: "error",
+            message: errorMessage,
+          });
+        }
+      }
+    };
+
+    fetchItemData();
+  }, [editModGroupId, setValue, setToastData]);
 
   const handleSearch = (event: any) => {
     setSearchTerm(event.target.value);
@@ -113,11 +146,13 @@ const AddModifierGroupForm = () => {
         : [...prevSelected, item]
     );
   };
+
+  const { setEditModId, setisEditMod } = useModStore();
   const handleEditItem = (id: string) => {
     console.log(`Edit item with id ${id}`);
-    setisAddModifierGroupModalOpen(true);
-    setEditModGroupId(id);
-    setisEditModGroup(true);
+    setisAddModifierModalOpen(true);
+    setEditModId(id);
+    setisEditMod(true);
   };
 
   const headingsDropdown = [
@@ -135,28 +170,6 @@ const AddModifierGroupForm = () => {
       ),
     },
   ];
-
-  //   useEffect(() => {
-  //     const fetchItemData = async () => {
-  //       if (editItemId) {
-  //         try {
-  //           const response = await sdk.getItem({ id: editItemId });
-  //           const item = response.getItem;
-  //           setValue("name", item.name.value);
-  //           setValue("desc", item.desc.value);
-  //
-  //         } catch (error) {
-  //           const errorMessage = extractErrorMessage(error);
-  //           setToastData({
-  //             type: "error",
-  //             message: errorMessage,
-  //           });
-  //         }
-  //       }
-  //     };
-
-  //     fetchItemData();
-  //   }, [editItemId, setValue, setToastData]);
 
   const onSubmit = async (data: IFormInput) => {
     try {

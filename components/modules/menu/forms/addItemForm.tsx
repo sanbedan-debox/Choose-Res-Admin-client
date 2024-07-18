@@ -17,6 +17,7 @@ import FormAddTable from "@/components/common/table/formTable";
 import { FaTrash } from "react-icons/fa";
 import AddFormDropdown from "@/components/common/addFormDropDown/addFormDropdown";
 import { MdArrowOutward } from "react-icons/md";
+import useModGroupStore from "@/store/modifierGroup";
 interface IFormInput {
   name: string;
   desc: string;
@@ -123,10 +124,15 @@ const AddItemForm = () => {
     },
   });
 
-  const { fetchMenuDatas, setfetchMenuDatas, setisAddItemModalOpen } =
-    useMenuOptionsStore();
+  const {
+    fetchMenuDatas,
+    setfetchMenuDatas,
+    setisAddItemModalOpen,
+    setisAddModifierGroupModalOpen,
+  } = useMenuOptionsStore();
   const { editItemId, isEditItem, setEditItemId, setisEditItem } =
     useMenuItemsStore();
+  const { setEditModGroupId, setisEditModGroup } = useModGroupStore();
   const [btnLoading, setBtnLoading] = useState(false);
   const { setToastData } = useGlobalStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -387,12 +393,14 @@ const AddItemForm = () => {
     setSelectedItems(tempSelectedItems);
     setIsModalOpen(false);
   };
+  const handleCreateModifierGroup = () => {
+    setisAddModifierGroupModalOpen(true);
+  };
 
   const handleEditItem = (id: string) => {
-    console.log(`Edit item with id ${id}`);
-    setisAddItemModalOpen(true);
-    setEditItemId(id);
-    setisEditItem(true);
+    setisAddModifierGroupModalOpen(true);
+    setEditModGroupId(id);
+    setisEditModGroup(true);
   };
 
   const headingsDropdown = [
@@ -700,7 +708,7 @@ const AddItemForm = () => {
         handleAddItems={handleAddItems}
         headings={headingsDropdown}
         renderActions={renderActions}
-        onClickCreatebtn={handleAddItem}
+        onClickCreatebtn={handleCreateModifierGroup}
       />
     </motion.div>
   );

@@ -14,6 +14,7 @@ import { FaTrash } from "react-icons/fa";
 import AddFormDropdown from "@/components/common/addFormDropDown/addFormDropdown";
 import { MdArrowOutward } from "react-icons/md";
 import useMenuMenuStore from "@/store/menumenu";
+import useMenuCategoryStore from "@/store/menuCategory";
 
 interface IFormInput {
   type: { value: string; label: string };
@@ -187,8 +188,14 @@ const AddMenuForm = () => {
       prevSelected.filter((item) => item._id !== id)
     );
   };
+
+  const { seteditCatsId, setisEditCats } = useMenuCategoryStore();
+
   const handleEditCategory = (id: string) => {
     console.log(`Edit item with id ${id}`);
+    setisAddCategoryModalOpen(true);
+    setisEditCats(true);
+    seteditCatsId(id);
   };
 
   const renderActions = (rowData: { _id: string }) => (
@@ -283,6 +290,26 @@ const AddMenuForm = () => {
       >
         <div className="col-span-2">
           <label
+            htmlFor="name"
+            className="block mb-2 text-sm font-medium text-left text-gray-700"
+          >
+            Name
+          </label>
+          <input
+            type="text"
+            {...register("name", { required: "Name is required" })}
+            id="name"
+            className="input input-primary"
+            placeholder="Enter menu name"
+          />
+          {errors.name && (
+            <p className="text-red-500 text-sm text-start">
+              {errors.name.message}
+            </p>
+          )}
+        </div>
+        <div className="col-span-2">
+          <label
             htmlFor="type"
             className="block mb-2 text-sm font-medium text-left text-gray-700"
           >
@@ -310,26 +337,6 @@ const AddMenuForm = () => {
           )}
         </div>
 
-        <div className="col-span-2">
-          <label
-            htmlFor="name"
-            className="block mb-2 text-sm font-medium text-left text-gray-700"
-          >
-            Name
-          </label>
-          <input
-            type="text"
-            {...register("name", { required: "Name is required" })}
-            id="name"
-            className="input input-primary"
-            placeholder="Enter menu name"
-          />
-          {errors.name && (
-            <p className="text-red-500 text-sm text-start">
-              {errors.name.message}
-            </p>
-          )}
-        </div>
         <FormAddTable
           data={data}
           headings={headings}

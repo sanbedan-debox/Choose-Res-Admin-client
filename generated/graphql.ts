@@ -1753,6 +1753,20 @@ export type GetModifiersforGroupDropDownQueryVariables = Exact<{ [key: string]: 
 
 export type GetModifiersforGroupDropDownQuery = { __typename?: 'Query', getModifiers: Array<{ __typename?: 'Modifier', _id: string, name: { __typename?: 'MasterCommon', value: string }, price: { __typename?: 'MasterCommonNumber', value: number } }> };
 
+export type DeleteModifierMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type DeleteModifierMutation = { __typename?: 'Mutation', deleteModifier: boolean };
+
+export type GetModifierGroupQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type GetModifierGroupQuery = { __typename?: 'Query', getModifierGroup: { __typename?: 'ModifierGroup', _id: string, pricingType: PriceTypeEnum, optional: boolean, name: { __typename?: 'MasterCommon', value: string }, modifiers: Array<{ __typename?: 'ModifierInfo', _id: string, name: { __typename?: 'MasterCommon', value: string }, price: { __typename?: 'MasterCommonNumber', value: number } }>, maxSelections: { __typename?: 'MasterCommonNumber', value: number } } };
+
 export type GetModifiersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -1764,6 +1778,13 @@ export type AddModifierMutationVariables = Exact<{
 
 
 export type AddModifierMutation = { __typename?: 'Mutation', addModifier: boolean };
+
+export type GetModifierQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type GetModifierQuery = { __typename?: 'Query', getModifier: { __typename?: 'Modifier', _id: string, name: { __typename?: 'MasterCommon', value: string }, price: { __typename?: 'MasterCommonNumber', value: number } } };
 
 export type AllPlacesQueryVariables = Exact<{
   input: Scalars['String']['input'];
@@ -2208,6 +2229,35 @@ export const GetModifiersforGroupDropDownDocument = gql`
   }
 }
     `;
+export const DeleteModifierDocument = gql`
+    mutation deleteModifier($id: String!) {
+  deleteModifier(id: $id)
+}
+    `;
+export const GetModifierGroupDocument = gql`
+    query getModifierGroup($id: String!) {
+  getModifierGroup(id: $id) {
+    _id
+    name {
+      value
+    }
+    pricingType
+    optional
+    modifiers {
+      name {
+        value
+      }
+      price {
+        value
+      }
+      _id
+    }
+    maxSelections {
+      value
+    }
+  }
+}
+    `;
 export const GetModifiersDocument = gql`
     query getModifiers {
   getModifiers {
@@ -2224,6 +2274,19 @@ export const GetModifiersDocument = gql`
 export const AddModifierDocument = gql`
     mutation addModifier($input: AddModifierInput!) {
   addModifier(input: $input)
+}
+    `;
+export const GetModifierDocument = gql`
+    query getModifier($id: String!) {
+  getModifier(id: $id) {
+    _id
+    name {
+      value
+    }
+    price {
+      value
+    }
+  }
 }
     `;
 export const AllPlacesDocument = gql`
@@ -2528,11 +2591,20 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     getModifiersforGroupDropDown(variables?: GetModifiersforGroupDropDownQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetModifiersforGroupDropDownQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetModifiersforGroupDropDownQuery>(GetModifiersforGroupDropDownDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getModifiersforGroupDropDown', 'query', variables);
     },
+    deleteModifier(variables: DeleteModifierMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<DeleteModifierMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<DeleteModifierMutation>(DeleteModifierDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'deleteModifier', 'mutation', variables);
+    },
+    getModifierGroup(variables: GetModifierGroupQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetModifierGroupQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetModifierGroupQuery>(GetModifierGroupDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getModifierGroup', 'query', variables);
+    },
     getModifiers(variables?: GetModifiersQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetModifiersQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetModifiersQuery>(GetModifiersDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getModifiers', 'query', variables);
     },
     addModifier(variables: AddModifierMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddModifierMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<AddModifierMutation>(AddModifierDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'addModifier', 'mutation', variables);
+    },
+    getModifier(variables: GetModifierQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetModifierQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetModifierQuery>(GetModifierDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getModifier', 'query', variables);
     },
     AllPlaces(variables: AllPlacesQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AllPlacesQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<AllPlacesQuery>(AllPlacesDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'AllPlaces', 'query', variables);

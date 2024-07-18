@@ -22,3 +22,30 @@ query getModifiersforGroupDropDown {
     }
   }
 }
+
+mutation deleteModifier($id: String!) {
+  deleteModifier(id: $id)
+}
+
+query getModifierGroup($id: String!) {
+  getModifierGroup(id: $id) {
+    _id
+    name {
+      value
+    }
+    pricingType
+    optional
+    modifiers {
+      name {
+        value
+      }
+      price {
+        value
+      }
+      _id
+    }
+    maxSelections {
+      value
+    }
+  }
+}

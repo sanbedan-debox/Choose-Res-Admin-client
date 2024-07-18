@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import CButton from "@/components/common/button/button";
@@ -10,11 +10,11 @@ import useGlobalStore from "@/store/global";
 import useMenuOptionsStore from "@/store/menuOptions";
 import CustomSwitchCard from "@/components/common/customSwitchCard/customSwitchCard";
 import useModStore from "@/store/modifiers";
+import useModGroupStore from "@/store/modifierGroup";
 
 interface IFormInput {
   name: string;
   optional: boolean;
-  pricingType: PriceTypeEnum;
   maxSelections: number;
   desc: string;
   minSelections: number;
@@ -36,28 +36,27 @@ const AddModifierForm = () => {
   const { editModId, isEditMod, setEditModId, setisEditMod } = useModStore();
   const [btnLoading, setBtnLoading] = useState(false);
   const { setToastData } = useGlobalStore();
+  useEffect(() => {
+    const fetchItemData = async () => {
+      if (editModId) {
+        try {
+          const response = await sdk.getModifier({ id: editModId });
+          const item = response.getModifier;
+          setValue("name", item.name.value);
+          // setValue("desc", item.);
+          setValue("price", item.price.value);
+        } catch (error) {
+          const errorMessage = extractErrorMessage(error);
+          setToastData({
+            type: "error",
+            message: errorMessage,
+          });
+        }
+      }
+    };
 
-  //   useEffect(() => {
-  //     const fetchItemData = async () => {
-  //       if (editItemId) {
-  //         try {
-  //           const response = await sdk.getItem({ id: editItemId });
-  //           const item = response.getItem;
-  //           setValue("name", item.name.value);
-  //           setValue("desc", item.desc.value);
-  //
-  //         } catch (error) {
-  //           const errorMessage = extractErrorMessage(error);
-  //           setToastData({
-  //             type: "error",
-  //             message: errorMessage,
-  //           });
-  //         }
-  //       }
-  //     };
-
-  //     fetchItemData();
-  //   }, [editItemId, setValue, setToastData]);
+    fetchItemData();
+  }, [editModId, setValue, setToastData]);
 
   const onSubmit = async (data: IFormInput) => {
     const parsedPrice = parseFloat(data.price.toString());
