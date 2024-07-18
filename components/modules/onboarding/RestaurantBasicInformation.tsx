@@ -140,9 +140,11 @@ const RestaurantBasicInformation = () => {
       setPreviewUrl(objectUrl);
     }
   };
+  const [btnLoading, setBtnLoading] = useState(false);
 
   const onSubmit = async (data: IFormInput) => {
     try {
+      setBtnLoading(true);
       const formattedWebsite = formatWebsiteUrlClickable(
         data.restaurantWebsite
       );
@@ -180,6 +182,8 @@ const RestaurantBasicInformation = () => {
         type: "error",
         message: errorMessage,
       });
+    } finally {
+      setBtnLoading(false);
     }
   };
 
@@ -450,6 +454,7 @@ const RestaurantBasicInformation = () => {
 
         <div className="col-span-2">
           <CButton
+            loading={btnLoading}
             variant={ButtonType.Primary}
             type="submit"
             className="mt-8 w-full btn btn-primary"

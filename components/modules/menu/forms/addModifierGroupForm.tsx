@@ -16,11 +16,12 @@ import FormAddTable from "@/components/common/table/formTable";
 import { FaTrash } from "react-icons/fa";
 import AddFormDropdown from "@/components/common/addFormDropDown/addFormDropdown";
 import { MdArrowOutward } from "react-icons/md";
+import useModGroupStore from "@/store/modifierGroup";
 
 interface IFormInput {
   name: string;
   optional: boolean;
-  pricingType: PriceTypeEnum;
+  pricingType: { value: string; label: string };
   maxSelections: number;
   minSelections: number;
 }
@@ -40,10 +41,14 @@ const AddModifierGroupForm = () => {
     price: number;
   }
 
-  const { fetchMenuDatas, setfetchMenuDatas, setisAddItemModalOpen } =
+  const { fetchMenuDatas, setfetchMenuDatas, setisAddModifierGroupModalOpen } =
     useMenuOptionsStore();
-  const { editItemId, isEditItem, setEditItemId, setisEditItem } =
-    useMenuItemsStore();
+  const {
+    editModGroupId,
+    isEditModGroup,
+    setEditModGroupId,
+    setisEditModGroup,
+  } = useModGroupStore();
   const [modifierssOption, setModifiersOption] = useState<any[]>([]);
 
   const [btnLoading, setBtnLoading] = useState(false);
@@ -91,7 +96,7 @@ const AddModifierGroupForm = () => {
   );
 
   const handleAddItem = () => {
-    setisAddItemModalOpen(true);
+    setisAddModifierGroupModalOpen(true);
   };
 
   const handleAddItems = () => {
@@ -110,9 +115,9 @@ const AddModifierGroupForm = () => {
   };
   const handleEditItem = (id: string) => {
     console.log(`Edit item with id ${id}`);
-    setisAddItemModalOpen(true);
-    setEditItemId(id);
-    setisEditItem(true);
+    setisAddModifierGroupModalOpen(true);
+    setEditModGroupId(id);
+    setisEditModGroup(true);
   };
 
   const headingsDropdown = [
@@ -156,29 +161,40 @@ const AddModifierGroupForm = () => {
   const onSubmit = async (data: IFormInput) => {
     try {
       setBtnLoading(true);
-      // !isEditItem
-      //   ? // ADD ITEM API
-      //     await sdk.addItem({
-      //       input: {
+      const parsedMaxSelection = parseFloat(data.maxSelections.toString());
+      setBtnLoading(true);
+      !isEditModGroup
+        ? // ADD ITEM API
+          await sdk.addModifierGroup({
+            input: {
+              name: {
+                value: data.name,
+              },
+              maxSelections: {
+                value: parsedMaxSelection,
+              },
 
-      //       }
-      //     })
-      //   : // EDIT/UPDATE ITEM API
-      //     await sdk.updateItem({
-      //       input: {
-      //         _id: editItemId || "",
-      //         name: {
-      //           value: data.name,
-      //         },
+              optional: data.optional,
+              pricingType: data.pricingType.value as PriceTypeEnum,
+            },
+          })
+        : // EDIT/UPDATE ITEM API
+          await sdk.updateItem({
+            input: {
+              _id: editModGroupId || "",
+              name: {
+                value: data.name,
+              },
 
-      //         // availability: [],
-      //       },
-      //     });
+              // availability: [],
+            },
+          });
       setBtnLoading(false);
-      setisAddItemModalOpen(false);
+      setisAddModifierGroupModalOpen(false);
       setfetchMenuDatas(!fetchMenuDatas);
-      setisEditItem(false);
-      setEditItemId(null);
+
+      setisEditModGroup(false);
+      setEditModGroupId(null);
       setToastData({
         type: "success",
         message: "Item Added Successfully",
@@ -189,6 +205,8 @@ const AddModifierGroupForm = () => {
         type: "error",
         message: errorMessage,
       });
+    } finally {
+      setBtnLoading(false);
     }
   };
   const [previewUrl, setPreviewUrl] = useState<string>("");
@@ -243,12 +261,12 @@ const AddModifierGroupForm = () => {
       transition={{ duration: 0.3 }}
     >
       <form
-        // onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit(onSubmit)}
         className="max-w-4xl mx-auto p-6 w-full bg-white rounded-md "
       >
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-semibold">
-            {!isEditItem ? "ADD Modifier Group" : "EDIT Modifier group"}
+            {!isEditModGroup ? "ADD Modifier Group" : "EDIT Modifier group"}
           </h2>
         </div>
         <div className="col-span-2 grid grid-cols-1 gap-6">
@@ -347,6 +365,7 @@ const AddModifierGroupForm = () => {
           />
 
           <CButton
+            loading={btnLoading}
             variant={ButtonType.Primary}
             type="submit"
             // className="px-6 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"

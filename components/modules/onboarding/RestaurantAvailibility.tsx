@@ -296,9 +296,11 @@ const RestaurantAvailability = () => {
     timeZone,
     availabilityHours,
   ]);
+  const [btnLoading, setBtnLoading] = useState(false);
 
   const onSubmit = async (data: any) => {
     try {
+      setBtnLoading(true);
       const formattedData = Object.keys(data.regularHours).map((day: any) => ({
         Day: day,
         hours: data.regularHours[day]
@@ -384,6 +386,8 @@ const RestaurantAvailability = () => {
         type: "error",
         message: errorMessage,
       });
+    } finally {
+      setBtnLoading(false);
     }
   };
 
@@ -660,6 +664,7 @@ const RestaurantAvailability = () => {
 
         <div className="flex justify-end">
           <CButton
+            loading={btnLoading}
             variant={ButtonType.Primary}
             type="submit"
             className="btn btn-primary w-full mt-8"

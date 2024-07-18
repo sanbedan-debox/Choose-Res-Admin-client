@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { STAGGER_CHILD_VARIANTS } from "@/lib/constants";
 import { useRouter } from "next/router";
@@ -119,9 +119,11 @@ const RestaurantAdditionalInformation = () => {
   }));
 
   const { isRestaurantCompleted } = useRestaurantsStore();
+  const [btnLoading, setBtnLoading] = useState(false);
 
   const onSubmit = async (data: IFormInput) => {
     try {
+      setBtnLoading(true);
       const response = await sdk.restaurantOnboarding({
         input: {
           socialInfo: {
@@ -152,6 +154,8 @@ const RestaurantAdditionalInformation = () => {
         type: "error",
         message: errorMessage,
       });
+    } finally {
+      setBtnLoading(false);
     }
   };
 
@@ -374,7 +378,12 @@ const RestaurantAdditionalInformation = () => {
           />
         </div>
 
-        <CButton className="w-full" type="submit" variant={ButtonType.Primary}>
+        <CButton
+          loading={btnLoading}
+          className="w-full"
+          type="submit"
+          variant={ButtonType.Primary}
+        >
           Submit
         </CButton>
       </form>

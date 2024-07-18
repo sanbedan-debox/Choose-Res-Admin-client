@@ -101,9 +101,11 @@ const UserLocation = () => {
 
   const [selectedPlace, setSelectedPlace] = useState<PlacesType | null>(null);
   const [coords, setCoords] = useState<number[]>([]);
+  const [btnLoading, setBtnLoading] = useState(false);
 
   const onSubmit = async (data: IFormInput) => {
     try {
+      setBtnLoading(true);
       const response = await sdk.UpdateUserOnboarding({
         input: {
           address: {
@@ -141,6 +143,8 @@ const UserLocation = () => {
         type: "error",
         message: errorMessage,
       });
+    } finally {
+      setBtnLoading(false);
     }
   };
 
@@ -359,6 +363,7 @@ const UserLocation = () => {
 
         <div className="col-span-2">
           <CButton
+            loading={btnLoading}
             variant={ButtonType.Primary}
             type="submit"
             className="inline-flex btn btn-primary items-center justify-center w-full mt-8"

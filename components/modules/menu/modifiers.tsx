@@ -1,5 +1,4 @@
 import RoopTable from "@/components/common/table/table";
-import CBTable from "@/components/common/table/table";
 import useGlobalStore from "@/store/global";
 import useMenuOptionsStore from "@/store/menuOptions";
 import { sdk } from "@/utils/graphqlClient";
@@ -10,7 +9,7 @@ import { FaTrash, FaEdit, FaShieldAlt } from "react-icons/fa";
 const Modifiers: React.FC = () => {
   const [modifier, setModifier] = useState<any>();
   const { setToastData } = useGlobalStore();
-  const { setisAddModifierModalOpen } = useMenuOptionsStore();
+  const { setisAddModifierModalOpen, fetchMenuDatas } = useMenuOptionsStore();
   useEffect(() => {
     const fetchRestaurantUsers = async () => {
       // setLoading(true);
@@ -35,7 +34,7 @@ const Modifiers: React.FC = () => {
     };
 
     fetchRestaurantUsers();
-  }, []);
+  }, [fetchMenuDatas]);
 
   const headings = [{ title: "Name", dataKey: "name.value" }];
 

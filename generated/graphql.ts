@@ -1664,6 +1664,11 @@ export type UpdateItemMutationVariables = Exact<{
 
 export type UpdateItemMutation = { __typename?: 'Mutation', updateItem: boolean };
 
+export type GetModifierGroupsforItemsDropDownQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetModifierGroupsforItemsDropDownQuery = { __typename?: 'Query', getModifierGroups: Array<{ __typename?: 'ModifierGroup', _id: string, name: { __typename?: 'MasterCommon', value: string }, modifiers: Array<{ __typename?: 'ModifierInfo', name: { __typename?: 'MasterCommon', value: string } }> }> };
+
 export type GetActiveStatesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -2053,6 +2058,21 @@ export const AddItemDocument = gql`
 export const UpdateItemDocument = gql`
     mutation updateItem($input: UpdateItemInput!) {
   updateItem(input: $input)
+}
+    `;
+export const GetModifierGroupsforItemsDropDownDocument = gql`
+    query getModifierGroupsforItemsDropDown {
+  getModifierGroups {
+    _id
+    name {
+      value
+    }
+    modifiers {
+      name {
+        value
+      }
+    }
+  }
 }
     `;
 export const GetActiveStatesDocument = gql`
@@ -2465,6 +2485,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     updateItem(variables: UpdateItemMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UpdateItemMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<UpdateItemMutation>(UpdateItemDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'updateItem', 'mutation', variables);
+    },
+    getModifierGroupsforItemsDropDown(variables?: GetModifierGroupsforItemsDropDownQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetModifierGroupsforItemsDropDownQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetModifierGroupsforItemsDropDownQuery>(GetModifierGroupsforItemsDropDownDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getModifierGroupsforItemsDropDown', 'query', variables);
     },
     getActiveStates(variables?: GetActiveStatesQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetActiveStatesQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetActiveStatesQuery>(GetActiveStatesDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getActiveStates', 'query', variables);

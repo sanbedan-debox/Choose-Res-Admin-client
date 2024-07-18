@@ -1,19 +1,15 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { useForm, Controller } from "react-hook-form";
-import Select from "react-select";
+import { useForm } from "react-hook-form";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
-import { PriceTypeEnum, StatusEnum } from "@/generated/graphql";
+import { PriceTypeEnum } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
 import useMenuOptionsStore from "@/store/menuOptions";
-import useMenuItemsStore from "@/store/menuItems";
 import CustomSwitchCard from "@/components/common/customSwitchCard/customSwitchCard";
-import AvailabilityForm from "@/components/common/availibility/availibility";
-import { DateTime } from "luxon";
-import CountSelector from "@/components/common/countSelector/countSelector";
+import useModStore from "@/store/modifiers";
 
 interface IFormInput {
   name: string;
@@ -37,8 +33,7 @@ const AddModifierForm = () => {
 
   const { fetchMenuDatas, setfetchMenuDatas, setisAddModifierModalOpen } =
     useMenuOptionsStore();
-  const { editItemId, isEditItem, setEditItemId, setisEditItem } =
-    useMenuItemsStore();
+  const { editModId, isEditMod, setEditModId, setisEditMod } = useModStore();
   const [btnLoading, setBtnLoading] = useState(false);
   const { setToastData } = useGlobalStore();
 
@@ -69,7 +64,7 @@ const AddModifierForm = () => {
 
     try {
       setBtnLoading(true);
-      !isEditItem
+      !isEditMod
         ? // ADD ITEM API
           await sdk.addModifier({
             input: {
@@ -84,7 +79,7 @@ const AddModifierForm = () => {
         : // EDIT/UPDATE ITEM API
           await sdk.updateItem({
             input: {
-              _id: editItemId || "",
+              _id: editModId || "",
               name: {
                 value: data.name,
               },
@@ -92,11 +87,10 @@ const AddModifierForm = () => {
               // availability: [],
             },
           });
-      setBtnLoading(false);
       setisAddModifierModalOpen(false);
       setfetchMenuDatas(!fetchMenuDatas);
-      setisEditItem(false);
-      setEditItemId(null);
+      setisEditMod(false);
+      setEditModId(null);
       setToastData({
         type: "success",
         message: "Item Added Successfully",
@@ -107,6 +101,8 @@ const AddModifierForm = () => {
         type: "error",
         message: errorMessage,
       });
+    } finally {
+      setBtnLoading(false);
     }
   };
   const [previewUrl, setPreviewUrl] = useState<string>("");
@@ -126,7 +122,7 @@ const AddModifierForm = () => {
       >
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-semibold">
-            {!isEditItem ? "ADD Modifier" : "EDIT Modifier"}
+            {!isEditMod ? "ADD Modifier" : "EDIT Modifier"}
           </h2>
         </div>
         <div className="col-span-2 grid grid-cols-1 gap-6">
@@ -285,6 +281,7 @@ const AddModifierForm = () => {
           </div>
 
           <CButton
+            loading={btnLoading}
             variant={ButtonType.Primary}
             type="submit"
             // className="px-6 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"

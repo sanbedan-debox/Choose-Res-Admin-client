@@ -37,7 +37,7 @@ const Modifiers: React.FC = () => {
     };
 
     fetchRestaurantUsers();
-  }, []);
+  }, [fetchMenuDatas]);
 
   const headings = [{ title: "Name", dataKey: "name" }];
 

@@ -123,8 +123,10 @@ const Items: React.FC = () => {
       onClick: () => setisAddItemModalOpen(true),
     },
   ];
+  const [btnLoading, setBtnLoading] = useState(false);
 
   const handleStatusConfirmation = async () => {
+    setBtnLoading(true);
     setShowStatusConfirmationModal(false);
     try {
       const response = await sdk.changeItemStatus({ id: selectedItemId });
@@ -137,9 +139,12 @@ const Items: React.FC = () => {
         type: "error",
         message: errorMessage,
       });
+    } finally {
+      setBtnLoading(false);
     }
   };
   const handleDeleteConfirmation = async () => {
+    setBtnLoading(true);
     setshowDeleteConfirmationModal(false);
     try {
       const response = await sdk.deleteItem({ id: selectedItemId });
@@ -152,6 +157,8 @@ const Items: React.FC = () => {
         type: "error",
         message: errorMessage,
       });
+    } finally {
+      setBtnLoading(false);
     }
   };
   const handleStatusCloseConfirmationModal = () => {
@@ -180,6 +187,7 @@ const Items: React.FC = () => {
       >
         <div className="flex justify-end space-x-4">
           <CButton
+            loading={btnLoading}
             variant={ButtonType.Primary}
             onClick={handleStatusConfirmation}
           >
@@ -197,6 +205,7 @@ const Items: React.FC = () => {
       >
         <div className="flex justify-end space-x-4">
           <CButton
+            loading={btnLoading}
             variant={ButtonType.Primary}
             // className=""
             onClick={handleDeleteConfirmation}

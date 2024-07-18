@@ -123,7 +123,10 @@ const Categories: React.FC = () => {
     setShowStatusConfirmationModal(false);
     setSelectedItemId("");
   };
+  const [btnLoading, setBtnLoading] = useState(false);
+
   const handleStatusConfirmation = async () => {
+    setBtnLoading(true);
     setShowStatusConfirmationModal(false);
     try {
       const response = await sdk.changeCategoryStatus({ id: selectedItemId });
@@ -136,6 +139,8 @@ const Categories: React.FC = () => {
         type: "error",
         message: errorMessage,
       });
+    } finally {
+      setBtnLoading(false);
     }
   };
 
@@ -144,6 +149,7 @@ const Categories: React.FC = () => {
     setSelectedItemId("");
   };
   const handleDeleteConfirmation = async () => {
+    setBtnLoading(true);
     setshowDeleteConfirmationModal(false);
     try {
       const response = await sdk.deleteCategory({ id: selectedItemId });
@@ -156,6 +162,8 @@ const Categories: React.FC = () => {
         type: "error",
         message: errorMessage,
       });
+    } finally {
+      setBtnLoading(false);
     }
   };
 
@@ -180,6 +188,7 @@ const Categories: React.FC = () => {
       >
         <div className="flex justify-end space-x-4">
           <CButton
+            loading={btnLoading}
             variant={ButtonType.Primary}
             // className=""
             onClick={handleStatusConfirmation}
@@ -198,6 +207,7 @@ const Categories: React.FC = () => {
       >
         <div className="flex justify-end space-x-4">
           <CButton
+            loading={btnLoading}
             variant={ButtonType.Primary}
             // className=""
             onClick={handleDeleteConfirmation}

@@ -71,3 +71,17 @@ mutation addItem($input: AddItemInput!) {
 mutation updateItem($input: UpdateItemInput!) {
   updateItem(input: $input)
 }
+
+query getModifierGroupsforItemsDropDown {
+  getModifierGroups {
+    _id
+    name {
+      value
+    }
+    modifiers {
+      name {
+        value
+      }
+    }
+  }
+}

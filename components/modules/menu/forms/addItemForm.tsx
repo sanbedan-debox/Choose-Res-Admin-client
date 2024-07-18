@@ -13,6 +13,10 @@ import useMenuItemsStore from "@/store/menuItems";
 import CustomSwitchCard from "@/components/common/customSwitchCard/customSwitchCard";
 import AvailabilityForm from "@/components/common/availibility/availibility";
 import { DateTime } from "luxon";
+import FormAddTable from "@/components/common/table/formTable";
+import { FaTrash } from "react-icons/fa";
+import AddFormDropdown from "@/components/common/addFormDropDown/addFormDropdown";
+import { MdArrowOutward } from "react-icons/md";
 interface IFormInput {
   name: string;
   desc: string;
@@ -68,6 +72,12 @@ interface IFormInput {
   };
 }
 
+interface ItemsDropDownType {
+  _id: string;
+  name: string;
+  price: number;
+}
+
 const AddItemForm = () => {
   const {
     handleSubmit,
@@ -119,6 +129,17 @@ const AddItemForm = () => {
     useMenuItemsStore();
   const [btnLoading, setBtnLoading] = useState(false);
   const { setToastData } = useGlobalStore();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedItems, setSelectedItems] = useState<any[]>([]);
+  const [prevItemsbfrEdit, setprevItemsbfrEdit] = useState<ItemsDropDownType[]>(
+    []
+  );
+  const [itemsOption, setItemsOption] = useState<any[]>([]);
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [tempSelectedItems, setTempSelectedItems] = useState<
+    ItemsDropDownType[]
+  >([]);
 
   useEffect(() => {
     const fetchItemData = async () => {
@@ -152,8 +173,36 @@ const AddItemForm = () => {
     fetchItemData();
   }, [editItemId, setValue, setToastData]);
 
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        const items = await sdk.getModifierGroupsforItemsDropDown();
+        if (items && items.getModifierGroups) {
+          const formattedItemsList = items.getModifierGroups.map((item) => ({
+            _id: item._id,
+            name: item?.name?.value,
+            length: item?.modifiers?.length,
+          }));
+          setItemsOption(formattedItemsList);
+        }
+      } catch (error: any) {
+        const errorMessage = extractErrorMessage(error);
+        setToastData({
+          type: "error",
+          message: errorMessage,
+        });
+      }
+    };
+    fetch();
+  }, [fetchMenuDatas, setToastData]);
+
+  const handleSearch = (event: any) => {
+    setSearchTerm(event.target.value);
+  };
+
   const onSubmit = async (data: IFormInput) => {
     try {
+      setBtnLoading(true);
       const statusSub = data.status ? StatusEnum.Active : StatusEnum.Inactive;
 
       const parsedPrice = parseFloat(data.price.toString());
@@ -261,6 +310,8 @@ const AddItemForm = () => {
         type: "error",
         message: errorMessage,
       });
+    } finally {
+      setBtnLoading(false);
     }
   };
   const [previewUrl, setPreviewUrl] = useState<string>("");
@@ -284,6 +335,84 @@ const AddItemForm = () => {
       setPreviewUrl(cloudinaryUrl);
       setIsUploading(false);
     }
+  };
+
+  const renderActions = (rowData: { _id: string }) => (
+    <div className="flex space-x-2 justify-center">
+      <FaTrash
+        className="text-red-600 cursor-pointer"
+        onClick={() => handleRemoveItem(rowData._id)}
+      />
+    </div>
+  );
+
+  const headings = [
+    { title: "Price", dataKey: "price" },
+    { title: "Actions", dataKey: "name", render: renderActions },
+  ];
+
+  const data = selectedItems.map((item) => ({
+    ...item,
+    actions: renderActions(item),
+  }));
+
+  const handleRemoveItem = (id: string) => {
+    setSelectedItems((prevSelected) =>
+      prevSelected.filter((item) => item._id !== id)
+    );
+
+    setTempSelectedItems((prevSelected) =>
+      prevSelected.filter((item) => item._id !== id)
+    );
+  };
+
+  const handleAddClick = () => {
+    setIsModalOpen(true);
+  };
+
+  const filteredItems = itemsOption.filter((item) =>
+    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  const handleItemClick = (item: any) => {
+    console.log(item);
+    setTempSelectedItems((prevSelected) =>
+      prevSelected.some((selectedItem) => selectedItem._id === item._id)
+        ? prevSelected.filter((i) => i._id !== item._id)
+        : [...prevSelected, item]
+    );
+  };
+
+  const handleAddItems = () => {
+    setSelectedItems([]);
+    setSelectedItems(tempSelectedItems);
+    setIsModalOpen(false);
+  };
+
+  const handleEditItem = (id: string) => {
+    console.log(`Edit item with id ${id}`);
+    setisAddItemModalOpen(true);
+    setEditItemId(id);
+    setisEditItem(true);
+  };
+
+  const headingsDropdown = [
+    { title: "Price", dataKey: "price" },
+    {
+      title: "Actions",
+      dataKey: "name",
+      render: (item: { _id: string }) => (
+        <div className="flex space-x-2 justify-center">
+          <MdArrowOutward
+            className="text-primary cursor-pointer"
+            onClick={() => handleEditItem(item._id)}
+          />
+        </div>
+      ),
+    },
+  ];
+
+  const handleAddItem = () => {
+    setisAddItemModalOpen(true);
   };
 
   return (
@@ -531,7 +660,14 @@ const AddItemForm = () => {
               />
             </div>
           </div>
-
+          <FormAddTable
+            data={data}
+            headings={headings}
+            title="Items"
+            emptyMessage="No items available"
+            buttonText="Add Items"
+            onAddClick={handleAddClick}
+          />
           <AvailabilityForm
             control={control}
             errors={errors}
@@ -543,6 +679,7 @@ const AddItemForm = () => {
           />
 
           <CButton
+            loading={btnLoading}
             variant={ButtonType.Primary}
             type="submit"
             // className="px-6 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
@@ -551,6 +688,20 @@ const AddItemForm = () => {
           </CButton>
         </div>
       </form>
+      <AddFormDropdown
+        title="Add Items"
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        searchTerm={searchTerm}
+        handleSearch={handleSearch}
+        filteredItems={filteredItems}
+        tempSelectedItems={tempSelectedItems}
+        handleItemClick={handleItemClick}
+        handleAddItems={handleAddItems}
+        headings={headingsDropdown}
+        renderActions={renderActions}
+        onClickCreatebtn={handleAddItem}
+      />
     </motion.div>
   );
 };

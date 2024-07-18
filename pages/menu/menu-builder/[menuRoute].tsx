@@ -13,7 +13,10 @@ import ModifiersGroup from "@/components/modules/menu/modifierGroups";
 import Modifiers from "@/components/modules/menu/modifiers";
 import useMenuCategoryStore from "@/store/menuCategory";
 import useMenuItemsStore from "@/store/menuItems";
+import useMenuMenuStore from "@/store/menumenu";
 import useMenuOptionsStore from "@/store/menuOptions";
+import useModGroupStore from "@/store/modifierGroup";
+import useModStore from "@/store/modifiers";
 
 import { GetServerSideProps } from "next";
 
@@ -38,8 +41,12 @@ const MenuPage = ({ repo: { pagePath } }: MenuPageProps) => {
     isAddModifierModalOpen,
     setisAddModifierModalOpen,
   } = useMenuOptionsStore();
+  const { setEditModGroupId, setisEditModGroup } = useModGroupStore();
 
   const { seteditCatsId, setisEditCats } = useMenuCategoryStore();
+  const { setEditModId, setisEditMod } = useModStore();
+  const { setEditMenuId, setisEditMenu } = useMenuMenuStore();
+
   const { setEditItemId, setisEditItem } = useMenuItemsStore();
   const handleAddMenuItemClose = () => {
     setisAddItemModalOpen(false);
@@ -56,14 +63,20 @@ const MenuPage = ({ repo: { pagePath } }: MenuPageProps) => {
   const handleAddMenuClose = () => {
     setisAddMenuModalOpen(false);
     setfetchMenuDatas(!fetchMenuDatas);
+    setisEditMenu(false);
+    setEditMenuId(null);
   };
   const handleAddModifierGroupClose = () => {
     setisAddModifierGroupModalOpen(false);
     setfetchMenuDatas(!fetchMenuDatas);
+    setisEditModGroup(false);
+    setEditModGroupId(null);
   };
   const handleAddModifierClose = () => {
     setisAddModifierModalOpen(false);
     setfetchMenuDatas(!fetchMenuDatas);
+    setisEditMod(false);
+    setEditModId(null);
   };
 
   let childComponent;

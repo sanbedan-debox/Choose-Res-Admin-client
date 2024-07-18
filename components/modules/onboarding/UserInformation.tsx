@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { STAGGER_CHILD_VARIANTS } from "@/lib/constants";
 import { useRouter } from "next/router";
@@ -126,9 +126,11 @@ const UserInfo = () => {
     value: val.toString(),
     label: formatEstimatedRevenueEnum(val),
   }));
+  const [btnLoading, setBtnLoading] = useState(false);
 
   const onSubmit = async (data: IFormInput) => {
     try {
+      setBtnLoading(true);
       const businessTypeValue = data.businessType as BusinessTypeEnum;
       const estimatedRevenueValue = data.revenue as EstimatedRevenueEnum;
       const employeeSizeValue = data.employees as StaffCountEnum;
@@ -156,6 +158,8 @@ const UserInfo = () => {
         type: "error",
         message: errorMessage,
       });
+    } finally {
+      setBtnLoading(false);
     }
   };
 
@@ -331,6 +335,7 @@ const UserInfo = () => {
 
         <div className="col-span-2">
           <CButton
+            loading={btnLoading}
             variant={ButtonType.Primary}
             type="submit"
             className="mt-8 w-full"

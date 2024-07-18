@@ -66,10 +66,10 @@ const Menu: React.FC = () => {
     setAvailableCaption("are you sure you want to delete this Category?");
   };
 
-  const { seteditMenuId, setisEditMenu } = useMenuMenuStore();
+  const { setEditMenuId, setisEditMenu } = useMenuMenuStore();
   const handleEditCategory = (_id: string) => {
     setisAddMenuModalOpen(true);
-    seteditMenuId(_id);
+    setEditMenuId(_id);
     setisEditMenu(true);
   };
   const renderActions = (rowData: { _id: string }) => (
@@ -130,7 +130,10 @@ const Menu: React.FC = () => {
     setShowStatusConfirmationModal(false);
     setSelectedItemId("");
   };
+  const [btnLoading, setBtnLoading] = useState(false);
+
   const handleStatusConfirmation = async () => {
+    setBtnLoading(true);
     setShowStatusConfirmationModal(false);
     try {
       const response = await sdk.changeMenuStatus({ id: selectedItemId });
@@ -143,6 +146,8 @@ const Menu: React.FC = () => {
         type: "error",
         message: errorMessage,
       });
+    } finally {
+      setBtnLoading(false);
     }
   };
   const handleDeleteCloseConfirmationModal = () => {
@@ -151,6 +156,7 @@ const Menu: React.FC = () => {
   };
 
   const handleDeleteConfirmation = async () => {
+    setBtnLoading(true);
     setshowDeleteConfirmationModal(false);
     try {
       const response = await sdk.deleteMenu({ id: selectedItemId });
@@ -163,6 +169,8 @@ const Menu: React.FC = () => {
         type: "error",
         message: errorMessage,
       });
+    } finally {
+      setBtnLoading(false);
     }
   };
 
@@ -186,6 +194,7 @@ const Menu: React.FC = () => {
       >
         <div className="flex justify-end space-x-4">
           <CButton
+            loading={btnLoading}
             variant={ButtonType.Primary}
             // className=""
             onClick={handleStatusConfirmation}
@@ -204,6 +213,7 @@ const Menu: React.FC = () => {
       >
         <div className="flex justify-end space-x-4">
           <CButton
+            loading={btnLoading}
             variant={ButtonType.Primary}
             // className=""
             onClick={handleDeleteConfirmation}

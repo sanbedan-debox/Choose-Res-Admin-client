@@ -47,8 +47,7 @@ const AddMenuForm = () => {
   const [tempSelectedItems, setTempSelectedItems] = useState<
     ItemsDropDownType[]
   >([]);
-  const { editMenuId, isEditMenu, seteditMenuId, setisEditMenu } =
-    useMenuMenuStore();
+  const { editMenuId, isEditMenu } = useMenuMenuStore();
 
   const {
     handleSubmit,
@@ -117,22 +116,22 @@ const AddMenuForm = () => {
             },
           },
         });
-        if (res?.updateMenu) {
-          if (prevItemsbfrEdit === selectedItems) {
-            const res = await sdk.addCategoryToMenu({
-              menuId: editMenuId || "",
-              categoryId: selectedItemsIds,
-            });
-          }
 
-          setToastData({
-            type: "success",
-            message: "Category Updated Successfully",
+        console.log(prevItemsbfrEdit, selectedItems);
+        if (prevItemsbfrEdit === selectedItems) {
+          const res = await sdk.addCategoryToMenu({
+            menuId: editMenuId || "",
+            categoryId: selectedItemsIds,
           });
-          setBtnLoading(false);
-          setisAddCategoryModalOpen(false);
-          setfetchMenuDatas(!fetchMenuDatas);
         }
+
+        setToastData({
+          type: "success",
+          message: "Category Updated Successfully",
+        });
+        setBtnLoading(false);
+        setisAddCategoryModalOpen(false);
+        setfetchMenuDatas(!fetchMenuDatas);
       }
 
       setToastData({

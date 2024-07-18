@@ -1,15 +1,15 @@
 import { create } from "zustand";
 
-type MenuMenuState = {
+type MenuItemsState = {
   editMenuId: string | null;
-  seteditMenuId: (open: string | null) => void;
+  setEditMenuId: (open: string | null) => void;
   isEditMenu: boolean;
   setisEditMenu: (open: boolean) => void;
 };
 
-const useMenuMenuStore = create<MenuMenuState>((set) => ({
+const useMenuMenuStore = create<MenuItemsState>((set) => ({
   editMenuId: null,
-  seteditMenuId: (open: string | null) => set({ editMenuId: open }),
+  setEditMenuId: (open: string | null) => set({ editMenuId: open }),
   isEditMenu: false,
   setisEditMenu: (open: boolean) => set({ isEditMenu: open }),
 }));

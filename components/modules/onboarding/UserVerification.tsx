@@ -9,6 +9,7 @@ import { sdk } from "@/utils/graphqlClient";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import { extractErrorMessage } from "@/utils/utilFUncs";
+import { useState } from "react";
 
 interface IFormInput {
   ein: string;
@@ -39,8 +40,11 @@ const UserVerification = () => {
     estimatedRevenue,
     state,
   } = useOnboardingStore();
+  const [btnLoading, setBtnLoading] = useState(false);
 
   const onSubmit = async (data: IFormInput) => {
+    setBtnLoading(true);
+
     if (!businessType || !businessName || !employeeSize || !estimatedRevenue) {
       try {
         setToastData({
@@ -102,6 +106,7 @@ const UserVerification = () => {
       });
       return;
     }
+    setBtnLoading(false);
   };
 
   return (
@@ -159,6 +164,7 @@ const UserVerification = () => {
 
         <div className="col-span-2">
           <CButton
+            loading={btnLoading}
             variant={ButtonType.Primary}
             type="submit"
             className="inline-flex btn btn-primary items-center justify-center w-full mt-8"
