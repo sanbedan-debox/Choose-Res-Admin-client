@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import ReactDOM from "react-dom";
-
+import { AnimatePresence, motion } from "framer-motion";
+import { fadeIn } from "@/utils/animations";
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -34,8 +35,6 @@ const ReusableModal: React.FC<ModalProps> = ({
     return () => document.removeEventListener("click", handleOutsideClick);
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
-
   const widthClasses = {
     xs: "w-1/5",
     sm: "w-1/4",
@@ -45,6 +44,7 @@ const ReusableModal: React.FC<ModalProps> = ({
     xl: "w-[95vw]",
     dxl: "w-full",
   };
+
   const hightClasses = {
     xs: "h-1/5",
     sm: "h-1/4",
@@ -56,51 +56,64 @@ const ReusableModal: React.FC<ModalProps> = ({
   };
 
   return ReactDOM.createPortal(
-    <div className="modal-overlay fixed inset-0 bg-black bg-opacity-45 flex items-center justify-center z-50">
-      <div
-        className={`rounded shadow-lg bg-white ${widthClasses[width]}  max-h-[100vh] overflow-auto z-10`}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="py-5 px-6">
-          <div className="flex items-start justify-between py-2 rounded-t">
-            <div className="flex items-center space-x-4">
-              <h2 className="text-2xl font-bold text-black">{title}</h2>
-            </div>
-            <button
-              type="button"
-              className="text-black bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center dark:hover:bg-primary dark:hover:text-white"
-              onClick={onClose}
-            >
-              <svg
-                className="w-3 h-3"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 14 14"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-                />
-              </svg>
-              <span className="sr-only">Close modal</span>
-            </button>
-          </div>
-          {comments && (
-            <p
-              className="text-gray-700
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="modal-overlay fixed inset-0 bg-black bg-opacity-45 flex items-center justify-center z-50"
+        >
+          <motion.div
+            variants={fadeIn("up", "tween", 0, 0.3)}
+            initial="hidden"
+            animate="show"
+            exit="hidden"
+            className={`rounded shadow-lg bg-white ${widthClasses[width]}  max-h-[100vh] overflow-auto z-10`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="py-5 px-6">
+              <div className="flex items-start justify-between py-2 rounded-t">
+                <div className="flex items-center space-x-4">
+                  <h2 className="text-2xl font-bold text-black">{title}</h2>
+                </div>
+                <button
+                  type="button"
+                  className="text-black bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center dark:hover:bg-primary dark:hover:text-white"
+                  onClick={onClose}
+                >
+                  <svg
+                    className="w-3 h-3"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 14 14"
+                  >
+                    <path
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                    />
+                  </svg>
+                  <span className="sr-only">Close modal</span>
+                </button>
+              </div>
+              {comments && (
+                <p
+                  className="text-gray-700
            mb-4"
-            >
-              {comments}
-            </p>
-          )}{" "}
-          {children}
-        </div>
-      </div>
-    </div>,
+                >
+                  {comments}
+                </p>
+              )}
+              {children}
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>,
     document.body
   );
 };
