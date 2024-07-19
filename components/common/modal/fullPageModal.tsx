@@ -44,6 +44,7 @@ const FullPageModal: React.FC<FullPageModalProps> = ({
       document.removeEventListener("keydown", handleEscapeKey);
     };
   }, [isOpen, onClose]);
+  if (!isOpen) return;
 
   return ReactDOM.createPortal(
     <AnimatePresence>

@@ -7,7 +7,6 @@ import { parseCookies } from "nookies";
 import { sdk } from "@/utils/graphqlClient";
 import useAuthStore from "@/store/auth";
 import { UserStatus } from "@/generated/graphql";
-import SetupGuide from "@/components/common/setupGuide/setupGuide";
 import QuickActions from "@/components/common/quickLinks/quickLink";
 
 type NextPageWithLayout = React.FC & {
@@ -108,8 +107,7 @@ const Dashboard: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
         {suggestions.length > 0 && (
           <ul className="absolute bg-white border border-gray-200 mt-9 rounded-lg shadow-lg">
             {suggestions.map((suggestion) => (
-              <a key={suggestion.name}
-              href="href={suggestion.link}">
+              <a key={suggestion.name} href="href={suggestion.link}">
                 <li
                   key={suggestion.name}
                   className="hover:bg-primary hover:text-white p-2"

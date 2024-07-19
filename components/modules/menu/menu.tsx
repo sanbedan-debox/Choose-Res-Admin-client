@@ -65,7 +65,9 @@ const Menu: React.FC = () => {
   const handleDeleteItem = (_id: string) => {
     setshowDeleteConfirmationModal(true);
     setSelectedItemId(_id);
-    setAvailableCaption("are you sure you want to delete this Category?");
+    setAvailableCaption(
+      " By clicking yes the selected Menu / Menus will be deleted. This action cannot be undone."
+    );
   };
 
   const { setEditMenuId, setisEditMenu } = useMenuMenuStore();
@@ -211,7 +213,7 @@ const Menu: React.FC = () => {
       <ReusableModal
         isOpen={showDeleteConfirmationModal}
         onClose={handleDeleteCloseConfirmationModal}
-        title="Are you sure ?"
+        title="Are you sure?"
         comments={availableCaption}
       >
         <div className="flex justify-end space-x-4">

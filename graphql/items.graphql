@@ -64,8 +64,8 @@ query getItem($id: String!) {
   }
 }
 
-mutation addItem($input: AddItemInput!) {
-  addItem(input: $input)
+mutation addItem($input: AddItemInput!, $modifierGroups: [String!]!) {
+  addItem(input: $input, modifierGroups: $modifierGroups)
 }
 
 mutation updateItem($input: UpdateItemInput!) {
@@ -84,4 +84,18 @@ query getModifierGroupsforItemsDropDown {
       }
     }
   }
+}
+
+mutation removeModifierGroupFromItem(
+  $itemId: String!
+  $modifierGroupId: String!
+) {
+  removeModifierGroupFromItem(
+    itemId: $itemId
+    modifierGroupId: $modifierGroupId
+  )
+}
+
+mutation addModifierGroupToItem($modifierGroupId: String!, $itemId: String!) {
+  addModifierGroupToItem(modifierGroupId: $modifierGroupId, itemId: $itemId)
 }

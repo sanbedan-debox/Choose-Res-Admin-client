@@ -5,12 +5,10 @@ import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
-import { PriceTypeEnum } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
 import useMenuOptionsStore from "@/store/menuOptions";
 import CustomSwitchCard from "@/components/common/customSwitchCard/customSwitchCard";
 import useModStore from "@/store/modifiers";
-import useModGroupStore from "@/store/modifierGroup";
 
 interface IFormInput {
   name: string;
@@ -76,11 +74,14 @@ const AddModifierForm = () => {
             },
           })
         : // EDIT/UPDATE ITEM API
-          await sdk.updateItem({
+          await sdk.updateModifier({
             input: {
               _id: editModId || "",
               name: {
                 value: data.name,
+              },
+              price: {
+                value: parsedPrice,
               },
 
               // availability: [],
@@ -285,7 +286,7 @@ const AddModifierForm = () => {
             type="submit"
             // className="px-6 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
           >
-            Save Modifier
+            {!isEditMod ? "Save Modifier" : "Edit Modifier"}
           </CButton>
         </div>
       </form>

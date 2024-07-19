@@ -2,9 +2,10 @@ mutation changeCategoryStatus($id: String!) {
   changeCategoryStatus(id: $id)
 }
 
-mutation addItemToCategory($categoryId: String!, $itemId: String!) {
-  addItemToCategory(categoryId: $categoryId, itemId: $itemId)
+mutation addItemToCategory($categoryId: String!, $itemId: [String!]!) {
+  addItemsToCategory(categoryId: $categoryId, itemIds: $itemId)
 }
+
 mutation deleteCategory($id: String!) {
   deleteCategory(id: $id)
 }
@@ -66,8 +67,8 @@ query getCategory($id: String!) {
       }
       _id {
         _id
-        image
       }
+      image
       price {
         value
       }
@@ -81,4 +82,8 @@ query getCategory($id: String!) {
 
 mutation updateCategory($input: UpdateCategoryInput!) {
   updateCategory(input: $input)
+}
+
+mutation removeItemFromCategory($itemId: String!, $categoryId: String!) {
+  removeItemFromCategory(categoryId: $categoryId, itemId: $itemId)
 }

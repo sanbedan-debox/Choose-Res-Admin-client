@@ -33,3 +33,7 @@ query getModifier($id: String!) {
 mutation deleteModifier($id: String!) {
   deleteModifier(id: $id)
 }
+
+mutation updateModifier($input: UpdateModifierInput!) {
+  updateModifier(input: $input)
+}

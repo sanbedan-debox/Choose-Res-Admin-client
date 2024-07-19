@@ -52,7 +52,7 @@ mutation deleteMenu($id: String!) {
 }
 
 mutation addCategoryToMenu($categoryId: [String!]!, $menuId: String!) {
-  addCategoryToMenu(categoryId: $categoryId, menuId: $menuId)
+  addCategoriesToMenu(categoryIds: $categoryId, menuId: $menuId)
 }
 
 query getMenusByType($id: String!) {
@@ -80,4 +80,8 @@ query getMenusByType($id: String!) {
 
 mutation updateMenu($input: UpdateMenuInput!) {
   updateMenu(input: $input)
+}
+
+mutation removeCategoryFromMenu($menuId: String!, $categoryId: String!) {
+  removeCategoryFromMenu(categoryId: $categoryId, menuId: $menuId)
 }

@@ -54,6 +54,7 @@ const ReusableModal: React.FC<ModalProps> = ({
     xl: "h-[95vh]",
     dxl: "h-full",
   };
+  if (!isOpen) return;
 
   return ReactDOM.createPortal(
     <AnimatePresence>

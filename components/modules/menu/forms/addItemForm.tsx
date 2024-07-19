@@ -76,7 +76,6 @@ interface IFormInput {
 interface ItemsDropDownType {
   _id: string;
   name: string;
-  price: number;
 }
 
 const AddItemForm = () => {
@@ -123,6 +122,7 @@ const AddItemForm = () => {
       },
     },
   });
+  const [changesMenu, setChangesMenu] = useState<any>([]);
 
   const {
     fetchMenuDatas,
@@ -153,6 +153,7 @@ const AddItemForm = () => {
         try {
           const response = await sdk.getItem({ id: editItemId });
           const item = response.getItem;
+          setChangesMenu(response.getItem);
           setValue("name", item.name.value);
           setValue("desc", item.desc.value);
           setValue("status", item.status === StatusEnum.Active ? true : false);
@@ -165,6 +166,13 @@ const AddItemForm = () => {
           setValue("isGlutenFree", item.isGlutenFree);
           setValue("isHalal", item.isHalal);
           setValue("isVegan", item.isVegan);
+          setSelectedItems(item?.modifierGroup);
+          const formateditemlist = item?.modifierGroup.map((el) => ({
+            _id: el._id,
+            name: el?.name?.value ?? "",
+          }));
+          setTempSelectedItems(formateditemlist);
+          setprevItemsbfrEdit(formateditemlist);
           setPreviewUrl(item.image || "");
         } catch (error) {
           const errorMessage = extractErrorMessage(error);
@@ -222,6 +230,7 @@ const AddItemForm = () => {
           })),
         active: data.activeDays[day],
       }));
+
       const formatData = (formattedData: any[]): any[] => {
         const currentDate = DateTime.now().toISO();
         const endcurrentDate = DateTime.now().plus({ minutes: 90 }).toISO();
@@ -247,69 +256,95 @@ const AddItemForm = () => {
       };
       const formattedSampleInput = formatData(formattedData);
       // setAvailabilityHours(formattedSampleInput);
-
+      const prevSelectedMenuIds = prevItemsbfrEdit.map((item) => item._id);
+      useEffect(() => {
+        if (!isModalOpen && selectedItems.length > 0) {
+          setItemsOption((prevItemsOption) =>
+            prevItemsOption.filter(
+              (item) =>
+                !selectedItems.some(
+                  (selectedItem) => selectedItem._id === item._id
+                )
+            )
+          );
+        }
+      }, [isModalOpen, selectedItems]);
+      const selectedItemsIds = selectedItems.map((item) => item._id);
+      const addedMenuIds = selectedItemsIds.filter(
+        (id) => !prevSelectedMenuIds.includes(id)
+      );
+      const isMenuAdded = addedMenuIds.length > 0;
       setBtnLoading(true);
-      !isEditItem
-        ? // ADD ITEM API
-          await sdk.addItem({
-            input: {
-              name: {
-                value: data.name,
-              },
-              desc: {
-                value: data.desc,
-              },
-              image: previewUrl,
-              price: {
-                value: parsedPrice,
-              },
-              status: statusSub,
-              applySalesTax: data.applySalesTax ? true : false,
-              popularItem: data.popularItem ? true : false,
-              upSellItem: data.upSellItem ? true : false,
-              hasNuts: data.hasNuts ? true : false,
-              isGlutenFree: data.isGlutenFree ? true : false,
-              isHalal: data.isHalal ? true : false,
-              isVegan: data.isVegan ? true : false,
-              isSpicy: data.isSpicy ? true : false,
-              availability: formattedSampleInput,
+      if (!isEditItem) {
+        // ADD ITEM API
+        await sdk.addItem({
+          input: {
+            name: {
+              value: data.name,
             },
-          })
-        : // EDIT/UPDATE ITEM API
-          await sdk.updateItem({
-            input: {
-              _id: editItemId || "",
-              name: {
-                value: data.name,
-              },
-              desc: {
-                value: data.desc,
-              },
-              image: previewUrl,
-              price: {
-                value: parsedPrice,
-              },
-              status: statusSub,
-              applySalesTax: data.applySalesTax ? true : false,
-              popularItem: data.popularItem ? true : false,
-              upSellItem: data.upSellItem ? true : false,
-              hasNuts: data.hasNuts ? true : false,
-              isGlutenFree: data.isGlutenFree ? true : false,
-              isHalal: data.isHalal ? true : false,
-              isVegan: data.isVegan ? true : false,
-              isSpicy: data.isSpicy ? true : false,
-              // availability: [],
+            desc: {
+              value: data.desc,
             },
-          });
-      setBtnLoading(false);
-      setisAddItemModalOpen(false);
-      setfetchMenuDatas(!fetchMenuDatas);
-      setisEditItem(false);
-      setEditItemId(null);
-      setToastData({
-        type: "success",
-        message: "Item Added Successfully",
-      });
+            image: previewUrl,
+            price: {
+              value: parsedPrice,
+            },
+            status: statusSub,
+            applySalesTax: data.applySalesTax ? true : false,
+            popularItem: data.popularItem ? true : false,
+            upSellItem: data.upSellItem ? true : false,
+            hasNuts: data.hasNuts ? true : false,
+            isGlutenFree: data.isGlutenFree ? true : false,
+            isHalal: data.isHalal ? true : false,
+            isVegan: data.isVegan ? true : false,
+            isSpicy: data.isSpicy ? true : false,
+            availability: formattedSampleInput,
+          },
+          modifierGroups: selectedItemsIds,
+        });
+      } else {
+        // EDIT/UPDATE ITEM API
+        await sdk.updateItem({
+          input: {
+            _id: editItemId || "",
+            name: {
+              value: data.name,
+            },
+            desc: {
+              value: data.desc,
+            },
+            image: previewUrl,
+            price: {
+              value: parsedPrice,
+            },
+            status: statusSub,
+            applySalesTax: data.applySalesTax ? true : false,
+            popularItem: data.popularItem ? true : false,
+            upSellItem: data.upSellItem ? true : false,
+            hasNuts: data.hasNuts ? true : false,
+            isGlutenFree: data.isGlutenFree ? true : false,
+            isHalal: data.isHalal ? true : false,
+            isVegan: data.isVegan ? true : false,
+            isSpicy: data.isSpicy ? true : false,
+            // availability: [],
+          },
+        });
+        isMenuAdded &&
+          (await sdk.addModifierGroupToItem({
+            modifierGroupId: addedMenuIds[0],
+            itemId: editItemId || "",
+          }));
+
+        setBtnLoading(false);
+        setisAddItemModalOpen(false);
+        setfetchMenuDatas(!fetchMenuDatas);
+        setisEditItem(false);
+        setEditItemId(null);
+        setToastData({
+          type: "success",
+          message: "Item Added Successfully",
+        });
+      }
     } catch (error: any) {
       const errorMessage = extractErrorMessage(error);
       setToastData({
@@ -362,7 +397,7 @@ const AddItemForm = () => {
     actions: renderActions(item),
   }));
 
-  const handleRemoveItem = (id: string) => {
+  const handleRemoveItem = async (id: string) => {
     setSelectedItems((prevSelected) =>
       prevSelected.filter((item) => item._id !== id)
     );
@@ -370,6 +405,17 @@ const AddItemForm = () => {
     setTempSelectedItems((prevSelected) =>
       prevSelected.filter((item) => item._id !== id)
     );
+    if (isEditItem) {
+      const res = await sdk.removeModifierGroupFromItem({
+        modifierGroupId: id,
+        itemId: editItemId || "",
+      });
+      if (res) {
+        setprevItemsbfrEdit((prevSelected) =>
+          prevSelected.filter((item) => item._id !== id)
+        );
+      }
+    }
   };
 
   const handleAddClick = () => {
@@ -384,7 +430,7 @@ const AddItemForm = () => {
     setTempSelectedItems((prevSelected) =>
       prevSelected.some((selectedItem) => selectedItem._id === item._id)
         ? prevSelected.filter((i) => i._id !== item._id)
-        : [...prevSelected, item]
+        : [item]
     );
   };
 
@@ -698,7 +744,7 @@ const AddItemForm = () => {
         </div>
       </form>
       <AddFormDropdown
-        title="Add Items"
+        title="Add Modifier Groups"
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         searchTerm={searchTerm}
@@ -707,6 +753,8 @@ const AddItemForm = () => {
         tempSelectedItems={tempSelectedItems}
         handleItemClick={handleItemClick}
         handleAddItems={handleAddItems}
+        createNewItemButtonLabel="Create New Modifier group"
+        addSelectedItemsButtonLabel="Add Selected Modifier Groups"
         headings={headingsDropdown}
         renderActions={renderActions}
         onClickCreatebtn={handleCreateModifierGroup}

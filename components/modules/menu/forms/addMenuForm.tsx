@@ -15,6 +15,7 @@ import AddFormDropdown from "@/components/common/addFormDropDown/addFormDropdown
 import { MdArrowOutward } from "react-icons/md";
 import useMenuMenuStore from "@/store/menumenu";
 import useMenuCategoryStore from "@/store/menuCategory";
+import ReusableModal from "@/components/common/modal/modal";
 
 interface IFormInput {
   type: { value: string; label: string };
@@ -35,7 +36,8 @@ const menuTypeOptions: any[] = [
 const AddMenuForm = () => {
   const { fetchMenuDatas, setfetchMenuDatas, setisAddMenuModalOpen } =
     useMenuOptionsStore();
-
+  const [confirmationRemoval, setConfirmationRemoval] = useState(false);
+  const [remmovingId, setRemovingId] = useState("");
   const [btnLoading, setBtnLoading] = useState(false);
   const { setToastData } = useGlobalStore();
   const [itemsOption, setItemsOption] = useState<any[]>([]);
@@ -57,7 +59,7 @@ const AddMenuForm = () => {
     setValue,
     register,
   } = useForm<IFormInput>();
-
+  const [changesMenu, setChangesMenu] = useState<any>([]);
   useEffect(() => {
     const fetchMenuData = async () => {
       if (editMenuId) {
@@ -65,6 +67,7 @@ const AddMenuForm = () => {
           console.log(editMenuId);
           const response = await sdk.getMenusByType({ id: editMenuId });
           const menu = response.getMenusByType;
+          setChangesMenu(response.getMenusByType);
           setValue("name", menu[0].name.value);
           const selectedMenuType = menuTypeOptions.find(
             (option) => option.value === menu[0]?.type
@@ -92,10 +95,44 @@ const AddMenuForm = () => {
     fetchMenuData();
   }, [editMenuId, setValue, setToastData]);
 
+  useEffect(() => {
+    if (!isModalOpen && selectedItems.length > 0) {
+      setItemsOption((prevItemsOption) =>
+        prevItemsOption.filter(
+          (item) =>
+            !selectedItems.some((selectedItem) => selectedItem._id === item._id)
+        )
+      );
+    }
+  }, [isModalOpen, selectedItems]);
+
   const onSubmit = async (data: IFormInput) => {
     try {
       setBtnLoading(true);
+      const prevSelectedMenuIds = prevItemsbfrEdit.map((item) => item._id);
       const selectedItemsIds = selectedItems.map((item) => item._id);
+
+      const addedMenuIds = selectedItemsIds.filter(
+        (id) => !prevSelectedMenuIds.includes(id)
+      );
+      const isMenuAdded = addedMenuIds.length > 0;
+
+      const updateInput: any = {
+        _id: editMenuId || "",
+      };
+      const selectedMenuType = menuTypeOptions.find(
+        (option) => option.value === changesMenu[0]?.type
+      );
+      if (data.type.value !== selectedMenuType.value) {
+        updateInput.type = data.type.value as MenuTypeEnum;
+      }
+
+      if (data.name !== changesMenu[0].name.value) {
+        updateInput.name = {
+          value: data.name,
+        };
+      }
+
       if (!isEditMenu) {
         await sdk.addMenu({
           input: {
@@ -107,24 +144,15 @@ const AddMenuForm = () => {
           },
         });
       } else {
-        //Edit Menu
         const res = await sdk.updateMenu({
-          input: {
-            _id: editMenuId || "",
-            type: data.type.value as MenuTypeEnum,
-            name: {
-              value: data.name,
-            },
-          },
+          input: updateInput,
         });
 
-        console.log(prevItemsbfrEdit, selectedItems);
-        if (prevItemsbfrEdit === selectedItems) {
-          const res = await sdk.addCategoryToMenu({
+        isMenuAdded &&
+          (await sdk.addCategoryToMenu({
+            categoryId: addedMenuIds,
             menuId: editMenuId || "",
-            categoryId: selectedItemsIds,
-          });
-        }
+          }));
 
         setToastData({
           type: "success",
@@ -179,7 +207,7 @@ const AddMenuForm = () => {
     fetch();
   }, [fetchMenuDatas, setToastData]);
 
-  const handleRemoveCategory = (id: string) => {
+  const handleRemoveCategory = async (id: string) => {
     setSelectedItems((prevSelected) =>
       prevSelected.filter((item) => item._id !== id)
     );
@@ -187,6 +215,18 @@ const AddMenuForm = () => {
     setTempSelectedItems((prevSelected) =>
       prevSelected.filter((item) => item._id !== id)
     );
+
+    if (isEditMenu) {
+      const res = await sdk.removeCategoryFromMenu({
+        categoryId: id,
+        menuId: editMenuId || "",
+      });
+      if (res) {
+        setprevItemsbfrEdit((prevSelected) =>
+          prevSelected.filter((item) => item._id !== id)
+        );
+      }
+    }
   };
 
   const { seteditCatsId, setisEditCats } = useMenuCategoryStore();
@@ -202,7 +242,11 @@ const AddMenuForm = () => {
     <div className="flex space-x-2 justify-center">
       <FaTrash
         className="text-red-600 cursor-pointer"
-        onClick={() => handleRemoveCategory(rowData._id)}
+        onClick={() => {
+          setConfirmationRemoval(true);
+          setRemovingId(rowData._id);
+          // handleRemoveCategory(rowData._id);
+        }}
       />
       <MdArrowOutward
         className="text-primary cursor-pointer"
@@ -372,6 +416,25 @@ const AddMenuForm = () => {
         addSelectedItemsButtonLabel="Add selected categories"
         onClickCreatebtn={handelCreateCategory}
       />
+      <ReusableModal
+        isOpen={confirmationRemoval}
+        onClose={() => {
+          setConfirmationRemoval(false);
+          setRemovingId("");
+        }}
+        title="Are you sure?"
+        comments="By clicking yes the selected category / categories will be removed from this menu. This action cannot be undone."
+      >
+        <div className="flex justify-end space-x-4">
+          <CButton
+            loading={btnLoading}
+            variant={ButtonType.Primary}
+            onClick={() => handleRemoveCategory}
+          >
+            Yes
+          </CButton>
+        </div>
+      </ReusableModal>
     </motion.div>
   );
 };

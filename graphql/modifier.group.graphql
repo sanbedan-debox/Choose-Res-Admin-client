@@ -6,9 +6,15 @@ query getModifierGroups {
     }
   }
 }
+mutation updateModifierGroup($input: UpdateModifierGroupInput!) {
+  updateModifierGroup(input: $input)
+}
 
-mutation addModifierGroup($input: AddModifierGroupInput!) {
-  addModifierGroup(input: $input)
+mutation addModifierGroup(
+  $input: AddModifierGroupInput!
+  $modifiers: [String!]!
+) {
+  addModifierGroup(input: $input, modifiers: $modifiers)
 }
 
 query getModifiersforGroupDropDown {
@@ -23,8 +29,8 @@ query getModifiersforGroupDropDown {
   }
 }
 
-mutation deleteModifier($id: String!) {
-  deleteModifier(id: $id)
+mutation removeModifierGroup($id: String!) {
+  removeModifierGroup(id: $id)
 }
 
 query getModifierGroup($id: String!) {
@@ -48,4 +54,24 @@ query getModifierGroup($id: String!) {
       value
     }
   }
+}
+
+mutation removeModifierFromModifierGroup(
+  $modifierGroupId: String!
+  $modifierId: String!
+) {
+  removeModifierFromModifierGroup(
+    modifierGroupId: $modifierGroupId
+    modifierId: $modifierId
+  )
+}
+
+mutation addModifierToModifierGroup(
+  $modifierIds: [String!]!
+  $modifierGroupId: String!
+) {
+  addModifierToModifierGroup(
+    modifierGroupId: $modifierGroupId
+    modifierIds: $modifierIds
+  )
 }

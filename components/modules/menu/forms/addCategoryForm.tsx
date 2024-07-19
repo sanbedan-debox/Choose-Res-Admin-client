@@ -39,6 +39,7 @@ const AddCategoryForm = () => {
   const [tempSelectedItems, setTempSelectedItems] = useState<
     ItemsDropDownType[]
   >([]);
+  const [changesMenu, setChangesMenu] = useState<any>([]);
 
   const { setToastData } = useGlobalStore();
   const {
@@ -63,6 +64,7 @@ const AddCategoryForm = () => {
         try {
           const response = await sdk.getCategory({ id: editCatsId });
           const item = response.getCategory;
+          setChangesMenu(response.getCategory);
           setValue("name", item.name.value);
           setValue("description", item.desc.value);
           setSelectedItems(item?.items);
@@ -86,10 +88,52 @@ const AddCategoryForm = () => {
     fetchItemData();
   }, [editCatsId, setValue, setToastData]);
 
+  useEffect(() => {
+    if (!isModalOpen && selectedItems.length > 0) {
+      setItemsOption((prevItemsOption) =>
+        prevItemsOption.filter(
+          (item) =>
+            !selectedItems.some((selectedItem) => selectedItem._id === item._id)
+        )
+      );
+    }
+  }, [isModalOpen, selectedItems]);
+
   const onSubmit = async (data: IFormInput) => {
     try {
+      const updateInput: any = {
+        _id: editCatsId || "",
+      };
+
+      let hasChanges = false;
+
+      if (data.name !== changesMenu[0].name.value) {
+        updateInput.name = {
+          value: data.name,
+        };
+        hasChanges = true;
+      }
+
+      if (data.description !== changesMenu[0].desc.value) {
+        updateInput.desc = {
+          value: data.description,
+        };
+        hasChanges = true;
+      }
+
       setBtnLoading(true);
+      const prevSelectedMenuIds = prevItemsbfrEdit.map((item) => item._id);
       const selectedItemsIds = selectedItems.map((item) => item._id);
+      const addedMenuIds = selectedItemsIds.filter(
+        (id) => !prevSelectedMenuIds.includes(id._id)
+      );
+      const isMenuAdded = addedMenuIds.length > 0;
+      console.log(
+        isMenuAdded,
+        prevSelectedMenuIds,
+        selectedItemsIds,
+        addedMenuIds
+      );
       if (!isEditCats) {
         // ADD CATEGORIES/NEW CATEGORIES
         const res = await sdk.addCategory({
@@ -116,33 +160,18 @@ const AddCategoryForm = () => {
       } else {
         // EDIT CATEGORIES
         const res = await sdk.updateCategory({
-          input: {
-            _id: editCatsId || "",
-            name: {
-              value: data.name,
-            },
-            desc: {
-              value: data.description,
-            },
-          },
+          input: updateInput,
         });
 
-        if (res?.updateCategory) {
-          if (prevItemsbfrEdit === selectedItems) {
-            const res = await sdk.addItemToCategory({
-              categoryId: editCatsId || "",
-              itemId: selectedItemsIds[0],
-            });
-          }
+        isMenuAdded &&
+          (await sdk.addItemToCategory({
+            itemId: addedMenuIds,
+            categoryId: editCatsId || "",
+          }));
 
-          setToastData({
-            type: "success",
-            message: "Category Updated Successfully",
-          });
-          setBtnLoading(false);
-          setisAddCategoryModalOpen(false);
-          setfetchMenuDatas(!fetchMenuDatas);
-        }
+        setBtnLoading(false);
+        setisAddCategoryModalOpen(false);
+        setfetchMenuDatas(!fetchMenuDatas);
       }
     } catch (error: any) {
       const errorMessage = extractErrorMessage(error);
@@ -150,6 +179,8 @@ const AddCategoryForm = () => {
         type: "error",
         message: errorMessage,
       });
+    } finally {
+      setBtnLoading(false);
     }
   };
 
@@ -204,11 +235,11 @@ const AddCategoryForm = () => {
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const renderActions = (rowData: { _id: string }) => (
+  const renderActions = (rowData: { _id: { _id: string } }) => (
     <div className="flex space-x-2 justify-center">
       <FaTrash
         className="text-red-600 cursor-pointer"
-        onClick={() => handleRemoveItem(rowData._id)}
+        onClick={() => handleRemoveItem(rowData._id._id, rowData._id)}
       />
     </div>
   );
@@ -222,20 +253,30 @@ const AddCategoryForm = () => {
     setIsModalOpen(true);
   };
 
-  const handleRemoveItem = (id: string) => {
+  const handleRemoveItem = async (id: string, rowDataId: any) => {
     setSelectedItems((prevSelected) =>
-      prevSelected.filter((item) => item._id !== id)
+      prevSelected.filter((item) => item._id !== rowDataId)
     );
 
     setTempSelectedItems((prevSelected) =>
-      prevSelected.filter((item) => item._id !== id)
+      prevSelected.filter((item) => item._id !== rowDataId)
     );
+
+    if (isEditCats) {
+      const res = await sdk.removeItemFromCategory({
+        categoryId: editCatsId || "",
+        itemId: id,
+      });
+
+      setprevItemsbfrEdit((prevSelected) =>
+        prevSelected.filter((item) => item._id !== rowDataId)
+      );
+    }
   };
 
   const { setEditItemId, setisEditItem } = useMenuItemsStore();
 
   const handleEditItem = (id: string) => {
-    console.log(`Edit item with id ${id}`);
     setisAddItemModalOpen(true);
     setEditItemId(id);
     setisEditItem(true);

@@ -94,7 +94,7 @@ const FormAddTable: React.FC<FormAddTableProps> = ({
       )}
       <CButton
         type="button"
-        variant={ButtonType.Primary}
+        variant={ButtonType.Outlined}
         onClick={onAddClick}
         className="w-full mt-2"
       >

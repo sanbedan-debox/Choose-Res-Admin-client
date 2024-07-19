@@ -591,11 +591,11 @@ export type ModifierInfo = {
 export type Mutation = {
   __typename?: 'Mutation';
   addAdmin: Scalars['Boolean']['output'];
+  addCategoriesToMenu: Scalars['Boolean']['output'];
   addCategory: Scalars['Boolean']['output'];
-  addCategoryToMenu: Scalars['Boolean']['output'];
   addCuisine: Scalars['Boolean']['output'];
   addItem: Scalars['Boolean']['output'];
-  addItemToCategory: Scalars['Boolean']['output'];
+  addItemsToCategory: Scalars['Boolean']['output'];
   addMenu: Scalars['Boolean']['output'];
   addModifier: Scalars['Boolean']['output'];
   addModifierGroup: Scalars['Boolean']['output'];
@@ -659,14 +659,14 @@ export type MutationAddAdminArgs = {
 };
 
 
-export type MutationAddCategoryArgs = {
-  input: AddCategoryInput;
+export type MutationAddCategoriesToMenuArgs = {
+  categoryIds: Array<Scalars['String']['input']>;
+  menuId: Scalars['String']['input'];
 };
 
 
-export type MutationAddCategoryToMenuArgs = {
-  categoryId: Array<Scalars['String']['input']>;
-  menuId: Scalars['String']['input'];
+export type MutationAddCategoryArgs = {
+  input: AddCategoryInput;
 };
 
 
@@ -677,12 +677,13 @@ export type MutationAddCuisineArgs = {
 
 export type MutationAddItemArgs = {
   input: AddItemInput;
+  modifierGroups: Array<Scalars['String']['input']>;
 };
 
 
-export type MutationAddItemToCategoryArgs = {
+export type MutationAddItemsToCategoryArgs = {
   categoryId: Scalars['String']['input'];
-  itemId: Scalars['String']['input'];
+  itemIds: Array<Scalars['String']['input']>;
 };
 
 
@@ -698,6 +699,7 @@ export type MutationAddModifierArgs = {
 
 export type MutationAddModifierGroupArgs = {
   input: AddModifierGroupInput;
+  modifiers: Array<Scalars['String']['input']>;
 };
 
 
@@ -709,7 +711,7 @@ export type MutationAddModifierGroupToItemArgs = {
 
 export type MutationAddModifierToModifierGroupArgs = {
   modifierGroupId: Scalars['String']['input'];
-  modifierId: Scalars['String']['input'];
+  modifierIds: Array<Scalars['String']['input']>;
 };
 
 
@@ -1576,11 +1578,11 @@ export type ChangeCategoryStatusMutation = { __typename?: 'Mutation', changeCate
 
 export type AddItemToCategoryMutationVariables = Exact<{
   categoryId: Scalars['String']['input'];
-  itemId: Scalars['String']['input'];
+  itemId: Array<Scalars['String']['input']> | Scalars['String']['input'];
 }>;
 
 
-export type AddItemToCategoryMutation = { __typename?: 'Mutation', addItemToCategory: boolean };
+export type AddItemToCategoryMutation = { __typename?: 'Mutation', addItemsToCategory: boolean };
 
 export type DeleteCategoryMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -1624,6 +1626,14 @@ export type UpdateCategoryMutationVariables = Exact<{
 
 export type UpdateCategoryMutation = { __typename?: 'Mutation', updateCategory: boolean };
 
+export type RemoveItemFromCategoryMutationVariables = Exact<{
+  itemId: Scalars['String']['input'];
+  categoryId: Scalars['String']['input'];
+}>;
+
+
+export type RemoveItemFromCategoryMutation = { __typename?: 'Mutation', removeItemFromCategory: boolean };
+
 export type ChangeItemStatusMutationVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
@@ -1652,6 +1662,7 @@ export type GetItemQuery = { __typename?: 'Query', getItem: { __typename?: 'Item
 
 export type AddItemMutationVariables = Exact<{
   input: AddItemInput;
+  modifierGroups: Array<Scalars['String']['input']> | Scalars['String']['input'];
 }>;
 
 
@@ -1668,6 +1679,22 @@ export type GetModifierGroupsforItemsDropDownQueryVariables = Exact<{ [key: stri
 
 
 export type GetModifierGroupsforItemsDropDownQuery = { __typename?: 'Query', getModifierGroups: Array<{ __typename?: 'ModifierGroup', _id: string, name: { __typename?: 'MasterCommon', value: string }, modifiers: Array<{ __typename?: 'ModifierInfo', name: { __typename?: 'MasterCommon', value: string } }> }> };
+
+export type RemoveModifierGroupFromItemMutationVariables = Exact<{
+  itemId: Scalars['String']['input'];
+  modifierGroupId: Scalars['String']['input'];
+}>;
+
+
+export type RemoveModifierGroupFromItemMutation = { __typename?: 'Mutation', removeModifierGroupFromItem: boolean };
+
+export type AddModifierGroupToItemMutationVariables = Exact<{
+  modifierGroupId: Scalars['String']['input'];
+  itemId: Scalars['String']['input'];
+}>;
+
+
+export type AddModifierGroupToItemMutation = { __typename?: 'Mutation', addModifierGroupToItem: boolean };
 
 export type GetActiveStatesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1720,7 +1747,7 @@ export type AddCategoryToMenuMutationVariables = Exact<{
 }>;
 
 
-export type AddCategoryToMenuMutation = { __typename?: 'Mutation', addCategoryToMenu: boolean };
+export type AddCategoryToMenuMutation = { __typename?: 'Mutation', addCategoriesToMenu: boolean };
 
 export type GetMenusByTypeQueryVariables = Exact<{
   id: Scalars['String']['input'];
@@ -1736,13 +1763,29 @@ export type UpdateMenuMutationVariables = Exact<{
 
 export type UpdateMenuMutation = { __typename?: 'Mutation', updateMenu: boolean };
 
+export type RemoveCategoryFromMenuMutationVariables = Exact<{
+  menuId: Scalars['String']['input'];
+  categoryId: Scalars['String']['input'];
+}>;
+
+
+export type RemoveCategoryFromMenuMutation = { __typename?: 'Mutation', removeCategoryFromMenu: boolean };
+
 export type GetModifierGroupsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetModifierGroupsQuery = { __typename?: 'Query', getModifierGroups: Array<{ __typename?: 'ModifierGroup', _id: string, name: { __typename?: 'MasterCommon', value: string } }> };
 
+export type UpdateModifierGroupMutationVariables = Exact<{
+  input: UpdateModifierGroupInput;
+}>;
+
+
+export type UpdateModifierGroupMutation = { __typename?: 'Mutation', updateModifierGroup: boolean };
+
 export type AddModifierGroupMutationVariables = Exact<{
   input: AddModifierGroupInput;
+  modifiers: Array<Scalars['String']['input']> | Scalars['String']['input'];
 }>;
 
 
@@ -1753,12 +1796,12 @@ export type GetModifiersforGroupDropDownQueryVariables = Exact<{ [key: string]: 
 
 export type GetModifiersforGroupDropDownQuery = { __typename?: 'Query', getModifiers: Array<{ __typename?: 'Modifier', _id: string, name: { __typename?: 'MasterCommon', value: string }, price: { __typename?: 'MasterCommonNumber', value: number } }> };
 
-export type DeleteModifierMutationVariables = Exact<{
+export type RemoveModifierGroupMutationVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
 
 
-export type DeleteModifierMutation = { __typename?: 'Mutation', deleteModifier: boolean };
+export type RemoveModifierGroupMutation = { __typename?: 'Mutation', removeModifierGroup: boolean };
 
 export type GetModifierGroupQueryVariables = Exact<{
   id: Scalars['String']['input'];
@@ -1766,6 +1809,22 @@ export type GetModifierGroupQueryVariables = Exact<{
 
 
 export type GetModifierGroupQuery = { __typename?: 'Query', getModifierGroup: { __typename?: 'ModifierGroup', _id: string, pricingType: PriceTypeEnum, optional: boolean, name: { __typename?: 'MasterCommon', value: string }, modifiers: Array<{ __typename?: 'ModifierInfo', _id: string, name: { __typename?: 'MasterCommon', value: string }, price: { __typename?: 'MasterCommonNumber', value: number } }>, maxSelections: { __typename?: 'MasterCommonNumber', value: number } } };
+
+export type RemoveModifierFromModifierGroupMutationVariables = Exact<{
+  modifierGroupId: Scalars['String']['input'];
+  modifierId: Scalars['String']['input'];
+}>;
+
+
+export type RemoveModifierFromModifierGroupMutation = { __typename?: 'Mutation', removeModifierFromModifierGroup: boolean };
+
+export type AddModifierToModifierGroupMutationVariables = Exact<{
+  modifierIds: Array<Scalars['String']['input']> | Scalars['String']['input'];
+  modifierGroupId: Scalars['String']['input'];
+}>;
+
+
+export type AddModifierToModifierGroupMutation = { __typename?: 'Mutation', addModifierToModifierGroup: boolean };
 
 export type GetModifiersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1779,12 +1838,26 @@ export type AddModifierMutationVariables = Exact<{
 
 export type AddModifierMutation = { __typename?: 'Mutation', addModifier: boolean };
 
+export type DeleteModifierMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type DeleteModifierMutation = { __typename?: 'Mutation', deleteModifier: boolean };
+
 export type GetModifierQueryVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
 
 
 export type GetModifierQuery = { __typename?: 'Query', getModifier: { __typename?: 'Modifier', _id: string, name: { __typename?: 'MasterCommon', value: string }, price: { __typename?: 'MasterCommonNumber', value: number } } };
+
+export type UpdateModifierMutationVariables = Exact<{
+  input: UpdateModifierInput;
+}>;
+
+
+export type UpdateModifierMutation = { __typename?: 'Mutation', updateModifier: boolean };
 
 export type AllPlacesQueryVariables = Exact<{
   input: Scalars['String']['input'];
@@ -1918,8 +1991,8 @@ export const ChangeCategoryStatusDocument = gql`
 }
     `;
 export const AddItemToCategoryDocument = gql`
-    mutation addItemToCategory($categoryId: String!, $itemId: String!) {
-  addItemToCategory(categoryId: $categoryId, itemId: $itemId)
+    mutation addItemToCategory($categoryId: String!, $itemId: [String!]!) {
+  addItemsToCategory(categoryId: $categoryId, itemIds: $itemId)
 }
     `;
 export const DeleteCategoryDocument = gql`
@@ -2002,6 +2075,11 @@ export const UpdateCategoryDocument = gql`
   updateCategory(input: $input)
 }
     `;
+export const RemoveItemFromCategoryDocument = gql`
+    mutation removeItemFromCategory($itemId: String!, $categoryId: String!) {
+  removeItemFromCategory(categoryId: $categoryId, itemId: $itemId)
+}
+    `;
 export const ChangeItemStatusDocument = gql`
     mutation changeItemStatus($id: String!) {
   changeItemStatus(id: $id)
@@ -2073,8 +2151,8 @@ export const GetItemDocument = gql`
 }
     `;
 export const AddItemDocument = gql`
-    mutation addItem($input: AddItemInput!) {
-  addItem(input: $input)
+    mutation addItem($input: AddItemInput!, $modifierGroups: [String!]!) {
+  addItem(input: $input, modifierGroups: $modifierGroups)
 }
     `;
 export const UpdateItemDocument = gql`
@@ -2095,6 +2173,16 @@ export const GetModifierGroupsforItemsDropDownDocument = gql`
       }
     }
   }
+}
+    `;
+export const RemoveModifierGroupFromItemDocument = gql`
+    mutation removeModifierGroupFromItem($itemId: String!, $modifierGroupId: String!) {
+  removeModifierGroupFromItem(itemId: $itemId, modifierGroupId: $modifierGroupId)
+}
+    `;
+export const AddModifierGroupToItemDocument = gql`
+    mutation addModifierGroupToItem($modifierGroupId: String!, $itemId: String!) {
+  addModifierGroupToItem(modifierGroupId: $modifierGroupId, itemId: $itemId)
 }
     `;
 export const GetActiveStatesDocument = gql`
@@ -2170,7 +2258,7 @@ export const DeleteMenuDocument = gql`
     `;
 export const AddCategoryToMenuDocument = gql`
     mutation addCategoryToMenu($categoryId: [String!]!, $menuId: String!) {
-  addCategoryToMenu(categoryId: $categoryId, menuId: $menuId)
+  addCategoriesToMenu(categoryIds: $categoryId, menuId: $menuId)
 }
     `;
 export const GetMenusByTypeDocument = gql`
@@ -2202,6 +2290,11 @@ export const UpdateMenuDocument = gql`
   updateMenu(input: $input)
 }
     `;
+export const RemoveCategoryFromMenuDocument = gql`
+    mutation removeCategoryFromMenu($menuId: String!, $categoryId: String!) {
+  removeCategoryFromMenu(categoryId: $categoryId, menuId: $menuId)
+}
+    `;
 export const GetModifierGroupsDocument = gql`
     query getModifierGroups {
   getModifierGroups {
@@ -2212,9 +2305,14 @@ export const GetModifierGroupsDocument = gql`
   }
 }
     `;
+export const UpdateModifierGroupDocument = gql`
+    mutation updateModifierGroup($input: UpdateModifierGroupInput!) {
+  updateModifierGroup(input: $input)
+}
+    `;
 export const AddModifierGroupDocument = gql`
-    mutation addModifierGroup($input: AddModifierGroupInput!) {
-  addModifierGroup(input: $input)
+    mutation addModifierGroup($input: AddModifierGroupInput!, $modifiers: [String!]!) {
+  addModifierGroup(input: $input, modifiers: $modifiers)
 }
     `;
 export const GetModifiersforGroupDropDownDocument = gql`
@@ -2230,9 +2328,9 @@ export const GetModifiersforGroupDropDownDocument = gql`
   }
 }
     `;
-export const DeleteModifierDocument = gql`
-    mutation deleteModifier($id: String!) {
-  deleteModifier(id: $id)
+export const RemoveModifierGroupDocument = gql`
+    mutation removeModifierGroup($id: String!) {
+  removeModifierGroup(id: $id)
 }
     `;
 export const GetModifierGroupDocument = gql`
@@ -2259,6 +2357,22 @@ export const GetModifierGroupDocument = gql`
   }
 }
     `;
+export const RemoveModifierFromModifierGroupDocument = gql`
+    mutation removeModifierFromModifierGroup($modifierGroupId: String!, $modifierId: String!) {
+  removeModifierFromModifierGroup(
+    modifierGroupId: $modifierGroupId
+    modifierId: $modifierId
+  )
+}
+    `;
+export const AddModifierToModifierGroupDocument = gql`
+    mutation addModifierToModifierGroup($modifierIds: [String!]!, $modifierGroupId: String!) {
+  addModifierToModifierGroup(
+    modifierGroupId: $modifierGroupId
+    modifierIds: $modifierIds
+  )
+}
+    `;
 export const GetModifiersDocument = gql`
     query getModifiers {
   getModifiers {
@@ -2277,6 +2391,11 @@ export const AddModifierDocument = gql`
   addModifier(input: $input)
 }
     `;
+export const DeleteModifierDocument = gql`
+    mutation deleteModifier($id: String!) {
+  deleteModifier(id: $id)
+}
+    `;
 export const GetModifierDocument = gql`
     query getModifier($id: String!) {
   getModifier(id: $id) {
@@ -2288,6 +2407,11 @@ export const GetModifierDocument = gql`
       value
     }
   }
+}
+    `;
+export const UpdateModifierDocument = gql`
+    mutation updateModifier($input: UpdateModifierInput!) {
+  updateModifier(input: $input)
 }
     `;
 export const AllPlacesDocument = gql`
@@ -2532,6 +2656,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     updateCategory(variables: UpdateCategoryMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UpdateCategoryMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<UpdateCategoryMutation>(UpdateCategoryDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'updateCategory', 'mutation', variables);
     },
+    removeItemFromCategory(variables: RemoveItemFromCategoryMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<RemoveItemFromCategoryMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<RemoveItemFromCategoryMutation>(RemoveItemFromCategoryDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'removeItemFromCategory', 'mutation', variables);
+    },
     changeItemStatus(variables: ChangeItemStatusMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<ChangeItemStatusMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<ChangeItemStatusMutation>(ChangeItemStatusDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'changeItemStatus', 'mutation', variables);
     },
@@ -2552,6 +2679,12 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     getModifierGroupsforItemsDropDown(variables?: GetModifierGroupsforItemsDropDownQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetModifierGroupsforItemsDropDownQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetModifierGroupsforItemsDropDownQuery>(GetModifierGroupsforItemsDropDownDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getModifierGroupsforItemsDropDown', 'query', variables);
+    },
+    removeModifierGroupFromItem(variables: RemoveModifierGroupFromItemMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<RemoveModifierGroupFromItemMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<RemoveModifierGroupFromItemMutation>(RemoveModifierGroupFromItemDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'removeModifierGroupFromItem', 'mutation', variables);
+    },
+    addModifierGroupToItem(variables: AddModifierGroupToItemMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddModifierGroupToItemMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<AddModifierGroupToItemMutation>(AddModifierGroupToItemDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'addModifierGroupToItem', 'mutation', variables);
     },
     getActiveStates(variables?: GetActiveStatesQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetActiveStatesQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetActiveStatesQuery>(GetActiveStatesDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getActiveStates', 'query', variables);
@@ -2583,8 +2716,14 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     updateMenu(variables: UpdateMenuMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UpdateMenuMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<UpdateMenuMutation>(UpdateMenuDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'updateMenu', 'mutation', variables);
     },
+    removeCategoryFromMenu(variables: RemoveCategoryFromMenuMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<RemoveCategoryFromMenuMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<RemoveCategoryFromMenuMutation>(RemoveCategoryFromMenuDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'removeCategoryFromMenu', 'mutation', variables);
+    },
     getModifierGroups(variables?: GetModifierGroupsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetModifierGroupsQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetModifierGroupsQuery>(GetModifierGroupsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getModifierGroups', 'query', variables);
+    },
+    updateModifierGroup(variables: UpdateModifierGroupMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UpdateModifierGroupMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<UpdateModifierGroupMutation>(UpdateModifierGroupDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'updateModifierGroup', 'mutation', variables);
     },
     addModifierGroup(variables: AddModifierGroupMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddModifierGroupMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<AddModifierGroupMutation>(AddModifierGroupDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'addModifierGroup', 'mutation', variables);
@@ -2592,11 +2731,17 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     getModifiersforGroupDropDown(variables?: GetModifiersforGroupDropDownQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetModifiersforGroupDropDownQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetModifiersforGroupDropDownQuery>(GetModifiersforGroupDropDownDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getModifiersforGroupDropDown', 'query', variables);
     },
-    deleteModifier(variables: DeleteModifierMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<DeleteModifierMutation> {
-      return withWrapper((wrappedRequestHeaders) => client.request<DeleteModifierMutation>(DeleteModifierDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'deleteModifier', 'mutation', variables);
+    removeModifierGroup(variables: RemoveModifierGroupMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<RemoveModifierGroupMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<RemoveModifierGroupMutation>(RemoveModifierGroupDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'removeModifierGroup', 'mutation', variables);
     },
     getModifierGroup(variables: GetModifierGroupQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetModifierGroupQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetModifierGroupQuery>(GetModifierGroupDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getModifierGroup', 'query', variables);
+    },
+    removeModifierFromModifierGroup(variables: RemoveModifierFromModifierGroupMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<RemoveModifierFromModifierGroupMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<RemoveModifierFromModifierGroupMutation>(RemoveModifierFromModifierGroupDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'removeModifierFromModifierGroup', 'mutation', variables);
+    },
+    addModifierToModifierGroup(variables: AddModifierToModifierGroupMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddModifierToModifierGroupMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<AddModifierToModifierGroupMutation>(AddModifierToModifierGroupDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'addModifierToModifierGroup', 'mutation', variables);
     },
     getModifiers(variables?: GetModifiersQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetModifiersQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetModifiersQuery>(GetModifiersDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getModifiers', 'query', variables);
@@ -2604,8 +2749,14 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     addModifier(variables: AddModifierMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddModifierMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<AddModifierMutation>(AddModifierDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'addModifier', 'mutation', variables);
     },
+    deleteModifier(variables: DeleteModifierMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<DeleteModifierMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<DeleteModifierMutation>(DeleteModifierDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'deleteModifier', 'mutation', variables);
+    },
     getModifier(variables: GetModifierQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetModifierQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetModifierQuery>(GetModifierDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getModifier', 'query', variables);
+    },
+    updateModifier(variables: UpdateModifierMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UpdateModifierMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<UpdateModifierMutation>(UpdateModifierDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'updateModifier', 'mutation', variables);
     },
     AllPlaces(variables: AllPlacesQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AllPlacesQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<AllPlacesQuery>(AllPlacesDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'AllPlaces', 'query', variables);

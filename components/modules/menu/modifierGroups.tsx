@@ -82,8 +82,8 @@ const Modifiers: React.FC = () => {
   const handleDeleteConfirmation = async () => {
     setBtnLoading(true);
     try {
-      const response = await sdk.deleteModifier({ id: selectedItemId });
-      if (response && response.deleteModifier) {
+      const response = await sdk.removeModifierGroup({ id: selectedItemId });
+      if (response && response.removeModifierGroup) {
         fetchModifierGroups();
       }
     } catch (error: any) {
