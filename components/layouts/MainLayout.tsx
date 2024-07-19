@@ -3,12 +3,25 @@ import Navbar from "../navbar/navbar";
 import Sidebar from "../navigation/sidebar";
 import { sdk } from "@/utils/graphqlClient";
 import useRestaurantsStore from "@/store/restaurant";
-import { RestaurantStatus, StatusEnum } from "@/generated/graphql";
+import { useForm, Controller } from "react-hook-form";
 import { parseCookies } from "nookies";
 import ReusableModal from "../common/modal/modal";
 import useGlobalStore from "@/store/global";
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { control, handleSubmit } = useForm({
+    defaultValues: {
+      name: "",
+      salesTax: "",
+      default: false,
+    },
+  });
+
+  const onSubmit = (data: any) => {
+    console.log(data);
+    // Handle form submission
+  };
+
   const {
     setRestaurants,
     setSelectedRestaurant,
@@ -73,8 +86,81 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             isOpen={isShowTaxSettings}
             onClose={handleCloseTaxSettings}
           >
-            TaxSettings
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div className="mb-4">
+                <label
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                  htmlFor="name"
+                >
+                  Name
+                </label>
+                <Controller
+                  name="name"
+                  control={control}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      id="name"
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    />
+                  )}
+                />
+              </div>
+
+              <div className="mb-4">
+                <label
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                  htmlFor="salesTax"
+                >
+                  Sales Tax
+                </label>
+                <Controller
+                  name="salesTax"
+                  control={control}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      id="salesTax"
+                      type="number"
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    />
+                  )}
+                />
+              </div>
+
+              <div className="mb-4">
+                <label
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                  htmlFor="default"
+                >
+                  Default
+                </label>
+                <Controller
+                  name="default"
+                  control={control}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      id="default"
+                      type="checkbox"
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      checked={field.value}
+                    />
+                  )}
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <button
+                  type="submit"
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                >
+                  Save
+                </button>
+              </div>
+            </form>
           </ReusableModal>
+
           <div />
         </div>
       </div>
