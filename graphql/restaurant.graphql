@@ -45,5 +45,22 @@ query getRestaurantDetails {
     }
     brandingLogo
     website
+    taxRates {
+      name {
+        value
+      }
+      salesTax {
+        value
+      }
+      default
+    }
   }
+}
+
+mutation addTaxRate($input: TaxRateInput!) {
+  addTaxRate(input: $input)
+}
+
+mutation addTaxRateInRestaurant($taxRateId: String!) {
+  addTaxRateInRestaurant(taxRateId: $taxRateId)
 }

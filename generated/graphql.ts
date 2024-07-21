@@ -1936,7 +1936,21 @@ export type SetRestaurantIdAsCookieQuery = { __typename?: 'Query', setRestaurant
 export type GetRestaurantDetailsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetRestaurantDetailsQuery = { __typename?: 'Query', getRestaurantDetails: { __typename?: 'Restaurant', _id: string, brandingLogo?: string | null, website?: string | null, name: { __typename?: 'MasterCommon', value: string } } };
+export type GetRestaurantDetailsQuery = { __typename?: 'Query', getRestaurantDetails: { __typename?: 'Restaurant', _id: string, brandingLogo?: string | null, website?: string | null, name: { __typename?: 'MasterCommon', value: string }, taxRates?: Array<{ __typename?: 'TaxRateInfo', default: boolean, name: { __typename?: 'MasterCommon', value: string }, salesTax: { __typename?: 'MasterCommonNumber', value: number } }> | null } };
+
+export type AddTaxRateMutationVariables = Exact<{
+  input: TaxRateInput;
+}>;
+
+
+export type AddTaxRateMutation = { __typename?: 'Mutation', addTaxRate: boolean };
+
+export type AddTaxRateInRestaurantMutationVariables = Exact<{
+  taxRateId: Scalars['String']['input'];
+}>;
+
+
+export type AddTaxRateInRestaurantMutation = { __typename?: 'Mutation', addTaxRateInRestaurant: boolean };
 
 
 export const LogoutDocument = gql`
@@ -2604,7 +2618,26 @@ export const GetRestaurantDetailsDocument = gql`
     }
     brandingLogo
     website
+    taxRates {
+      name {
+        value
+      }
+      salesTax {
+        value
+      }
+      default
+    }
   }
+}
+    `;
+export const AddTaxRateDocument = gql`
+    mutation addTaxRate($input: TaxRateInput!) {
+  addTaxRate(input: $input)
+}
+    `;
+export const AddTaxRateInRestaurantDocument = gql`
+    mutation addTaxRateInRestaurant($taxRateId: String!) {
+  addTaxRateInRestaurant(taxRateId: $taxRateId)
 }
     `;
 
@@ -2797,6 +2830,12 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     getRestaurantDetails(variables?: GetRestaurantDetailsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetRestaurantDetailsQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetRestaurantDetailsQuery>(GetRestaurantDetailsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getRestaurantDetails', 'query', variables);
+    },
+    addTaxRate(variables: AddTaxRateMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddTaxRateMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<AddTaxRateMutation>(AddTaxRateDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'addTaxRate', 'mutation', variables);
+    },
+    addTaxRateInRestaurant(variables: AddTaxRateInRestaurantMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddTaxRateInRestaurantMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<AddTaxRateInRestaurantMutation>(AddTaxRateInRestaurantDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'addTaxRateInRestaurant', 'mutation', variables);
     }
   };
 }

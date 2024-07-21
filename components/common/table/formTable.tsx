@@ -39,7 +39,7 @@ const FormAddTable: React.FC<FormAddTableProps> = ({
 }) => {
   console.log("roop", data);
   return (
-    <div className="w-full">
+    <div className="w-full border rounded-md p-2 border-t-2 border-b-2 ">
       <h2 className="block mb-2 text-sm font-medium text-left text-gray-700">
         {title}
       </h2>
@@ -96,7 +96,7 @@ const FormAddTable: React.FC<FormAddTableProps> = ({
         type="button"
         variant={ButtonType.Outlined}
         onClick={onAddClick}
-        className="w-full mt-2"
+        className="w-full mt-2 mb-2"
       >
         {buttonText}
       </CButton>

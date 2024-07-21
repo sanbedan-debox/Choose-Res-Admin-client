@@ -66,18 +66,23 @@ const MenuSection: React.FC<MenuSectionProps> = ({ contentList }) => {
         </nav>
       </aside>
       <main className="w-3/4 p-4">
-        {contentList.map((content) => (
-          <section
-            id={content.id}
-            key={content.id}
-            className="mb-16 p-4 rounded shadow"
-            ref={(el) => {
-              if (el) sectionRefs.current.push(el);
-            }}
-          >
-            <h2 className="text-2xl font-bold mb-4">{content.title}</h2>
-            <content.Component />
-          </section>
+        {contentList.map((content, index) => (
+          <>
+            <section
+              id={content.id}
+              key={content.id}
+              className="mb-4 p-4 rounded shadow "
+              ref={(el) => {
+                if (el) sectionRefs.current.push(el);
+              }}
+            >
+              <h2 className="text-2xl font-bold mb-4">{content.title}</h2>
+              <content.Component />
+            </section>
+            {index < contentList.length - 1 && (
+              <div className="w-full mb-4 bg-primary rounded-md bg-opacity-45 h-1"></div>
+            )}{" "}
+          </>
         ))}
       </main>
     </div>

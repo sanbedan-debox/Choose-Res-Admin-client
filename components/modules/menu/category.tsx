@@ -104,7 +104,9 @@ const Categories: React.FC = () => {
   const handleDeleteItem = (_id: string) => {
     setshowDeleteConfirmationModal(true);
     setSelectedItemId(_id);
-    setAvailableCaption("are you sure you want to delete this Category?");
+    setAvailableCaption(
+      "By clicking yes the selected Category / Categories will be deleted. This action cannot be undone."
+    );
   };
 
   const headings = [

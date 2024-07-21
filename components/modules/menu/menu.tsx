@@ -32,6 +32,7 @@ const Menu: React.FC = () => {
     useState(false);
   const { setToastData } = useGlobalStore();
   const [tableLoading, setTableLoading] = useState(false);
+  const { setEditMenuId, setisEditMenu } = useMenuMenuStore();
 
   const fetchAllMenus = async () => {
     setTableLoading(true);
@@ -70,8 +71,7 @@ const Menu: React.FC = () => {
     );
   };
 
-  const { setEditMenuId, setisEditMenu } = useMenuMenuStore();
-  const handleEditCategory = (_id: string) => {
+  const handleEditMenu = (_id: string) => {
     setisAddMenuModalOpen(true);
     setEditMenuId(_id);
     setisEditMenu(true);
@@ -84,7 +84,7 @@ const Menu: React.FC = () => {
       />
       <FaEdit
         className="text-blue-500 cursor-pointer"
-        onClick={() => handleEditCategory(rowData._id)}
+        onClick={() => handleEditMenu(rowData._id)}
       />
       <FaCopy
         className="text-green-500 cursor-pointer"

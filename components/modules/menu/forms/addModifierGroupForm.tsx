@@ -17,6 +17,7 @@ import AddFormDropdown from "@/components/common/addFormDropDown/addFormDropdown
 import { MdArrowOutward } from "react-icons/md";
 import useModGroupStore from "@/store/modifierGroup";
 import useModStore from "@/store/modifiers";
+import ReusableModal from "@/components/common/modal/modal";
 
 interface IFormInput {
   name: string;
@@ -54,7 +55,8 @@ const AddModifierGroupForm = () => {
     setisEditModGroup,
   } = useModGroupStore();
   const [modifierssOption, setModifiersOption] = useState<any[]>([]);
-
+  const [confirmationRemoval, setConfirmationRemoval] = useState(false);
+  const [remmovingId, setRemovingId] = useState<string>("");
   const [btnLoading, setBtnLoading] = useState(false);
   const { setToastData } = useGlobalStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -267,7 +269,11 @@ const AddModifierGroupForm = () => {
     <div className="flex space-x-2 justify-center">
       <FaTrash
         className="text-red-600 cursor-pointer"
-        onClick={() => handleRemoveItem(rowData._id)}
+        onClick={() => {
+          setConfirmationRemoval(true);
+          console.log("Row Data Id while del", rowData._id);
+          setRemovingId(rowData?._id);
+        }}
       />
     </div>
   );
@@ -276,26 +282,26 @@ const AddModifierGroupForm = () => {
     actions: renderActions(item),
   }));
 
-  const handleRemoveItem = async (id: string) => {
+  const handleRemoveModifiers = async () => {
     setSelectedItems((prevSelected) =>
-      prevSelected.filter((item) => item._id !== id)
+      prevSelected.filter((item) => item._id !== remmovingId)
     );
 
     setTempSelectedItems((prevSelected) =>
-      prevSelected.filter((item) => item._id !== id)
+      prevSelected.filter((item) => item._id !== remmovingId)
     );
-
     if (isEditModGroup) {
       const res = await sdk.removeModifierFromModifierGroup({
-        modifierId: id,
+        modifierId: remmovingId,
         modifierGroupId: editModGroupId || "",
       });
       if (res) {
         setprevItemsbfrEdit((prevSelected) =>
-          prevSelected.filter((item) => item._id !== id)
+          prevSelected.filter((item) => item._id !== remmovingId)
         );
       }
     }
+    setConfirmationRemoval(false);
   };
 
   const headings = [
@@ -315,7 +321,7 @@ const AddModifierGroupForm = () => {
         )
       );
     }
-  }, [isModalOpen, selectedItems]);
+  }, [isModalOpen, selectedItems, fetchMenuDatas]);
 
   return (
     <motion.div
@@ -457,6 +463,25 @@ const AddModifierGroupForm = () => {
           />
         </div>
       </form>
+      <ReusableModal
+        isOpen={confirmationRemoval}
+        onClose={() => {
+          setConfirmationRemoval(false);
+          setRemovingId("");
+        }}
+        title="Are you sure?"
+        comments="By clicking yes the selected Modifier / Modifiers will be removed from this category. This action cannot be undone."
+      >
+        <div className="flex justify-end space-x-4">
+          <CButton
+            loading={btnLoading}
+            variant={ButtonType.Primary}
+            onClick={() => handleRemoveModifiers()}
+          >
+            Yes
+          </CButton>
+        </div>
+      </ReusableModal>
     </motion.div>
   );
 };

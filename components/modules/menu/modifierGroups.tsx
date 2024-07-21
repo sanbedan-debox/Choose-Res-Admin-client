@@ -54,7 +54,9 @@ const Modifiers: React.FC = () => {
   const handleDeleteItem = (_id: string) => {
     setshowDeleteConfirmationModal(true);
     setSelectedItemId(_id);
-    setAvailableCaption("are you sure you want to delete this item?");
+    setAvailableCaption(
+      " By clicking yes the selected Modifer Group / Modifier Groups will be deleted. This action cannot be undone."
+    );
   };
   const renderActions = (rowData: { _id: string }) => (
     <div className="flex space-x-3 justify-center">

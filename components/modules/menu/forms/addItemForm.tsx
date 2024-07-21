@@ -18,6 +18,7 @@ import { FaTrash } from "react-icons/fa";
 import AddFormDropdown from "@/components/common/addFormDropDown/addFormDropdown";
 import { MdArrowOutward } from "react-icons/md";
 import useModGroupStore from "@/store/modifierGroup";
+import ReusableModal from "@/components/common/modal/modal";
 interface IFormInput {
   name: string;
   desc: string;
@@ -132,6 +133,8 @@ const AddItemForm = () => {
   } = useMenuOptionsStore();
   const { editItemId, isEditItem, setEditItemId, setisEditItem } =
     useMenuItemsStore();
+  const [confirmationRemoval, setConfirmationRemoval] = useState(false);
+  const [remmovingId, setRemovingId] = useState<string>("");
   const { setEditModGroupId, setisEditModGroup } = useModGroupStore();
   const [btnLoading, setBtnLoading] = useState(false);
   const { setToastData } = useGlobalStore();
@@ -375,7 +378,7 @@ const AddItemForm = () => {
         )
       );
     }
-  }, [isModalOpen, selectedItems]);
+  }, [isModalOpen, selectedItems, fetchMenuDatas]);
 
   const [previewUrl, setPreviewUrl] = useState<string>("");
   const [isUploading, setIsUploading] = useState(false);
@@ -404,7 +407,11 @@ const AddItemForm = () => {
     <div className="flex space-x-2 justify-center">
       <FaTrash
         className="text-red-600 cursor-pointer"
-        onClick={() => handleRemoveItem(rowData._id)}
+        onClick={() => {
+          setConfirmationRemoval(true);
+          console.log("Row Data Id while del", rowData._id);
+          setRemovingId(rowData?._id);
+        }}
       />
     </div>
   );
@@ -419,25 +426,33 @@ const AddItemForm = () => {
     actions: renderActions(item),
   }));
 
-  const handleRemoveItem = async (id: string) => {
+  const handleRemoveCategory = async () => {
     setSelectedItems((prevSelected) =>
-      prevSelected.filter((item) => item._id !== id)
+      prevSelected.filter((item) => item._id !== remmovingId)
     );
 
     setTempSelectedItems((prevSelected) =>
-      prevSelected.filter((item) => item._id !== id)
+      prevSelected.filter((item) => item._id !== remmovingId)
     );
     if (isEditItem) {
-      const res = await sdk.removeModifierGroupFromItem({
-        modifierGroupId: id,
-        itemId: editItemId || "",
-      });
-      if (res) {
+      try {
+        const res = await sdk.removeModifierGroupFromItem({
+          modifierGroupId: remmovingId,
+          itemId: editItemId || "",
+        });
+
         setprevItemsbfrEdit((prevSelected) =>
-          prevSelected.filter((item) => item._id !== id)
+          prevSelected.filter((item) => item._id !== remmovingId)
         );
+      } catch (error) {
+        const errorMessage = extractErrorMessage(error);
+        setToastData({
+          type: "error",
+          message: errorMessage,
+        });
       }
     }
+    setConfirmationRemoval(false);
   };
 
   const handleAddClick = () => {
@@ -545,6 +560,7 @@ const AddItemForm = () => {
               </p>
             )}
           </div>
+
           <div className="mb-1">
             <label
               htmlFor="price"
@@ -554,15 +570,21 @@ const AddItemForm = () => {
             </label>
             <input
               type="number"
-              {...register("price", { required: "Price is required" })}
+              {...register("price", {
+                required: "Price is required",
+                pattern: {
+                  value: /^\d+(\.\d{1,2})?$/,
+                  message: "Enter a valid price (e.g., 7.99)",
+                },
+              })}
               id="price"
               className="input input-primary"
               placeholder="Enter item price"
               style={{
                 appearance: "textfield",
               }}
-              inputMode="numeric"
-              pattern="[0-9]*"
+              inputMode="decimal"
+              step="0.01"
               onWheel={(e) => e.preventDefault()}
               onKeyDown={(e) => {
                 if (e.key === "e" || e.key === "-" || e.key === "+") {
@@ -576,6 +598,7 @@ const AddItemForm = () => {
               </p>
             )}
           </div>
+
           <div className="col-span-1">
             <label className="block mb-2 text-lg font-medium text-left text-gray-700">
               Photo
@@ -781,6 +804,25 @@ const AddItemForm = () => {
         renderActions={renderActions}
         onClickCreatebtn={handleCreateModifierGroup}
       />
+      <ReusableModal
+        isOpen={confirmationRemoval}
+        onClose={() => {
+          setConfirmationRemoval(false);
+          setRemovingId("");
+        }}
+        title="Are you sure?"
+        comments="By clicking yes the selected Modifier Group / modifier Groups will be removed from this Item. This action cannot be undone."
+      >
+        <div className="flex justify-end space-x-4">
+          <CButton
+            loading={btnLoading}
+            variant={ButtonType.Primary}
+            onClick={() => handleRemoveCategory()}
+          >
+            Yes
+          </CButton>
+        </div>
+      </ReusableModal>
     </motion.div>
   );
 };

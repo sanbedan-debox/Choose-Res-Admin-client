@@ -37,7 +37,7 @@ const AddMenuForm = () => {
   const { fetchMenuDatas, setfetchMenuDatas, setisAddMenuModalOpen } =
     useMenuOptionsStore();
   const [confirmationRemoval, setConfirmationRemoval] = useState(false);
-  const [remmovingId, setRemovingId] = useState("");
+  const [removingId, setRemovingId] = useState<string>("");
   const [btnLoading, setBtnLoading] = useState(false);
   const { setToastData } = useGlobalStore();
   const [itemsOption, setItemsOption] = useState<any[]>([]);
@@ -50,7 +50,10 @@ const AddMenuForm = () => {
   const [tempSelectedItems, setTempSelectedItems] = useState<
     ItemsDropDownType[]
   >([]);
+  const [changesMenu, setChangesMenu] = useState<any>([]);
   const { editMenuId, isEditMenu } = useMenuMenuStore();
+  const { seteditCatsId, setisEditCats } = useMenuCategoryStore();
+  const { setisAddCategoryModalOpen } = useMenuOptionsStore();
 
   const {
     handleSubmit,
@@ -59,52 +62,6 @@ const AddMenuForm = () => {
     setValue,
     register,
   } = useForm<IFormInput>();
-  const [changesMenu, setChangesMenu] = useState<any>([]);
-  useEffect(() => {
-    const fetchMenuData = async () => {
-      if (editMenuId) {
-        try {
-          console.log(editMenuId);
-          const response = await sdk.getMenusByType({ id: editMenuId });
-          const menu = response.getMenusByType;
-          setChangesMenu(response.getMenusByType);
-          setValue("name", menu[0].name.value);
-          const selectedMenuType = menuTypeOptions.find(
-            (option) => option.value === menu[0]?.type
-          );
-          setValue("type", selectedMenuType);
-
-          const formateditemlist = menu[0]?.categories.map((el) => ({
-            _id: el._id._id,
-            name: el?.name?.value ?? "",
-            length: 0,
-          }));
-          setSelectedItems(menu[0].categories);
-          setTempSelectedItems(formateditemlist);
-          setprevItemsbfrEdit(formateditemlist);
-        } catch (error) {
-          const errorMessage = extractErrorMessage(error);
-          setToastData({
-            type: "error",
-            message: errorMessage,
-          });
-        }
-      }
-    };
-
-    fetchMenuData();
-  }, [editMenuId, setValue, setToastData]);
-
-  useEffect(() => {
-    if (!isModalOpen && selectedItems.length > 0) {
-      setItemsOption((prevItemsOption) =>
-        prevItemsOption.filter(
-          (item) =>
-            !selectedItems.some((selectedItem) => selectedItem._id === item._id)
-        )
-      );
-    }
-  }, [isModalOpen, selectedItems]);
 
   const onSubmit = async (data: IFormInput) => {
     try {
@@ -207,29 +164,28 @@ const AddMenuForm = () => {
     fetch();
   }, [fetchMenuDatas, setToastData]);
 
-  const handleRemoveCategory = async (id: string) => {
+  const handleRemoveCategory = async () => {
     setSelectedItems((prevSelected) =>
-      prevSelected.filter((item) => item._id !== id)
+      prevSelected.filter((item) => item._id._id !== removingId)
     );
 
     setTempSelectedItems((prevSelected) =>
-      prevSelected.filter((item) => item._id !== id)
+      prevSelected.filter((item) => item._id !== removingId)
     );
 
     if (isEditMenu) {
       const res = await sdk.removeCategoryFromMenu({
-        categoryId: id,
+        categoryId: removingId,
         menuId: editMenuId || "",
       });
       if (res) {
         setprevItemsbfrEdit((prevSelected) =>
-          prevSelected.filter((item) => item._id !== id)
+          prevSelected.filter((item) => item._id !== removingId)
         );
       }
     }
+    setConfirmationRemoval(false);
   };
-
-  const { seteditCatsId, setisEditCats } = useMenuCategoryStore();
 
   const handleEditCategory = (id: string) => {
     console.log(`Edit item with id ${id}`);
@@ -238,22 +194,27 @@ const AddMenuForm = () => {
     seteditCatsId(id);
   };
 
-  const renderActions = (rowData: { _id: string }) => (
+  const renderActions = (rowData: { _id: { _id: string } }) => (
     <div className="flex space-x-2 justify-center">
       <FaTrash
         className="text-red-600 cursor-pointer"
         onClick={() => {
           setConfirmationRemoval(true);
-          setRemovingId(rowData._id);
+          console.log("Row Data Id while del", rowData._id._id);
+          setRemovingId(rowData?._id?._id);
           // handleRemoveCategory(rowData._id);
         }}
       />
       <MdArrowOutward
         className="text-primary cursor-pointer"
-        onClick={() => handleEditCategory(rowData._id)}
+        onClick={() => {
+          console.log(rowData?._id);
+          handleEditCategory(rowData?._id?._id);
+        }}
       />
     </div>
   );
+
   const data = selectedItems.map((item) => ({
     ...item,
     actions: renderActions(item),
@@ -269,12 +230,22 @@ const AddMenuForm = () => {
     setSearchTerm(event.target.value);
   };
 
+  useEffect(() => {
+    if (!isModalOpen && selectedItems.length > 0) {
+      setItemsOption((prevItemsOption) =>
+        prevItemsOption.filter(
+          (item) =>
+            !selectedItems.some((selectedItem) => selectedItem._id === item._id)
+        )
+      );
+    }
+  }, [isModalOpen, selectedItems, fetchMenuDatas]);
+
   const filteredItems = itemsOption.filter((item) =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const headingsDropdown = [
-    { title: "Items", dataKey: "items" },
     {
       title: "Actions",
       dataKey: "name",
@@ -306,10 +277,45 @@ const AddMenuForm = () => {
         : [...prevSelected, item]
     );
   };
-  const { setisAddCategoryModalOpen } = useMenuOptionsStore();
+
   const handelCreateCategory = () => {
     setisAddCategoryModalOpen(true);
   };
+
+  useEffect(() => {
+    const fetchMenuData = async () => {
+      if (editMenuId) {
+        try {
+          console.log(editMenuId);
+          const response = await sdk.getMenusByType({ id: editMenuId });
+          const menu = response.getMenusByType;
+          setChangesMenu(response.getMenusByType);
+          setValue("name", menu[0].name.value);
+          const selectedMenuType = menuTypeOptions.find(
+            (option) => option.value === menu[0]?.type
+          );
+          setValue("type", selectedMenuType);
+
+          const formateditemlist = menu[0]?.categories.map((el) => ({
+            _id: el._id._id,
+            name: el?.name?.value ?? "",
+            length: 0,
+          }));
+          setSelectedItems(menu[0].categories);
+          setTempSelectedItems(formateditemlist);
+          setprevItemsbfrEdit(formateditemlist);
+        } catch (error) {
+          const errorMessage = extractErrorMessage(error);
+          setToastData({
+            type: "error",
+            message: errorMessage,
+          });
+        }
+      }
+    };
+
+    fetchMenuData();
+  }, [editMenuId, setValue, setToastData]);
 
   return (
     <motion.div
@@ -321,7 +327,7 @@ const AddMenuForm = () => {
     >
       <div className="flex flex-col items-center space-y-5 text-center">
         <h1 className="font-display max-w-2xl font-semibold text-2xl">
-          Add a new menu
+          {isEditMenu ? "Edit Menu" : " Add a new menu"}
         </h1>
         <p className="max-w-md text-accent-foreground/80 text-sm">
           Fill in the details to add a new menu.
@@ -397,7 +403,7 @@ const AddMenuForm = () => {
           type="submit"
           className="w-full"
         >
-          Add Menu
+          {isEditMenu ? "Save Menu" : "Add Menu"}
         </CButton>
       </form>
       <AddFormDropdown
@@ -429,7 +435,7 @@ const AddMenuForm = () => {
           <CButton
             loading={btnLoading}
             variant={ButtonType.Primary}
-            onClick={() => handleRemoveCategory}
+            onClick={() => handleRemoveCategory()}
           >
             Yes
           </CButton>

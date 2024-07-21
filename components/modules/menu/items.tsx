@@ -89,7 +89,9 @@ const Items: React.FC = () => {
   const handleDeleteItem = (_id: string) => {
     setshowDeleteConfirmationModal(true);
     setSelectedItemId(_id);
-    setAvailableCaption("are you sure you want to delete this item?");
+    setAvailableCaption(
+      " By clicking yes the selected Item / Items will be deleted. This action cannot be undone."
+    );
   };
 
   const { setEditItemId, setisEditItem } = useMenuItemsStore();

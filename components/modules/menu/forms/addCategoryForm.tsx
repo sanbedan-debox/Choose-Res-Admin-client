@@ -14,6 +14,7 @@ import { FaTrash } from "react-icons/fa";
 import { MdArrowOutward } from "react-icons/md";
 import AddFormDropdown from "@/components/common/addFormDropDown/addFormDropdown";
 import useMenuItemsStore from "@/store/menuItems";
+import ReusableModal from "@/components/common/modal/modal";
 
 interface IFormInput {
   name: string;
@@ -35,6 +36,8 @@ const AddCategoryForm = () => {
   const [prevItemsbfrEdit, setprevItemsbfrEdit] = useState<ItemsDropDownType[]>(
     []
   );
+  const [confirmationRemoval, setConfirmationRemoval] = useState(false);
+  const [remmovingId, setRemovingId] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState("");
   const [tempSelectedItems, setTempSelectedItems] = useState<
     ItemsDropDownType[]
@@ -239,7 +242,15 @@ const AddCategoryForm = () => {
     <div className="flex space-x-2 justify-center">
       <FaTrash
         className="text-red-600 cursor-pointer"
-        onClick={() => handleRemoveItem(rowData._id._id, rowData._id)}
+        onClick={() => {
+          setConfirmationRemoval(true);
+          console.log("Row Data Id while del", rowData._id._id);
+          setRemovingId(rowData?._id?._id);
+        }}
+      />
+      <MdArrowOutward
+        className="text-primary cursor-pointer"
+        onClick={() => handleEditItem(rowData?._id?._id)}
       />
     </div>
   );
@@ -251,27 +262,6 @@ const AddCategoryForm = () => {
 
   const handleAddClick = () => {
     setIsModalOpen(true);
-  };
-
-  const handleRemoveItem = async (id: string, rowDataId: any) => {
-    setSelectedItems((prevSelected) =>
-      prevSelected.filter((item) => item._id !== rowDataId)
-    );
-
-    setTempSelectedItems((prevSelected) =>
-      prevSelected.filter((item) => item._id !== rowDataId)
-    );
-
-    if (isEditCats) {
-      const res = await sdk.removeItemFromCategory({
-        categoryId: editCatsId || "",
-        itemId: id,
-      });
-
-      setprevItemsbfrEdit((prevSelected) =>
-        prevSelected.filter((item) => item._id !== rowDataId)
-      );
-    }
   };
 
   const { setEditItemId, setisEditItem } = useMenuItemsStore();
@@ -305,23 +295,26 @@ const AddCategoryForm = () => {
       ),
     },
   ];
-  const [selectAll, setSelectAll] = useState(false);
-  const handleSelectAll = () => {
-    setSelectAll(!selectAll);
-    if (!selectAll) {
-      const allItems = filteredItems.filter(
-        (item) =>
-          !tempSelectedItems.some(
-            (selectedItem) => selectedItem._id === item._id
-          )
+
+  const handleRemoveCategory = async () => {
+    setSelectedItems((prevSelected) =>
+      prevSelected.filter((item) => item._id._id !== remmovingId)
+    );
+
+    setTempSelectedItems((prevSelected) =>
+      prevSelected.filter((item) => item._id !== remmovingId)
+    );
+    if (isEditCats) {
+      const res = await sdk.removeItemFromCategory({
+        categoryId: editCatsId || "",
+        itemId: remmovingId,
+      });
+
+      setprevItemsbfrEdit((prevSelected) =>
+        prevSelected.filter((item) => item._id !== remmovingId)
       );
-      setTempSelectedItems((prevSelectedItems) => [
-        ...prevSelectedItems,
-        ...allItems,
-      ]);
-    } else {
-      setTempSelectedItems([]);
     }
+    setConfirmationRemoval(false);
   };
 
   return (
@@ -425,6 +418,26 @@ const AddCategoryForm = () => {
         // handleSelectAll={handleSelectAll}
         // selectAll={selectAll}
       />
+
+      <ReusableModal
+        isOpen={confirmationRemoval}
+        onClose={() => {
+          setConfirmationRemoval(false);
+          setRemovingId("");
+        }}
+        title="Are you sure?"
+        comments="By clicking yes the selected Item / items will be removed from this category. This action cannot be undone."
+      >
+        <div className="flex justify-end space-x-4">
+          <CButton
+            loading={btnLoading}
+            variant={ButtonType.Primary}
+            onClick={() => handleRemoveCategory()}
+          >
+            Yes
+          </CButton>
+        </div>
+      </ReusableModal>
     </motion.div>
   );
 };

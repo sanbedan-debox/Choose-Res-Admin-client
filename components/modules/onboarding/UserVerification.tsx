@@ -105,8 +105,9 @@ const UserVerification = () => {
         message: errorMessage,
       });
       return;
+    } finally {
+      setBtnLoading(false);
     }
-    setBtnLoading(false);
   };
 
   return (
