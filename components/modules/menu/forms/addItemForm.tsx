@@ -220,15 +220,34 @@ const AddItemForm = () => {
       const statusSub = data.status ? StatusEnum.Active : StatusEnum.Inactive;
 
       const parsedPrice = parseFloat(data.price.toString());
-      const formattedData = Object.keys(data.regularHours).map((day: any) => ({
+      const formattedData = Object.keys(data.regularHours).map((day) => ({
         Day: day,
-        hours: data.regularHours[day]
+        hours: data.regularHours[
+          day as
+            | "Monday"
+            | "Tuesday"
+            | "Wednesday"
+            | "Thursday"
+            | "Friday"
+            | "Saturday"
+            | "Sunday"
+        ]
           .filter((slot: any) => slot.from && slot.to)
           .map((slot: any) => ({
             start: slot.from,
             end: slot.to,
           })),
-        active: data.activeDays[day],
+        active:
+          data.activeDays[
+            day as
+              | "Monday"
+              | "Tuesday"
+              | "Wednesday"
+              | "Thursday"
+              | "Friday"
+              | "Saturday"
+              | "Sunday"
+          ],
       }));
 
       const formatData = (formattedData: any[]): any[] => {
@@ -257,18 +276,6 @@ const AddItemForm = () => {
       const formattedSampleInput = formatData(formattedData);
       // setAvailabilityHours(formattedSampleInput);
       const prevSelectedMenuIds = prevItemsbfrEdit.map((item) => item._id);
-      useEffect(() => {
-        if (!isModalOpen && selectedItems.length > 0) {
-          setItemsOption((prevItemsOption) =>
-            prevItemsOption.filter(
-              (item) =>
-                !selectedItems.some(
-                  (selectedItem) => selectedItem._id === item._id
-                )
-            )
-          );
-        }
-      }, [isModalOpen, selectedItems]);
       const selectedItemsIds = selectedItems.map((item) => item._id);
       const addedMenuIds = selectedItemsIds.filter(
         (id) => !prevSelectedMenuIds.includes(id)
@@ -302,6 +309,9 @@ const AddItemForm = () => {
           },
           modifierGroups: selectedItemsIds,
         });
+        setBtnLoading(false);
+        setisAddItemModalOpen(false);
+        setfetchMenuDatas(!fetchMenuDatas);
       } else {
         // EDIT/UPDATE ITEM API
         await sdk.updateItem({
@@ -355,6 +365,18 @@ const AddItemForm = () => {
       setBtnLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!isModalOpen && selectedItems.length > 0) {
+      setItemsOption((prevItemsOption) =>
+        prevItemsOption.filter(
+          (item) =>
+            !selectedItems.some((selectedItem) => selectedItem._id === item._id)
+        )
+      );
+    }
+  }, [isModalOpen, selectedItems]);
+
   const [previewUrl, setPreviewUrl] = useState<string>("");
   const [isUploading, setIsUploading] = useState(false);
 

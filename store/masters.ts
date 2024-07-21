@@ -1,8 +1,8 @@
 import { create } from "zustand";
 
 type MasterStates = {
-  statesOptions: any[];
-  setMasterStates: (res: any) => void;
+  statesOptions: { value: string; label: string }[];
+  setMasterStates: (res: { value: string; label: string }[]) => void;
   timezonesOptions: any[];
   setMasterTimezones: (res: any) => void;
 };

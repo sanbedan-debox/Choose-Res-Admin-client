@@ -47,6 +47,7 @@ query getUserOnboardingDetails {
         value
       }
       state {
+        _id
         value
       }
       city {
@@ -130,6 +131,7 @@ query getRestaurantOnboardingData {
         value
       }
       state {
+        _id
         value
       }
       city {
@@ -162,8 +164,8 @@ query getRestaurantOnboardingData {
       active
     }
     timezone {
-      value
       _id
+      value
     }
     category
     beverageCategory

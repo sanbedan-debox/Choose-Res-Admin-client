@@ -110,7 +110,7 @@ const Categories: React.FC = () => {
   const headings = [
     { title: "Toggle Availibility", dataKey: "status", render: renderSwitch },
     { title: "Name", dataKey: "name" },
-    { title: "id", dataKey: "_id" },
+    // { title: "id", dataKey: "_id" },
     { title: "Desc", dataKey: "desc" },
     { title: "Items", dataKey: "items" },
     { title: "Actions", dataKey: "name.value", render: renderActions },

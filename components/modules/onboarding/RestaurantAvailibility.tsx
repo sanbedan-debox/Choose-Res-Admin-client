@@ -17,15 +17,15 @@ import useMasterStore from "@/store/masters";
 import AvailabilityForm from "@/components/common/availibility/availibility";
 import { timeZoneOptions } from "./interface/interface";
 
-interface FormData {
+interface IFormData {
   addressLine1: string;
   addressLine2: string;
   city: string;
   location: PlacesType;
-  state: string;
+  state: { id: string; value: string } | null;
   postcode: string;
   locationType: { value: string; label: string };
-  timezone: string;
+  timezone: { id: string; value: string } | null;
   regularHours: {
     Monday: {
       from: { label: string; value: string };
@@ -104,7 +104,7 @@ const RestaurantAvailability = () => {
     watch,
     setValue,
     getValues,
-  } = useForm<FormData>({
+  } = useForm<IFormData>({
     defaultValues: {
       regularHours: {
         Monday: [
@@ -298,18 +298,40 @@ const RestaurantAvailability = () => {
   ]);
   const [btnLoading, setBtnLoading] = useState(false);
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: IFormData) => {
     try {
+      if (!data.state || !data.timezone) {
+        return;
+      }
       setBtnLoading(true);
-      const formattedData = Object.keys(data.regularHours).map((day: any) => ({
+      const formattedData = Object.keys(data.regularHours).map((day) => ({
         Day: day,
-        hours: data.regularHours[day]
+        hours: data.regularHours[
+          day as
+            | "Monday"
+            | "Tuesday"
+            | "Wednesday"
+            | "Thursday"
+            | "Friday"
+            | "Saturday"
+            | "Sunday"
+        ]
           .filter((slot: any) => slot.from && slot.to)
           .map((slot: any) => ({
             start: slot.from,
             end: slot.to,
           })),
-        active: data.activeDays[day],
+        active:
+          data.activeDays[
+            day as
+              | "Monday"
+              | "Tuesday"
+              | "Wednesday"
+              | "Thursday"
+              | "Friday"
+              | "Saturday"
+              | "Sunday"
+          ],
       }));
 
       const formatData = (formattedData: any[]): any[] => {
@@ -340,10 +362,6 @@ const RestaurantAvailability = () => {
 
       setAvailabilityHours(formattedSampleInput);
 
-      const matchedTimezone = timeZoneOptions.find(
-        (tz) => tz.value === data.timezone
-      );
-
       const response = await sdk.restaurantOnboarding({
         input: {
           address: {
@@ -356,7 +374,7 @@ const RestaurantAvailability = () => {
             city: {
               value: data.city,
             },
-            state: { value: data.state },
+            state: { _id: data.state.id, value: data.state.value },
             postcode: {
               value: data.postcode,
             },
@@ -369,8 +387,8 @@ const RestaurantAvailability = () => {
             },
           },
           timezone: {
-            _id: matchedTimezone?.value,
-            value: matchedTimezone?.label || "",
+            _id: data.timezone.id,
+            value: data.timezone.value,
           },
           availability: formattedSampleInput,
         },
@@ -513,14 +531,22 @@ const RestaurantAvailability = () => {
                 <Select
                   {...field}
                   id="state"
-                  options={statesOptions}
+                  options={statesOptions.map((el) => ({
+                    id: el.value,
+                    value: el.label,
+                  }))}
+                  getOptionLabel={(e) => e.value}
+                  getOptionValue={(e) => e.id}
                   className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
                   classNamePrefix="react-select"
                   placeholder="Select State"
-                  value={statesOptions.find((option) => option.value === state)}
+                  value={state}
                   onChange={(option) => {
-                    setValue("state", option?.value || "");
-                    setState(option?.value || "");
+                    setValue("state", option);
+                    setState({
+                      id: option?.id ?? "",
+                      value: option?.value ?? "",
+                    });
                   }}
                 />
               )}
@@ -569,6 +595,7 @@ const RestaurantAvailability = () => {
             value={selectedPlace}
             menuPlacement="auto"
             maxMenuHeight={200}
+            noOptionsMessage={() => "Search for your desired location"}
             onChange={async (option) => {
               setSelectedPlace({
                 label: option?.label ?? "",
@@ -629,16 +656,22 @@ const RestaurantAvailability = () => {
               <Select
                 {...field}
                 id="timezone"
-                options={timezonesOptions}
+                options={timezonesOptions.map((el) => ({
+                  id: el.value,
+                  value: el.label,
+                }))}
+                getOptionLabel={(e) => e.value}
+                getOptionValue={(e) => e.id}
                 className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
                 classNamePrefix="react-select"
                 placeholder="Select Timezone"
-                value={timezonesOptions.find(
-                  (option) => option.value === timeZone
-                )}
+                value={timeZone}
                 onChange={(option) => {
-                  setValue("timezone", option?.value || "");
-                  setTimeZone(option?.value || "");
+                  setValue("timezone", option);
+                  setTimeZone({
+                    id: option?.id ?? "",
+                    value: option?.value ?? "",
+                  });
                 }}
               />
             )}

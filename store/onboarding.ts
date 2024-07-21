@@ -22,8 +22,8 @@ type OnboardingStates = {
   setAddressLine2: (address: string) => void;
   city: string;
   setCity: (city: string) => void;
-  state: string;
-  setState: (state: string) => void;
+  state: { id: string; value: string } | null;
+  setState: (state: { id: string; value: string } | null) => void;
   postcode: string;
   setPostcode: (postcode: string) => void;
   place: { displayName: string; placeId: string };
@@ -58,7 +58,7 @@ const useOnboardingStore = create<OnboardingStates>((set) => ({
   setAddressLine2: (address) => set({ addressLine2: address }),
   city: "",
   setCity: (city) => set({ city }),
-  state: "",
+  state: null,
   setState: (state) => set({ state }),
   postcode: "",
   setPostcode: (postcode) => set({ postcode }),

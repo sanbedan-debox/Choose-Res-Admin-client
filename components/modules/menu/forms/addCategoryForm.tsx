@@ -107,14 +107,14 @@ const AddCategoryForm = () => {
 
       let hasChanges = false;
 
-      if (data.name !== changesMenu[0].name.value) {
+      if (data.name !== changesMenu[0]?.name.value ?? "") {
         updateInput.name = {
           value: data.name,
         };
         hasChanges = true;
       }
 
-      if (data.description !== changesMenu[0].desc.value) {
+      if (data.description !== changesMenu[0]?.desc.value ?? "") {
         updateInput.desc = {
           value: data.description,
         };

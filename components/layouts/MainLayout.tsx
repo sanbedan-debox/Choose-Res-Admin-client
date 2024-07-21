@@ -35,7 +35,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const fetchRestaurantUsers = async () => {
       try {
         const response = await sdk.getUserRestaurants();
-        if (response && response.getUserRestaurants) {
+        if (response?.getUserRestaurants) {
           const formattedRestaurant = response.getUserRestaurants.map(
             (res) => ({
               ...res,
@@ -43,23 +43,29 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           );
           setRestaurants(formattedRestaurant);
 
-          const res = await sdk.getRestaurantDetails();
-          console.log("TESTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT");
-          console.log(res);
-          if (!res) {
-            try {
-              const res = await sdk.setRestaurantIdAsCookie({
-                id: formattedRestaurant[0]?._id,
-              });
-              if (res) {
-                setSelectedRestaurant(formattedRestaurant[0]?.name?.value);
-              }
-            } catch (error) {
-              console.error("Failed to fetch restaurant users:", error);
-            }
-          } else {
+          try {
+            const res = await sdk.getRestaurantDetails();
             setSelectedRestaurant(res?.getRestaurantDetails?.name?.value);
+          } catch (error) {
+            await sdk.setRestaurantIdAsCookie({
+              id: formattedRestaurant[0]?._id,
+            });
           }
+
+          // if (!res) {
+          //   try {
+          //     const res = await sdk.setRestaurantIdAsCookie({
+          //       id: formattedRestaurant[0]?._id,
+          //     });
+          //     if (res) {
+          //       setSelectedRestaurant(formattedRestaurant[0]?.name?.value);
+          //     }
+          //   } catch (error) {
+          //     console.error("Failed to fetch restaurant users:", error);
+          //   }
+          // } else {
+          //   setSelectedRestaurant(res?.getRestaurantDetails?.name?.value);
+          // }
         }
       } catch (error) {
         console.error("Failed to fetch restaurant users:", error);
@@ -143,8 +149,9 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                       {...field}
                       id="default"
                       type="checkbox"
+                      value={field.name}
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      checked={field.value}
+                      // checked={field.value}
                     />
                   )}
                 />

@@ -20,7 +20,7 @@ interface IFormInput {
   addressLine1: string;
   addressLine2: string;
   city: string;
-  state: string;
+  state: { id: string; value: string } | null;
   postcode: string;
   location: PlacesType;
 }
@@ -106,6 +106,9 @@ const UserLocation = () => {
   const onSubmit = async (data: IFormInput) => {
     try {
       setBtnLoading(true);
+      if (!data.state) {
+        return;
+      }
       const response = await sdk.UpdateUserOnboarding({
         input: {
           address: {
@@ -118,7 +121,7 @@ const UserLocation = () => {
             city: {
               value: data.city,
             },
-            state: { value: data.state },
+            state: { _id: data.state.id, value: data.state.value },
             postcode: {
               value: data.postcode,
             },
@@ -251,14 +254,22 @@ const UserLocation = () => {
                 <Select
                   {...field}
                   id="state"
-                  options={statesOptions}
+                  options={statesOptions.map((el) => ({
+                    id: el.value,
+                    value: el.label,
+                  }))}
+                  getOptionLabel={(e) => e.value}
+                  getOptionValue={(e) => e.id}
                   className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
                   classNamePrefix="react-select"
                   placeholder="Select State"
-                  value={statesOptions.find((option) => option.value === state)}
+                  value={state}
                   onChange={(option) => {
-                    setValue("state", option?.value || "");
-                    setState(option?.value || "");
+                    setValue("state", option);
+                    setState({
+                      id: option?.id ?? "",
+                      value: option?.value ?? "",
+                    });
                   }}
                 />
               )}
@@ -311,6 +322,7 @@ const UserLocation = () => {
             value={selectedPlace}
             menuPlacement="auto"
             maxMenuHeight={200}
+            noOptionsMessage={() => "Search for your desired location"}
             onChange={async (option) => {
               setSelectedPlace({
                 label: option?.label ?? "",

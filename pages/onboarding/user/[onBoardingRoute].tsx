@@ -78,7 +78,7 @@ const OnboardingPage = ({ repo }: HomePageProps) => {
     setCords(repo?.address?.coordinate?.coordinates ?? []);
     setPlace(repo?.address?.place);
     setPostcode(repo.address?.postcode?.value);
-    setState(repo.address?.state?.value);
+    setState(repo.address?.state);
   }, [
     repo,
     setbusinessName,

@@ -172,15 +172,15 @@ const Login: FC = () => {
                       htmlFor="email"
                       className="block mb-2 text-sm font-medium text-black"
                     >
-                      Email Address or Phone Number
+                      Email or Mobile Number
                     </label>
                     <input
                       {...register("email", {
-                        required: "Email or Phone Number is required",
+                        required: "Email or Mobile Number is required",
                       })}
                       id="email"
                       className="input input-primary"
-                      placeholder="Enter your Email Address or Phone Number"
+                      placeholder="Enter your email or mobile number"
                     />
                     {errors.email && (
                       <p className="text-red-500 text-sm text-start">

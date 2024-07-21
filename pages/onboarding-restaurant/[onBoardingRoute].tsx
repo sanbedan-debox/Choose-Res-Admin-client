@@ -74,7 +74,7 @@ const OnboardingPage = ({ repo }: HomePageProps) => {
     setAddressLine2(repo?.address?.addressLine1?.value);
     setCity(repo.address?.city?.value);
     setPostcode(repo.address?.postcode?.value);
-    setState(repo.address?.state?.value);
+    setState(repo.address?.state);
     setCords(repo?.address?.coordinate?.coordinates ?? []);
     setPlace(repo.address?.place);
     setFacebookLink(repo?.socialInfo?.facebook);

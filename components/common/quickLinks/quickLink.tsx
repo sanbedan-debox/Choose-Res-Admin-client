@@ -10,13 +10,17 @@ import {
 } from "react-icons/fa";
 
 const quickActions = [
-  { name: "Sales summary", icon: <FaChartLine />, link: "/sales-summary" },
-  { name: "Labor summary", icon: <FaUserFriends />, link: "/labor-summary" },
-  { name: "Menu builder", icon: <FaUtensils />, link: "/menu-builder" },
-  { name: "Edit menus", icon: <FaEdit />, link: "/edit-menus" },
-  { name: "Refund check", icon: <FaCheck />, link: "/refund-check" },
-  { name: "Employees", icon: <FaUsers />, link: "/employees" },
-  { name: "Time entries", icon: <FaClock />, link: "/time-entries" },
+  { name: "Sales summary", icon: <FaChartLine />, link: "/dashboard" },
+  // { name: "Labor summary", icon: <FaUserFriends />, link: "/labor-summary" },
+  {
+    name: "Menu builder",
+    icon: <FaUtensils />,
+    link: "/menu/menu-builder/menu",
+  },
+  // { name: "Edit menus", icon: <FaEdit />, link: "/edit-menus" },
+  // { name: "Refund check", icon: <FaCheck />, link: "/refund-check" },
+  // { name: "Employees", icon: <FaUsers />, link: "/employees" },
+  // { name: "Time entries", icon: <FaClock />, link: "/time-entries" },
 ];
 
 const QuickActions = () => (

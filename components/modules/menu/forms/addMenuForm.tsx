@@ -123,11 +123,11 @@ const AddMenuForm = () => {
       const selectedMenuType = menuTypeOptions.find(
         (option) => option.value === changesMenu[0]?.type
       );
-      if (data.type.value !== selectedMenuType.value) {
+      if (data.type.value !== selectedMenuType?.value) {
         updateInput.type = data.type.value as MenuTypeEnum;
       }
 
-      if (data.name !== changesMenu[0].name.value) {
+      if (data.name !== changesMenu[0]?.name.value ?? "") {
         updateInput.name = {
           value: data.name,
         };

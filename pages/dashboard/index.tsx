@@ -34,12 +34,12 @@ const Dashboard: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
 
   const features = [
     { name: "Sales summary", link: "/sales-summary" },
-    { name: "Labor summary", link: "/labor-summary" },
-    { name: "Menu builder", link: "/menu-builder" },
-    { name: "Edit menus", link: "/edit-menus" },
-    { name: "Refund check", link: "/refund-check" },
-    { name: "Employees", link: "/employees" },
-    { name: "Time entries", link: "/time-entries" },
+    // { name: "Labor summary", link: "/labor-summary" },
+    { name: "Menu builder", link: "/menu/menu-builder/menu" },
+    // { name: "Edit menus", link: "/edit-menus" },
+    // { name: "Refund check", link: "/refund-check" },
+    // { name: "Employees", link: "/employees" },
+    // { name: "Time entries", link: "/time-entries" },
   ];
   useEffect(() => {
     if (searchQuery.length > 0) {

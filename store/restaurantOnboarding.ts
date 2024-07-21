@@ -35,16 +35,16 @@ type RestaurantOnboardingStates = {
   setAddressLine2: (address: string) => void;
   city: string;
   setCity: (city: string) => void;
-  state: string;
-  setState: (state: string) => void;
+  state: { id: string; value: string } | null;
+  setState: (state: { id: string; value: string } | null) => void;
   postcode: string;
   setPostcode: (postcode: string) => void;
   place: { displayName: string; placeId: string };
   setPlace: (place: { displayName: string; placeId: string }) => void;
   cords: [number, number];
   setCords: (coords: [number, number]) => void;
-  timeZone: string;
-  setTimeZone: (state: string) => void;
+  timeZone: { id: string; value: string } | null;
+  setTimeZone: (timezone: { id: string; value: string } | null) => void;
   availabilityHours: AvailabilityHour[];
   setAvailabilityHours: (hours: AvailabilityHour[]) => void;
 
@@ -87,7 +87,7 @@ const RestaurantOnboardingStore = create<RestaurantOnboardingStates>((set) => ({
   setAddressLine2: (address) => set({ addressLine2: address }),
   city: "",
   setCity: (city) => set({ city }),
-  state: "",
+  state: null,
   setState: (state) => set({ state }),
   postcode: "",
   setPostcode: (postcode) => set({ postcode }),
@@ -95,7 +95,7 @@ const RestaurantOnboardingStore = create<RestaurantOnboardingStates>((set) => ({
   setPlace: (place) => set({ place }),
   cords: [0, 0],
   setCords: (cords) => set({ cords }),
-  timeZone: "",
+  timeZone: null,
   setTimeZone: (timeZone) => set({ timeZone }),
   availabilityHours: [],
   setAvailabilityHours: (hours) => set({ availabilityHours: hours }),
@@ -140,7 +140,7 @@ const initialState: RestaurantOnboardingStates = {
   setAddressLine2: (address) => {},
   city: "",
   setCity: (city) => {},
-  state: "",
+  state: null,
   setState: (state) => {},
   postcode: "",
   setPostcode: (postcode) => {},
@@ -148,7 +148,7 @@ const initialState: RestaurantOnboardingStates = {
   setPlace: (place) => {},
   cords: [0, 0],
   setCords: (cords) => {},
-  timeZone: "",
+  timeZone: null,
   setTimeZone: (timeZone) => {},
   availabilityHours: [],
   setAvailabilityHours: (hours) => {},

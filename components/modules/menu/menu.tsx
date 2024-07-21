@@ -99,8 +99,8 @@ const Menu: React.FC = () => {
     console.log(rowData.status, rowData._id);
     setAvailableCaption(
       rowData.status === StatusEnum.Inactive
-        ? "are you sure you want to activate the Category?"
-        : "are you sure you want to deactivate the Category?"
+        ? "Are you sure you want to activate the menu?"
+        : "Are you sure you want to deactivate the menu?"
     );
   };
 
