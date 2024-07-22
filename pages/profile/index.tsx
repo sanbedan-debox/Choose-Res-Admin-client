@@ -1,10 +1,10 @@
-import MainLayout from "@/components/layouts/MainLayout";
 import Loader from "@/components/loader";
 import useGlobalStore from "@/store/global";
 import React, { useEffect } from "react";
 import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
 import { sdk } from "@/utils/graphqlClient";
+import MainLayout from "@/components/layouts/mainBodyLayout";
 
 type NextPageWithLayout = React.FC & {
   getLayout?: (page: React.ReactNode) => React.ReactNode;

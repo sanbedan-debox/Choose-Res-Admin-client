@@ -8,7 +8,7 @@ import useModGroupStore from "@/store/modifierGroup";
 import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import React, { useEffect, useState } from "react";
-import { FaTrash, FaEdit, FaShieldAlt } from "react-icons/fa";
+import { FaTrash, FaEdit } from "react-icons/fa";
 
 const Modifiers: React.FC = () => {
   const [modifierGroups, setModifierGroups] = useState<any>();
@@ -135,7 +135,6 @@ const Modifiers: React.FC = () => {
           <CButton
             loading={btnLoading}
             variant={ButtonType.Primary}
-            // className=""
             onClick={handleDeleteConfirmation}
           >
             Yes

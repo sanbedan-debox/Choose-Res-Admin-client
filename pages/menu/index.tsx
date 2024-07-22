@@ -1,5 +1,4 @@
 import MenuSection from "@/components/common/menuSection/menuSection";
-import MainLayout from "@/components/layouts/MainLayout";
 import useGlobalStore from "@/store/global";
 import { menuContents } from "./menuContent";
 import { UserStatus } from "@/generated/graphql";
@@ -8,6 +7,7 @@ import { parseCookies } from "nookies";
 import { sdk } from "@/utils/graphqlClient";
 import useAuthStore from "@/store/auth";
 import { useEffect } from "react";
+import MainLayout from "@/components/layouts/mainBodyLayout";
 
 type NextPageWithLayout = React.FC & {
   getLayout?: (page: React.ReactNode) => React.ReactNode;

@@ -1,6 +1,4 @@
-import MainLayout from "@/components/layouts/MainLayout";
-import Loader from "@/components/loader";
-import useGlobalStore from "@/store/global";
+import MainLayout from "@/components/layouts/mainBodyLayout";
 import React, { useEffect, useState } from "react";
 
 type NextPageWithLayout = React.FC & {

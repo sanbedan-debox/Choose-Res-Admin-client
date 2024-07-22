@@ -12,7 +12,7 @@ interface Heading {
 }
 
 interface DataItem {
-  id: string;
+  _id: string;
   [key: string]: any;
 }
 
@@ -37,7 +37,6 @@ const FormAddTable: React.FC<FormAddTableProps> = ({
   onAddClick,
   isShowImage = false,
 }) => {
-  console.log("roop", data);
   return (
     <div className="w-full border rounded-md p-2 border-t-2 border-b-2 ">
       <h2 className="block mb-2 text-sm font-medium text-left text-gray-700">

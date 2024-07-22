@@ -63,6 +63,10 @@ const AddModifierGroupForm = () => {
   const [tempSelectedItems, setTempSelectedItems] = useState<
     ItemsDropDownType[]
   >([]);
+  const [selectedItems, setSelectedItems] = useState<any[]>([]);
+
+  const { setEditModId, setisEditMod } = useModStore();
+
   const [prevItemsbfrEdit, setprevItemsbfrEdit] = useState<ItemsDropDownType[]>(
     []
   );
@@ -71,7 +75,17 @@ const AddModifierGroupForm = () => {
     { value: PriceTypeEnum.IndividualPrice, label: "Individual Price" },
     { value: PriceTypeEnum.SamePrice, label: "Same Price" },
   ];
-  const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    if (selectedItems.length > 0) {
+      setModifiersOption((prevItemsOption) =>
+        prevItemsOption.filter(
+          (item) =>
+            !selectedItems.some((selectedItem) => selectedItem._id === item._id)
+        )
+      );
+    }
+  }, [isModalOpen, selectedItems, fetchMenuDatas, tempSelectedItems]);
 
   useEffect(() => {
     const fetch = async () => {
@@ -83,7 +97,14 @@ const AddModifierGroupForm = () => {
             name: item?.name?.value,
             price: item?.price?.value,
           }));
-          setModifiersOption(formattedItemsList);
+          const filteredItemsList = formattedItemsList.filter(
+            (item) =>
+              !selectedItems.some(
+                (selectedItem) => selectedItem._id === item._id
+              )
+          );
+
+          setModifiersOption(filteredItemsList);
         }
       } catch (error: any) {
         const errorMessage = extractErrorMessage(error);
@@ -94,7 +115,7 @@ const AddModifierGroupForm = () => {
       }
     };
     fetch();
-  }, [fetchMenuDatas, setToastData]);
+  }, [fetchMenuDatas, setToastData, selectedItems]);
   useEffect(() => {
     const fetchItemData = async () => {
       if (editModGroupId) {
@@ -114,7 +135,7 @@ const AddModifierGroupForm = () => {
           );
           setSelectedItems(item?.modifiers);
           const formateditemlist = item?.modifiers.map((el) => ({
-            _id: el._id,
+            _id: el?.id,
             name: el?.name?.value ?? "",
             price: el?.price?.value ?? "",
           }));
@@ -133,14 +154,6 @@ const AddModifierGroupForm = () => {
     fetchItemData();
   }, [editModGroupId, setValue, setToastData]);
 
-  const handleSearch = (event: any) => {
-    setSearchTerm(event.target.value);
-  };
-
-  const filteredItems = modifierssOption.filter((item) =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   const handleAddItem = () => {
     setisAddModifierModalOpen(true);
   };
@@ -152,7 +165,6 @@ const AddModifierGroupForm = () => {
   };
 
   const handleItemClick = (item: any) => {
-    console.log(item);
     setTempSelectedItems((prevSelected) =>
       prevSelected.some((selectedItem) => selectedItem._id === item._id)
         ? prevSelected.filter((i) => i._id !== item._id)
@@ -160,9 +172,7 @@ const AddModifierGroupForm = () => {
     );
   };
 
-  const { setEditModId, setisEditMod } = useModStore();
   const handleEditItem = (id: string) => {
-    console.log(`Edit item with id ${id}`);
     setisAddModifierModalOpen(true);
     setEditModId(id);
     setisEditMod(true);
@@ -188,6 +198,7 @@ const AddModifierGroupForm = () => {
     try {
       setBtnLoading(true);
       const parsedMaxSelection = parseFloat(data.maxSelections.toString());
+      const parsedMinSelection = parseFloat(data.minSelections.toString());
       const selectedItemsIds = selectedItems.map((item) => item._id);
       const prevSelectedMenuIds = prevItemsbfrEdit.map((item) => item._id);
 
@@ -196,11 +207,21 @@ const AddModifierGroupForm = () => {
       );
       const isMenuAdded = addedMenuIds.length > 0;
       setBtnLoading(true);
+      if (selectedItems.length === 0) {
+        setToastData({
+          type: "error",
+          message: "At least one modifier must be selected.",
+        });
+        return;
+      }
       if (!isEditModGroup) {
         await sdk.addModifierGroup({
           input: {
             name: {
               value: data.name,
+            },
+            minSelections: {
+              value: parsedMinSelection,
             },
             maxSelections: {
               value: parsedMaxSelection,
@@ -254,8 +275,6 @@ const AddModifierGroupForm = () => {
       setBtnLoading(false);
     }
   };
-  const [previewUrl, setPreviewUrl] = useState<string>("");
-  const [isUploading, setIsUploading] = useState(false);
 
   const handleMinCountChange = (count: number) => {
     setValue("minSelections", count);
@@ -264,14 +283,12 @@ const AddModifierGroupForm = () => {
   const handleMaxCountChange = (count: number) => {
     setValue("maxSelections", count);
   };
-  const [selectedItems, setSelectedItems] = useState<any[]>([]);
   const renderActions = (rowData: { _id: string }) => (
     <div className="flex space-x-2 justify-center">
       <FaTrash
         className="text-red-600 cursor-pointer"
         onClick={() => {
           setConfirmationRemoval(true);
-          console.log("Row Data Id while del", rowData._id);
           setRemovingId(rowData?._id);
         }}
       />
@@ -290,7 +307,10 @@ const AddModifierGroupForm = () => {
     setTempSelectedItems((prevSelected) =>
       prevSelected.filter((item) => item._id !== remmovingId)
     );
-    if (isEditModGroup) {
+    const isPresentInPrevItems = prevItemsbfrEdit.some(
+      (item) => item._id === remmovingId
+    );
+    if (isEditModGroup && isPresentInPrevItems) {
       const res = await sdk.removeModifierFromModifierGroup({
         modifierId: remmovingId,
         modifierGroupId: editModGroupId || "",
@@ -313,7 +333,7 @@ const AddModifierGroupForm = () => {
     setIsModalOpen(true);
   };
   useEffect(() => {
-    if (!isModalOpen && selectedItems.length > 0) {
+    if (selectedItems.length > 0) {
       setModifiersOption((prevItemsOption) =>
         prevItemsOption.filter(
           (item) =>
@@ -440,7 +460,6 @@ const AddModifierGroupForm = () => {
             loading={btnLoading}
             variant={ButtonType.Primary}
             type="submit"
-            // className="px-6 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
           >
             Save Item
           </CButton>
@@ -449,9 +468,7 @@ const AddModifierGroupForm = () => {
             title="Add Modifers"
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
-            searchTerm={searchTerm}
-            handleSearch={handleSearch}
-            filteredItems={filteredItems}
+            data={modifierssOption}
             tempSelectedItems={tempSelectedItems}
             addSelectedItemsButtonLabel="Add Selected Modifiers"
             createNewItemButtonLabel="Create New Modifier"

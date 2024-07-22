@@ -71,6 +71,7 @@ const AddModifierForm = () => {
               price: {
                 value: parsedPrice,
               },
+              preSelect: data.optional,
             },
           })
         : // EDIT/UPDATE ITEM API
@@ -83,7 +84,6 @@ const AddModifierForm = () => {
               price: {
                 value: parsedPrice,
               },
-
               // availability: [],
             },
           });

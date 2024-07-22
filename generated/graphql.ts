@@ -100,6 +100,7 @@ export type AddMenuInput = {
 
 export type AddModifierGroupInput = {
   maxSelections: MasterCommonInputNumber;
+  minSelections: MasterCommonInputNumber;
   name: MasterCommonInput;
   optional: Scalars['Boolean']['input'];
   pricingType: PriceTypeEnum;
@@ -107,6 +108,7 @@ export type AddModifierGroupInput = {
 
 export type AddModifierInput = {
   name: MasterCommonInput;
+  preSelect: Scalars['Boolean']['input'];
   price: MasterCommonInputNumber;
 };
 
@@ -172,7 +174,7 @@ export type AddressInfoInput = {
 export type Admin = {
   __typename?: 'Admin';
   _id: Scalars['ID']['output'];
-  accessHistory: Array<AccessHistory>;
+  accessHistory?: Maybe<Array<AccessHistory>>;
   blockedBy: Admin;
   createdAt: Scalars['DateTimeISO']['output'];
   createdBy: Admin;
@@ -248,6 +250,7 @@ export type CategoryGroupInput = {
 export type CategoryInfo = {
   __typename?: 'CategoryInfo';
   _id: Category;
+  id: Scalars['String']['output'];
   name?: Maybe<MasterCommon>;
   status: StatusEnum;
 };
@@ -477,6 +480,7 @@ export type Item = {
 export type ItemInfo = {
   __typename?: 'ItemInfo';
   _id: Item;
+  id: Scalars['String']['output'];
   name?: Maybe<MasterCommon>;
   price: MasterCommonNumber;
   status: StatusEnum;
@@ -538,6 +542,7 @@ export type Menu = {
 export type MenuInfo = {
   __typename?: 'MenuInfo';
   _id: Menu;
+  id: Scalars['String']['output'];
   name?: Maybe<MasterCommon>;
   type: MenuTypeEnum;
 };
@@ -554,6 +559,7 @@ export type Modifier = {
   _id: Scalars['ID']['output'];
   createdAt: Scalars['DateTimeISO']['output'];
   name: MasterCommon;
+  preSelect: Scalars['Boolean']['output'];
   price: MasterCommonNumber;
   restaurantId: Restaurant;
   updatedAt: Scalars['DateTimeISO']['output'];
@@ -565,25 +571,29 @@ export type ModifierGroup = {
   _id: Scalars['ID']['output'];
   createdAt: Scalars['DateTimeISO']['output'];
   maxSelections: MasterCommonNumber;
+  minSelections: MasterCommonNumber;
   modifiers: Array<ModifierInfo>;
   name: MasterCommon;
   optional: Scalars['Boolean']['output'];
   pricingType: PriceTypeEnum;
   restaurantId: Restaurant;
+  status: StatusEnum;
   updatedAt: Scalars['DateTimeISO']['output'];
   user: User;
 };
 
 export type ModifierGroupInfo = {
   __typename?: 'ModifierGroupInfo';
-  _id: Scalars['ID']['output'];
+  _id: ModifierGroup;
+  id: Scalars['String']['output'];
   name: MasterCommon;
   pricingType: PriceTypeEnum;
 };
 
 export type ModifierInfo = {
   __typename?: 'ModifierInfo';
-  _id: Scalars['ID']['output'];
+  _id: Modifier;
+  id: Scalars['String']['output'];
   name: MasterCommon;
   price: MasterCommonNumber;
 };
@@ -603,7 +613,7 @@ export type Mutation = {
   addModifierToModifierGroup: Scalars['Boolean']['output'];
   addRestaurant: Scalars['Boolean']['output'];
   addState: Scalars['Boolean']['output'];
-  addTaxRate: Scalars['Boolean']['output'];
+  addTaxRate: Scalars['String']['output'];
   addTaxRateInRestaurant: Scalars['Boolean']['output'];
   addTimezone: Scalars['Boolean']['output'];
   addUser: Scalars['String']['output'];
@@ -614,6 +624,7 @@ export type Mutation = {
   changeCategoryStatus: Scalars['Boolean']['output'];
   changeItemStatus: Scalars['Boolean']['output'];
   changeMenuStatus: Scalars['Boolean']['output'];
+  changeModifierGroupStatus: Scalars['Boolean']['output'];
   changeRestaurantStatus: Scalars['Boolean']['output'];
   changeRole: Scalars['Boolean']['output'];
   changeUserStatus: Scalars['Boolean']['output'];
@@ -705,7 +716,7 @@ export type MutationAddModifierGroupArgs = {
 
 export type MutationAddModifierGroupToItemArgs = {
   itemId: Scalars['String']['input'];
-  modifierGroupId: Scalars['String']['input'];
+  modifierGroupIds: Array<Scalars['String']['input']>;
 };
 
 
@@ -778,6 +789,11 @@ export type MutationChangeItemStatusArgs = {
 
 
 export type MutationChangeMenuStatusArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type MutationChangeModifierGroupStatusArgs = {
   id: Scalars['String']['input'];
 };
 
@@ -1402,15 +1418,17 @@ export type UpdateMenuInput = {
 
 export type UpdateModifierGroupInput = {
   _id: Scalars['String']['input'];
-  maxSelections: MasterCommonInputNumber;
-  name: MasterCommonInput;
-  optional: Scalars['Boolean']['input'];
-  pricingType: PriceTypeEnum;
+  maxSelections?: InputMaybe<MasterCommonInputNumber>;
+  minSelections?: InputMaybe<MasterCommonInputNumber>;
+  name?: InputMaybe<MasterCommonInput>;
+  optional?: InputMaybe<Scalars['Boolean']['input']>;
+  pricingType?: InputMaybe<PriceTypeEnum>;
 };
 
 export type UpdateModifierInput = {
   _id: Scalars['String']['input'];
   name?: InputMaybe<MasterCommonInput>;
+  preSelect?: InputMaybe<Scalars['Boolean']['input']>;
   price?: InputMaybe<MasterCommonInputNumber>;
 };
 
@@ -1651,14 +1669,14 @@ export type DeleteItemMutation = { __typename?: 'Mutation', deleteItem: boolean 
 export type GetItemsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetItemsQuery = { __typename?: 'Query', getItems: Array<{ __typename?: 'Item', _id: string, status: StatusEnum, name: { __typename?: 'MasterCommon', value: string }, desc: { __typename?: 'MasterCommon', value: string }, modifierGroup: Array<{ __typename?: 'ModifierGroupInfo', _id: string, name: { __typename?: 'MasterCommon', _id: string, value: string } }>, price: { __typename?: 'MasterCommonNumber', _id: string, value: number } }> };
+export type GetItemsQuery = { __typename?: 'Query', getItems: Array<{ __typename?: 'Item', _id: string, status: StatusEnum, name: { __typename?: 'MasterCommon', value: string }, desc: { __typename?: 'MasterCommon', value: string }, modifierGroup: Array<{ __typename?: 'ModifierGroupInfo', id: string, name: { __typename?: 'MasterCommon', _id: string, value: string } }>, price: { __typename?: 'MasterCommonNumber', _id: string, value: number } }> };
 
 export type GetItemQueryVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
 
 
-export type GetItemQuery = { __typename?: 'Query', getItem: { __typename?: 'Item', _id: string, status: StatusEnum, image?: string | null, applySalesTax: boolean, popularItem: boolean, upSellItem: boolean, isSpicy: boolean, isVegan: boolean, isHalal: boolean, isGlutenFree: boolean, hasNuts: boolean, createdAt: any, updatedAt: any, name: { __typename?: 'MasterCommon', value: string }, desc: { __typename?: 'MasterCommon', value: string }, modifierGroup: Array<{ __typename?: 'ModifierGroupInfo', pricingType: PriceTypeEnum, _id: string, name: { __typename?: 'MasterCommon', value: string } }>, price: { __typename?: 'MasterCommonNumber', value: number } } };
+export type GetItemQuery = { __typename?: 'Query', getItem: { __typename?: 'Item', _id: string, status: StatusEnum, image?: string | null, applySalesTax: boolean, popularItem: boolean, upSellItem: boolean, isSpicy: boolean, isVegan: boolean, isHalal: boolean, isGlutenFree: boolean, hasNuts: boolean, createdAt: any, updatedAt: any, name: { __typename?: 'MasterCommon', value: string }, desc: { __typename?: 'MasterCommon', value: string }, modifierGroup: Array<{ __typename?: 'ModifierGroupInfo', pricingType: PriceTypeEnum, id: string, name: { __typename?: 'MasterCommon', value: string } }>, price: { __typename?: 'MasterCommonNumber', value: number } } };
 
 export type AddItemMutationVariables = Exact<{
   input: AddItemInput;
@@ -1689,7 +1707,7 @@ export type RemoveModifierGroupFromItemMutationVariables = Exact<{
 export type RemoveModifierGroupFromItemMutation = { __typename?: 'Mutation', removeModifierGroupFromItem: boolean };
 
 export type AddModifierGroupToItemMutationVariables = Exact<{
-  modifierGroupId: Scalars['String']['input'];
+  modifierGroupId: Array<Scalars['String']['input']> | Scalars['String']['input'];
   itemId: Scalars['String']['input'];
 }>;
 
@@ -1808,7 +1826,7 @@ export type GetModifierGroupQueryVariables = Exact<{
 }>;
 
 
-export type GetModifierGroupQuery = { __typename?: 'Query', getModifierGroup: { __typename?: 'ModifierGroup', _id: string, pricingType: PriceTypeEnum, optional: boolean, name: { __typename?: 'MasterCommon', value: string }, modifiers: Array<{ __typename?: 'ModifierInfo', _id: string, name: { __typename?: 'MasterCommon', value: string }, price: { __typename?: 'MasterCommonNumber', value: number } }>, maxSelections: { __typename?: 'MasterCommonNumber', value: number } } };
+export type GetModifierGroupQuery = { __typename?: 'Query', getModifierGroup: { __typename?: 'ModifierGroup', _id: string, pricingType: PriceTypeEnum, optional: boolean, name: { __typename?: 'MasterCommon', value: string }, modifiers: Array<{ __typename?: 'ModifierInfo', id: string, name: { __typename?: 'MasterCommon', value: string }, price: { __typename?: 'MasterCommonNumber', value: number } }>, maxSelections: { __typename?: 'MasterCommonNumber', value: number } } };
 
 export type RemoveModifierFromModifierGroupMutationVariables = Exact<{
   modifierGroupId: Scalars['String']['input'];
@@ -1943,7 +1961,7 @@ export type AddTaxRateMutationVariables = Exact<{
 }>;
 
 
-export type AddTaxRateMutation = { __typename?: 'Mutation', addTaxRate: boolean };
+export type AddTaxRateMutation = { __typename?: 'Mutation', addTaxRate: string };
 
 export type AddTaxRateInRestaurantMutationVariables = Exact<{
   taxRateId: Scalars['String']['input'];
@@ -2115,7 +2133,7 @@ export const GetItemsDocument = gql`
     }
     status
     modifierGroup {
-      _id
+      id
       name {
         _id
         value
@@ -2144,7 +2162,7 @@ export const GetItemDocument = gql`
         value
       }
       pricingType
-      _id
+      id
     }
     image
     price {
@@ -2194,8 +2212,8 @@ export const RemoveModifierGroupFromItemDocument = gql`
 }
     `;
 export const AddModifierGroupToItemDocument = gql`
-    mutation addModifierGroupToItem($modifierGroupId: String!, $itemId: String!) {
-  addModifierGroupToItem(modifierGroupId: $modifierGroupId, itemId: $itemId)
+    mutation addModifierGroupToItem($modifierGroupId: [String!]!, $itemId: String!) {
+  addModifierGroupToItem(modifierGroupIds: $modifierGroupId, itemId: $itemId)
 }
     `;
 export const GetActiveStatesDocument = gql`
@@ -2362,7 +2380,7 @@ export const GetModifierGroupDocument = gql`
       price {
         value
       }
-      _id
+      id
     }
     maxSelections {
       value

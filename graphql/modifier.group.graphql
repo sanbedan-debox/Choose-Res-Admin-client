@@ -48,7 +48,7 @@ query getModifierGroup($id: String!) {
       price {
         value
       }
-      _id
+      id
     }
     maxSelections {
       value

@@ -73,7 +73,7 @@ const Items: React.FC = () => {
       />
       <FaShieldAlt
         className="text-green-500 cursor-pointer"
-        onClick={() => console.log("Change Password", rowData._id)}
+        // onClick={() => console.log("Change Password", rowData._id)}
       />
     </div>
   );

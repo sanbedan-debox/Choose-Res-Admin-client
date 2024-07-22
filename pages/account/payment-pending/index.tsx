@@ -1,4 +1,4 @@
-import BlockerLayout from "@/components/layouts/BlockersLayout";
+import BlockerLayout from "@/components/layouts/blockerLayout";
 import Image from "next/image";
 import LogoImage from "../../../assets/logo/logoDark.png";
 import IllustrationImage from "../../../assets/svg/pending.svg";

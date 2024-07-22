@@ -139,13 +139,12 @@ const AddItemForm = () => {
   const [btnLoading, setBtnLoading] = useState(false);
   const { setToastData } = useGlobalStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedItems, setSelectedItems] = useState<any[]>([]);
+  const [selectedItems, setSelectedItems] = useState<ItemsDropDownType[]>([]);
   const [prevItemsbfrEdit, setprevItemsbfrEdit] = useState<ItemsDropDownType[]>(
     []
   );
-  const [itemsOption, setItemsOption] = useState<any[]>([]);
+  const [itemsOption, setItemsOption] = useState<ItemsDropDownType[]>([]);
 
-  const [searchTerm, setSearchTerm] = useState("");
   const [tempSelectedItems, setTempSelectedItems] = useState<
     ItemsDropDownType[]
   >([]);
@@ -169,11 +168,11 @@ const AddItemForm = () => {
           setValue("isGlutenFree", item.isGlutenFree);
           setValue("isHalal", item.isHalal);
           setValue("isVegan", item.isVegan);
-          setSelectedItems(item?.modifierGroup);
           const formateditemlist = item?.modifierGroup.map((el) => ({
-            _id: el._id,
+            _id: el?.id,
             name: el?.name?.value ?? "",
           }));
+          setSelectedItems(formateditemlist);
           setTempSelectedItems(formateditemlist);
           setprevItemsbfrEdit(formateditemlist);
           setPreviewUrl(item.image || "");
@@ -191,31 +190,15 @@ const AddItemForm = () => {
   }, [editItemId, setValue, setToastData]);
 
   useEffect(() => {
-    const fetch = async () => {
-      try {
-        const items = await sdk.getModifierGroupsforItemsDropDown();
-        if (items && items.getModifierGroups) {
-          const formattedItemsList = items.getModifierGroups.map((item) => ({
-            _id: item._id,
-            name: item?.name?.value,
-            length: item?.modifiers?.length,
-          }));
-          setItemsOption(formattedItemsList);
-        }
-      } catch (error: any) {
-        const errorMessage = extractErrorMessage(error);
-        setToastData({
-          type: "error",
-          message: errorMessage,
-        });
-      }
-    };
-    fetch();
-  }, [fetchMenuDatas, setToastData]);
-
-  const handleSearch = (event: any) => {
-    setSearchTerm(event.target.value);
-  };
+    if (selectedItems.length > 0) {
+      setItemsOption((prevItemsOption) =>
+        prevItemsOption.filter(
+          (item) =>
+            !selectedItems.some((selectedItem) => selectedItem._id === item._id)
+        )
+      );
+    }
+  }, [isModalOpen, selectedItems, fetchMenuDatas, tempSelectedItems]);
 
   const onSubmit = async (data: IFormInput) => {
     try {
@@ -368,17 +351,35 @@ const AddItemForm = () => {
       setBtnLoading(false);
     }
   };
-
   useEffect(() => {
-    if (!isModalOpen && selectedItems.length > 0) {
-      setItemsOption((prevItemsOption) =>
-        prevItemsOption.filter(
-          (item) =>
-            !selectedItems.some((selectedItem) => selectedItem._id === item._id)
-        )
-      );
-    }
-  }, [isModalOpen, selectedItems, fetchMenuDatas]);
+    const fetch = async () => {
+      try {
+        const items = await sdk.getModifierGroupsforItemsDropDown();
+        if (items && items.getModifierGroups) {
+          const formattedItemsList = items.getModifierGroups.map((item) => ({
+            _id: item._id || "",
+            name: item?.name?.value || "",
+            length: item?.modifiers?.length || 0,
+          }));
+          const filteredItemsList = formattedItemsList.filter(
+            (item) =>
+              !selectedItems.some(
+                (selectedItem) => selectedItem._id === item._id
+              )
+          );
+
+          setItemsOption(filteredItemsList);
+        }
+      } catch (error: any) {
+        const errorMessage = extractErrorMessage(error);
+        setToastData({
+          type: "error",
+          message: errorMessage,
+        });
+      }
+    };
+    fetch();
+  }, [fetchMenuDatas, setToastData, selectedItems]);
 
   const [previewUrl, setPreviewUrl] = useState<string>("");
   const [isUploading, setIsUploading] = useState(false);
@@ -409,7 +410,6 @@ const AddItemForm = () => {
         className="text-red-600 cursor-pointer"
         onClick={() => {
           setConfirmationRemoval(true);
-          console.log("Row Data Id while del", rowData._id);
           setRemovingId(rowData?._id);
         }}
       />
@@ -434,7 +434,12 @@ const AddItemForm = () => {
     setTempSelectedItems((prevSelected) =>
       prevSelected.filter((item) => item._id !== remmovingId)
     );
-    if (isEditItem) {
+
+    const isPresentInPrevItems = prevItemsbfrEdit.some(
+      (item) => item._id === remmovingId
+    );
+
+    if (isEditItem && isPresentInPrevItems) {
       try {
         const res = await sdk.removeModifierGroupFromItem({
           modifierGroupId: remmovingId,
@@ -459,11 +464,7 @@ const AddItemForm = () => {
     setIsModalOpen(true);
   };
 
-  const filteredItems = itemsOption.filter((item) =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
   const handleItemClick = (item: any) => {
-    console.log(item);
     setTempSelectedItems((prevSelected) =>
       prevSelected.some((selectedItem) => selectedItem._id === item._id)
         ? prevSelected.filter((i) => i._id !== item._id)
@@ -501,10 +502,6 @@ const AddItemForm = () => {
       ),
     },
   ];
-
-  const handleAddItem = () => {
-    setisAddItemModalOpen(true);
-  };
 
   return (
     <motion.div
@@ -782,7 +779,6 @@ const AddItemForm = () => {
             loading={btnLoading}
             variant={ButtonType.Primary}
             type="submit"
-            // className="px-6 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
           >
             Save Item
           </CButton>
@@ -792,9 +788,7 @@ const AddItemForm = () => {
         title="Add Modifier Groups"
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        searchTerm={searchTerm}
-        handleSearch={handleSearch}
-        filteredItems={filteredItems}
+        data={itemsOption}
         tempSelectedItems={tempSelectedItems}
         handleItemClick={handleItemClick}
         handleAddItems={handleAddItems}

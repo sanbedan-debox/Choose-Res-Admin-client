@@ -16,6 +16,7 @@ import { MdArrowOutward } from "react-icons/md";
 import useMenuMenuStore from "@/store/menumenu";
 import useMenuCategoryStore from "@/store/menuCategory";
 import ReusableModal from "@/components/common/modal/modal";
+import useRestaurantsStore from "@/store/restaurant";
 
 interface IFormInput {
   type: { value: string; label: string };
@@ -25,7 +26,6 @@ interface IFormInput {
 interface ItemsDropDownType {
   _id: string;
   name: string;
-  length: number;
 }
 
 const menuTypeOptions: any[] = [
@@ -33,6 +33,7 @@ const menuTypeOptions: any[] = [
   { value: MenuTypeEnum.DineIn, label: "Dine In" },
   { value: MenuTypeEnum.Catering, label: "Catering" },
 ];
+
 const AddMenuForm = () => {
   const { fetchMenuDatas, setfetchMenuDatas, setisAddMenuModalOpen } =
     useMenuOptionsStore();
@@ -40,13 +41,12 @@ const AddMenuForm = () => {
   const [removingId, setRemovingId] = useState<string>("");
   const [btnLoading, setBtnLoading] = useState(false);
   const { setToastData } = useGlobalStore();
-  const [itemsOption, setItemsOption] = useState<any[]>([]);
+  const [itemsOption, setItemsOption] = useState<ItemsDropDownType[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedItems, setSelectedItems] = useState<any[]>([]);
+  const [selectedItems, setSelectedItems] = useState<ItemsDropDownType[]>([]);
   const [prevItemsbfrEdit, setprevItemsbfrEdit] = useState<ItemsDropDownType[]>(
     []
   );
-  const [searchTerm, setSearchTerm] = useState("");
   const [tempSelectedItems, setTempSelectedItems] = useState<
     ItemsDropDownType[]
   >([]);
@@ -62,7 +62,7 @@ const AddMenuForm = () => {
     setValue,
     register,
   } = useForm<IFormInput>();
-
+  const { selectedRestaurantTaxRate } = useRestaurantsStore();
   const onSubmit = async (data: IFormInput) => {
     try {
       setBtnLoading(true);
@@ -98,6 +98,7 @@ const AddMenuForm = () => {
               value: data.name,
             },
             categories: selectedItemsIds,
+            taxRateId: selectedRestaurantTaxRate || "",
           },
         });
       } else {
@@ -149,8 +150,17 @@ const AddMenuForm = () => {
           const formattedItemsList = categories.getCategories.map((cats) => ({
             _id: cats._id,
             name: cats?.name?.value,
-            items: cats?.items?.length,
           }));
+          console.log("Categories Options set", formattedItemsList);
+          const filteredItemsList = formattedItemsList.filter(
+            (item) =>
+              !selectedItems.some(
+                (selectedItem) => selectedItem._id === item._id
+              )
+          );
+
+          console.log("Categories Options set", filteredItemsList);
+
           setItemsOption(formattedItemsList);
         }
       } catch (error: any) {
@@ -162,18 +172,22 @@ const AddMenuForm = () => {
       }
     };
     fetch();
-  }, [fetchMenuDatas, setToastData]);
+  }, [fetchMenuDatas, setToastData, selectedItems]);
 
   const handleRemoveCategory = async () => {
     setSelectedItems((prevSelected) =>
-      prevSelected.filter((item) => item._id._id !== removingId)
+      prevSelected.filter((item) => item._id !== removingId)
     );
 
     setTempSelectedItems((prevSelected) =>
       prevSelected.filter((item) => item._id !== removingId)
     );
 
-    if (isEditMenu) {
+    const isPresentInPrevItems = prevItemsbfrEdit.some(
+      (item) => item._id === removingId
+    );
+
+    if (isEditMenu && isPresentInPrevItems) {
       const res = await sdk.removeCategoryFromMenu({
         categoryId: removingId,
         menuId: editMenuId || "",
@@ -188,35 +202,32 @@ const AddMenuForm = () => {
   };
 
   const handleEditCategory = (id: string) => {
-    console.log(`Edit item with id ${id}`);
     setisAddCategoryModalOpen(true);
     setisEditCats(true);
     seteditCatsId(id);
   };
 
-  const renderActions = (rowData: { _id: { _id: string } }) => (
+  const renderActions = (rowData: ItemsDropDownType) => (
     <div className="flex space-x-2 justify-center">
       <FaTrash
         className="text-red-600 cursor-pointer"
         onClick={() => {
           setConfirmationRemoval(true);
-          console.log("Row Data Id while del", rowData._id._id);
-          setRemovingId(rowData?._id?._id);
-          // handleRemoveCategory(rowData._id);
+          setRemovingId(rowData?._id);
         }}
       />
       <MdArrowOutward
         className="text-primary cursor-pointer"
         onClick={() => {
-          console.log(rowData?._id);
-          handleEditCategory(rowData?._id?._id);
+          handleEditCategory(rowData?._id);
         }}
       />
     </div>
   );
 
   const data = selectedItems.map((item) => ({
-    ...item,
+    _id: item._id,
+    name: item.name,
     actions: renderActions(item),
   }));
 
@@ -226,12 +237,8 @@ const AddMenuForm = () => {
     setIsModalOpen(false);
   };
 
-  const handleSearch = (event: any) => {
-    setSearchTerm(event.target.value);
-  };
-
   useEffect(() => {
-    if (!isModalOpen && selectedItems.length > 0) {
+    if (selectedItems.length > 0) {
       setItemsOption((prevItemsOption) =>
         prevItemsOption.filter(
           (item) =>
@@ -239,11 +246,7 @@ const AddMenuForm = () => {
         )
       );
     }
-  }, [isModalOpen, selectedItems, fetchMenuDatas]);
-
-  const filteredItems = itemsOption.filter((item) =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  }, [isModalOpen, selectedItems, fetchMenuDatas, tempSelectedItems]);
 
   const headingsDropdown = [
     {
@@ -270,7 +273,6 @@ const AddMenuForm = () => {
   };
 
   const handleItemClick = (item: any) => {
-    console.log(item);
     setTempSelectedItems((prevSelected) =>
       prevSelected.some((selectedItem) => selectedItem._id === item._id)
         ? prevSelected.filter((i) => i._id !== item._id)
@@ -286,7 +288,6 @@ const AddMenuForm = () => {
     const fetchMenuData = async () => {
       if (editMenuId) {
         try {
-          console.log(editMenuId);
           const response = await sdk.getMenusByType({ id: editMenuId });
           const menu = response.getMenusByType;
           setChangesMenu(response.getMenusByType);
@@ -301,7 +302,7 @@ const AddMenuForm = () => {
             name: el?.name?.value ?? "",
             length: 0,
           }));
-          setSelectedItems(menu[0].categories);
+          setSelectedItems(formateditemlist);
           setTempSelectedItems(formateditemlist);
           setprevItemsbfrEdit(formateditemlist);
         } catch (error) {
@@ -410,9 +411,7 @@ const AddMenuForm = () => {
         title="Add Categories"
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        searchTerm={searchTerm}
-        handleSearch={handleSearch}
-        filteredItems={filteredItems}
+        data={itemsOption}
         tempSelectedItems={tempSelectedItems}
         handleItemClick={handleItemClick}
         handleAddItems={handleAddItems}

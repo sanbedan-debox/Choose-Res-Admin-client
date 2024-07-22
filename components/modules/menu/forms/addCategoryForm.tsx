@@ -26,23 +26,27 @@ interface ItemsDropDownType {
   _id: string;
   name: string;
   price: number;
+  image: string;
 }
 
 const AddCategoryForm = () => {
   const [btnLoading, setBtnLoading] = useState(false);
-  const [itemsOption, setItemsOption] = useState<any[]>([]);
+  const [itemsOption, setItemsOption] = useState<ItemsDropDownType[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedItems, setSelectedItems] = useState<any[]>([]);
+
+  const [selectedItems, setSelectedItems] = useState<ItemsDropDownType[]>([]);
   const [prevItemsbfrEdit, setprevItemsbfrEdit] = useState<ItemsDropDownType[]>(
     []
   );
   const [confirmationRemoval, setConfirmationRemoval] = useState(false);
-  const [remmovingId, setRemovingId] = useState<string>("");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [removingId, setRemovingId] = useState<string>("");
   const [tempSelectedItems, setTempSelectedItems] = useState<
     ItemsDropDownType[]
   >([]);
+
+  //HELP
   const [changesMenu, setChangesMenu] = useState<any>([]);
+  const { setEditItemId, setisEditItem } = useMenuItemsStore();
 
   const { setToastData } = useGlobalStore();
   const {
@@ -51,8 +55,7 @@ const AddCategoryForm = () => {
     setisAddCategoryModalOpen,
     setisAddItemModalOpen,
   } = useMenuOptionsStore();
-  const { editCatsId, isEditCats, seteditCatsId, setisEditCats } =
-    useMenuCategoryStore();
+  const { editCatsId, isEditCats } = useMenuCategoryStore();
   const {
     handleSubmit,
     formState: { errors },
@@ -70,12 +73,14 @@ const AddCategoryForm = () => {
           setChangesMenu(response.getCategory);
           setValue("name", item.name.value);
           setValue("description", item.desc.value);
-          setSelectedItems(item?.items);
+
           const formateditemlist = item?.items.map((el) => ({
             _id: el._id._id,
             name: el?.name?.value ?? "",
             price: el?.price?.value ?? "",
+            image: "",
           }));
+          setSelectedItems(formateditemlist);
           setTempSelectedItems(formateditemlist);
           setprevItemsbfrEdit(formateditemlist);
         } catch (error) {
@@ -92,7 +97,7 @@ const AddCategoryForm = () => {
   }, [editCatsId, setValue, setToastData]);
 
   useEffect(() => {
-    if (!isModalOpen && selectedItems.length > 0) {
+    if (selectedItems.length > 0) {
       setItemsOption((prevItemsOption) =>
         prevItemsOption.filter(
           (item) =>
@@ -100,7 +105,7 @@ const AddCategoryForm = () => {
         )
       );
     }
-  }, [isModalOpen, selectedItems]);
+  }, [isModalOpen, selectedItems, fetchMenuDatas, tempSelectedItems]);
 
   const onSubmit = async (data: IFormInput) => {
     try {
@@ -128,15 +133,10 @@ const AddCategoryForm = () => {
       const prevSelectedMenuIds = prevItemsbfrEdit.map((item) => item._id);
       const selectedItemsIds = selectedItems.map((item) => item._id);
       const addedMenuIds = selectedItemsIds.filter(
-        (id) => !prevSelectedMenuIds.includes(id._id)
+        (id) => !prevSelectedMenuIds.includes(id)
       );
       const isMenuAdded = addedMenuIds.length > 0;
-      console.log(
-        isMenuAdded,
-        prevSelectedMenuIds,
-        selectedItemsIds,
-        addedMenuIds
-      );
+
       if (!isEditCats) {
         // ADD CATEGORIES/NEW CATEGORIES
         const res = await sdk.addCategory({
@@ -197,12 +197,19 @@ const AddCategoryForm = () => {
         });
         if (items && items.getItems) {
           const formattedItemsList = items.getItems.map((item) => ({
-            _id: item._id,
-            name: item?.name?.value,
-            price: item?.price?.value,
-            image: item?.image,
+            _id: item._id || "",
+            name: item?.name?.value || "",
+            price: item?.price?.value || 0,
+            image: item?.image || "",
           }));
-          setItemsOption(formattedItemsList);
+          const filteredItemsList = formattedItemsList.filter(
+            (item) =>
+              !selectedItems.some(
+                (selectedItem) => selectedItem._id === item._id
+              )
+          );
+
+          setItemsOption(filteredItemsList);
         }
       } catch (error: any) {
         const errorMessage = extractErrorMessage(error);
@@ -213,10 +220,9 @@ const AddCategoryForm = () => {
       }
     };
     fetch();
-  }, [fetchMenuDatas, setToastData]);
+  }, [fetchMenuDatas, setToastData, selectedItems]);
 
-  const handleItemClick = (item: any) => {
-    console.log(item);
+  const handleItemClick = (item: ItemsDropDownType) => {
     setTempSelectedItems((prevSelected) =>
       prevSelected.some((selectedItem) => selectedItem._id === item._id)
         ? prevSelected.filter((i) => i._id !== item._id)
@@ -230,27 +236,18 @@ const AddCategoryForm = () => {
     setIsModalOpen(false);
   };
 
-  const handleSearch = (event: any) => {
-    setSearchTerm(event.target.value);
-  };
-
-  const filteredItems = itemsOption.filter((item) =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const renderActions = (rowData: { _id: { _id: string } }) => (
+  const renderActions = (rowData: ItemsDropDownType) => (
     <div className="flex space-x-2 justify-center">
       <FaTrash
         className="text-red-600 cursor-pointer"
         onClick={() => {
           setConfirmationRemoval(true);
-          console.log("Row Data Id while del", rowData._id._id);
-          setRemovingId(rowData?._id?._id);
+          setRemovingId(rowData?._id);
         }}
       />
       <MdArrowOutward
         className="text-primary cursor-pointer"
-        onClick={() => handleEditItem(rowData?._id?._id)}
+        onClick={() => handleEditItem(rowData?._id)}
       />
     </div>
   );
@@ -263,8 +260,6 @@ const AddCategoryForm = () => {
   const handleAddClick = () => {
     setIsModalOpen(true);
   };
-
-  const { setEditItemId, setisEditItem } = useMenuItemsStore();
 
   const handleEditItem = (id: string) => {
     setisAddItemModalOpen(true);
@@ -298,20 +293,25 @@ const AddCategoryForm = () => {
 
   const handleRemoveCategory = async () => {
     setSelectedItems((prevSelected) =>
-      prevSelected.filter((item) => item._id._id !== remmovingId)
+      prevSelected.filter((item) => item._id !== removingId)
     );
 
     setTempSelectedItems((prevSelected) =>
-      prevSelected.filter((item) => item._id !== remmovingId)
+      prevSelected.filter((item) => item._id !== removingId)
     );
-    if (isEditCats) {
+
+    const isPresentInPrevItems = prevItemsbfrEdit.some(
+      (item) => item._id === removingId
+    );
+
+    if (isEditCats && isPresentInPrevItems) {
       const res = await sdk.removeItemFromCategory({
         categoryId: editCatsId || "",
-        itemId: remmovingId,
+        itemId: removingId,
       });
 
       setprevItemsbfrEdit((prevSelected) =>
-        prevSelected.filter((item) => item._id !== remmovingId)
+        prevSelected.filter((item) => item._id !== removingId)
       );
     }
     setConfirmationRemoval(false);
@@ -406,17 +406,13 @@ const AddCategoryForm = () => {
         title="Add Items"
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        searchTerm={searchTerm}
-        handleSearch={handleSearch}
-        filteredItems={filteredItems}
+        data={itemsOption}
         tempSelectedItems={tempSelectedItems}
         handleItemClick={handleItemClick}
         handleAddItems={handleAddItems}
         headings={headingsDropdown}
         renderActions={renderActions}
         onClickCreatebtn={handleAddItem}
-        // handleSelectAll={handleSelectAll}
-        // selectAll={selectAll}
       />
 
       <ReusableModal

@@ -1,5 +1,5 @@
 import NotFound from "@/components/common/notFound/notFound";
-import OnboardingLayout from "@/components/layouts/OnboardingLayout";
+import OnboardingLayout from "@/components/layouts/onboardingUserLayout";
 import UserInfo from "@/components/modules/onboarding/UserInformation";
 
 import UserLocation from "@/components/modules/onboarding/UserLocation";

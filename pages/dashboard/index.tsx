@@ -1,4 +1,3 @@
-import MainLayout from "@/components/layouts/MainLayout";
 import Loader from "@/components/loader";
 import useGlobalStore from "@/store/global";
 import React, { useState, useEffect } from "react";
@@ -8,6 +7,7 @@ import { sdk } from "@/utils/graphqlClient";
 import useAuthStore from "@/store/auth";
 import { UserStatus } from "@/generated/graphql";
 import QuickActions from "@/components/common/quickLinks/quickLink";
+import MainLayout from "@/components/layouts/mainBodyLayout";
 
 type NextPageWithLayout = React.FC & {
   getLayout?: (page: React.ReactNode) => React.ReactNode;

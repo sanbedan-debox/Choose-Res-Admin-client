@@ -1,6 +1,6 @@
 import React from "react";
 
-import StaticLayout from "@/components/layouts/StaticPageLayout";
+import StaticLayout from "@/components/layouts/staticPageLayout";
 
 type NextPageWithLayout = React.FC & {
   getLayout?: (page: React.ReactNode) => React.ReactNode;

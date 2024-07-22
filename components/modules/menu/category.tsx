@@ -59,8 +59,6 @@ const Categories: React.FC = () => {
     setShowStatusConfirmationModal(true);
     setSelectedItemId(rowData._id);
 
-    console.log(rowData.status, rowData._id);
-
     setAvailableCaption(
       rowData.status === StatusEnum.Inactive
         ? "are you sure you want to activate the Category?"
@@ -94,10 +92,10 @@ const Categories: React.FC = () => {
         className="text-blue-500 cursor-pointer"
         onClick={() => handleEditCategory(rowData._id)}
       />
-      <FaCopy
+      {/* <FaCopy
         className="text-green-500 cursor-pointer"
         onClick={() => console.log("Duplicate", rowData._id)}
-      />
+      /> */}
     </div>
   );
 

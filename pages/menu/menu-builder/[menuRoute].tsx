@@ -1,6 +1,6 @@
 import FullPageModal from "@/components/common/modal/fullPageModal";
 import NotFound from "@/components/common/notFound/notFound";
-import MenuLayout from "@/components/layouts/MenuLayout";
+import MenuLayout from "@/components/layouts/menuNextedLayout";
 import Categories from "@/components/modules/menu/category";
 import AddCategoryForm from "@/components/modules/menu/forms/addCategoryForm";
 import AddItemForm from "@/components/modules/menu/forms/addItemForm";

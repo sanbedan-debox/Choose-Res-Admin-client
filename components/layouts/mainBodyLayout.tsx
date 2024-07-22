@@ -20,7 +20,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     },
   });
 
-  const [isSwitchChecked, setIsSwitchChecked] = useState(false); // State for the switch
+  const [isSwitchChecked, setIsSwitchChecked] = useState(false);
 
   const onSubmit = async (data: any) => {
     try {
@@ -34,11 +34,14 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         input: taxRateInput,
       });
 
-      // if (taxRateResponse?.addTaxRate?._id) {
-      //   await sdk.addTaxRateInRestaurant({
-      //     taxRateId: taxRateResponse.addTaxRate._id,
-      //   });
-      // }
+      if (taxRateResponse?.addTaxRate) {
+        await sdk.addTaxRateInRestaurant({
+          taxRateId: taxRateResponse.addTaxRate,
+        });
+        setSelectedRestaurantTaxRate(taxRateResponse?.addTaxRate);
+      }
+
+      fetchRestaurantUsers();
       setisShowTaxSettings(false);
     } catch (error) {
       console.error("Error submitting tax rate:", error);
@@ -53,53 +56,53 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   } = useRestaurantsStore();
   const cookies = parseCookies();
   const selectedRestaurantId = cookies.restaurantId;
-  const { isRestaurantCompleted } = useRestaurantsStore();
-  useEffect(() => {
-    const fetchRestaurantUsers = async () => {
-      try {
-        const response = await sdk.getUserRestaurants();
-        if (response?.getUserRestaurants) {
-          const formattedRestaurant = response.getUserRestaurants.map(
-            (res) => ({
-              ...res,
-            })
-          );
-          setRestaurants(formattedRestaurant);
+  const { isRestaurantCompleted, setSelectedRestaurantTaxRate } =
+    useRestaurantsStore();
 
-          try {
-            const res = await sdk.getRestaurantDetails();
-            setSelectedRestaurant(res?.getRestaurantDetails?.name?.value);
+  const fetchRestaurantUsers = async () => {
+    try {
+      const response = await sdk.getUserRestaurants();
+      if (response?.getUserRestaurants) {
+        const formattedRestaurant = response.getUserRestaurants.map((res) => ({
+          ...res,
+        }));
+        setRestaurants(formattedRestaurant);
 
-            if (res?.getRestaurantDetails?.taxRates?.length === 0) {
-              setisShowTaxSettings(true);
-            }
-            if (!res) {
-              try {
-                const res = await sdk.setRestaurantIdAsCookie({
-                  id: formattedRestaurant[0]?._id,
-                });
-                if (res) {
-                  setSelectedRestaurant(formattedRestaurant[0]?.name?.value);
-                }
-              } catch (error) {
-                console.error("Failed to fetch restaurant users:", error);
-              }
-            } else {
-              setSelectedRestaurant(res?.getRestaurantDetails?.name?.value);
-            }
-          } catch (error) {
-            await sdk.setRestaurantIdAsCookie({
-              id: formattedRestaurant[0]?._id,
-            });
+        try {
+          const res = await sdk.getRestaurantDetails();
+          setSelectedRestaurant(res?.getRestaurantDetails?.name?.value);
+
+          if (res?.getRestaurantDetails?.taxRates?.length === 0) {
+            setisShowTaxSettings(true);
           }
+          if (!res) {
+            try {
+              const res = await sdk.setRestaurantIdAsCookie({
+                id: formattedRestaurant[0]?._id,
+              });
+              if (res) {
+                setSelectedRestaurant(formattedRestaurant[0]?.name?.value);
+              }
+            } catch (error) {
+              console.error("Failed to fetch restaurant users:", error);
+            }
+          } else {
+            setSelectedRestaurant(res?.getRestaurantDetails?.name?.value);
+          }
+        } catch (error) {
+          await sdk.setRestaurantIdAsCookie({
+            id: formattedRestaurant[0]?._id,
+          });
         }
-      } catch (error) {
-        console.error("Failed to fetch restaurant users:", error);
-      } finally {
-        // setLoading(false);
       }
-    };
+    } catch (error) {
+      console.error("Failed to fetch restaurant users:", error);
+    } finally {
+      // setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchRestaurantUsers();
   }, []);
   const { isShowTaxSettings, setisShowTaxSettings } = useGlobalStore();
@@ -122,7 +125,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className="mb-4">
                 <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
+                  className="block mb-2 text-sm font-medium text-left text-gray-700"
                   htmlFor="name"
                 >
                   Name
@@ -143,7 +146,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
               <div className="mb-4">
                 <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
+                  className="block mb-2 text-sm font-medium text-left text-gray-700"
                   htmlFor="salesTax"
                 >
                   Sales Tax
@@ -165,7 +168,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
               <div className="mb-4 flex justify-between items-center ">
                 <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
+                  className="block mb-2 text-sm font-medium text-left text-gray-700"
                   htmlFor="default"
                 >
                   Default
@@ -179,11 +182,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               </div>
 
               <div className="flex items-center justify-end">
-                <CButton
-                  variant={ButtonType.Primary}
-                  type="submit"
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                >
+                <CButton variant={ButtonType.Primary} type="submit">
                   Save
                 </CButton>
               </div>

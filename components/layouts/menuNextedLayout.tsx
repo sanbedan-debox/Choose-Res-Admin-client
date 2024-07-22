@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { useRouter } from "next/router";
 import { AnimatePresence } from "framer-motion";
 
-import MainLayout from "./MainLayout";
+import MainLayout from "./mainBodyLayout";
 
 type Props = {
   children: ReactNode;

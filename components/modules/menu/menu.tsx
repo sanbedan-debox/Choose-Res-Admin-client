@@ -96,7 +96,6 @@ const Menu: React.FC = () => {
   const handleToggleSwitch = (rowData: { status: string; _id: string }) => {
     setShowStatusConfirmationModal(true);
     setSelectedItemId(rowData._id);
-    console.log(rowData.status, rowData._id);
     setAvailableCaption(
       rowData.status === StatusEnum.Inactive
         ? "Are you sure you want to activate the menu?"

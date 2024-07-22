@@ -16,7 +16,7 @@ query getItems {
     }
     status
     modifierGroup {
-      _id
+      id
       name {
         _id
         value
@@ -44,7 +44,7 @@ query getItem($id: String!) {
         value
       }
       pricingType
-      _id
+      id
     }
     image
     price {
@@ -96,6 +96,9 @@ mutation removeModifierGroupFromItem(
   )
 }
 
-mutation addModifierGroupToItem($modifierGroupId: String!, $itemId: String!) {
-  addModifierGroupToItem(modifierGroupId: $modifierGroupId, itemId: $itemId)
+mutation addModifierGroupToItem(
+  $modifierGroupId: [String!]!
+  $itemId: String!
+) {
+  addModifierGroupToItem(modifierGroupIds: $modifierGroupId, itemId: $itemId)
 }
