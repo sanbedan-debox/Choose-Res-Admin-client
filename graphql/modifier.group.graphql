@@ -1,6 +1,7 @@
 query getModifierGroups {
   getModifierGroups {
     _id
+    status
     name {
       value
     }
@@ -74,4 +75,8 @@ mutation addModifierToModifierGroup(
     modifierGroupId: $modifierGroupId
     modifierIds: $modifierIds
   )
+}
+
+mutation changeModifierGroupStatus($id: String!) {
+  changeModifierGroupStatus(id: $id)
 }

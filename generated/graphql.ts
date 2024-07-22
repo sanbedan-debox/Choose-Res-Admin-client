@@ -1792,7 +1792,7 @@ export type RemoveCategoryFromMenuMutation = { __typename?: 'Mutation', removeCa
 export type GetModifierGroupsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetModifierGroupsQuery = { __typename?: 'Query', getModifierGroups: Array<{ __typename?: 'ModifierGroup', _id: string, name: { __typename?: 'MasterCommon', value: string } }> };
+export type GetModifierGroupsQuery = { __typename?: 'Query', getModifierGroups: Array<{ __typename?: 'ModifierGroup', _id: string, status: StatusEnum, name: { __typename?: 'MasterCommon', value: string } }> };
 
 export type UpdateModifierGroupMutationVariables = Exact<{
   input: UpdateModifierGroupInput;
@@ -1843,6 +1843,13 @@ export type AddModifierToModifierGroupMutationVariables = Exact<{
 
 
 export type AddModifierToModifierGroupMutation = { __typename?: 'Mutation', addModifierToModifierGroup: boolean };
+
+export type ChangeModifierGroupStatusMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type ChangeModifierGroupStatusMutation = { __typename?: 'Mutation', changeModifierGroupStatus: boolean };
 
 export type GetModifiersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2330,6 +2337,7 @@ export const GetModifierGroupsDocument = gql`
     query getModifierGroups {
   getModifierGroups {
     _id
+    status
     name {
       value
     }
@@ -2402,6 +2410,11 @@ export const AddModifierToModifierGroupDocument = gql`
     modifierGroupId: $modifierGroupId
     modifierIds: $modifierIds
   )
+}
+    `;
+export const ChangeModifierGroupStatusDocument = gql`
+    mutation changeModifierGroupStatus($id: String!) {
+  changeModifierGroupStatus(id: $id)
 }
     `;
 export const GetModifiersDocument = gql`
@@ -2794,6 +2807,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     addModifierToModifierGroup(variables: AddModifierToModifierGroupMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddModifierToModifierGroupMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<AddModifierToModifierGroupMutation>(AddModifierToModifierGroupDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'addModifierToModifierGroup', 'mutation', variables);
+    },
+    changeModifierGroupStatus(variables: ChangeModifierGroupStatusMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<ChangeModifierGroupStatusMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<ChangeModifierGroupStatusMutation>(ChangeModifierGroupStatusDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'changeModifierGroupStatus', 'mutation', variables);
     },
     getModifiers(variables?: GetModifiersQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetModifiersQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetModifiersQuery>(GetModifiersDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getModifiers', 'query', variables);
