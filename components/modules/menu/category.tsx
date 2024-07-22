@@ -61,8 +61,8 @@ const Categories: React.FC = () => {
 
     setAvailableCaption(
       rowData.status === StatusEnum.Inactive
-        ? "are you sure you want to activate the Category?"
-        : "are you sure you want to deactivate the Category?"
+        ? "Turning of the category would turn on all the items of the category for the selected menu template. Click Yes to proceed."
+        : "Turning of the category would turn off all the items of the category for the selected menu template. Click Yes to proceed."
     );
   };
 

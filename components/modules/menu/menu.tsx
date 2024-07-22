@@ -98,8 +98,8 @@ const Menu: React.FC = () => {
     setSelectedItemId(rowData._id);
     setAvailableCaption(
       rowData.status === StatusEnum.Inactive
-        ? "Are you sure you want to activate the menu?"
-        : "Are you sure you want to deactivate the menu?"
+        ? "Turning of the Menu would turn on all the items of the Menu for the selected menu template. Click Yes to proceed."
+        : "Turning of the Menu would turn off all the items of the Menu for the selected menu template. Click Yes to proceed."
     );
   };
 

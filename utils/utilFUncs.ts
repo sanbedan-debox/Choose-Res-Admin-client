@@ -22,3 +22,23 @@ export const extractErrorMessage = (error: any): string => {
     }
 };
 
+
+//Price Round Off
+
+export const roundOffPrice = (price: number) => {
+    const decimalPart = price % 1;
+
+    if (decimalPart <= 0.29) {
+        return Math.floor(price) + 0.49;
+    } else if (decimalPart <= 0.70) {
+        return Math.floor(price) + 0.99;
+    } else {
+        return Math.ceil(price);
+    }
+};
+
+
+export const isValidNameAlphabetic = (name: string) => {
+    const regex = /^[a-zA-Z0-9\s]+$/;
+    return regex.test(name);
+}

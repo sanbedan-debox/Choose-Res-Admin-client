@@ -5,7 +5,11 @@ import Select from "react-select";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import { sdk } from "@/utils/graphqlClient";
-import { extractErrorMessage } from "@/utils/utilFUncs";
+import {
+  extractErrorMessage,
+  isValidNameAlphabetic,
+  roundOffPrice,
+} from "@/utils/utilFUncs";
 import { StatusEnum } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
 import useMenuOptionsStore from "@/store/menuOptions";
@@ -208,9 +212,100 @@ const AddItemForm = () => {
   const onSubmit = async (data: IFormInput) => {
     try {
       setBtnLoading(true);
-      const statusSub = data.status ? StatusEnum.Active : StatusEnum.Inactive;
+      if (!data.price || data.price <= 0) {
+        setToastData({
+          message:
+            "An item cannot be added without pricing, please add a numerical value that is greater than zero to save and continue",
+          type: "error",
+        });
+      }
+      if (!isValidNameAlphabetic(data.name)) {
+        setToastData({
+          message:
+            "Please use only alphabets and numbers while adding or updating name.",
+          type: "error",
+        });
+        return;
+      }
 
-      const parsedPrice = parseFloat(data.price.toString());
+      const statusSub = data.status ? StatusEnum.Active : StatusEnum.Inactive;
+      let updateInput: any = { _id: editItemId || "" };
+      let hasChanges = false;
+      const imgUrl = await handleLogoUpload();
+
+      const addChange = (field: string, newValue: any) => {
+        updateInput[field] = { value: newValue };
+        hasChanges = true;
+      };
+
+      if (data.name !== changesMenu.name.value) {
+        addChange("name", data.name);
+      }
+
+      if (data.desc !== changesMenu.desc.value) {
+        addChange("desc", data.desc);
+      }
+
+      if (data.image !== changesMenu.image.value) {
+        updateInput.image = data.image;
+        hasChanges = true;
+      }
+
+      if (data.price !== changesMenu.price.value) {
+        addChange("price", data.price);
+      }
+
+      if (data.status !== (changesMenu.status === StatusEnum.Active)) {
+        updateInput.status = data.status;
+        hasChanges = true;
+      }
+
+      if (data.applySalesTax !== changesMenu.applySalesTax) {
+        updateInput.applySalesTax = data.applySalesTax;
+        hasChanges = true;
+      }
+
+      if (data.popularItem !== changesMenu.popularItem) {
+        updateInput.popularItem = data.popularItem;
+        hasChanges = true;
+      }
+
+      if (data.upSellItem !== changesMenu.upSellItem) {
+        updateInput.upSellItem = data.upSellItem;
+        hasChanges = true;
+      }
+
+      if (data.isSpicy !== changesMenu.isSpicy) {
+        updateInput.isSpicy = data.isSpicy;
+        hasChanges = true;
+      }
+
+      if (data.hasNuts !== changesMenu.hasNuts) {
+        updateInput.hasNuts = data.hasNuts;
+        hasChanges = true;
+      }
+
+      if (data.isGlutenFree !== changesMenu.isGlutenFree) {
+        updateInput.isGlutenFree = data.isGlutenFree;
+        hasChanges = true;
+      }
+
+      if (data.isHalal !== changesMenu.isHalal) {
+        updateInput.isHalal = data.isHalal;
+        hasChanges = true;
+      }
+
+      if (data.isVegan !== changesMenu.isVegan) {
+        updateInput.isVegan = data.isVegan;
+        hasChanges = true;
+      }
+
+      if (data.image !== changesMenu.image) {
+        updateInput.image = imgUrl || "";
+        hasChanges = true;
+      }
+
+      const parsedPrice = roundOffPrice(parseFloat(data.price.toString()));
       const formattedData = Object.keys(data.regularHours).map((day) => ({
         Day: day,
         hours: data.regularHours[
@@ -307,32 +402,8 @@ const AddItemForm = () => {
         setfetchMenuDatas(!fetchMenuDatas);
       } else {
         // EDIT/UPDATE ITEM API
-        const imgUrl = await handleLogoUpload();
-
         await sdk.updateItem({
-          input: {
-            _id: editItemId || "",
-            name: {
-              value: data.name,
-            },
-            desc: {
-              value: data.desc,
-            },
-            image: imgUrl,
-            price: {
-              value: parsedPrice,
-            },
-            status: statusSub,
-            applySalesTax: data.applySalesTax ? true : false,
-            popularItem: data.popularItem ? true : false,
-            upSellItem: data.upSellItem ? true : false,
-            hasNuts: data.hasNuts ? true : false,
-            isGlutenFree: data.isGlutenFree ? true : false,
-            isHalal: data.isHalal ? true : false,
-            isVegan: data.isVegan ? true : false,
-            isSpicy: data.isSpicy ? true : false,
-            // availability: [],
-          },
+          input: updateInput,
         });
         isMenuAdded &&
           (await sdk.addModifierGroupToItem({

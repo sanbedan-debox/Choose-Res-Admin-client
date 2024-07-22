@@ -5,7 +5,7 @@ import Select from "react-select";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import { sdk } from "@/utils/graphqlClient";
-import { extractErrorMessage } from "@/utils/utilFUncs";
+import { extractErrorMessage, isValidNameAlphabetic } from "@/utils/utilFUncs";
 import { FilterOperatorsEnum, MenuTypeEnum } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
 import useMenuOptionsStore from "@/store/menuOptions";
@@ -65,6 +65,14 @@ const AddMenuForm = () => {
   const { selectedRestaurantTaxRate } = useRestaurantsStore();
   const onSubmit = async (data: IFormInput) => {
     try {
+      if (!isValidNameAlphabetic(data.name)) {
+        setToastData({
+          message:
+            "Please use only alphabets and numbers while adding or updating name.",
+          type: "error",
+        });
+        return;
+      }
       setBtnLoading(true);
       const prevSelectedMenuIds = prevItemsbfrEdit.map((item) => item._id);
       const selectedItemsIds = selectedItems.map((item) => item._id);

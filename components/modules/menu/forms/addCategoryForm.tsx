@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import { sdk } from "@/utils/graphqlClient";
-import { extractErrorMessage } from "@/utils/utilFUncs";
+import { extractErrorMessage, isValidNameAlphabetic } from "@/utils/utilFUncs";
 import useGlobalStore from "@/store/global";
 import { FilterOperatorsEnum } from "@/generated/graphql";
 import useMenuOptionsStore from "@/store/menuOptions";
@@ -109,6 +109,14 @@ const AddCategoryForm = () => {
 
   const onSubmit = async (data: IFormInput) => {
     try {
+      if (!isValidNameAlphabetic(data.name)) {
+        setToastData({
+          message:
+            "Please use only alphabets and numbers while adding or updating name.",
+          type: "error",
+        });
+        return;
+      }
       const updateInput: any = {
         _id: editCatsId || "",
       };

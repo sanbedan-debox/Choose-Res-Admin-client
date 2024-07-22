@@ -4,7 +4,7 @@ import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
-import { extractErrorMessage } from "@/utils/utilFUncs";
+import { extractErrorMessage, isValidNameAlphabetic } from "@/utils/utilFUncs";
 import { PriceTypeEnum } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
 import useMenuOptionsStore from "@/store/menuOptions";
@@ -197,6 +197,14 @@ const AddModifierGroupForm = () => {
   const onSubmit = async (data: IFormInput) => {
     try {
       setBtnLoading(true);
+      if (!isValidNameAlphabetic(data.name)) {
+        setToastData({
+          message:
+            "Please use only alphabets and numbers while adding or updating name.",
+          type: "error",
+        });
+        return;
+      }
       const parsedMaxSelection = parseFloat(data.maxSelections.toString());
       const parsedMinSelection = parseFloat(data.minSelections.toString());
       const selectedItemsIds = selectedItems.map((item) => item._id);

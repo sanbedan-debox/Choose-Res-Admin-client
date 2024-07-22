@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import { sdk } from "@/utils/graphqlClient";
-import { extractErrorMessage } from "@/utils/utilFUncs";
+import { extractErrorMessage, isValidNameAlphabetic } from "@/utils/utilFUncs";
 import useGlobalStore from "@/store/global";
 import useMenuOptionsStore from "@/store/menuOptions";
 import CustomSwitchCard from "@/components/common/customSwitchCard/customSwitchCard";
@@ -29,6 +29,7 @@ const AddModifierForm = () => {
     watch,
     register,
   } = useForm<IFormInput>();
+  const [changesModifiers, setChangesModifiers] = useState<any | null>(null);
 
   const { fetchMenuDatas, setfetchMenuDatas, setisAddModifierModalOpen } =
     useMenuOptionsStore();
@@ -47,6 +48,8 @@ const AddModifierForm = () => {
         try {
           const response = await sdk.getModifier({ id: editModId });
           const item = response.getModifier;
+          setChangesModifiers(item);
+
           setValue("name", item.name.value);
           // setValue("desc", item.);
           setValue("price", item.price.value);
@@ -64,7 +67,33 @@ const AddModifierForm = () => {
   }, [editModId, setValue, setToastData]);
 
   const onSubmit = async (data: IFormInput) => {
+    if (!isValidNameAlphabetic(data.name)) {
+      setToastData({
+        message:
+          "Please use only alphabets and numbers while adding or updating name.",
+        type: "error",
+      });
+      return;
+    }
     const parsedPrice = parseFloat(data.price.toString());
+    let updateInput: any = { _id: editModId || "" };
+    let hasChanges = false;
+    const addChange = (field: string, newValue: any) => {
+      updateInput[field] = { value: newValue };
+      hasChanges = true;
+    };
+    if (data.name !== changesModifiers.name.value) {
+      addChange("name", data.name);
+    }
+
+    if (data.price !== changesModifiers.price.value) {
+      addChange("price", data.price);
+    }
+
+    if (data.optional !== changesModifiers.preSelect) {
+      updateInput.preSelect = data.optional;
+      hasChanges = true;
+    }
 
     try {
       setBtnLoading(true);
@@ -86,16 +115,7 @@ const AddModifierForm = () => {
           })
         : // EDIT/UPDATE ITEM API
           await sdk.updateModifier({
-            input: {
-              _id: editModId || "",
-              name: {
-                value: data.name,
-              },
-              price: {
-                value: parsedPrice,
-              },
-              // availability: [],
-            },
+            input: updateInput,
           });
       setisAddModifierModalOpen(false);
       setfetchMenuDatas(!fetchMenuDatas);
@@ -212,15 +232,21 @@ const AddModifierForm = () => {
             </label>
             <input
               type="number"
-              {...register("price", { required: "Price is required" })}
+              {...register("price", {
+                required: "Price is required",
+                pattern: {
+                  value: /^\d+(\.\d{1,2})?$/,
+                  message: "Enter a valid price (e.g., 7.99)",
+                },
+              })}
               id="price"
               className="input input-primary"
               placeholder="Enter item price"
               style={{
                 appearance: "textfield",
               }}
-              inputMode="numeric"
-              pattern="[0-9]*"
+              inputMode="decimal"
+              step="0.01"
               onWheel={(e) => e.preventDefault()}
               onKeyDown={(e) => {
                 if (e.key === "e" || e.key === "-" || e.key === "+") {
