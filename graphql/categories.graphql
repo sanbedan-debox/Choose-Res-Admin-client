@@ -50,7 +50,6 @@ query getItemsForCategoryDropdown(
 mutation addCategory($input: AddCategoryInput!) {
   addCategory(input: $input)
 }
-
 query getCategory($id: String!) {
   getCategory(id: $id) {
     _id
@@ -62,6 +61,7 @@ query getCategory($id: String!) {
     }
     status
     items {
+      id
       name {
         value
       }

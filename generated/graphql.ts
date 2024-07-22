@@ -1635,7 +1635,7 @@ export type GetCategoryQueryVariables = Exact<{
 }>;
 
 
-export type GetCategoryQuery = { __typename?: 'Query', getCategory: { __typename?: 'Category', _id: string, status: StatusEnum, createdAt: any, updatedAt: any, name: { __typename?: 'MasterCommon', value: string }, desc: { __typename?: 'MasterCommon', value: string }, items: Array<{ __typename?: 'ItemInfo', status: StatusEnum, name?: { __typename?: 'MasterCommon', value: string } | null, _id: { __typename?: 'Item', _id: string }, price: { __typename?: 'MasterCommonNumber', value: number } }> } };
+export type GetCategoryQuery = { __typename?: 'Query', getCategory: { __typename?: 'Category', _id: string, status: StatusEnum, createdAt: any, updatedAt: any, name: { __typename?: 'MasterCommon', value: string }, desc: { __typename?: 'MasterCommon', value: string }, items: Array<{ __typename?: 'ItemInfo', id: string, status: StatusEnum, name?: { __typename?: 'MasterCommon', value: string } | null, _id: { __typename?: 'Item', _id: string }, price: { __typename?: 'MasterCommonNumber', value: number } }> } };
 
 export type UpdateCategoryMutationVariables = Exact<{
   input: UpdateCategoryInput;
@@ -2092,6 +2092,7 @@ export const GetCategoryDocument = gql`
     }
     status
     items {
+      id
       name {
         value
       }
