@@ -1,28 +1,3 @@
-query GetAdmins {
-  getAllMenus {
-    _id
-    type
-    user {
-      firstName
-      lastName
-      email
-      phone
-      businessName
-    }
-    name {
-      value
-    }
-    categories {
-      name {
-        value
-      }
-    }
-    createdAt
-    updatedAt
-    status
-  }
-}
-
 query getUserRestaurants {
   getUserRestaurants {
     name {

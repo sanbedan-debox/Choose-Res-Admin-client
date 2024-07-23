@@ -20,8 +20,6 @@ type UserRepo = {
   firstName: string;
   lastName: string;
   status: string;
-  businessName: string;
-  establishedAt: string;
 };
 
 const Dashboard: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
@@ -53,15 +51,12 @@ const Dashboard: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
   }, [searchQuery]);
 
   const {
-    setBusinessName,
     setEmail,
-    setEstablishedAt,
     setFirstName,
     setLastName,
     setPhone,
     setStatus,
     setUserId,
-    firstName,
   } = useAuthStore();
 
   useEffect(() => {
@@ -71,13 +66,9 @@ const Dashboard: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
     setFirstName(repo?.firstName ?? "");
     setLastName(repo?.lastName ?? "");
     setStatus(repo?.status ?? "");
-    setBusinessName(repo?.businessName ?? "");
-    setEstablishedAt(repo?.establishedAt ?? "");
   }, [
     repo,
-    setBusinessName,
     setEmail,
-    setEstablishedAt,
     setFirstName,
     setLastName,
     setPhone,
@@ -172,16 +163,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     );
 
     if (response && response.meUser) {
-      const {
-        _id,
-        email,
-        firstName,
-        status,
-        lastName,
-        phone,
-        businessName,
-        establishedAt,
-      } = response.meUser;
+      const { _id, email, firstName, status, lastName, phone } =
+        response.meUser;
 
       if (status === UserStatus.Blocked) {
         return {
@@ -229,8 +212,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             firstName,
             lastName,
             status,
-            businessName,
-            establishedAt,
           },
         },
       };

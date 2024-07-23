@@ -56,8 +56,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   } = useRestaurantsStore();
   const cookies = parseCookies();
   const selectedRestaurantId = cookies.restaurantId;
-  const { isRestaurantCompleted, setSelectedRestaurantTaxRate } =
-    useRestaurantsStore();
+  const { setSelectedRestaurantTaxRate } = useRestaurantsStore();
 
   const fetchRestaurantUsers = async () => {
     try {

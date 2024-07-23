@@ -94,8 +94,7 @@ const UserInfo = () => {
     setemployeeSize,
     estimatedRevenue,
     setestimatedRevenue,
-    // establishedAt,
-    // setestablishedAt,
+
     dob,
     setdob,
   } = useOnboardingStore();
@@ -117,11 +116,6 @@ const UserInfo = () => {
     label: formatStaffCountEnum(val),
   }));
 
-  // const employeSize = Object.values(StaffCountEnum).map((val)=>({
-  //   value: val.toString(),
-  //   label: val.toString(),
-  // }))
-
   const revenueOptions = Object.values(EstimatedRevenueEnum).map((val) => ({
     value: val.toString(),
     label: formatEstimatedRevenueEnum(val),
@@ -134,7 +128,7 @@ const UserInfo = () => {
       const businessTypeValue = data.businessType as BusinessTypeEnum;
       const estimatedRevenueValue = data.revenue as EstimatedRevenueEnum;
       const employeeSizeValue = data.employees as StaffCountEnum;
-      const response = await sdk.UpdateUserOnboarding({
+      const response = await sdk.businessOnboarding({
         input: {
           businessName: data.businessName,
 
@@ -142,9 +136,6 @@ const UserInfo = () => {
           estimatedRevenue: estimatedRevenueValue,
 
           employeeSize: employeeSizeValue,
-
-          // establishedAt: establishedAt?.toISOString(),
-          // dob: dob?.toISOString(),
         },
       });
       setToastData({

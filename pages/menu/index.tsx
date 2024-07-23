@@ -20,28 +20,13 @@ type UserRepo = {
   firstName: string;
   lastName: string;
   status: string;
-  businessName: string;
-  establishedAt: string;
 };
 
 const Menu: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
   const { setSelectedMenu } = useGlobalStore();
-  // const [loading, setLoading] = useState(true);
-
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     setLoading(false);
-  //   }, 1000);
-  // }, []);
-
-  // if (loading) {
-  //   return <Loader />;
-  // }
 
   const {
-    setBusinessName,
     setEmail,
-    setEstablishedAt,
     setFirstName,
     setLastName,
     setPhone,
@@ -57,13 +42,9 @@ const Menu: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
     setFirstName(repo?.firstName ?? "");
     setLastName(repo?.lastName ?? "");
     setStatus(repo?.status ?? "");
-    setBusinessName(repo?.businessName ?? "");
-    setEstablishedAt(repo?.establishedAt ?? "");
   }, [
     repo,
-    setBusinessName,
     setEmail,
-    setEstablishedAt,
     setFirstName,
     setLastName,
     setPhone,
@@ -106,16 +87,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     );
 
     if (response && response.meUser) {
-      const {
-        _id,
-        email,
-        firstName,
-        status,
-        lastName,
-        phone,
-        businessName,
-        establishedAt,
-      } = response.meUser;
+      const { _id, email, firstName, status, lastName, phone } =
+        response.meUser;
 
       if (status === UserStatus.Blocked) {
         return {
@@ -163,8 +136,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             firstName,
             lastName,
             status,
-            businessName,
-            establishedAt,
           },
         },
       };

@@ -118,7 +118,6 @@ const RestaurantAdditionalInformation = () => {
     label: formatMeatType(val),
   }));
 
-  const { isRestaurantCompleted } = useRestaurantsStore();
   const [btnLoading, setBtnLoading] = useState(false);
 
   const onSubmit = async (data: IFormInput) => {
@@ -137,9 +136,7 @@ const RestaurantAdditionalInformation = () => {
         },
       });
       if (response.restaurantOnboarding) {
-        const res = await sdk.completeRestaurantOnboarding({
-          flag: isRestaurantCompleted,
-        });
+        const res = await sdk.completeRestaurantOnboarding();
         if (res.completeRestaurantOnboarding) {
           setToastData({
             message: "Restaurant Added successfully!",

@@ -32,16 +32,11 @@ const Navbar: React.FC = () => {
     setSelectedRestaurant,
     setRefreshRestaurantChange,
     refreshRestaurantChange,
-    setIsRestaurantCompleted,
   } = useRestaurantsStore();
   const toggleSidebar = () => {
     setisSidebarExpanded(!isSidebarExpanded);
   };
 
-  const resetRestaurantOnboardingDatas = () => {
-    // reset();
-    setIsRestaurantCompleted(true);
-  };
   const profileDropdownRef = useRef<HTMLDivElement>(null);
   const restaurantDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -166,16 +161,12 @@ const Navbar: React.FC = () => {
                         className="block px-4 py-2 text-sm hover:bg-primary hover:text-white"
                         href="/onboarding-restaurant/restaurant-basic-information"
                       >
-                        <CButton
-                          onClick={resetRestaurantOnboardingDatas}
-                          variant={ButtonType.Primary}
-                        >
+                        <CButton variant={ButtonType.Primary}>
                           Add Restaurant
                         </CButton>
                       </Link>
                     )}
                     <Link
-                      onClick={resetRestaurantOnboardingDatas}
                       className="block px-4 py-2 text-sm hover:bg-primary hover:text-white"
                       href="/onboarding-restaurant/restaurant-basic-information"
                     >
@@ -187,12 +178,7 @@ const Navbar: React.FC = () => {
             </div>
           ) : (
             <Link href="/onboarding-restaurant/restaurant-basic-information">
-              <CButton
-                onClick={resetRestaurantOnboardingDatas}
-                variant={ButtonType.Primary}
-              >
-                Add Restaurant
-              </CButton>
+              <CButton variant={ButtonType.Primary}>Add Restaurant</CButton>
             </Link>
           )}
         </div>

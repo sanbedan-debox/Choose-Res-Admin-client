@@ -83,11 +83,11 @@ const Modifiers: React.FC = () => {
   const renderActions = (rowData: { _id: string }) => (
     <div className="flex space-x-3 justify-center">
       <FaTrash
-        className="text-red-500 cursor-pointer"
+        className="text-primary text-lg cursor-pointer"
         onClick={() => handleDeleteItem(rowData._id)}
       />
       <FaEdit
-        className="text-blue-500 cursor-pointer"
+        className="text-primary text-lg cursor-pointer"
         onClick={() => handleEditItem(rowData._id)}
       />
       <IoDuplicateOutline

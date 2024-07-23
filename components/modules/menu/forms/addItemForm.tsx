@@ -224,7 +224,7 @@ const AddItemForm = () => {
     try {
       setBtnLoading(true);
       if (!isDuplicateItem) {
-        if (!isValidNameAlphabetic(data.name)) {
+        if (!isValidNameAlphabetic(data?.name)) {
           setToastData({
             message:
               "Please use only alphabets and numbers while adding or updating name.",
@@ -251,69 +251,69 @@ const AddItemForm = () => {
         hasChanges = true;
       };
 
-      if (data.name !== changesMenu.name.value) {
+      if (data.name !== changesMenu?.name?.value) {
         addChange("name", data.name);
       }
 
-      if (data.desc !== changesMenu.desc.value) {
+      if (data.desc !== changesMenu?.desc?.value) {
         addChange("desc", data.desc);
       }
 
-      if (data.image !== changesMenu.image.value) {
+      if (data.image !== changesMenu?.image?.value) {
         updateInput.image = data.image;
         hasChanges = true;
       }
 
-      if (data.price !== changesMenu.price.value) {
+      if (data.price !== changesMenu?.price?.value) {
         addChange("price", data.price);
       }
 
-      if (data.status !== (changesMenu.status === StatusEnum.Active)) {
+      if (data.status !== (changesMenu?.status === StatusEnum.Active)) {
         updateInput.status = data.status;
         hasChanges = true;
       }
 
-      if (data.applySalesTax !== changesMenu.applySalesTax) {
+      if (data.applySalesTax !== changesMenu?.applySalesTax) {
         updateInput.applySalesTax = data.applySalesTax;
         hasChanges = true;
       }
 
-      if (data.popularItem !== changesMenu.popularItem) {
+      if (data.popularItem !== changesMenu?.popularItem) {
         updateInput.popularItem = data.popularItem;
         hasChanges = true;
       }
 
-      if (data.upSellItem !== changesMenu.upSellItem) {
+      if (data.upSellItem !== changesMenu?.upSellItem) {
         updateInput.upSellItem = data.upSellItem;
         hasChanges = true;
       }
 
-      if (data.isSpicy !== changesMenu.isSpicy) {
+      if (data.isSpicy !== changesMenu?.isSpicy) {
         updateInput.isSpicy = data.isSpicy;
         hasChanges = true;
       }
 
-      if (data.hasNuts !== changesMenu.hasNuts) {
+      if (data.hasNuts !== changesMenu?.hasNuts) {
         updateInput.hasNuts = data.hasNuts;
         hasChanges = true;
       }
 
-      if (data.isGlutenFree !== changesMenu.isGlutenFree) {
+      if (data.isGlutenFree !== changesMenu?.isGlutenFree) {
         updateInput.isGlutenFree = data.isGlutenFree;
         hasChanges = true;
       }
 
-      if (data.isHalal !== changesMenu.isHalal) {
+      if (data.isHalal !== changesMenu?.isHalal) {
         updateInput.isHalal = data.isHalal;
         hasChanges = true;
       }
 
-      if (data.isVegan !== changesMenu.isVegan) {
+      if (data.isVegan !== changesMenu?.isVegan) {
         updateInput.isVegan = data.isVegan;
         hasChanges = true;
       }
 
-      if (data.image !== changesMenu.image) {
+      if (data.image !== changesMenu?.image) {
         updateInput.image = imgUrl || "";
         hasChanges = true;
       }

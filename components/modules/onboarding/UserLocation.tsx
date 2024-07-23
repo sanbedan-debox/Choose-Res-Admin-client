@@ -109,7 +109,7 @@ const UserLocation = () => {
       if (!data.state) {
         return;
       }
-      const response = await sdk.UpdateUserOnboarding({
+      const response = await sdk.businessOnboarding({
         input: {
           address: {
             addressLine1: {
@@ -351,18 +351,6 @@ const UserLocation = () => {
               });
               // setLocation(option?.value || "");
             }}
-            // defaultOptions={[
-            //   { value: "One", label: "One" },
-            //   { value: "One", label: "One" },
-            //   { value: "One", label: "One" },
-            //   { value: "One", label: "One" },
-            //   { value: "One", label: "One" },
-            //   { value: "One", label: "One" },
-            //   { value: "One", label: "One" },
-            //   { value: "One", label: "One" },
-            //   { value: "One", label: "One" },
-            //   { value: "One", label: "One" },
-            // ]}
             loadOptions={debouncedLoadOptions}
           />
 

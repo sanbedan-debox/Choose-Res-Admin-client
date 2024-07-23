@@ -82,15 +82,15 @@ const UserVerification = () => {
     }
 
     try {
-      const response = await sdk.UpdateUserOnboarding({
+      const response = await sdk.businessOnboarding({
         input: {
           ein: data.ein,
         },
       });
 
-      if (response.updateUserOnboarding) {
-        const res = await sdk.completeUserOnboarding();
-        if (res.completeUserOnboarding) {
+      if (response.businessOnboarding) {
+        const res = await sdk.completeBusinessOnboarding();
+        if (res.completeBusinessOnboarding) {
           setToastData({
             message: "User verification details updated successfully!",
             type: "success",

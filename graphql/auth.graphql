@@ -9,7 +9,6 @@ query GenerateOtpForLogin($input: String!) {
 }
 
 # Query to fetch user's profile
-
 query MeUser {
   meUser {
     _id
@@ -18,14 +17,9 @@ query MeUser {
     status
     email
     phone
-    businessName
-    establishedAt
     accountPreferences {
       whatsApp
       email
-    }
-    restaurants {
-      _id
     }
   }
 }
@@ -47,4 +41,20 @@ mutation verifyUserDetails($input: VerifyUserDetails!) {
 input CommunicationPreferenceInput {
   whatsApp: Boolean!
   email: Boolean!
+}
+
+query getBusinessDetails {
+  getBusinessDetails {
+    businessName
+    estimatedRevenue
+    employeeSize
+    employeeSize
+    businessType
+    restaurants {
+      name {
+        value
+      }
+      id
+    }
+  }
 }

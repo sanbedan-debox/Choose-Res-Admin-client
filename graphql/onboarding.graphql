@@ -12,18 +12,18 @@ query PlaceDetails($placeId: String!) {
   }
 }
 # Mutation to update the restaurant user's profile
-mutation UpdateRestaurantUserProfile($input: UpdateUserProfileInput!) {
+mutation updateUserProfile($input: UpdateUserProfileInput!) {
   updateUserProfile(input: $input)
 }
 
 # Mutation to update user onboarding details
-mutation UpdateUserOnboarding($input: UpdateUserOnboardingInput!) {
-  updateUserOnboarding(input: $input)
+mutation businessOnboarding($input: RegisterBusinessInput!) {
+  businessOnboarding(input: $input)
 }
 # Inputs
 
-mutation completeUserOnboarding {
-  completeUserOnboarding
+mutation completeBusinessOnboarding {
+  completeBusinessOnboarding
 }
 
 # Object types
@@ -34,8 +34,8 @@ type AddRestaurantUser {
   numberOtpVerifyKey: String!
 }
 
-query getUserOnboardingDetails {
-  getUserOnboardingDetails {
+query getBusinessOnboardingDetails {
+  getBusinessOnboardingDetails {
     ein
     # ssn
     businessName
@@ -76,8 +76,8 @@ mutation restaurantOnboarding($input: UpdateRestaurantDetailsInput!) {
   restaurantOnboarding(input: $input)
 }
 
-query completeRestaurantOnboarding($flag: Boolean!) {
-  completeRestaurantOnboarding(isCompleted: $flag)
+query completeRestaurantOnboarding {
+  completeRestaurantOnboarding
 }
 # Input for adding a new restaurant user
 input AddRestaurantUserInput {

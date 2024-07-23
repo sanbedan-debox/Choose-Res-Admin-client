@@ -276,6 +276,8 @@ const AddModifierGroupForm = () => {
       }
 
       if (!isEditModGroup) {
+        const selectedItemsIds = await selectedItems.map((item) => item.id);
+
         await sdk.addModifierGroup({
           input: {
             name: {

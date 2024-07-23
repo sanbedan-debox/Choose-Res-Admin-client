@@ -16,12 +16,10 @@ type HomePageProps = {
   repo: {
     pagePath: string;
     address: any;
-    businessName: any;
     businessType: any;
     ein: any;
     dob: any;
     employeeSize: any;
-    establishedAt: any;
     estimatedRevenue: any;
   };
 };
@@ -37,40 +35,18 @@ const OnboardingPage = ({ repo }: HomePageProps) => {
     setPlace,
     setPostcode,
     setState,
-    setbusinessName,
     setbusinessType,
     setdob,
     setein,
     setemployeeSize,
-    setestablishedAt,
     setestimatedRevenue,
   } = useOnboardingStore();
 
-  // useEffect(() => {
-  //   setbusinessName(repo.businessName);
-  //   setbusinessType(repo.businessType);
-  //   setdob(repo.dob);
-  //   setein(repo.ein);
-  //   setemployeeSize(repo.employeeSize);
-  //   setestablishedAt(repo.establishedAt);
-  //   setestimatedRevenue(repo.estimatedRevenue);
-  //   setAddressLine1(repo.address?.addressLine1?.value);
-  //   setAddressLine2(repo.address?.addressLine2?.value);
-  //   setCity(repo.address?.city?.value);
-  //   setCords(repo?.address?.coordinate?.coordinates ?? []);
-  //   setPlace(repo?.address?.place);
-
-  //   setPostcode(repo.address?.postcode?.value);
-  //   setState(repo.address?.state?.value);
-  // }, [repo]);
-
   useEffect(() => {
-    setbusinessName(repo.businessName);
     setbusinessType(repo.businessType);
     setdob(repo.dob);
     setein(repo.ein);
     setemployeeSize(repo.employeeSize);
-    setestablishedAt(repo.establishedAt);
     setestimatedRevenue(repo.estimatedRevenue);
     setAddressLine1(repo.address?.addressLine1?.value);
     setAddressLine2(repo.address?.addressLine2?.value);
@@ -81,12 +57,10 @@ const OnboardingPage = ({ repo }: HomePageProps) => {
     setState(repo.address?.state);
   }, [
     repo,
-    setbusinessName,
     setbusinessType,
     setdob,
     setein,
     setemployeeSize,
-    setestablishedAt,
     setestimatedRevenue,
     setAddressLine1,
     setAddressLine2,
@@ -137,35 +111,31 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
     };
   }
   try {
-    const response = await sdk.getUserOnboardingDetails(
+    const response = await sdk.getBusinessOnboardingDetails(
       {},
       {
         cookie: context.req.headers.cookie?.toString() ?? "",
       }
     );
 
-    if (response && response.getUserOnboardingDetails) {
+    if (response && response.getBusinessOnboardingDetails) {
       const {
         address,
-        businessName,
         businessType,
         ein,
         dob,
         employeeSize,
-        establishedAt,
         estimatedRevenue,
-      } = response.getUserOnboardingDetails;
+      } = response.getBusinessOnboardingDetails;
 
       return {
         props: {
           repo: {
             pagePath: context.query["onBoardingRoute"]?.toString() ?? "",
-            businessName,
             businessType,
             ein,
             dob,
             employeeSize,
-            establishedAt,
             estimatedRevenue,
             address,
           },

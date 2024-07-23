@@ -230,33 +230,7 @@ const Login: FC = () => {
           </div>
         </div>
       </div>
-      {/* <ReusableModal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        title="Enter OTP"
-        width="sm"
-      >
-        <form onSubmit={handleSubmit(onSubmitOtp)}>
-          <div className="flex flex-col ">
-            <input
-              type="text"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              className="input input-primary mb-8"
-              placeholder="Enter OTP"
-            />
-            {otpError && <p className="text-red-500">{otpError}</p>}
 
-            <CButton
-              loading={btnloading}
-              variant={ButtonType.Primary}
-              className="btn btn-primary"
-            >
-              Submit
-            </CButton>
-          </div>
-        </form>
-      </ReusableModal> */}
       <ReusableModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}

@@ -85,3 +85,22 @@ mutation updateMenu($input: UpdateMenuInput!) {
 mutation removeCategoryFromMenu($menuId: String!, $categoryId: String!) {
   removeCategoryFromMenu(categoryId: $categoryId, menuId: $menuId)
 }
+
+query getAllMenus {
+  getAllMenus {
+    _id
+    type
+
+    name {
+      value
+    }
+    categories {
+      name {
+        value
+      }
+    }
+    createdAt
+    updatedAt
+    status
+  }
+}
