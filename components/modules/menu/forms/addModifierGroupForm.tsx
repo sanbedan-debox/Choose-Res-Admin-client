@@ -146,12 +146,12 @@ const AddModifierGroupForm = () => {
             "pricingType",
             selectedPriceType || PriceTypeEnum.FreeOfCharge
           );
-          setSelectedItems(item?.modifiers);
           const formateditemlist = item?.modifiers.map((el) => ({
             _id: el?.id,
             name: el?.name?.value ?? "",
             price: el?.price?.value ?? "",
           }));
+          setSelectedItems(formateditemlist || []);
           setTempSelectedItems(formateditemlist);
           setprevItemsbfrEdit(formateditemlist);
         } catch (error) {
@@ -230,7 +230,8 @@ const AddModifierGroupForm = () => {
       const prevSelectedMenuIds = await prevItemsbfrEdit.map(
         (item) => item._id
       );
-      const selectedItemsIds = await selectedItems.map((item) => item.id);
+      console.log(selectedItems);
+      const selectedItemsIds = await selectedItems.map((item) => item._id);
       console.log("prev Selected IDs:", prevSelectedMenuIds);
       console.log("selected Items IDs:", selectedItemsIds);
       const addedMenuIds = selectedItemsIds.filter(
@@ -238,7 +239,7 @@ const AddModifierGroupForm = () => {
       );
       const isMenuAdded = addedMenuIds.length > 0;
       setBtnLoading(true);
-      if (selectedItems.length === 0) {
+      if (selectedItemsIds.length === 0) {
         setToastData({
           type: "error",
           message: "At least one modifier must be selected.",
@@ -276,8 +277,6 @@ const AddModifierGroupForm = () => {
       }
 
       if (!isEditModGroup) {
-        const selectedItemsIds = await selectedItems.map((item) => item.id);
-
         await sdk.addModifierGroup({
           input: {
             name: {
