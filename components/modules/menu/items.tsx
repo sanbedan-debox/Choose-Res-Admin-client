@@ -7,11 +7,11 @@ import { StatusEnum } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
 import useMenuItemsStore from "@/store/menuItems";
 import useMenuOptionsStore from "@/store/menuOptions";
-
 import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import React, { useEffect, useState } from "react";
 import { FaTrash, FaEdit, FaShieldAlt } from "react-icons/fa";
+import { IoDuplicateOutline } from "react-icons/io5";
 
 const Items: React.FC = () => {
   const [items, setItems] = useState<
@@ -57,6 +57,23 @@ const Items: React.FC = () => {
     }
   };
 
+  const { setEditItemId, setisEditItem, setisDuplicateItem } =
+    useMenuItemsStore();
+
+  const handleEditItem = (_id: string) => {
+    setisAddItemModalOpen(true);
+    setEditItemId(_id);
+    setisEditItem(true);
+    setisDuplicateItem(false);
+  };
+
+  const handleDuplcateCategory = (_id: string) => {
+    setisAddItemModalOpen(true);
+    setEditItemId(_id);
+    setisDuplicateItem(true);
+    setisEditItem(false);
+  };
+
   useEffect(() => {
     fetchMenuItems();
   }, [fetchMenuDatas, setToastData]);
@@ -64,16 +81,16 @@ const Items: React.FC = () => {
   const renderActions = (rowData: { _id: string }) => (
     <div className="flex space-x-2 justify-center">
       <FaTrash
-        className="text-red-500 cursor-pointer"
+        className="text-primary text-lg cursor-pointer"
         onClick={() => handleDeleteItem(rowData._id)}
       />
       <FaEdit
-        className="text-blue-500 cursor-pointer"
+        className="text-primary text-lg cursor-pointer"
         onClick={() => handleEditItem(rowData._id)}
       />
-      <FaShieldAlt
-        className="text-green-500 cursor-pointer"
-        // onClick={() => console.log("Change Password", rowData._id)}
+      <IoDuplicateOutline
+        className="text-primary text-lg cursor-pointer"
+        onClick={() => handleDuplcateCategory(rowData._id)}
       />
     </div>
   );
@@ -92,14 +109,6 @@ const Items: React.FC = () => {
     setAvailableCaption(
       " By clicking yes the selected Item / Items will be deleted. This action cannot be undone."
     );
-  };
-
-  const { setEditItemId, setisEditItem } = useMenuItemsStore();
-
-  const handleEditItem = (_id: string) => {
-    setisAddItemModalOpen(true);
-    setEditItemId(_id);
-    setisEditItem(true);
   };
 
   const renderSwitch = (rowData: { status: StatusEnum; _id: string }) => (

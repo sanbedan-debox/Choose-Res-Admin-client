@@ -7,6 +7,7 @@ import { ButtonType } from "@/components/common/button/interface";
 import { sdk } from "@/utils/graphqlClient";
 import {
   extractErrorMessage,
+  generateUniqueName,
   isValidNameAlphabetic,
   roundOffPrice,
 } from "@/utils/utilFUncs";
@@ -135,8 +136,14 @@ const AddItemForm = () => {
     setisAddItemModalOpen,
     setisAddModifierGroupModalOpen,
   } = useMenuOptionsStore();
-  const { editItemId, isEditItem, setEditItemId, setisEditItem } =
-    useMenuItemsStore();
+  const {
+    editItemId,
+    isEditItem,
+    setEditItemId,
+    setisEditItem,
+    setisDuplicateItem,
+    isDuplicateItem,
+  } = useMenuItemsStore();
   const [confirmationRemoval, setConfirmationRemoval] = useState(false);
   const [remmovingId, setRemovingId] = useState<string>("");
   const { setEditModGroupId, setisEditModGroup } = useModGroupStore();
@@ -158,43 +165,47 @@ const AddItemForm = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [logoURL, setLogoURL] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchItemData = async () => {
-      if (editItemId) {
-        try {
-          const response = await sdk.getItem({ id: editItemId });
-          const item = response.getItem;
-          setChangesMenu(response.getItem);
-          setValue("name", item.name.value);
-          setValue("desc", item.desc.value);
-          setValue("status", item.status === StatusEnum.Active ? true : false);
-          setValue("price", item.price.value);
-          setValue("applySalesTax", item.applySalesTax);
-          setValue("popularItem", item.popularItem);
-          setValue("upSellItem", item.upSellItem);
-          setValue("isSpicy", item.isSpicy);
-          setValue("hasNuts", item.hasNuts);
-          setValue("isGlutenFree", item.isGlutenFree);
-          setValue("isHalal", item.isHalal);
-          setValue("isVegan", item.isVegan);
-          const formateditemlist = item?.modifierGroup.map((el) => ({
-            _id: el?.id,
-            name: el?.name?.value ?? "",
-          }));
-          setSelectedItems(formateditemlist);
-          setTempSelectedItems(formateditemlist);
-          setprevItemsbfrEdit(formateditemlist);
-          setPreviewUrl(item.image || "");
-        } catch (error) {
-          const errorMessage = extractErrorMessage(error);
-          setToastData({
-            type: "error",
-            message: errorMessage,
-          });
+  const fetchItemData = async () => {
+    if (editItemId) {
+      try {
+        const response = await sdk.getItem({ id: editItemId });
+        const item = response.getItem;
+        setChangesMenu(response.getItem);
+        const nameDup = generateUniqueName(item?.name?.value);
+        setValue("name", item.name.value);
+        if (isDuplicateItem) {
+          setValue("name", nameDup);
         }
+        setValue("desc", item.desc.value);
+        setValue("status", item.status === StatusEnum.Active ? true : false);
+        setValue("price", item.price.value);
+        setValue("applySalesTax", item.applySalesTax);
+        setValue("popularItem", item.popularItem);
+        setValue("upSellItem", item.upSellItem);
+        setValue("isSpicy", item.isSpicy);
+        setValue("hasNuts", item.hasNuts);
+        setValue("isGlutenFree", item.isGlutenFree);
+        setValue("isHalal", item.isHalal);
+        setValue("isVegan", item.isVegan);
+        const formateditemlist = item?.modifierGroup.map((el) => ({
+          _id: el?.id,
+          name: el?.name?.value ?? "",
+        }));
+        setSelectedItems(formateditemlist);
+        setTempSelectedItems(formateditemlist);
+        setprevItemsbfrEdit(formateditemlist);
+        setPreviewUrl(item.image || "");
+      } catch (error) {
+        const errorMessage = extractErrorMessage(error);
+        setToastData({
+          type: "error",
+          message: errorMessage,
+        });
       }
-    };
+    }
+  };
 
+  useEffect(() => {
     fetchItemData();
   }, [editItemId, setValue, setToastData]);
 
@@ -212,20 +223,22 @@ const AddItemForm = () => {
   const onSubmit = async (data: IFormInput) => {
     try {
       setBtnLoading(true);
+      if (!isDuplicateItem) {
+        if (!isValidNameAlphabetic(data.name)) {
+          setToastData({
+            message:
+              "Please use only alphabets and numbers while adding or updating name.",
+            type: "error",
+          });
+          return;
+        }
+      }
       if (!data.price || data.price <= 0) {
         setToastData({
           message:
             "An item cannot be added without pricing, please add a numerical value that is greater than zero to save and continue",
           type: "error",
         });
-      }
-      if (!isValidNameAlphabetic(data.name)) {
-        setToastData({
-          message:
-            "Please use only alphabets and numbers while adding or updating name.",
-          type: "error",
-        });
-        return;
       }
 
       const statusSub = data.status ? StatusEnum.Active : StatusEnum.Inactive;
@@ -399,6 +412,7 @@ const AddItemForm = () => {
         });
         setBtnLoading(false);
         setisAddItemModalOpen(false);
+        setisDuplicateItem(false);
         setfetchMenuDatas(!fetchMenuDatas);
       } else {
         // EDIT/UPDATE ITEM API
@@ -416,6 +430,8 @@ const AddItemForm = () => {
         setfetchMenuDatas(!fetchMenuDatas);
         setisEditItem(false);
         setEditItemId(null);
+        setisDuplicateItem(false);
+
         setToastData({
           type: "success",
           message: "Item Added Successfully",

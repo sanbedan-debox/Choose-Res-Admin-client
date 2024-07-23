@@ -9,12 +9,14 @@ import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import React, { useEffect, useState } from "react";
 import { FaTrash, FaEdit } from "react-icons/fa";
+import { IoDuplicateOutline } from "react-icons/io5";
 
 const Modifiers: React.FC = () => {
   const [modifier, setModifier] = useState<any>();
   const { setToastData } = useGlobalStore();
   const { setisAddModifierModalOpen, fetchMenuDatas } = useMenuOptionsStore();
   const [tableLoading, setTableLoading] = useState(false);
+  const { setEditModId, setisEditMod, setisDuplicateMods } = useModStore();
 
   const fetchModifiers = async () => {
     setTableLoading(true);
@@ -59,6 +61,20 @@ const Modifiers: React.FC = () => {
     );
   };
 
+  const handleEditItem = (_id: string) => {
+    setisAddModifierModalOpen(true);
+    setEditModId(_id);
+    setisEditMod(true);
+    setisDuplicateMods(false);
+  };
+
+  const handleDuplcateCategory = (_id: string) => {
+    setisAddModifierModalOpen(true);
+    setEditModId(_id);
+    setisDuplicateMods(true);
+    setisEditMod(false);
+  };
+
   const renderActions = (rowData: { _id: string }) => (
     <div className="flex space-x-3 justify-center">
       <FaTrash
@@ -69,15 +85,13 @@ const Modifiers: React.FC = () => {
         className="text-blue-500 cursor-pointer"
         onClick={() => handleEditItem(rowData._id)}
       />
+      <IoDuplicateOutline
+        className="text-primary text-lg cursor-pointer"
+        onClick={() => handleDuplcateCategory(rowData._id)}
+      />
     </div>
   );
-  const { setEditModId, setisEditMod } = useModStore();
 
-  const handleEditItem = (_id: string) => {
-    setisAddModifierModalOpen(true);
-    setEditModId(_id);
-    setisEditMod(true);
-  };
   const headings = [
     { title: "Name", dataKey: "name" },
     { title: "Price", dataKey: "price" },

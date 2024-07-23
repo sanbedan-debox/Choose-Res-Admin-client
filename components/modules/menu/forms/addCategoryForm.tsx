@@ -4,7 +4,11 @@ import { useForm } from "react-hook-form";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import { sdk } from "@/utils/graphqlClient";
-import { extractErrorMessage, isValidNameAlphabetic } from "@/utils/utilFUncs";
+import {
+  extractErrorMessage,
+  generateUniqueName,
+  isValidNameAlphabetic,
+} from "@/utils/utilFUncs";
 import useGlobalStore from "@/store/global";
 import { FilterOperatorsEnum } from "@/generated/graphql";
 import useMenuOptionsStore from "@/store/menuOptions";
@@ -55,7 +59,13 @@ const AddCategoryForm = () => {
     setisAddCategoryModalOpen,
     setisAddItemModalOpen,
   } = useMenuOptionsStore();
-  const { editCatsId, isEditCats } = useMenuCategoryStore();
+  const {
+    editCatsId,
+    isEditCats,
+    isDuplicateCats,
+    setisDuplicateCats,
+    setisEditCats,
+  } = useMenuCategoryStore();
   const {
     handleSubmit,
     formState: { errors },
@@ -72,8 +82,11 @@ const AddCategoryForm = () => {
           const item = response.getCategory;
           setChangesMenu(response.getCategory);
           setValue("name", item.name.value);
+          const nameDup = generateUniqueName(item?.name?.value);
+          if (isDuplicateCats) {
+            setValue("name", nameDup);
+          }
           setValue("description", item.desc.value);
-
           const formateditemlist = item?.items.map((el) => ({
             _id: el._id._id,
             name: el?.name?.value ?? "",
@@ -109,14 +122,17 @@ const AddCategoryForm = () => {
 
   const onSubmit = async (data: IFormInput) => {
     try {
-      if (!isValidNameAlphabetic(data.name)) {
-        setToastData({
-          message:
-            "Please use only alphabets and numbers while adding or updating name.",
-          type: "error",
-        });
-        return;
+      if (!isDuplicateCats) {
+        if (!isValidNameAlphabetic(data.name)) {
+          setToastData({
+            message:
+              "Please use only alphabets and numbers while adding or updating name.",
+            type: "error",
+          });
+          return;
+        }
       }
+
       const updateInput: any = {
         _id: editCatsId || "",
       };
@@ -167,12 +183,15 @@ const AddCategoryForm = () => {
           setBtnLoading(false);
           setisAddCategoryModalOpen(false);
           setfetchMenuDatas(!fetchMenuDatas);
+          setisDuplicateCats(false);
+          setisEditCats(false);
         }
       } else {
         // EDIT CATEGORIES
-        const res = await sdk.updateCategory({
-          input: updateInput,
-        });
+        hasChanges &&
+          (await sdk.updateCategory({
+            input: updateInput,
+          }));
 
         isMenuAdded &&
           (await sdk.addItemToCategory({
@@ -181,6 +200,8 @@ const AddCategoryForm = () => {
           }));
 
         setBtnLoading(false);
+        setisDuplicateCats(false);
+        setisEditCats(false);
         setisAddCategoryModalOpen(false);
         setfetchMenuDatas(!fetchMenuDatas);
       }

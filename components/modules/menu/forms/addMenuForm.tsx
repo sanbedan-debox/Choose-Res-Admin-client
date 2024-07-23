@@ -5,7 +5,11 @@ import Select from "react-select";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import { sdk } from "@/utils/graphqlClient";
-import { extractErrorMessage, isValidNameAlphabetic } from "@/utils/utilFUncs";
+import {
+  extractErrorMessage,
+  generateUniqueName,
+  isValidNameAlphabetic,
+} from "@/utils/utilFUncs";
 import { FilterOperatorsEnum, MenuTypeEnum } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
 import useMenuOptionsStore from "@/store/menuOptions";
@@ -51,7 +55,14 @@ const AddMenuForm = () => {
     ItemsDropDownType[]
   >([]);
   const [changesMenu, setChangesMenu] = useState<any>([]);
-  const { editMenuId, isEditMenu } = useMenuMenuStore();
+  const {
+    editMenuId,
+    isEditMenu,
+    isDuplicateMenu,
+    setEditMenuId,
+    setisDuplicateMenu,
+    setisEditMenu,
+  } = useMenuMenuStore();
   const { seteditCatsId, setisEditCats } = useMenuCategoryStore();
   const { setisAddCategoryModalOpen } = useMenuOptionsStore();
 
@@ -65,14 +76,17 @@ const AddMenuForm = () => {
   const { selectedRestaurantTaxRate } = useRestaurantsStore();
   const onSubmit = async (data: IFormInput) => {
     try {
-      if (!isValidNameAlphabetic(data.name)) {
-        setToastData({
-          message:
-            "Please use only alphabets and numbers while adding or updating name.",
-          type: "error",
-        });
-        return;
+      if (!isDuplicateMenu) {
+        if (!isValidNameAlphabetic(data.name)) {
+          setToastData({
+            message:
+              "Please use only alphabets and numbers while adding or updating name.",
+            type: "error",
+          });
+          return;
+        }
       }
+
       setBtnLoading(true);
       const prevSelectedMenuIds = prevItemsbfrEdit.map((item) => item._id);
       const selectedItemsIds = selectedItems.map((item) => item._id);
@@ -124,9 +138,8 @@ const AddMenuForm = () => {
           type: "success",
           message: "Category Updated Successfully",
         });
+        setisAddMenuModalOpen(false);
         setBtnLoading(false);
-        setisAddCategoryModalOpen(false);
-        setfetchMenuDatas(!fetchMenuDatas);
       }
 
       setToastData({
@@ -136,6 +149,8 @@ const AddMenuForm = () => {
       setBtnLoading(false);
       setisAddMenuModalOpen(false);
       setfetchMenuDatas(!fetchMenuDatas);
+      setisDuplicateMenu(false);
+      setisEditCats(false);
     } catch (error: any) {
       setBtnLoading(false);
       const errorMessage = extractErrorMessage(error);
@@ -299,7 +314,11 @@ const AddMenuForm = () => {
           const response = await sdk.getMenusByType({ id: editMenuId });
           const menu = response.getMenusByType;
           setChangesMenu(response.getMenusByType);
+          const nameDup = generateUniqueName(menu[0]?.name?.value);
           setValue("name", menu[0].name.value);
+          if (isDuplicateMenu) {
+            setValue("name", nameDup);
+          }
           const selectedMenuType = menuTypeOptions.find(
             (option) => option.value === menu[0]?.type
           );

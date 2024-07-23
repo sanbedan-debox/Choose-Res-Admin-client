@@ -4,7 +4,11 @@ import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
-import { extractErrorMessage, isValidNameAlphabetic } from "@/utils/utilFUncs";
+import {
+  extractErrorMessage,
+  generateUniqueName,
+  isValidNameAlphabetic,
+} from "@/utils/utilFUncs";
 import { PriceTypeEnum } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
 import useMenuOptionsStore from "@/store/menuOptions";
@@ -53,6 +57,8 @@ const AddModifierGroupForm = () => {
     isEditModGroup,
     setEditModGroupId,
     setisEditModGroup,
+    isDuplicateModifierGroup,
+    setisDuplicateModifierGroup,
   } = useModGroupStore();
   const [modifierssOption, setModifiersOption] = useState<any[]>([]);
   const [confirmationRemoval, setConfirmationRemoval] = useState(false);
@@ -64,6 +70,7 @@ const AddModifierGroupForm = () => {
     ItemsDropDownType[]
   >([]);
   const [selectedItems, setSelectedItems] = useState<any[]>([]);
+  const [changesMenu, setChangesMenu] = useState<any>([]);
 
   const { setEditModId, setisEditMod } = useModStore();
 
@@ -93,7 +100,7 @@ const AddModifierGroupForm = () => {
         const items = await sdk.getModifiersforGroupDropDown();
         if (items && items.getModifiers) {
           const formattedItemsList = items.getModifiers.map((item) => ({
-            _id: item._id,
+            _id: item?._id,
             name: item?.name?.value,
             price: item?.price?.value,
           }));
@@ -122,8 +129,14 @@ const AddModifierGroupForm = () => {
         try {
           const response = await sdk.getModifierGroup({ id: editModGroupId });
           const item = response.getModifierGroup;
-          setValue("name", item.name.value || "");
-          setValue("maxSelections", item.maxSelections?.value || 1);
+          setChangesMenu(response.getModifierGroup);
+
+          setValue("name", item.name.value);
+          const nameDup = generateUniqueName(item?.name?.value);
+          if (isDuplicateModifierGroup) {
+            setValue("name", nameDup);
+          }
+          setValue("maxSelections", item?.maxSelections?.value || 1);
           // setValue("minSelections", item.maxSelections?.value || 0);
           setValue("optional", item.optional || false);
           const selectedPriceType = PricingTypeOptions.find(
@@ -197,19 +210,29 @@ const AddModifierGroupForm = () => {
   const onSubmit = async (data: IFormInput) => {
     try {
       setBtnLoading(true);
-      if (!isValidNameAlphabetic(data.name)) {
-        setToastData({
-          message:
-            "Please use only alphabets and numbers while adding or updating name.",
-          type: "error",
-        });
-        return;
-      }
-      const parsedMaxSelection = parseFloat(data.maxSelections.toString());
-      const parsedMinSelection = parseFloat(data.minSelections.toString());
-      const selectedItemsIds = selectedItems.map((item) => item._id);
-      const prevSelectedMenuIds = prevItemsbfrEdit.map((item) => item._id);
 
+      if (!isDuplicateModifierGroup) {
+        if (!isValidNameAlphabetic(data.name)) {
+          setToastData({
+            message:
+              "Please use only alphabets and numbers while adding or updating name.",
+            type: "error",
+          });
+          return;
+        }
+      }
+      const parsedMaxSelection =
+        parseFloat(data?.maxSelections?.toString()) || 0;
+      const parsedMinSelection =
+        parseFloat(data?.minSelections?.toString()) || 0;
+      const parsedOptionalBoolean = data.optional ? true : false;
+      parseFloat(data?.minSelections?.toString()) || 0;
+      const prevSelectedMenuIds = await prevItemsbfrEdit.map(
+        (item) => item._id
+      );
+      const selectedItemsIds = await selectedItems.map((item) => item.id);
+      console.log("prev Selected IDs:", prevSelectedMenuIds);
+      console.log("selected Items IDs:", selectedItemsIds);
       const addedMenuIds = selectedItemsIds.filter(
         (id) => !prevSelectedMenuIds.includes(id)
       );
@@ -222,6 +245,36 @@ const AddModifierGroupForm = () => {
         });
         return;
       }
+      const updateInput: any = {
+        _id: editModGroupId || "",
+      };
+      let hasChanges = false;
+
+      const addChange = (field: string, newValue: any) => {
+        updateInput[field] = { value: newValue };
+        hasChanges = true;
+      };
+
+      if (data.name !== changesMenu?.name?.value) {
+        addChange("name", data.name);
+        hasChanges = true;
+      }
+
+      if (data.maxSelections !== changesMenu?.maxSelections?.value) {
+        addChange("maxSelections", data.maxSelections);
+        hasChanges = true;
+      }
+
+      if (data.optional !== changesMenu?.optional) {
+        updateInput.optional = data.optional;
+        hasChanges = true;
+      }
+
+      if (data?.pricingType?.value !== changesMenu?.pricingType?.value) {
+        updateInput.pricingType = data.pricingType.value as PriceTypeEnum;
+        hasChanges = true;
+      }
+
       if (!isEditModGroup) {
         await sdk.addModifierGroup({
           input: {
@@ -234,28 +287,18 @@ const AddModifierGroupForm = () => {
             maxSelections: {
               value: parsedMaxSelection,
             },
-
-            optional: data.optional,
+            optional: parsedOptionalBoolean,
             pricingType: data.pricingType.value as PriceTypeEnum,
           },
           modifiers: selectedItemsIds,
         });
       } else {
         // EDIT/UPDATE ITEM API
-        await sdk.updateModifierGroup({
-          input: {
-            _id: editModGroupId || "",
-            name: {
-              value: data.name,
-            },
-            maxSelections: {
-              value: parsedMaxSelection,
-            },
-
-            optional: data.optional,
-            pricingType: data.pricingType.value as PriceTypeEnum,
-          },
-        });
+        if (hasChanges) {
+          await sdk.updateModifierGroup({
+            input: updateInput,
+          });
+        }
 
         isMenuAdded &&
           (await sdk.addModifierToModifierGroup({

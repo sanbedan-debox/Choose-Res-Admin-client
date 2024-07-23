@@ -55,65 +55,6 @@ const Categories: React.FC = () => {
     useState(false);
   const [selectedItemId, setSelectedItemId] = useState<string>("");
   const [availableCaption, setAvailableCaption] = useState("");
-  const [duplicatedItem, setDuplicatedItem] = useState<{
-    _id: string;
-    name: { value: string };
-    desc: { value: string };
-    status: string;
-    items: Array<{
-      _id: string;
-    }>;
-    createdAt: string;
-    updatedAt: string;
-  } | null>(null);
-
-  const handleDuplicateItem = async (_id: string) => {
-    try {
-      const response = await sdk.getCategory({ id: _id });
-      const item = response.getCategory;
-      if (item) {
-        await setDuplicatedItem({
-          _id: item._id,
-          name: item.name,
-          desc: item.desc,
-          status: item.status,
-          items: item.items.map((i) => ({
-            _id: i.id,
-          })),
-          createdAt: item.createdAt,
-          updatedAt: item.updatedAt,
-        });
-      }
-      setBtnLoading(true);
-      if (response) {
-        const selectedIds: string[] =
-          duplicatedItem?.items.map((item) => item._id) || [];
-        const newName = generateUniqueName(duplicatedItem?.name?.value || "");
-        const res = await sdk.addCategory({
-          input: {
-            name: {
-              value: newName,
-            },
-            desc: {
-              value: duplicatedItem?.desc?.value || "",
-            },
-            items: selectedIds,
-          },
-        });
-      }
-      fetchCategories();
-
-      // Handle response as needed
-    } catch (error: any) {
-      const errorMessage = extractErrorMessage(error);
-      setToastData({
-        type: "error",
-        message: errorMessage,
-      });
-    } finally {
-      setBtnLoading(false);
-    }
-  };
 
   const handleToggleSwitch = (rowData: { status: string; _id: string }) => {
     setShowStatusConfirmationModal(true);
@@ -136,12 +77,23 @@ const Categories: React.FC = () => {
     </div>
   );
 
-  const { seteditCatsId, setisEditCats } = useMenuCategoryStore();
+  const { seteditCatsId, setisEditCats, setisDuplicateCats } =
+    useMenuCategoryStore();
+
   const handleEditCategory = (_id: string) => {
     setisAddCategoryModalOpen(true);
     seteditCatsId(_id);
     setisEditCats(true);
+    setisDuplicateCats(false);
   };
+
+  const handleDuplcateCategory = (_id: string) => {
+    setisAddCategoryModalOpen(true);
+    seteditCatsId(_id);
+    setisDuplicateCats(true);
+    setisEditCats(false);
+  };
+
   const renderActions = (rowData: { _id: string }) => (
     <div className="flex space-x-2 justify-center">
       <FaTrash
@@ -154,7 +106,7 @@ const Categories: React.FC = () => {
       />
       <IoDuplicateOutline
         className="text-primary text-lg cursor-pointer"
-        onClick={() => handleDuplicateItem(rowData._id)}
+        onClick={() => handleDuplcateCategory(rowData._id)}
       />
     </div>
   );

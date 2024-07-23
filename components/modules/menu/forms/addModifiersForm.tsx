@@ -4,7 +4,12 @@ import { useForm } from "react-hook-form";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import { sdk } from "@/utils/graphqlClient";
-import { extractErrorMessage, isValidNameAlphabetic } from "@/utils/utilFUncs";
+import {
+  extractErrorMessage,
+  generateUniqueName,
+  isValidNameAlphabetic,
+  roundOffPrice,
+} from "@/utils/utilFUncs";
 import useGlobalStore from "@/store/global";
 import useMenuOptionsStore from "@/store/menuOptions";
 import CustomSwitchCard from "@/components/common/customSwitchCard/customSwitchCard";
@@ -33,7 +38,14 @@ const AddModifierForm = () => {
 
   const { fetchMenuDatas, setfetchMenuDatas, setisAddModifierModalOpen } =
     useMenuOptionsStore();
-  const { editModId, isEditMod, setEditModId, setisEditMod } = useModStore();
+  const {
+    editModId,
+    isEditMod,
+    setEditModId,
+    setisEditMod,
+    setisDuplicateMods,
+    isDuplicateMods,
+  } = useModStore();
   const [btnLoading, setBtnLoading] = useState(false);
   const { setToastData } = useGlobalStore();
 
@@ -51,6 +63,10 @@ const AddModifierForm = () => {
           setChangesModifiers(item);
 
           setValue("name", item.name.value);
+          const nameDup = generateUniqueName(item?.name?.value);
+          if (isDuplicateMods) {
+            setValue("name", nameDup);
+          }
           // setValue("desc", item.);
           setValue("price", item.price.value);
         } catch (error) {
@@ -67,30 +83,33 @@ const AddModifierForm = () => {
   }, [editModId, setValue, setToastData]);
 
   const onSubmit = async (data: IFormInput) => {
-    if (!isValidNameAlphabetic(data.name)) {
-      setToastData({
-        message:
-          "Please use only alphabets and numbers while adding or updating name.",
-        type: "error",
-      });
-      return;
+    if (!isDuplicateMods) {
+      if (!isValidNameAlphabetic(data.name)) {
+        setToastData({
+          message:
+            "Please use only alphabets and numbers while adding or updating name.",
+          type: "error",
+        });
+        return;
+      }
     }
-    const parsedPrice = parseFloat(data.price.toString());
+
+    const parsedPrice = roundOffPrice(parseFloat(data.price.toString()));
     let updateInput: any = { _id: editModId || "" };
     let hasChanges = false;
     const addChange = (field: string, newValue: any) => {
       updateInput[field] = { value: newValue };
       hasChanges = true;
     };
-    if (data.name !== changesModifiers.name.value) {
+    if (data.name !== changesModifiers?.name?.value) {
       addChange("name", data.name);
     }
 
-    if (data.price !== changesModifiers.price.value) {
+    if (data.price !== changesModifiers?.price?.value) {
       addChange("price", data.price);
     }
 
-    if (data.optional !== changesModifiers.preSelect) {
+    if (data.optional !== changesModifiers?.preSelect) {
       updateInput.preSelect = data.optional;
       hasChanges = true;
     }
@@ -117,10 +136,12 @@ const AddModifierForm = () => {
           await sdk.updateModifier({
             input: updateInput,
           });
+
       setisAddModifierModalOpen(false);
       setfetchMenuDatas(!fetchMenuDatas);
       setisEditMod(false);
       setEditModId(null);
+      setisDuplicateMods(false);
       setToastData({
         type: "success",
         message: "Item Added Successfully",

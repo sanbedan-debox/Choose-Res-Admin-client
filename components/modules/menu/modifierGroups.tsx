@@ -11,6 +11,7 @@ import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import React, { useEffect, useState } from "react";
 import { FaTrash, FaEdit } from "react-icons/fa";
+import { IoDuplicateOutline } from "react-icons/io5";
 
 const Modifiers: React.FC = () => {
   const [modifierGroups, setModifierGroups] = useState<any>();
@@ -50,6 +51,8 @@ const Modifiers: React.FC = () => {
 
   const [showDeleteConfirmationModal, setshowDeleteConfirmationModal] =
     useState(false);
+  const { setEditModGroupId, setisEditModGroup, setisDuplicateModifierGroup } =
+    useModGroupStore();
 
   const [selectedItemId, setSelectedItemId] = useState<string>("");
   const [availableCaption, setAvailableCaption] = useState(
@@ -62,6 +65,21 @@ const Modifiers: React.FC = () => {
       " By clicking yes the selected Modifer Group / Modifier Groups will be deleted. This action cannot be undone."
     );
   };
+
+  const handleEditItem = (_id: string) => {
+    setisAddModifierGroupModalOpen(true);
+    setEditModGroupId(_id);
+    setisEditModGroup(true);
+    setisDuplicateModifierGroup(false);
+  };
+
+  const handleDuplcateCategory = (_id: string) => {
+    setisAddModifierGroupModalOpen(true);
+    setEditModGroupId(_id);
+    setisDuplicateModifierGroup(true);
+    setisEditModGroup(false);
+  };
+
   const renderActions = (rowData: { _id: string }) => (
     <div className="flex space-x-3 justify-center">
       <FaTrash
@@ -72,16 +90,12 @@ const Modifiers: React.FC = () => {
         className="text-blue-500 cursor-pointer"
         onClick={() => handleEditItem(rowData._id)}
       />
+      <IoDuplicateOutline
+        className="text-primary text-lg cursor-pointer"
+        onClick={() => handleDuplcateCategory(rowData._id)}
+      />
     </div>
   );
-
-  const { setEditModGroupId, setisEditModGroup } = useModGroupStore();
-
-  const handleEditItem = (_id: string) => {
-    setisAddModifierGroupModalOpen(true);
-    setEditModGroupId(_id);
-    setisEditModGroup(true);
-  };
 
   const [btnLoading, setBtnLoading] = useState(false);
 

@@ -12,6 +12,7 @@ import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import React, { useEffect, useState } from "react";
 import { FaTrash, FaEdit, FaShieldAlt, FaCopy } from "react-icons/fa";
+import { IoDuplicateOutline } from "react-icons/io5";
 
 const Menu: React.FC = () => {
   const [menu, setMenu] = useState<
@@ -32,7 +33,8 @@ const Menu: React.FC = () => {
     useState(false);
   const { setToastData } = useGlobalStore();
   const [tableLoading, setTableLoading] = useState(false);
-  const { setEditMenuId, setisEditMenu } = useMenuMenuStore();
+  const { setEditMenuId, setisEditMenu, setisDuplicateMenu } =
+    useMenuMenuStore();
 
   const fetchAllMenus = async () => {
     setTableLoading(true);
@@ -75,20 +77,29 @@ const Menu: React.FC = () => {
     setisAddMenuModalOpen(true);
     setEditMenuId(_id);
     setisEditMenu(true);
+    setisDuplicateMenu(false);
   };
+
+  const handleDuplcateMenu = (_id: string) => {
+    setisAddMenuModalOpen(true);
+    setEditMenuId(_id);
+    setisDuplicateMenu(true);
+    setisEditMenu(false);
+  };
+
   const renderActions = (rowData: { _id: string }) => (
     <div className="flex space-x-2 justify-center">
       <FaTrash
-        className="text-red-500 cursor-pointer"
+        className="text-primary text-lg cursor-pointer"
         onClick={() => handleDeleteItem(rowData._id)}
       />
       <FaEdit
-        className="text-blue-500 cursor-pointer"
+        className="text-primary  text-lg cursor-pointer"
         onClick={() => handleEditMenu(rowData._id)}
       />
-      <FaCopy
-        className="text-green-500 cursor-pointer"
-        onClick={() => console.log("Duplicate", rowData._id)}
+      <IoDuplicateOutline
+        className="text-primary text-lg cursor-pointer"
+        onClick={() => handleDuplcateMenu(rowData._id)}
       />
     </div>
   );
