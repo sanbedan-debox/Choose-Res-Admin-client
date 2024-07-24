@@ -310,8 +310,9 @@ const AddItemForm = () => {
         console.log(originalFormat);
         setValue("regularHours", originalFormat.regularHours);
         setValue("activeDays", originalFormat.activeDays);
-
-        setValue("activeDays.Monday", originalFormat?.regularHours?.Monday);
+        console.log("Hello");
+        console.log(originalFormat?.regularHours);
+        setValue("regularHours", originalFormat?.regularHours);
       } catch (error) {
         const errorMessage = extractErrorMessage(error);
         setToastData({
@@ -435,6 +436,8 @@ const AddItemForm = () => {
         hasChanges = true;
       }
 
+      console.log("On Submit");
+      console.log(data.regularHours);
       const parsedPrice = roundOffPrice(parseFloat(data.price.toString()));
       const formattedData = Object.keys(data.regularHours).map((day) => ({
         Day: day,

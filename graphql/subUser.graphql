@@ -1,0 +1,21 @@
+mutation addTeamMember($AddTeamMemberInput: AddTeamMemberInput!) {
+  addTeamMember(input: $AddTeamMemberInput)
+}
+
+query getTeamMembers {
+  getTeamMembers {
+    _id
+    firstName
+    lastName
+    email
+    phone
+    role
+    onboardingStatus
+    createdAt
+    updatedAt
+  }
+}
+
+mutation removeTeamMember($teamId: String!) {
+  removeTeamMember(teamId: $teamId)
+}

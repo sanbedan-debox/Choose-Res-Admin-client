@@ -2048,6 +2048,25 @@ export type AddTaxRateInRestaurantMutationVariables = Exact<{
 
 export type AddTaxRateInRestaurantMutation = { __typename?: 'Mutation', addTaxRateInRestaurant: boolean };
 
+export type AddTeamMemberMutationVariables = Exact<{
+  AddTeamMemberInput: AddTeamMemberInput;
+}>;
+
+
+export type AddTeamMemberMutation = { __typename?: 'Mutation', addTeamMember: boolean };
+
+export type GetTeamMembersQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetTeamMembersQuery = { __typename?: 'Query', getTeamMembers: Array<{ __typename?: 'Teams', _id: string, firstName: string, lastName: string, email: string, phone: string, role: string, onboardingStatus: TeamsOnboardingEnum, createdAt: any, updatedAt: any }> };
+
+export type RemoveTeamMemberMutationVariables = Exact<{
+  teamId: Scalars['String']['input'];
+}>;
+
+
+export type RemoveTeamMemberMutation = { __typename?: 'Mutation', removeTeamMember: boolean };
+
 
 export const LogoutDocument = gql`
     query Logout {
@@ -2756,6 +2775,31 @@ export const AddTaxRateInRestaurantDocument = gql`
   addTaxRateInRestaurant(taxRateId: $taxRateId)
 }
     `;
+export const AddTeamMemberDocument = gql`
+    mutation addTeamMember($AddTeamMemberInput: AddTeamMemberInput!) {
+  addTeamMember(input: $AddTeamMemberInput)
+}
+    `;
+export const GetTeamMembersDocument = gql`
+    query getTeamMembers {
+  getTeamMembers {
+    _id
+    firstName
+    lastName
+    email
+    phone
+    role
+    onboardingStatus
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export const RemoveTeamMemberDocument = gql`
+    mutation removeTeamMember($teamId: String!) {
+  removeTeamMember(teamId: $teamId)
+}
+    `;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string, variables?: any) => Promise<T>;
 
@@ -2958,6 +3002,15 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     addTaxRateInRestaurant(variables: AddTaxRateInRestaurantMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddTaxRateInRestaurantMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<AddTaxRateInRestaurantMutation>(AddTaxRateInRestaurantDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'addTaxRateInRestaurant', 'mutation', variables);
+    },
+    addTeamMember(variables: AddTeamMemberMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddTeamMemberMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<AddTeamMemberMutation>(AddTeamMemberDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'addTeamMember', 'mutation', variables);
+    },
+    getTeamMembers(variables?: GetTeamMembersQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetTeamMembersQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetTeamMembersQuery>(GetTeamMembersDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getTeamMembers', 'query', variables);
+    },
+    removeTeamMember(variables: RemoveTeamMemberMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<RemoveTeamMemberMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<RemoveTeamMemberMutation>(RemoveTeamMemberDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'removeTeamMember', 'mutation', variables);
     }
   };
 }

@@ -1,7 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import CButton from "../button/button";
 import { ButtonType } from "../button/interface";
-import NoImage from "../../../assets/svg/noImage.svg";
 import { ImFileEmpty } from "react-icons/im";
 import { CiImageOn } from "react-icons/ci";
 
@@ -37,6 +36,8 @@ const FormAddTable: React.FC<FormAddTableProps> = ({
   onAddClick,
   isShowImage = false,
 }) => {
+  const [imageError, setImageError] = useState<boolean>(false);
+
   return (
     <div className="w-full border rounded-md p-2 border-t-2 border-b-2 ">
       <h2 className="block mb-2 text-sm font-medium text-left text-gray-700">
@@ -63,11 +64,12 @@ const FormAddTable: React.FC<FormAddTableProps> = ({
             >
               <div className="flex items-center space-x-2 py-1">
                 {isShowImage &&
-                  (item?.image?.trim ? (
+                  (item?.image?.trim() && !imageError ? (
                     <img
-                      src={item?.image?.trim() ? item.image : NoImage}
+                      src={item.image}
                       alt={item.name.value}
                       className="w-10 h-10 rounded-md"
+                      onError={() => setImageError(true)}
                     />
                   ) : (
                     <div className="text-primary text-2xl">
