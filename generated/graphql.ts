@@ -2032,7 +2032,7 @@ export type SetRestaurantIdAsCookieQuery = { __typename?: 'Query', setRestaurant
 export type GetRestaurantDetailsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetRestaurantDetailsQuery = { __typename?: 'Query', getRestaurantDetails: { __typename?: 'Restaurant', _id: string, brandingLogo?: string | null, website?: string | null, name: { __typename?: 'MasterCommon', value: string }, taxRates?: Array<{ __typename?: 'TaxRateInfo', default: boolean, name: { __typename?: 'MasterCommon', value: string }, salesTax: { __typename?: 'MasterCommonNumber', value: number } }> | null } };
+export type GetRestaurantDetailsQuery = { __typename?: 'Query', getRestaurantDetails: { __typename?: 'Restaurant', _id: string, brandingLogo?: string | null, website?: string | null, name: { __typename?: 'MasterCommon', value: string }, taxRates?: Array<{ __typename?: 'TaxRateInfo', _id: string, default: boolean, name: { __typename?: 'MasterCommon', value: string }, salesTax: { __typename?: 'MasterCommonNumber', value: number } }> | null } };
 
 export type AddTaxRateMutationVariables = Exact<{
   input: TaxRateInput;
@@ -2754,6 +2754,7 @@ export const GetRestaurantDetailsDocument = gql`
     brandingLogo
     website
     taxRates {
+      _id
       name {
         value
       }

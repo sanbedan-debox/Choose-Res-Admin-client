@@ -122,34 +122,20 @@ const Items: React.FC = () => {
   );
 
   const headings = [
-    { title: "Name", dataKey: "name", type: "data" },
-    { title: "Desc", dataKey: "desc", type: "data" },
-    { title: "Price", dataKey: "price", type: "data" },
+    { title: "Name", dataKey: "name" },
+    { title: "Desc", dataKey: "desc" },
+    { title: "Price", dataKey: "price" },
     {
       title: "Toggle Status",
       dataKey: "name.value",
       render: renderSwitch,
-      type: "action",
     },
     {
       title: "Actions",
       dataKey: "name.value",
       render: renderActions,
-      type: "action",
     },
   ];
-
-  // const headings = [
-  //   { title: "Name", dataKey: "name" },
-  //   { title: "Desc", dataKey: "desc" },
-  //   { title: "Price", dataKey: "price" },
-  //   {
-  //     title: "Toggle Status",
-  //     dataKey: "name.value",
-  //     render: renderSwitch,
-  //   },
-  //   { title: "Actions", dataKey: "name.value", render: renderActions },
-  // ];
 
   const mainActions = [
     {

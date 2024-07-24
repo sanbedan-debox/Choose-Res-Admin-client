@@ -21,6 +21,7 @@ query getRestaurantDetails {
     brandingLogo
     website
     taxRates {
+      _id
       name {
         value
       }

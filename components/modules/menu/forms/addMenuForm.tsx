@@ -106,7 +106,7 @@ const AddMenuForm = () => {
         updateInput.type = data.type.value as MenuTypeEnum;
       }
 
-      if (data.name !== changesMenu[0]?.name.value ?? "") {
+      if (data.name !== changesMenu[0]?.name.value) {
         updateInput.name = {
           value: data.name,
         };
