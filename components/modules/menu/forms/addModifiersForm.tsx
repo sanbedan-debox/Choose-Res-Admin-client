@@ -163,7 +163,7 @@ const AddModifierForm = () => {
 
       const formData = new FormData();
       formData.append("file", logoFile);
-      formData.append("upload_preset", "csv-data");
+      formData.append("upload_preset", "modifier-images");
 
       const response = await fetch(
         "https://api.cloudinary.com/v1_1/choose-pos/raw/upload",
@@ -180,11 +180,9 @@ const AddModifierForm = () => {
   const handleLogoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     if (file) {
-      // Update state to store the selected file
       setLogoFile(file);
-      setIsUploading(false); // Remove the initial set to true to delay upload
+      setIsUploading(false);
 
-      // Set the preview URL for the selected image
       const objectUrl = URL.createObjectURL(file);
       setPreviewUrl(objectUrl);
     }

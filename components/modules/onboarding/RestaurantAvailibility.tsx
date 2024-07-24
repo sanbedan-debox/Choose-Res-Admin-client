@@ -66,27 +66,6 @@ interface IFormData {
     Sunday: boolean;
   };
 }
-const generateTimeOptions = () => {
-  const options: { value: string; label: string }[] = [];
-  const periods = ["AM", "PM"];
-
-  for (let hour = 0; hour < 24; hour++) {
-    for (let minute = 0; minute < 60; minute += 15) {
-      const period = periods[Math.floor(hour / 12)];
-      const displayHour = hour % 12 === 0 ? 12 : hour % 12;
-      const displayMinute = minute === 0 ? "00" : minute.toString();
-      const time = `${displayHour}:${displayMinute} ${period}`;
-
-      const date = new Date();
-      date.setHours(hour, minute, 0, 0);
-
-      const isoTime = date.toISOString();
-
-      options.push({ value: isoTime, label: time });
-    }
-  }
-  return options;
-};
 
 type PlacesType = {
   label: string;

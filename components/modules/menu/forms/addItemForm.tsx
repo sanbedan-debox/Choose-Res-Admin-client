@@ -92,8 +92,10 @@ const AddItemForm = () => {
     setValue,
     watch,
     register,
+    getValues,
   } = useForm<IFormInput>({
     defaultValues: {
+      status: true,
       regularHours: {
         Monday: [
           { from: { label: "", value: "" }, to: { label: "", value: "" } },
@@ -129,6 +131,113 @@ const AddItemForm = () => {
     },
   });
   const [changesMenu, setChangesMenu] = useState<any>([]);
+
+  function reformatAvailability(
+    data: {
+      day: string;
+      hours: { start: string; end: string }[];
+      active: boolean;
+    }[]
+  ): any {
+    const defaultValues: any = {
+      regularHours: {
+        Monday: [
+          { from: { label: "", value: "" }, to: { label: "", value: "" } },
+        ],
+        Tuesday: [
+          { from: { label: "", value: "" }, to: { label: "", value: "" } },
+        ],
+        Wednesday: [
+          { from: { label: "", value: "" }, to: { label: "", value: "" } },
+        ],
+        Thursday: [
+          { from: { label: "", value: "" }, to: { label: "", value: "" } },
+        ],
+        Friday: [
+          { from: { label: "", value: "" }, to: { label: "", value: "" } },
+        ],
+        Saturday: [
+          { from: { label: "", value: "" }, to: { label: "", value: "" } },
+        ],
+        Sunday: [
+          { from: { label: "", value: "" }, to: { label: "", value: "" } },
+        ],
+      },
+      activeDays: {
+        Monday: false,
+        Tuesday: false,
+        Wednesday: false,
+        Thursday: false,
+        Friday: false,
+        Saturday: false,
+        Sunday: false,
+      },
+    };
+
+    const reformattedData: any = { ...defaultValues };
+
+    const generateTimeOptions = () => {
+      const options: { value: string; label: string }[] = [];
+      const periods = ["AM", "PM"];
+
+      for (let hour = 0; hour < 24; hour++) {
+        for (let minute = 0; minute < 60; minute += 15) {
+          const period = periods[Math.floor(hour / 12)];
+          const displayHour = hour % 12 === 0 ? 12 : hour % 12;
+          const displayMinute = minute === 0 ? "00" : minute.toString();
+          const time = `${displayHour}:${displayMinute} ${period}`;
+
+          const date = new Date();
+          date.setHours(hour, minute, 0, 0);
+
+          const isoTime = date.toISOString();
+
+          options.push({ value: isoTime, label: time });
+        }
+      }
+      return options;
+    };
+
+    const timeOptions = generateTimeOptions();
+
+    data &&
+      data.forEach((item) => {
+        const day = item.day;
+        const hours = item.hours;
+        const active = item.active;
+
+        reformattedData.regularHours[day] = hours.map((hour: any) => ({
+          from: {
+            label:
+              timeOptions.find((option) => {
+                const optionDate = new Date(option.value);
+                const hourStartDate = new Date(hour.start);
+                return (
+                  optionDate.getHours() === hourStartDate.getHours() &&
+                  optionDate.getMinutes() === hourStartDate.getMinutes()
+                );
+              })?.label || "",
+            value: hour.start,
+          },
+          to: {
+            label:
+              timeOptions.find((option) => {
+                const optionDate = new Date(option.value);
+                const hourEndDate = new Date(hour.end);
+                return (
+                  optionDate.getHours() === hourEndDate.getHours() &&
+                  optionDate.getMinutes() === hourEndDate.getMinutes()
+                );
+              })?.label || "",
+            value: hour.end,
+          },
+        }));
+
+        reformattedData.activeDays[day] = active;
+      });
+
+    return reformattedData;
+  }
 
   const {
     fetchMenuDatas,
@@ -187,6 +296,7 @@ const AddItemForm = () => {
         setValue("isGlutenFree", item.isGlutenFree);
         setValue("isHalal", item.isHalal);
         setValue("isVegan", item.isVegan);
+
         const formateditemlist = item?.modifierGroup.map((el) => ({
           _id: el?.id,
           name: el?.name?.value ?? "",
@@ -195,6 +305,13 @@ const AddItemForm = () => {
         setTempSelectedItems(formateditemlist);
         setprevItemsbfrEdit(formateditemlist);
         setPreviewUrl(item.image || "");
+
+        const originalFormat = reformatAvailability(item?.availability ?? []);
+        console.log(originalFormat);
+        setValue("regularHours", originalFormat.regularHours);
+        setValue("activeDays", originalFormat.activeDays);
+
+        setValue("activeDays.Monday", originalFormat?.regularHours?.Monday);
       } catch (error) {
         const errorMessage = extractErrorMessage(error);
         setToastData({
@@ -482,7 +599,7 @@ const AddItemForm = () => {
 
       const formData = new FormData();
       formData.append("file", logoFile);
-      formData.append("upload_preset", "csv-data");
+      formData.append("upload_preset", "⁠item-images");
 
       const response = await fetch(
         "https://api.cloudinary.com/v1_1/choose-pos/raw/upload",
@@ -499,11 +616,9 @@ const AddItemForm = () => {
   const handleLogoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     if (file) {
-      // Update state to store the selected file
       setLogoFile(file);
-      setIsUploading(false); // Remove the initial set to true to delay upload
+      setIsUploading(false);
 
-      // Set the preview URL for the selected image
       const objectUrl = URL.createObjectURL(file);
       setPreviewUrl(objectUrl);
     }
@@ -883,7 +998,7 @@ const AddItemForm = () => {
           <AvailabilityForm
             control={control}
             errors={errors}
-            getValues={null}
+            getValues={getValues}
             register={register}
             setValue={setValue}
             watch={watch}

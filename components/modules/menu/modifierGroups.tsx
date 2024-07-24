@@ -81,17 +81,17 @@ const Modifiers: React.FC = () => {
   };
 
   const renderActions = (rowData: { _id: string }) => (
-    <div className="flex space-x-3 justify-center">
+    <div className="flex space-x-3 justify-end">
       <FaTrash
-        className="text-primary text-lg cursor-pointer"
+        className="text-primary text-md cursor-pointer"
         onClick={() => handleDeleteItem(rowData._id)}
       />
       <FaEdit
-        className="text-primary text-lg cursor-pointer"
+        className="text-primary text-md cursor-pointer"
         onClick={() => handleEditItem(rowData._id)}
       />
       <IoDuplicateOutline
-        className="text-primary text-lg cursor-pointer"
+        className="text-primary text-md cursor-pointer"
         onClick={() => handleDuplcateCategory(rowData._id)}
       />
     </div>
@@ -138,10 +138,9 @@ const Modifiers: React.FC = () => {
     </div>
   );
   const headings = [
-    { title: "Toggle Availibility", dataKey: "status", render: renderSwitch },
-
     { title: "Name", dataKey: "name" },
 
+    { title: "Toggle Status", dataKey: "status", render: renderSwitch },
     { title: "Actions", dataKey: "_id", render: renderActions },
   ];
 

@@ -15,12 +15,7 @@ import Image from "next/image";
 import { modules } from "./common/accessConfig";
 
 const Sidebar: React.FC = () => {
-  const {
-    isSidebarExpanded,
-    setisSidebarExpanded,
-    selectedMenu,
-    setSelectedMenu,
-  } = useGlobalStore();
+  const { isSidebarExpanded, selectedMenu, setSelectedMenu } = useGlobalStore();
   const router = useRouter();
 
   const userRole = "admin";
@@ -93,7 +88,12 @@ const Sidebar: React.FC = () => {
                       selectedMenu === module.name
                         ? "bg-primary text-white"
                         : ""
-                    } hover:bg-primary hover:text-white`}
+                    } hover:bg-primary hover:text-white
+                     
+                    ${isSidebarExpanded ? "text-lg" : "text-xl"}
+                    
+                    `}
+                    title={module.name}
                   >
                     {getIconComponent(module.icon)}
                     {isSidebarExpanded && (

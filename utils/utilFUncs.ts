@@ -28,36 +28,35 @@ export const extractErrorMessage = (error: any): string => {
 export const roundOffPrice = (price: number) => {
     const decimalPart = price % 1;
 
-    if (decimalPart <= 0.29) {
+    if (decimalPart === 0) {
+        return price - 0.01;
+    } else if (decimalPart < 0.50) {
         return Math.floor(price) + 0.49;
-    } else if (decimalPart <= 0.70) {
-        return Math.floor(price) + 0.99;
     } else {
-        return Math.ceil(price);
+        return Math.floor(price) + 0.99;
     }
 };
 
 
+
+
 export const isValidNameAlphabetic = (name: string) => {
-    const regex = /^[a-zA-Z0-9\s]+$/;
+    const regex = /^[a-zA-Z0-9\s-]+$/;
     return regex.test(name);
 }
 
 export const generateUniqueName = (baseName: string): string => {
-    // Remove any existing (copy) suffix and trim the base name
-    const nameWithoutSuffix = baseName.replace(/\s*\(copy(\d*)\)\s*$/, '').trim();
+    const nameWithoutSuffix = baseName.replace(/\s*-copy(\d*)\s*$/, '').trim();
 
-    // Check if the base name already has a suffix
-    const hasCopySuffix = /\(copy(\d*)\)$/.test(baseName);
+    const hasCopySuffix = /-copy(\d*)$/.test(baseName);
 
-    // If there is no suffix, start with (copy)
     if (!hasCopySuffix) {
-        return `${nameWithoutSuffix} (copy)`;
+        return `${nameWithoutSuffix}-copy`;
     }
 
-    // Extract the current suffix number
-    const currentSuffix = (baseName.match(/\(copy(\d*)\)$/) || [])[1];
+    const currentSuffix = (baseName.match(/-copy(\d*)$/) || [])[1];
     const nextSuffix = currentSuffix ? parseInt(currentSuffix, 10) + 1 : 2;
 
-    return `${nameWithoutSuffix} (copy${nextSuffix})`;
+    return `${nameWithoutSuffix}-copy${nextSuffix}`;
 };
+

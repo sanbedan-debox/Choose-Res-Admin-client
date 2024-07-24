@@ -20,7 +20,6 @@ import { FaSpinner } from "react-icons/fa";
 interface TableProps {
   data: any[];
   itemsPerPage: number;
-  actions?: { label: string; onClick: (data: any) => void; style?: string }[];
   mainActions?: { label: string; onClick: () => void }[];
   csvExport?: boolean;
   fullCsv?: boolean;
@@ -40,7 +39,6 @@ interface TableProps {
 const RoopTable: React.FC<TableProps> = ({
   data = [],
   itemsPerPage,
-  actions = [],
   mainActions = [],
   csvExport = false,
   fullCsv = true,
@@ -287,21 +285,20 @@ const RoopTable: React.FC<TableProps> = ({
         <>
           <div className="overflow-x-auto">
             <table className="min-w-full bg-transparent rounded-lg overflow-hidden">
-              <thead className="bg-white text-black text-nowrap ">
+              <thead className="bg-white   text-black ">
                 <tr>
                   {headings.map((heading, index) => (
                     <th
                       key={index}
-                      className="py-2 px-4 first:rounded-tl-lg last:rounded-tr-lg"
+                      className={`py-2 px-4 text-left font-medium first:rounded-tl-lg last:rounded-tr-lg ${
+                        ["Actions", "Toggle Status"].includes(heading.title)
+                          ? "text-right px-0"
+                          : ""
+                      }`}
                     >
                       {heading.title}
                     </th>
                   ))}
-                  {actions.length > 0 && (
-                    <th className="py-2 px-4 first:rounded-tl-lg last:rounded-tr-lg">
-                      Actions
-                    </th>
-                  )}
                 </tr>
               </thead>
               <tbody>
@@ -310,7 +307,11 @@ const RoopTable: React.FC<TableProps> = ({
                     {headings.map((heading, colIndex) => (
                       <td
                         key={colIndex}
-                        className="py-2 px-4 first:rounded-tl-lg last:rounded-tr-lg text-center text-nowrap text-sm"
+                        className={`py-2 px-4 text-left first:rounded-tl-lg last:rounded-tr-lg text-nowrap text-sm ${
+                          ["Actions", "Toggle Status"].includes(heading.title)
+                            ? "text-right px-0"
+                            : ""
+                        }`}
                       >
                         {heading.render
                           ? heading.render(row)
@@ -320,33 +321,6 @@ const RoopTable: React.FC<TableProps> = ({
                             )}
                       </td>
                     ))}
-                    {actions.length > 0 && (
-                      <td className="py-2 px-4 text-center">
-                        <Menu as="div" className=" inline-block">
-                          <Menu.Button className="flex items-center space-x-2">
-                            <HiDotsVertical className="h-5 w-5 text-black" />
-                          </Menu.Button>
-                          <Menu.Items className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg focus:outline-none z-20">
-                            {actions.map((action, actionIndex) => (
-                              <Menu.Item key={actionIndex}>
-                                {({ active }) => (
-                                  <button
-                                    onClick={() => action.onClick(row)}
-                                    className={`${
-                                      active
-                                        ? "bg-primary text-white"
-                                        : "text-black"
-                                    } flex w-full items-center px-4 py-2 text-sm`}
-                                  >
-                                    {action.label}
-                                  </button>
-                                )}
-                              </Menu.Item>
-                            ))}
-                          </Menu.Items>
-                        </Menu>
-                      </td>
-                    )}
                   </tr>
                 ))}
               </tbody>

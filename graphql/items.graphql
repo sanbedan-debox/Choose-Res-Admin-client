@@ -58,12 +58,18 @@ query getItem($id: String!) {
     isHalal
     isGlutenFree
     hasNuts
-    # availability
+    availability {
+      day
+      hours {
+        start
+        end
+      }
+      active
+    }
     createdAt
     updatedAt
   }
 }
-
 mutation addItem($input: AddItemInput!, $modifierGroups: [String!]!) {
   addItem(input: $input, modifierGroups: $modifierGroups)
 }

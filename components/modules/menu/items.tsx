@@ -79,17 +79,17 @@ const Items: React.FC = () => {
   }, [fetchMenuDatas, setToastData]);
 
   const renderActions = (rowData: { _id: string }) => (
-    <div className="flex space-x-2 justify-center">
+    <div className="flex space-x-2 justify-end">
       <FaTrash
-        className="text-primary text-lg cursor-pointer"
+        className="text-primary text-md cursor-pointer"
         onClick={() => handleDeleteItem(rowData._id)}
       />
       <FaEdit
-        className="text-primary text-lg cursor-pointer"
+        className="text-primary text-md cursor-pointer"
         onClick={() => handleEditItem(rowData._id)}
       />
       <IoDuplicateOutline
-        className="text-primary text-lg cursor-pointer"
+        className="text-primary text-md cursor-pointer"
         onClick={() => handleDuplcateCategory(rowData._id)}
       />
     </div>
@@ -112,7 +112,7 @@ const Items: React.FC = () => {
   };
 
   const renderSwitch = (rowData: { status: StatusEnum; _id: string }) => (
-    <div>
+    <div className="">
       <CustomSwitch
         checked={rowData.status === StatusEnum.Active}
         onChange={() => handleToggleSwitch(rowData)}
@@ -122,11 +122,14 @@ const Items: React.FC = () => {
   );
 
   const headings = [
-    { title: "Toggle Availibility", dataKey: "status", render: renderSwitch },
     { title: "Name", dataKey: "name" },
     { title: "Desc", dataKey: "desc" },
     { title: "Price", dataKey: "price" },
-    // { title: "Description", dataKey: "desc" },
+    {
+      title: "Toggle Status",
+      dataKey: "name.value",
+      render: renderSwitch,
+    },
     { title: "Actions", dataKey: "name.value", render: renderActions },
   ];
 

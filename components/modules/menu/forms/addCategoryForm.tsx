@@ -88,7 +88,7 @@ const AddCategoryForm = () => {
           }
           setValue("description", item.desc.value);
           const formateditemlist = item?.items.map((el) => ({
-            _id: el._id._id,
+            _id: el.id,
             name: el?.name?.value ?? "",
             price: el?.price?.value ?? "",
             image: "",

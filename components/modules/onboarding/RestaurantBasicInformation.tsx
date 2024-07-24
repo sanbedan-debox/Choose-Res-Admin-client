@@ -114,7 +114,7 @@ const RestaurantBasicInformation = () => {
 
       const formData = new FormData();
       formData.append("file", logoFile);
-      formData.append("upload_preset", "csv-data");
+      formData.append("upload_preset", "restaurants-branding-logo");
 
       const response = await fetch(
         "https://api.cloudinary.com/v1_1/choose-pos/raw/upload",

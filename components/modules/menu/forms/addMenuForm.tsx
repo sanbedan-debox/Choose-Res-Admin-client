@@ -162,6 +162,17 @@ const AddMenuForm = () => {
   };
 
   useEffect(() => {
+    if (selectedItems.length > 0) {
+      setItemsOption((prevItemsOption) =>
+        prevItemsOption.filter(
+          (item) =>
+            !selectedItems.some((selectedItem) => selectedItem._id === item._id)
+        )
+      );
+    }
+  }, [isModalOpen, selectedItems, fetchMenuDatas, tempSelectedItems]);
+
+  useEffect(() => {
     const fetch = async () => {
       try {
         const categories = await sdk.getCategoriesForMenuDropdown({
@@ -174,7 +185,6 @@ const AddMenuForm = () => {
             _id: cats._id,
             name: cats?.name?.value,
           }));
-          console.log("Categories Options set", formattedItemsList);
           const filteredItemsList = formattedItemsList.filter(
             (item) =>
               !selectedItems.some(
@@ -182,9 +192,7 @@ const AddMenuForm = () => {
               )
           );
 
-          console.log("Categories Options set", filteredItemsList);
-
-          setItemsOption(formattedItemsList);
+          setItemsOption(filteredItemsList);
         }
       } catch (error: any) {
         const errorMessage = extractErrorMessage(error);
@@ -259,17 +267,6 @@ const AddMenuForm = () => {
     setSelectedItems(tempSelectedItems);
     setIsModalOpen(false);
   };
-
-  useEffect(() => {
-    if (selectedItems.length > 0) {
-      setItemsOption((prevItemsOption) =>
-        prevItemsOption.filter(
-          (item) =>
-            !selectedItems.some((selectedItem) => selectedItem._id === item._id)
-        )
-      );
-    }
-  }, [isModalOpen, selectedItems, fetchMenuDatas, tempSelectedItems]);
 
   const headingsDropdown = [
     {

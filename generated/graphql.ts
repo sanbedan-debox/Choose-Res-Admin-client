@@ -127,6 +127,15 @@ export type AddStateInput = {
   value: Scalars['String']['input'];
 };
 
+export type AddTeamMemberInput = {
+  accountPreferences: AccountPreferenceInput;
+  email: Scalars['String']['input'];
+  firstName: Scalars['String']['input'];
+  lastName: Scalars['String']['input'];
+  phone: Scalars['String']['input'];
+  role: UserRole;
+};
+
 export type AddTimezoneInput = {
   gmtOffset: Scalars['Float']['input'];
   value: Scalars['String']['input'];
@@ -233,6 +242,7 @@ export type Business = {
   phone: Scalars['String']['output'];
   restaurants?: Maybe<Array<RestaurantInfo>>;
   status: StatusEnum;
+  teams: Array<Teams>;
   updatedAt: Scalars['DateTimeISO']['output'];
   user: User;
 };
@@ -635,6 +645,7 @@ export type Mutation = {
   addState: Scalars['Boolean']['output'];
   addTaxRate: Scalars['String']['output'];
   addTaxRateInRestaurant: Scalars['Boolean']['output'];
+  addTeamMember: Scalars['Boolean']['output'];
   addTimezone: Scalars['Boolean']['output'];
   addUser: Scalars['String']['output'];
   addWaitListUser: Scalars['Boolean']['output'];
@@ -668,6 +679,7 @@ export type Mutation = {
   removeModifierGroup: Scalars['Boolean']['output'];
   removeModifierGroupFromItem: Scalars['Boolean']['output'];
   removeRestaurant: Scalars['Boolean']['output'];
+  removeTeamMember: Scalars['Boolean']['output'];
   restaurantOnboarding: Scalars['Boolean']['output'];
   sendTestEmails: Scalars['Boolean']['output'];
   updateCategory: Scalars['Boolean']['output'];
@@ -681,6 +693,7 @@ export type Mutation = {
   updateTaxRate: Scalars['Boolean']['output'];
   updateTimezoneStatus: Scalars['Boolean']['output'];
   updateUserProfile: Scalars['Boolean']['output'];
+  verifyTeamEmail: Scalars['Boolean']['output'];
   verifyUserDetails: Scalars['Boolean']['output'];
 };
 
@@ -763,6 +776,11 @@ export type MutationAddTaxRateArgs = {
 
 export type MutationAddTaxRateInRestaurantArgs = {
   taxRateId: Scalars['String']['input'];
+};
+
+
+export type MutationAddTeamMemberArgs = {
+  input: AddTeamMemberInput;
 };
 
 
@@ -928,6 +946,11 @@ export type MutationRemoveModifierGroupFromItemArgs = {
 };
 
 
+export type MutationRemoveTeamMemberArgs = {
+  teamId: Scalars['String']['input'];
+};
+
+
 export type MutationRestaurantOnboardingArgs = {
   input: UpdateRestaurantDetailsInput;
 };
@@ -990,6 +1013,11 @@ export type MutationUpdateTimezoneStatusArgs = {
 
 export type MutationUpdateUserProfileArgs = {
   input: UpdateUserProfileInput;
+};
+
+
+export type MutationVerifyTeamEmailArgs = {
+  token: Scalars['String']['input'];
 };
 
 
@@ -1078,6 +1106,7 @@ export type Query = {
   getRestaurantOnboardingData: Restaurant;
   getTaxRate: TaxRate;
   getTaxRates: Array<TaxRate>;
+  getTeamMembers: Array<Teams>;
   getUserRestaurants: Array<Restaurant>;
   getUsersForTarget: Scalars['Float']['output'];
   getWaitListUsers: Array<WaitListUser>;
@@ -1394,6 +1423,27 @@ export type TaxRateInput = {
   salesTax: MasterCommonInputNumber;
 };
 
+export type Teams = {
+  __typename?: 'Teams';
+  _id: Scalars['ID']['output'];
+  accountPreferences?: Maybe<AccountPreference>;
+  createdAt: Scalars['DateTimeISO']['output'];
+  email: Scalars['String']['output'];
+  firstName: Scalars['String']['output'];
+  lastName: Scalars['String']['output'];
+  onboardingStatus: TeamsOnboardingEnum;
+  phone: Scalars['String']['output'];
+  role: Scalars['String']['output'];
+  updatedAt: Scalars['DateTimeISO']['output'];
+  user?: Maybe<User>;
+};
+
+/** Team member onboarding status enum. */
+export enum TeamsOnboardingEnum {
+  Completed = 'completed',
+  EmailPending = 'emailPending'
+}
+
 export type TestEmailInput = {
   emails: Scalars['String']['input'];
   html: Scalars['String']['input'];
@@ -1517,11 +1567,20 @@ export type User = {
   lastLoggedOut: Scalars['DateTimeISO']['output'];
   lastName: Scalars['String']['output'];
   phone: Scalars['String']['output'];
+  role: UserRole;
   status: UserStatus;
   statusUpdatedBy?: Maybe<Admin>;
   updatedAt: Scalars['DateTimeISO']['output'];
   verificationRejections?: Maybe<Array<RejectRecord>>;
 };
+
+/** User roles  */
+export enum UserRole {
+  Accountant = 'Accountant',
+  Manager = 'Manager',
+  MarketingPartner = 'MarketingPartner',
+  Owner = 'Owner'
+}
 
 /** UserStatus type enum  */
 export enum UserStatus {
@@ -1690,7 +1749,7 @@ export type GetItemQueryVariables = Exact<{
 }>;
 
 
-export type GetItemQuery = { __typename?: 'Query', getItem: { __typename?: 'Item', _id: string, status: StatusEnum, image?: string | null, applySalesTax: boolean, popularItem: boolean, upSellItem: boolean, isSpicy: boolean, isVegan: boolean, isHalal: boolean, isGlutenFree: boolean, hasNuts: boolean, createdAt: any, updatedAt: any, name: { __typename?: 'MasterCommon', value: string }, desc: { __typename?: 'MasterCommon', value: string }, modifierGroup: Array<{ __typename?: 'ModifierGroupInfo', pricingType: PriceTypeEnum, id: string, name: { __typename?: 'MasterCommon', value: string } }>, price: { __typename?: 'MasterCommonNumber', value: number } } };
+export type GetItemQuery = { __typename?: 'Query', getItem: { __typename?: 'Item', _id: string, status: StatusEnum, image?: string | null, applySalesTax: boolean, popularItem: boolean, upSellItem: boolean, isSpicy: boolean, isVegan: boolean, isHalal: boolean, isGlutenFree: boolean, hasNuts: boolean, createdAt: any, updatedAt: any, name: { __typename?: 'MasterCommon', value: string }, desc: { __typename?: 'MasterCommon', value: string }, modifierGroup: Array<{ __typename?: 'ModifierGroupInfo', pricingType: PriceTypeEnum, id: string, name: { __typename?: 'MasterCommon', value: string } }>, price: { __typename?: 'MasterCommonNumber', value: number }, availability?: Array<{ __typename?: 'Availability', day: string, active: boolean, hours: Array<{ __typename?: 'Hours', start: any, end: any }> }> | null } };
 
 export type AddItemMutationVariables = Exact<{
   input: AddItemInput;
@@ -2208,6 +2267,14 @@ export const GetItemDocument = gql`
     isHalal
     isGlutenFree
     hasNuts
+    availability {
+      day
+      hours {
+        start
+        end
+      }
+      active
+    }
     createdAt
     updatedAt
   }
