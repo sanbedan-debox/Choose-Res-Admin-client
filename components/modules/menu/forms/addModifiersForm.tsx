@@ -14,6 +14,8 @@ import useGlobalStore from "@/store/global";
 import useMenuOptionsStore from "@/store/menuOptions";
 import CustomSwitchCard from "@/components/common/customSwitchCard/customSwitchCard";
 import useModStore from "@/store/modifiers";
+import { IoIosAddCircleOutline } from "react-icons/io";
+import { RiEditCircleLine } from "react-icons/ri";
 
 interface IFormInput {
   name: string;
@@ -393,7 +395,14 @@ const AddModifierForm = () => {
             type="submit"
             // className="px-6 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
           >
-            {!isEditMod ? "Save Modifier" : "Edit Modifier"}
+            <div className="flex justify-center items-center">
+              {!isEditMod ? "Add Modifier" : "Edit Modifier"}
+              {!isEditMod ? (
+                <IoIosAddCircleOutline className="text-xl ml-1" />
+              ) : (
+                <RiEditCircleLine className="text-xl ml-1" />
+              )}
+            </div>
           </CButton>
         </div>
       </form>

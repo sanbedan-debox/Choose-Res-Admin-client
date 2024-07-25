@@ -25,6 +25,8 @@ import { MdArrowOutward } from "react-icons/md";
 import useModGroupStore from "@/store/modifierGroup";
 import ReusableModal from "@/components/common/modal/modal";
 import useAuthStore from "@/store/auth";
+import { IoIosAddCircleOutline } from "react-icons/io";
+import { RiEditCircleLine } from "react-icons/ri";
 interface IFormInput {
   name: string;
   desc: string;
@@ -1044,7 +1046,14 @@ const AddItemForm = () => {
             variant={ButtonType.Primary}
             type="submit"
           >
-            Save Item
+            <div className="flex justify-center items-center">
+              {isEditItem ? "Save Menu" : "Add Menu"}
+              {!isEditItem ? (
+                <IoIosAddCircleOutline className="text-xl ml-1" />
+              ) : (
+                <RiEditCircleLine className="text-xl ml-1" />
+              )}
+            </div>
           </CButton>
         </div>
       </form>

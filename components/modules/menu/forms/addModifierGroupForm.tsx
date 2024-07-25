@@ -22,6 +22,8 @@ import { MdArrowOutward } from "react-icons/md";
 import useModGroupStore from "@/store/modifierGroup";
 import useModStore from "@/store/modifiers";
 import ReusableModal from "@/components/common/modal/modal";
+import { IoIosAddCircleOutline } from "react-icons/io";
+import { RiEditCircleLine } from "react-icons/ri";
 
 interface IFormInput {
   name: string;
@@ -535,7 +537,14 @@ const AddModifierGroupForm = () => {
             variant={ButtonType.Primary}
             type="submit"
           >
-            Save Item
+            <div className="flex justify-center ">
+              {isEditModGroup ? "Edit Modifer Group" : "Add Modifier Group"}
+              {!isEditModGroup ? (
+                <IoIosAddCircleOutline className="text-xl ml-1" />
+              ) : (
+                <RiEditCircleLine className="text-xl ml-1" />
+              )}
+            </div>
           </CButton>
 
           <AddFormDropdown

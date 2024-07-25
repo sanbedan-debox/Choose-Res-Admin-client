@@ -22,6 +22,8 @@ import useMenuCategoryStore from "@/store/menuCategory";
 import ReusableModal from "@/components/common/modal/modal";
 import useRestaurantsStore from "@/store/restaurant";
 import useAuthStore from "@/store/auth";
+import { IoIosAddCircleOutline } from "react-icons/io";
+import { RiEditCircleLine } from "react-icons/ri";
 
 interface IFormInput {
   type: { value: string; label: string };
@@ -468,7 +470,14 @@ const AddMenuForm = () => {
           type="submit"
           className="w-full"
         >
-          {isEditMenu ? "Save Menu" : "Add Menu"}
+          <div className="flex justify-center items-center">
+            {isEditMenu ? "Save Menu" : "Add Menu"}
+            {!isEditMenu ? (
+              <IoIosAddCircleOutline className="text-xl ml-1" />
+            ) : (
+              <RiEditCircleLine className="text-xl ml-1" />
+            )}
+          </div>
         </CButton>
       </form>
       <AddFormDropdown

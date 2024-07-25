@@ -11,8 +11,19 @@ import {
   FaUsers,
   FaTable,
 } from "react-icons/fa";
+import { TbSocial } from "react-icons/tb";
+import { GrGift, GrRestaurant } from "react-icons/gr";
+
 import Image from "next/image";
 import { modules } from "./common/accessConfig";
+import {
+  MdOutlineIntegrationInstructions,
+  MdOutlineInventory2,
+  MdOutlinePayments,
+  MdRestaurantMenu,
+} from "react-icons/md";
+import { BiWorld } from "react-icons/bi";
+import { RiReservedLine } from "react-icons/ri";
 
 const Sidebar: React.FC = () => {
   const { isSidebarExpanded, selectedMenu, setSelectedMenu } = useGlobalStore();
@@ -24,22 +35,22 @@ const Sidebar: React.FC = () => {
   const getIconComponent = (iconName: string) => {
     const icons: { [key: string]: JSX.Element } = {
       dashboard: <FaHome />,
-      menu: <FaCog />,
-      aggregator: <FaChartBar />,
-      cms: <FaListUl />,
-      marketing: <FaChartBar />,
+      menu: <MdRestaurantMenu />,
+      aggregator: <MdOutlineIntegrationInstructions />,
+      cms: <BiWorld />,
+      marketing: <TbSocial />,
       reports: <FaChartBar />,
       customers: <FaUsers />,
-      rewards: <FaCog />,
+      rewards: <GrGift />,
       user: <FaUsers />,
-      inventory: <FaTable />,
+      inventory: <MdOutlineInventory2 />,
       operations: <FaCog />,
       marketinginsights: <FaChartBar />,
       tips: <FaListUl />,
       staff: <FaUsers />,
-      payment: <FaCog />,
-      table: <FaTable />,
-      banquet: <FaCog />,
+      payment: <MdOutlinePayments />,
+      table: <GrRestaurant />,
+      banquet: <RiReservedLine />,
       catering: <FaCog />,
     };
     return icons[iconName] || <FaHome />;

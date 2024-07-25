@@ -3,6 +3,7 @@ import CButton from "../button/button";
 import { ButtonType } from "../button/interface";
 import { ImFileEmpty } from "react-icons/im";
 import { CiImageOn } from "react-icons/ci";
+import { IoIosAddCircleOutline } from "react-icons/io";
 
 interface Heading {
   title: string;
@@ -99,7 +100,10 @@ const FormAddTable: React.FC<FormAddTableProps> = ({
         onClick={onAddClick}
         className="w-full mt-2 mb-2"
       >
-        {buttonText}
+        <div className="flex justify-center ">
+          {buttonText}
+          <IoIosAddCircleOutline className="text-xl ml-1" />
+        </div>
       </CButton>
     </div>
   );

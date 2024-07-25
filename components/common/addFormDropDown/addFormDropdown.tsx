@@ -3,6 +3,9 @@ import ReusableModal from "@/components/common/modal/modal";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 
+import { BsArrowUpRightCircle } from "react-icons/bs";
+import { IoIosAddCircleOutline } from "react-icons/io";
+
 interface Props {
   title: string;
   isOpen: boolean;
@@ -90,10 +93,18 @@ const AddFormDropdown: React.FC<Props> = ({
         </ul>
         <div className="flex space-x-2 justify-end">
           <CButton onClick={onClickCreatebtn} variant={ButtonType.Outlined}>
-            {createNewItemButtonLabel}
+            <div className="flex justify-center items-center">
+              {createNewItemButtonLabel}
+
+              <BsArrowUpRightCircle className="text-xl ml-1" />
+            </div>
           </CButton>
           <CButton onClick={handleAddItems} variant={ButtonType.Primary}>
-            {addSelectedItemsButtonLabel}
+            <div className="flex justify-center items-center">
+              {addSelectedItemsButtonLabel}
+
+              <IoIosAddCircleOutline className="text-xl ml-1" />
+            </div>
           </CButton>
         </div>
       </div>

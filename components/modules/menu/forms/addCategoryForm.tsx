@@ -19,6 +19,8 @@ import { MdArrowOutward } from "react-icons/md";
 import AddFormDropdown from "@/components/common/addFormDropDown/addFormDropdown";
 import useMenuItemsStore from "@/store/menuItems";
 import ReusableModal from "@/components/common/modal/modal";
+import { IoIosAddCircleOutline } from "react-icons/io";
+import { RiEditCircleLine } from "react-icons/ri";
 
 interface IFormInput {
   name: string;
@@ -434,7 +436,14 @@ const AddCategoryForm = () => {
           type="submit"
           className="w-full"
         >
-          Add Category
+          <div className="flex justify-center items-center ">
+            {isEditCats ? "Save Menu" : "Add Menu"}
+            {!isEditCats ? (
+              <IoIosAddCircleOutline className="text-xl ml-1" />
+            ) : (
+              <RiEditCircleLine className="text-xl ml-1" />
+            )}
+          </div>
         </CButton>
       </form>
 
