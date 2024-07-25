@@ -88,6 +88,7 @@ export type AddItemInput = {
   price: MasterCommonInputNumber;
   status: StatusEnum;
   upSellItem: Scalars['Boolean']['input'];
+  visibility?: InputMaybe<VisibilityInput>;
 };
 
 export type AddMenuInput = {
@@ -499,6 +500,7 @@ export type Item = {
   upSellItem: Scalars['Boolean']['output'];
   updatedAt: Scalars['DateTimeISO']['output'];
   user: User;
+  visibility: Visibility;
 };
 
 export type ItemInfo = {
@@ -1600,6 +1602,19 @@ export type VerifyUserDetails = {
   firstName: Scalars['String']['input'];
   lastName: Scalars['String']['input'];
   phone: Scalars['String']['input'];
+};
+
+export type Visibility = {
+  __typename?: 'Visibility';
+  catering: Scalars['Boolean']['output'];
+  dineIn: Scalars['Boolean']['output'];
+  onlineOrdering: Scalars['Boolean']['output'];
+};
+
+export type VisibilityInput = {
+  catering: Scalars['Boolean']['input'];
+  dineIn: Scalars['Boolean']['input'];
+  onlineOrdering: Scalars['Boolean']['input'];
 };
 
 export type WaitListUser = {
