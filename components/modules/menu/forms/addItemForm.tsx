@@ -747,7 +747,7 @@ const AddItemForm = () => {
               htmlFor="name"
               className="block mb-2 text-sm font-medium text-left text-gray-700"
             >
-              Name
+              Display Name
             </label>
             <input
               type="text"
@@ -756,6 +756,9 @@ const AddItemForm = () => {
               className="input input-primary"
               placeholder="Enter item name"
             />
+            <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
+              This is the name the customer will see
+            </p>
             {errors.name && (
               <p className="text-red-500 text-sm text-start">
                 {errors.name.message}
@@ -810,8 +813,10 @@ const AddItemForm = () => {
                 }
               }}
             />
-            <p className="text-primary text-xs mt-1 mx-1 text-start">
-              Item prices will be rounded off the nearest number.
+            <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
+              Item prices will be rounded off the nearest whole number like
+              12.22 then it will be converted to 12.49 and 12.77 will be
+              converted to 12.99.
             </p>
             {errors.price && (
               <p className="text-red-500 text-sm text-start">
@@ -824,7 +829,7 @@ const AddItemForm = () => {
             <label className="block mb-2 text-lg font-medium text-left text-gray-700">
               Photo
             </label>
-            <div className="mb-4">
+            <div className="">
               {previewUrl ? (
                 <div className="flex items-center justify-between hover:bg-primary hover:bg-opacity-5 px-4 rounded-md">
                   <img
@@ -893,6 +898,9 @@ const AddItemForm = () => {
                 </label>
               )}
             </div>
+            <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
+              This is the image your customer will see
+            </p>
           </div>
           <div className="mb-1">
             <label
@@ -1007,15 +1015,20 @@ const AddItemForm = () => {
               />
             </div>
           </div>
-          <FormAddTable
-            data={data}
-            headings={headings}
-            title="Modifier Groups"
-            emptyCaption="You can add Modifier Group for items here"
-            emptyMessage="No Modifier Groups available"
-            buttonText="Add Modifier Groups"
-            onAddClick={handleAddClick}
-          />
+          <div>
+            <FormAddTable
+              data={data}
+              headings={headings}
+              title="Modifier Groups"
+              emptyCaption="You can add Modifier Group for items here"
+              emptyMessage="No Modifier Groups available"
+              buttonText="Add Modifier Groups"
+              onAddClick={handleAddClick}
+            />
+            <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
+              Modifier Groups allow your customer to customize an item
+            </p>
+          </div>
           <AvailabilityForm
             control={control}
             errors={errors}

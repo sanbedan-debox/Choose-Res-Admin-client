@@ -8,6 +8,7 @@ import useAuthStore from "@/store/auth";
 import { UserStatus } from "@/generated/graphql";
 import QuickActions from "@/components/common/quickLinks/quickLink";
 import MainLayout from "@/components/layouts/mainBodyLayout";
+import { Searchfeatures } from "@/utils/searchFeatures";
 
 type NextPageWithLayout = React.FC & {
   getLayout?: (page: React.ReactNode) => React.ReactNode;
@@ -30,18 +31,9 @@ const Dashboard: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
     { name: string; link: string }[]
   >([]);
 
-  const features = [
-    { name: "Sales summary", link: "/sales-summary" },
-    // { name: "Labor summary", link: "/labor-summary" },
-    { name: "Menu builder", link: "/menu/menu-builder/menu" },
-    // { name: "Edit menus", link: "/edit-menus" },
-    // { name: "Refund check", link: "/refund-check" },
-    // { name: "Employees", link: "/employees" },
-    // { name: "Time entries", link: "/time-entries" },
-  ];
   useEffect(() => {
     if (searchQuery.length > 0) {
-      const filteredSuggestions = features.filter((feature) =>
+      const filteredSuggestions = Searchfeatures.filter((feature) =>
         feature.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
       setSuggestions(filteredSuggestions);

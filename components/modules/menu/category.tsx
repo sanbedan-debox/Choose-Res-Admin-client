@@ -96,10 +96,10 @@ const Categories: React.FC = () => {
 
   const renderActions = (rowData: { _id: string }) => (
     <div className="flex space-x-2 justify-end">
-      <FaTrash
+      {/* <FaTrash
         className="text-primary text-md cursor-pointer"
         onClick={() => handleDeleteItem(rowData._id)}
-      />
+      /> */}
       <FaEdit
         className="text-primary text-md cursor-pointer"
         onClick={() => handleEditCategory(rowData._id)}

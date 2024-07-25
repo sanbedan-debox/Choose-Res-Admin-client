@@ -77,10 +77,10 @@ const Modifiers: React.FC = () => {
 
   const renderActions = (rowData: { _id: string }) => (
     <div className="flex space-x-3 justify-end">
-      <FaTrash
+      {/* <FaTrash
         className="text-primary text-md cursor-pointer"
         onClick={() => handleDeleteItem(rowData._id)}
-      />
+      /> */}
       <FaEdit
         className="text-primary text-md cursor-pointer"
         onClick={() => handleEditItem(rowData._id)}

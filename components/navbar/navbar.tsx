@@ -17,6 +17,8 @@ import { ButtonType } from "../common/button/interface";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import RestaurantOnboardingStore from "@/store/restaurantOnboarding";
 import { RestaurantStatus } from "@/generated/graphql";
+import { Searchfeatures } from "@/utils/searchFeatures";
+import { IoSearchSharp } from "react-icons/io5";
 
 const Navbar: React.FC = () => {
   const { firstName } = useAuthStore();
@@ -107,7 +109,20 @@ const Navbar: React.FC = () => {
   const toggleRestaurantDropdown = () => {
     setIsRestaurantDropdownOpen(!isRestaurantDropdownOpen);
   };
-
+  const [searchQuery, setSearchQuery] = useState("");
+  const [suggestions, setSuggestions] = useState<
+    { name: string; link: string }[]
+  >([]);
+  useEffect(() => {
+    if (searchQuery.length > 0) {
+      const filteredSuggestions = Searchfeatures.filter((feature) =>
+        feature.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setSuggestions(filteredSuggestions);
+    } else {
+      setSuggestions([]);
+    }
+  }, [searchQuery]);
   return (
     <nav
       className={`text-black p-4 bg-white fixed top-0 z-10 transition-all duration-300 ${
@@ -180,7 +195,31 @@ const Navbar: React.FC = () => {
             </Link>
           )}
         </div>
+
         <div className="flex items-center space-x-1 relative">
+          <div className=" flex items-center">
+            <input
+              type="text"
+              placeholder="What are you looking for?"
+              className="input input-primary w-full"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            {suggestions.length > 0 && (
+              <ul className="absolute bg-white border border-gray-200 mt-9 rounded-lg shadow-lg">
+                {suggestions.map((suggestion) => (
+                  <a key={suggestion.name} href="href={suggestion.link}">
+                    <li
+                      key={suggestion.name}
+                      className="hover:bg-primary hover:text-white p-2"
+                    >
+                      <p>{suggestion.name}</p>
+                    </li>
+                  </a>
+                ))}
+              </ul>
+            )}
+          </div>
           <div ref={profileDropdownRef} className="relative">
             <button
               onClick={toggleProfileDropdown}

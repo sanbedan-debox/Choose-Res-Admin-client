@@ -416,7 +416,7 @@ const AddModifierGroupForm = () => {
               htmlFor="name"
               className="block mb-2 text-sm font-medium text-left text-gray-700"
             >
-              Name
+              Display Name
             </label>
             <input
               type="text"
@@ -425,24 +425,36 @@ const AddModifierGroupForm = () => {
               className="input input-primary"
               placeholder="Enter item name"
             />
+            <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
+              This is the name your customer will say.
+            </p>
             {errors.name && (
               <p className="text-red-500 text-sm text-start">
                 {errors.name.message}
               </p>
             )}
           </div>
-          <CountSelector
-            title="Minimum"
-            initialValue={0}
-            onCountChange={handleMinCountChange}
-          />
 
-          <CountSelector
-            title="Maximum"
-            initialValue={1}
-            onCountChange={handleMaxCountChange}
-            showLimit
-          />
+          <div className="flex flex-col space-y-3">
+            <CountSelector
+              title="Minimum"
+              initialValue={0}
+              onCountChange={handleMinCountChange}
+            />
+            <div className="flex flex-col">
+              <CountSelector
+                title="Maximum"
+                initialValue={1}
+                onCountChange={handleMaxCountChange}
+                showLimit
+              />
+              <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
+                Select the Minimum number of modifiers a customer must select
+                from this modifer group when ordering and the maximum number of
+                modifiers they can select
+              </p>
+            </div>
+          </div>
           <div className="">
             <label
               htmlFor="type"
@@ -465,6 +477,10 @@ const AddModifierGroupForm = () => {
                 />
               )}
             />
+            <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
+              Select how you want to charge your customers for the modifiers
+              they are selecting.
+            </p>
             {errors.pricingType && (
               <p className="text-red-500 text-sm text-start">
                 {errors.pricingType.message}
@@ -487,6 +503,9 @@ const AddModifierGroupForm = () => {
               switchChecked={watch("optional")}
               onSwitchChange={() => setValue("optional", !watch("optional"))}
             />
+            <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
+              Turn on if you want to make this modifiers optional
+            </p>
 
             {errors.optional && (
               <p className="text-red-500 text-sm text-start">
@@ -494,17 +513,22 @@ const AddModifierGroupForm = () => {
               </p>
             )}
           </div>
-
-          <FormAddTable
-            data={data}
-            isShowImage
-            headings={headings}
-            title="Modifiers"
-            emptyCaption="No Modifiers added,Add Now"
-            emptyMessage="No Modifiers available"
-            buttonText="Add Modifiers"
-            onAddClick={handleAddClick}
-          />
+          <div>
+            <FormAddTable
+              data={data}
+              isShowImage
+              headings={headings}
+              title="Modifiers"
+              emptyCaption="No Modifiers added,Add Now"
+              emptyMessage="No Modifiers available"
+              buttonText="Add Modifiers"
+              onAddClick={handleAddClick}
+            />
+            <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
+              Modifiers allow customers to customize an item (eg. Pepperoni,No
+              Onions,Sprinkles)
+            </p>
+          </div>
 
           <CButton
             loading={btnLoading}

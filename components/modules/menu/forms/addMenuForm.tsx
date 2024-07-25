@@ -370,7 +370,7 @@ const AddMenuForm = () => {
             htmlFor="name"
             className="block mb-2 text-sm font-medium text-left text-gray-700"
           >
-            Name
+            Display Name
           </label>
           <input
             type="text"
@@ -379,6 +379,9 @@ const AddMenuForm = () => {
             className="input input-primary"
             placeholder="Enter menu name"
           />
+          <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
+            This is the name your customer will see.
+          </p>
           {errors.name && (
             <p className="text-red-500 text-sm text-start">
               {errors.name.message}
@@ -407,23 +410,29 @@ const AddMenuForm = () => {
               />
             )}
           />
+          <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
+            Select what kind of menu you want this to be.
+          </p>
           {errors.type && (
             <p className="text-red-500 text-sm text-start">
               {errors.type.message}
             </p>
           )}
         </div>
-
-        <FormAddTable
-          data={data}
-          headings={headings}
-          title="Categories"
-          emptyCaption="Add Categories to your menu"
-          emptyMessage="No Categories selected"
-          buttonText="Add Categories"
-          onAddClick={handleAddClick}
-        />
-
+        <div>
+          <FormAddTable
+            data={data}
+            headings={headings}
+            title="Categories"
+            emptyCaption="Add Categories to your menu"
+            emptyMessage="No Categories selected"
+            buttonText="Add Categories"
+            onAddClick={handleAddClick}
+          />
+          <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
+            Select the categories and items you want to be in this menu.
+          </p>
+        </div>
         {!taxRate ? (
           <div
             className="flex justify-between items-center p-4 border rounded-md shadow-sm bg-white cursor-pointer"

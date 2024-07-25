@@ -28,7 +28,7 @@ const CountSelector: React.FC<CountSelectorProps> = ({
   };
 
   return (
-    <div className="mb-4">
+    <div className="">
       <div className="flex bg-primary bg-opacity-5 items-center py-3 rounded-md px-3 justify-between">
         <span className="text-left font-medium text-gray-700">{title}</span>
         <div className="flex space-x-3">

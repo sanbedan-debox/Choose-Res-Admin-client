@@ -79,11 +79,11 @@ const Items: React.FC = () => {
   }, [fetchMenuDatas, setToastData]);
 
   const renderActions = (rowData: { _id: string }) => (
-    <div className="flex space-x-2 justify-end">
-      <FaTrash
+    <div className="flex space-x-2">
+      {/* <FaTrash
         className="text-primary text-md cursor-pointer"
         onClick={() => handleDeleteItem(rowData._id)}
-      />
+      /> */}
       <FaEdit
         className="text-primary text-md cursor-pointer"
         onClick={() => handleEditItem(rowData._id)}

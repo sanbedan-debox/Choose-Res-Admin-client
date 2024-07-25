@@ -211,15 +211,18 @@ const AddModifierForm = () => {
               htmlFor="name"
               className="block mb-2 text-sm font-medium text-left text-gray-700"
             >
-              Name
+              Display Name
             </label>
             <input
               type="text"
               {...register("name", { required: "Name is required" })}
               id="name"
               className="input input-primary"
-              placeholder="Enter item name"
+              placeholder="Enter Modifier name"
             />
+            <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
+              This is the name your customer will see
+            </p>
             {errors.name && (
               <p className="text-red-500 text-sm text-start">
                 {errors.name.message}
@@ -273,9 +276,10 @@ const AddModifierForm = () => {
                 }
               }}
             />
-            <p className="text-primary text-xs mt-1 mx-1 text-start">
+            <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
               Modifier prices will be rounded off the nearest number.
             </p>
+
             {errors.price && (
               <p className="text-red-500 text-sm text-start">
                 {errors.price.message}
@@ -319,7 +323,7 @@ const AddModifierForm = () => {
                   </button>
                 </div>
               ) : (
-                <label className="block mb-2 text-sm font-medium text-left text-gray-700">
+                <label className="block  text-sm font-medium text-left text-gray-700">
                   Item Picture (Optional)
                   <div className="border-2 border-dashed border-gray-300 p-6 text-center rounded-lg cursor-pointer hover:bg-gray-100 relative">
                     <input
@@ -354,6 +358,9 @@ const AddModifierForm = () => {
                   </div>
                 </label>
               )}
+              <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
+                This is the image your customer will see
+              </p>
             </div>
           </div>
 

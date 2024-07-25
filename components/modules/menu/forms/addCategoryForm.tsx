@@ -372,7 +372,7 @@ const AddCategoryForm = () => {
             htmlFor="name"
             className="block mb-2 text-sm font-medium text-left text-gray-700"
           >
-            Name
+            Display Name
           </label>
           <input
             type="text"
@@ -381,6 +381,9 @@ const AddCategoryForm = () => {
             className="input input-primary"
             placeholder="Enter category name"
           />
+          <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
+            This is the name your customer will see
+          </p>
           {errors.name && (
             <p className="text-red-500 text-sm text-start">
               {errors.name.message}
@@ -409,17 +412,21 @@ const AddCategoryForm = () => {
             </p>
           )}
         </div>
-
-        <FormAddTable
-          data={data}
-          isShowImage
-          headings={headings}
-          title="Items"
-          emptyCaption="Add Items to the Category to activate it"
-          emptyMessage="No items available"
-          buttonText="Add Items"
-          onAddClick={handleAddClick}
-        />
+        <div>
+          <FormAddTable
+            data={data}
+            isShowImage
+            headings={headings}
+            title="Items"
+            emptyCaption="Add Items to the Category to activate it"
+            emptyMessage="No items available"
+            buttonText="Add Items"
+            onAddClick={handleAddClick}
+          />
+          <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
+            The Items on your category (eg. Pizza,Burger,Chocolate Cake).
+          </p>
+        </div>
 
         <CButton
           loading={btnLoading}
