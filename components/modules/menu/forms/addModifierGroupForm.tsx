@@ -230,10 +230,8 @@ const AddModifierGroupForm = () => {
       const prevSelectedMenuIds = await prevItemsbfrEdit.map(
         (item) => item._id
       );
-      console.log(selectedItems);
       const selectedItemsIds = await selectedItems.map((item) => item._id);
-      console.log("prev Selected IDs:", prevSelectedMenuIds);
-      console.log("selected Items IDs:", selectedItemsIds);
+
       const addedMenuIds = selectedItemsIds.filter(
         (id) => !prevSelectedMenuIds.includes(id)
       );

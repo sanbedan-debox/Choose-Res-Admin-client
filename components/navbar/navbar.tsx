@@ -56,10 +56,8 @@ const Navbar: React.FC = () => {
       }
     };
 
-    // Add event listener
     document.addEventListener("mousedown", handleClickOutside);
 
-    // Clean up event listener
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -67,7 +65,6 @@ const Navbar: React.FC = () => {
 
   const setSelectedRestaurantFunc = async (restaurant: any) => {
     try {
-      console.log(restaurant);
       const res = await sdk.setRestaurantIdAsCookie({
         id: restaurant?._id,
       });

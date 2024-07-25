@@ -273,6 +273,9 @@ const AddModifierForm = () => {
                 }
               }}
             />
+            <p className="text-primary text-xs mt-1 mx-1 text-start">
+              Modifier prices will be rounded off the nearest number.
+            </p>
             {errors.price && (
               <p className="text-red-500 text-sm text-start">
                 {errors.price.message}

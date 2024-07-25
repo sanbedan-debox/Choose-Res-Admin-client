@@ -114,7 +114,6 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
       }
     );
 
-    console.log("ServerSide", response?.getBusinessOnboardingDetails);
     if (response && response.getBusinessOnboardingDetails) {
       const { address, businessType, ein, employeeSize, estimatedRevenue } =
         response.getBusinessOnboardingDetails;

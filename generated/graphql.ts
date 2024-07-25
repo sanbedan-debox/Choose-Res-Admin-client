@@ -505,6 +505,7 @@ export type ItemInfo = {
   __typename?: 'ItemInfo';
   _id: Item;
   id: Scalars['String']['output'];
+  image?: Maybe<Scalars['String']['output']>;
   name?: Maybe<MasterCommon>;
   price: MasterCommonNumber;
   status: StatusEnum;
@@ -1707,7 +1708,7 @@ export type GetCategoryQueryVariables = Exact<{
 }>;
 
 
-export type GetCategoryQuery = { __typename?: 'Query', getCategory: { __typename?: 'Category', _id: string, status: StatusEnum, createdAt: any, updatedAt: any, name: { __typename?: 'MasterCommon', value: string }, desc: { __typename?: 'MasterCommon', value: string }, items: Array<{ __typename?: 'ItemInfo', id: string, status: StatusEnum, name?: { __typename?: 'MasterCommon', value: string } | null, _id: { __typename?: 'Item', _id: string }, price: { __typename?: 'MasterCommonNumber', value: number } }> } };
+export type GetCategoryQuery = { __typename?: 'Query', getCategory: { __typename?: 'Category', _id: string, status: StatusEnum, createdAt: any, updatedAt: any, name: { __typename?: 'MasterCommon', value: string }, desc: { __typename?: 'MasterCommon', value: string }, items: Array<{ __typename?: 'ItemInfo', id: string, image?: string | null, status: StatusEnum, name?: { __typename?: 'MasterCommon', value: string } | null, _id: { __typename?: 'Item', _id: string }, price: { __typename?: 'MasterCommonNumber', value: number } }> } };
 
 export type UpdateCategoryMutationVariables = Exact<{
   input: UpdateCategoryInput;
@@ -2256,6 +2257,7 @@ export const GetCategoryDocument = gql`
       _id {
         _id
       }
+      image
       price {
         value
       }

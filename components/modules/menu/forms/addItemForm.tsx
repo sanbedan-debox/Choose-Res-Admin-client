@@ -24,6 +24,7 @@ import AddFormDropdown from "@/components/common/addFormDropDown/addFormDropdown
 import { MdArrowOutward } from "react-icons/md";
 import useModGroupStore from "@/store/modifierGroup";
 import ReusableModal from "@/components/common/modal/modal";
+import useAuthStore from "@/store/auth";
 interface IFormInput {
   name: string;
   desc: string;
@@ -85,6 +86,8 @@ interface ItemsDropDownType {
 }
 
 const AddItemForm = () => {
+  const { setisShowTaxSettings } = useGlobalStore();
+
   const {
     handleSubmit,
     formState: { errors },
@@ -131,7 +134,7 @@ const AddItemForm = () => {
     },
   });
   const [changesMenu, setChangesMenu] = useState<any>([]);
-
+  const { taxRate } = useAuthStore();
   function reformatAvailability(
     data: {
       day: string;
@@ -307,11 +310,9 @@ const AddItemForm = () => {
         setPreviewUrl(item.image || "");
 
         const originalFormat = reformatAvailability(item?.availability ?? []);
-        console.log(originalFormat);
         setValue("regularHours", originalFormat.regularHours);
         setValue("activeDays", originalFormat.activeDays);
-        console.log("Hello");
-        console.log(originalFormat?.regularHours);
+
         setValue("regularHours", originalFormat?.regularHours);
       } catch (error) {
         const errorMessage = extractErrorMessage(error);
@@ -436,8 +437,6 @@ const AddItemForm = () => {
         hasChanges = true;
       }
 
-      console.log("On Submit");
-      console.log(data.regularHours);
       const parsedPrice = roundOffPrice(parseFloat(data.price.toString()));
       const formattedData = Object.keys(data.regularHours).map((day) => ({
         Day: day,
@@ -811,6 +810,9 @@ const AddItemForm = () => {
                 }
               }}
             />
+            <p className="text-primary text-xs mt-1 mx-1 text-start">
+              Item prices will be rounded off the nearest number.
+            </p>
             {errors.price && (
               <p className="text-red-500 text-sm text-start">
                 {errors.price.message}
@@ -923,15 +925,31 @@ const AddItemForm = () => {
               Options
             </label>
             <div className="mb-1 grid grid-cols-2 gap-4">
-              <CustomSwitchCard
-                label="sales Tax"
-                title="Apply Sales Tax"
-                caption="This item is subject to sales tax."
-                switchChecked={watch("applySalesTax")}
-                onSwitchChange={() =>
-                  setValue("applySalesTax", !watch("applySalesTax"))
-                }
-              />
+              {!taxRate ? (
+                <div
+                  className="flex justify-between items-center p-4 border rounded-md shadow-sm bg-white cursor-pointer"
+                  onClick={() => setisShowTaxSettings(true)}
+                >
+                  <div>
+                    <h3 className=" font-semibold text-start text-md">
+                      Tax Rate was not found
+                    </h3>
+                    <p className="text-gray-600 text-sm">
+                      Please add tax rate to apply for this item
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <CustomSwitchCard
+                  label="sales Tax"
+                  title="Apply Sales Tax"
+                  caption="This item is subject to sales tax."
+                  switchChecked={watch("applySalesTax")}
+                  onSwitchChange={() =>
+                    setValue("applySalesTax", !watch("applySalesTax"))
+                  }
+                />
+              )}
               <CustomSwitchCard
                 label="is it a popular item"
                 title="Popular Item"

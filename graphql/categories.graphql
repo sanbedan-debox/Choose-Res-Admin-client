@@ -68,7 +68,7 @@ query getCategory($id: String!) {
       _id {
         _id
       }
-      # image
+      image
       price {
         value
       }

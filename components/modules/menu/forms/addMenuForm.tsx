@@ -21,6 +21,7 @@ import useMenuMenuStore from "@/store/menumenu";
 import useMenuCategoryStore from "@/store/menuCategory";
 import ReusableModal from "@/components/common/modal/modal";
 import useRestaurantsStore from "@/store/restaurant";
+import useAuthStore from "@/store/auth";
 
 interface IFormInput {
   type: { value: string; label: string };
@@ -65,7 +66,8 @@ const AddMenuForm = () => {
   } = useMenuMenuStore();
   const { seteditCatsId, setisEditCats } = useMenuCategoryStore();
   const { setisAddCategoryModalOpen } = useMenuOptionsStore();
-
+  const { taxRate } = useAuthStore();
+  const { setisShowTaxSettings } = useGlobalStore();
   const {
     handleSubmit,
     formState: { errors },
@@ -421,6 +423,35 @@ const AddMenuForm = () => {
           buttonText="Add Categories"
           onAddClick={handleAddClick}
         />
+
+        {!taxRate ? (
+          <div
+            className="flex justify-between items-center p-4 border rounded-md shadow-sm bg-white cursor-pointer"
+            onClick={() => setisShowTaxSettings(true)}
+          >
+            <div>
+              <h3 className=" font-semibold text-start text-md">
+                Tax Rate was not found
+              </h3>
+              <p className="text-gray-600 text-sm">
+                Please add tax rate to apply for this item
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div
+            className="flex justify-between items-center p-4 border rounded-md shadow-sm bg-white cursor-pointer"
+            onClick={() => setisShowTaxSettings(true)}
+          >
+            <div>
+              <h3 className=" font-semibold text-start text-md">Tax Rate</h3>
+              <p className="text-gray-600 text-sm">
+                The Menu will be having an tax rate of, To add new click here.
+              </p>
+            </div>
+            <div>{taxRate?.salesTax} %</div>
+          </div>
+        )}
 
         <CButton
           loading={btnLoading}
