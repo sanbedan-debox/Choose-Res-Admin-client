@@ -100,7 +100,7 @@ const FormAddTable: React.FC<FormAddTableProps> = ({
         onClick={onAddClick}
         className="w-full mt-2 mb-2"
       >
-        <div className="flex justify-center ">
+        <div className="flex justify-center items-center">
           {buttonText}
           <IoIosAddCircleOutline className="text-xl ml-1" />
         </div>

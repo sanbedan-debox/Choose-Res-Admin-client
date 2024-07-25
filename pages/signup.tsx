@@ -111,8 +111,10 @@ const Signup: FC = () => {
     }
   };
   const resendOtp = async () => {
-    reset();
     await onSubmit({ firstName, lastName, email, phone, commPref });
+    reset();
+    setOtpEmail("");
+    setOtpWhatsApp("");
     // setToastData({ message: "", type: "success" });
   };
 
@@ -146,11 +148,9 @@ const Signup: FC = () => {
         type: "error",
         message: errorMessage,
       });
-      // reset();
-      // reset({
-      //   emailOtp: "",
-      //   numberOtp: "",
-      // });
+      reset();
+      setOtpEmail("");
+      setOtpWhatsApp("");
     }
   };
 

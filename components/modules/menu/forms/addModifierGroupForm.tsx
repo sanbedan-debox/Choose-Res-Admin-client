@@ -537,7 +537,7 @@ const AddModifierGroupForm = () => {
             variant={ButtonType.Primary}
             type="submit"
           >
-            <div className="flex justify-center ">
+            <div className="flex justify-center items-center">
               {isEditModGroup ? "Edit Modifer Group" : "Add Modifier Group"}
               {!isEditModGroup ? (
                 <IoIosAddCircleOutline className="text-xl ml-1" />

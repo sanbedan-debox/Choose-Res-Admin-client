@@ -97,6 +97,8 @@ const Login: FC = () => {
   const resendOtp = async () => {
     // reset();
     await onSubmit({ email });
+    // reset();
+    setOtp("");
     setToastData({ message: "OTP Sent Successfully", type: "success" });
   };
 
@@ -120,7 +122,6 @@ const Login: FC = () => {
           type: "success",
         });
         router.replace("/dashboard");
-        // reset();
       }
     } catch (error: any) {
       setBtnLoading(false);
@@ -130,6 +131,7 @@ const Login: FC = () => {
         message: errorMessage,
       });
       // reset();
+      setOtp("");
     }
   };
 

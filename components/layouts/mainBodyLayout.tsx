@@ -12,6 +12,7 @@ import CButton from "../common/button/button";
 import { ButtonType } from "../common/button/interface";
 import useAuthStore from "@/store/auth";
 import { useRouter } from "next/router";
+import { extractErrorMessage } from "@/utils/utilFUncs";
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [initialFormValues, setInitialFormValues] = useState({
@@ -104,7 +105,10 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 setSelectedRestaurant(formattedRestaurant[0]?.name?.value);
               }
             } catch (error) {
-              console.error("Failed to fetch restaurant users:", error);
+              setToastData({
+                message: extractErrorMessage(error),
+                type: "error",
+              });
             }
           } else {
             setSelectedRestaurant(res?.getRestaurantDetails?.name?.value);
@@ -113,6 +117,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           await sdk.setRestaurantIdAsCookie({
             id: formattedRestaurant[0]?._id,
           });
+          setSelectedRestaurant(formattedRestaurant[0]?.name?.value);
         }
       }
     } catch (error) {
@@ -121,6 +126,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       // setLoading(false);
     }
   };
+  const { setToastData } = useGlobalStore();
 
   const handleInputChange = () => {
     const currentFormValues = getValues();
