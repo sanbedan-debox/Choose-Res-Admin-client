@@ -1081,7 +1081,7 @@ export type Query = {
   getAllStates: Array<State>;
   getAllTimezones: Array<Timezone>;
   getBusinessDetails: Business;
-  getBusinessOnboardingDetails: Business;
+  getBusinessOnboardingDetails?: Maybe<Business>;
   getCategories: Array<Category>;
   getCategory: Category;
   getCategoryByMenu: Category;
@@ -1100,7 +1100,7 @@ export type Query = {
   getRestaurantOnboardingData: Restaurant;
   getTaxRate: TaxRate;
   getTaxRates: Array<TaxRate>;
-  getTeamMembers: Array<Teams>;
+  getTeamMembers: Array<SubUser>;
   getUserRestaurants: Array<Restaurant>;
   getUsersForTarget: Scalars['Float']['output'];
   getWaitListUsers: Array<WaitListUser>;
@@ -1298,7 +1298,6 @@ export type Restaurant = {
   meatType?: Maybe<MeatType>;
   menus?: Maybe<Array<MenuInfo>>;
   name: MasterCommon;
-  onboardingCompleted: Scalars['Boolean']['output'];
   socialInfo?: Maybe<SocialInfo>;
   status: RestaurantStatus;
   taxRates?: Maybe<Array<TaxRateInfo>>;
@@ -1332,7 +1331,8 @@ export enum RestaurantStatus {
   Active = 'active',
   Blocked = 'blocked',
   BlockedBySystem = 'blockedBySystem',
-  Inactive = 'inactive'
+  Inactive = 'inactive',
+  OnboardingPending = 'onboardingPending'
 }
 
 /** Restaurant type enum. */
@@ -1427,12 +1427,6 @@ export type TaxRateInput = {
   default: Scalars['Boolean']['input'];
   name: MasterCommonInput;
   salesTax: MasterCommonInputNumber;
-};
-
-export type Teams = {
-  __typename?: 'Teams';
-  _id?: Maybe<User>;
-  subUsers: Array<SubUser>;
 };
 
 export type TestEmailInput = {
@@ -1635,7 +1629,7 @@ export type GenerateOtpForLoginQuery = { __typename?: 'Query', generateOtpForLog
 export type MeUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MeUserQuery = { __typename?: 'Query', meUser: { __typename?: 'User', _id: string, firstName: string, lastName: string, status: UserStatus, email: string, phone: string, accountPreferences?: { __typename?: 'AccountPreference', whatsApp: boolean, email: boolean } | null } };
+export type MeUserQuery = { __typename?: 'Query', meUser: { __typename?: 'User', _id: string, firstName: string, lastName: string, status: UserStatus, email: string, phone: string, ownerUserId?: string | null, role: UserRole, businessInfo?: { __typename?: 'Business', businessName?: string | null, ein?: string | null, businessType?: BusinessTypeEnum | null, estimatedRevenue?: EstimatedRevenueEnum | null, employeeSize?: StaffCountEnum | null, establishedAt?: string | null, address?: { __typename?: 'AddressInfo', addressLine1: { __typename?: 'MasterCommon', value: string }, addressLine2?: { __typename?: 'MasterCommon', value: string } | null, state: { __typename?: 'MasterCommon', _id: string, value: string }, city: { __typename?: 'MasterCommon', value: string }, postcode: { __typename?: 'MasterCommon', value: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', placeId: string, displayName: string } | null } | null } | null, restaurants?: Array<{ __typename?: 'RestaurantInfo', id: string, status: RestaurantStatus, name: { __typename?: 'MasterCommon', value: string } }> | null } };
 
 export type VerifyOtpForLoginQueryVariables = Exact<{
   key: Scalars['String']['input'];
@@ -2003,7 +1997,7 @@ export type CompleteBusinessOnboardingMutation = { __typename?: 'Mutation', comp
 export type GetBusinessOnboardingDetailsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetBusinessOnboardingDetailsQuery = { __typename?: 'Query', getBusinessOnboardingDetails: { __typename?: 'Business', ein?: string | null, businessName?: string | null, employeeSize?: StaffCountEnum | null, establishedAt?: string | null, businessType?: BusinessTypeEnum | null, estimatedRevenue?: EstimatedRevenueEnum | null, address?: { __typename?: 'AddressInfo', addressLine1: { __typename?: 'MasterCommon', value: string }, addressLine2?: { __typename?: 'MasterCommon', value: string } | null, state: { __typename?: 'MasterCommon', _id: string, value: string }, city: { __typename?: 'MasterCommon', value: string }, postcode: { __typename?: 'MasterCommon', value: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string, placeId: string } | null } | null } };
+export type GetBusinessOnboardingDetailsQuery = { __typename?: 'Query', getBusinessOnboardingDetails?: { __typename?: 'Business', ein?: string | null, businessName?: string | null, employeeSize?: StaffCountEnum | null, establishedAt?: string | null, businessType?: BusinessTypeEnum | null, estimatedRevenue?: EstimatedRevenueEnum | null, address?: { __typename?: 'AddressInfo', addressLine1: { __typename?: 'MasterCommon', value: string }, addressLine2?: { __typename?: 'MasterCommon', value: string } | null, state: { __typename?: 'MasterCommon', _id: string, value: string }, city: { __typename?: 'MasterCommon', value: string }, postcode: { __typename?: 'MasterCommon', value: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string, placeId: string } | null } | null } | null };
 
 export type RestaurantOnboardingMutationVariables = Exact<{
   input: UpdateRestaurantDetailsInput;
@@ -2063,7 +2057,7 @@ export type AddTeamMemberMutation = { __typename?: 'Mutation', addTeamMember: bo
 export type GetTeamMembersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetTeamMembersQuery = { __typename?: 'Query', getTeamMembers: Array<{ __typename?: 'Teams', _id?: { __typename?: 'User', firstName: string, lastName: string } | null, subUsers: Array<{ __typename?: 'SubUser', firstName: string, lastName: string, email: string, phone: string, role: string, status: UserStatus }> }> };
+export type GetTeamMembersQuery = { __typename?: 'Query', getTeamMembers: Array<{ __typename?: 'SubUser', firstName: string, lastName: string, email: string, phone: string, role: string, status: UserStatus, _id?: { __typename?: 'User', _id: string } | null }> };
 
 export type RemoveTeamMemberMutationVariables = Exact<{
   teamId: Scalars['String']['input'];
@@ -2092,9 +2086,47 @@ export const MeUserDocument = gql`
     status
     email
     phone
-    accountPreferences {
-      whatsApp
-      email
+    ownerUserId
+    role
+    businessInfo {
+      businessName
+      ein
+      businessType
+      estimatedRevenue
+      employeeSize
+      establishedAt
+      address {
+        addressLine1 {
+          value
+        }
+        addressLine2 {
+          value
+        }
+        state {
+          _id
+          value
+        }
+        city {
+          value
+        }
+        postcode {
+          value
+        }
+        coordinate {
+          coordinates
+        }
+        place {
+          placeId
+          displayName
+        }
+      }
+    }
+    restaurants {
+      id
+      name {
+        value
+      }
+      status
     }
   }
 }
@@ -2807,17 +2839,14 @@ export const GetTeamMembersDocument = gql`
     query getTeamMembers {
   getTeamMembers {
     _id {
-      firstName
-      lastName
+      _id
     }
-    subUsers {
-      firstName
-      lastName
-      email
-      phone
-      role
-      status
-    }
+    firstName
+    lastName
+    email
+    phone
+    role
+    status
   }
 }
     `;

@@ -9,7 +9,6 @@ import logo1 from "../assets/logo/logoDark.png";
 import Link from "next/link";
 import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
-import { UserStatus } from "@/generated/graphql";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import { extractErrorMessage } from "@/utils/utilFUncs";
@@ -44,6 +43,7 @@ const Login: FC = () => {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<IFormInput>();
 
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
@@ -95,7 +95,9 @@ const Login: FC = () => {
   };
 
   const resendOtp = async () => {
+    // reset();
     await onSubmit({ email });
+    setToastData({ message: "OTP Sent Successfully", type: "success" });
   };
 
   const onSubmitOtp: SubmitHandler<IFormInput> = async () => {
@@ -118,6 +120,7 @@ const Login: FC = () => {
           type: "success",
         });
         router.replace("/dashboard");
+        // reset();
       }
     } catch (error: any) {
       setBtnLoading(false);
@@ -126,6 +129,7 @@ const Login: FC = () => {
         type: "error",
         message: errorMessage,
       });
+      // reset();
     }
   };
 

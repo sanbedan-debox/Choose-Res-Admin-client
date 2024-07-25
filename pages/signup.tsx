@@ -62,6 +62,7 @@ const Signup: FC = () => {
     register: registerOtp,
     handleSubmit: handleSubmitOtp,
     formState: { errors: errorsOtp },
+    reset,
   } = useForm<IOTPFormInput>();
 
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
@@ -110,11 +111,13 @@ const Signup: FC = () => {
     }
   };
   const resendOtp = async () => {
+    reset();
     await onSubmit({ firstName, lastName, email, phone, commPref });
+    // setToastData({ message: "", type: "success" });
   };
 
   const onSubmitOtp: SubmitHandler<IOTPFormInput> = async (data) => {
-    const { emailOtp, numberOtp } = data;
+    const { emailOtp } = data;
 
     try {
       const input: VerifyUserDetails = {
@@ -135,6 +138,7 @@ const Signup: FC = () => {
       if (response.verifyUserDetails) {
         setToastData({ message: "Verification Successful", type: "success" });
         router.replace("/onboarding/user/intro");
+        // reset();
       }
     } catch (error: any) {
       const errorMessage = extractErrorMessage(error);
@@ -142,6 +146,11 @@ const Signup: FC = () => {
         type: "error",
         message: errorMessage,
       });
+      // reset();
+      // reset({
+      //   emailOtp: "",
+      //   numberOtp: "",
+      // });
     }
   };
 
@@ -159,21 +168,6 @@ const Signup: FC = () => {
     setOtpEmail("");
     setOtpWhatsApp("");
   }, [showModal]);
-
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setOtpEmail("");
-    setOtpWhatsApp("");
-    setTimer(120);
-  };
-
-  const toggleCommunicationPref = (type: CommunicationType) => {
-    if (commPref.includes(type)) {
-      setCommPref((prev) => prev.filter((pref) => pref !== type));
-    } else {
-      setCommPref((prev) => [...prev, type]);
-    }
-  };
 
   return (
     <div className="bg-white">
@@ -357,7 +351,7 @@ const Signup: FC = () => {
                 </div>
 
                 <p className="text-sm text-gray-800">
-                  {`By logging in, you agree to CHOOSE's`}{" "}
+                  {`By signing up, you agree to CHOOSE's`}{" "}
                   <Link
                     href="/signup"
                     className="text-primary focus:outline-none focus:underline hover:underline"

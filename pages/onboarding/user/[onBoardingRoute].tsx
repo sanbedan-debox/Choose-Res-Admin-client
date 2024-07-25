@@ -18,7 +18,6 @@ type HomePageProps = {
     address: any;
     businessType: any;
     ein: any;
-    dob: any;
     employeeSize: any;
     estimatedRevenue: any;
   };
@@ -36,7 +35,6 @@ const OnboardingPage = ({ repo }: HomePageProps) => {
     setPostcode,
     setState,
     setbusinessType,
-    setdob,
     setein,
     setemployeeSize,
     setestimatedRevenue,
@@ -44,7 +42,6 @@ const OnboardingPage = ({ repo }: HomePageProps) => {
 
   useEffect(() => {
     setbusinessType(repo.businessType);
-    setdob(repo.dob);
     setein(repo.ein);
     setemployeeSize(repo.employeeSize);
     setestimatedRevenue(repo.estimatedRevenue);
@@ -58,7 +55,6 @@ const OnboardingPage = ({ repo }: HomePageProps) => {
   }, [
     repo,
     setbusinessType,
-    setdob,
     setein,
     setemployeeSize,
     setestimatedRevenue,
@@ -118,26 +114,32 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
       }
     );
 
+    console.log("ServerSide", response?.getBusinessOnboardingDetails);
     if (response && response.getBusinessOnboardingDetails) {
-      const {
-        address,
-        businessType,
-        ein,
-        dob,
-        employeeSize,
-        estimatedRevenue,
-      } = response.getBusinessOnboardingDetails;
-
+      const { address, businessType, ein, employeeSize, estimatedRevenue } =
+        response.getBusinessOnboardingDetails;
       return {
         props: {
           repo: {
             pagePath: context.query["onBoardingRoute"]?.toString() ?? "",
             businessType,
             ein,
-            dob,
             employeeSize,
             estimatedRevenue,
             address,
+          },
+        },
+      };
+    } else if (response.getBusinessOnboardingDetails === null) {
+      return {
+        props: {
+          repo: {
+            pagePath: context.query["onBoardingRoute"]?.toString() ?? "",
+            businessType: null,
+            ein: null,
+            employeeSize: null,
+            estimatedRevenue: null,
+            address: null,
           },
         },
       };

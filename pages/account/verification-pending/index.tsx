@@ -1,10 +1,7 @@
 import BlockerLayout from "@/components/layouts/blockerLayout";
-import Image from "next/image";
-import LogoImage from "../../../assets/logo/logoDark.png";
-import IllustrationImage from "../../../assets/svg/pending.svg";
+
 import React from "react";
-import { BsShopWindow } from "react-icons/bs";
-import { FaStore } from "react-icons/fa";
+
 import { FaArrowRight } from "react-icons/fa";
 import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
@@ -138,7 +135,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       return {
         props: {
           status,
-          restaurants: (response.meUser.restaurants ?? []).length,
+          restaurants: (response?.meUser?.restaurants ?? []).length,
         },
       };
     } else {

@@ -69,58 +69,6 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { setTaxRate } = useAuthStore();
   const router = useRouter();
 
-  // const fetchRestaurantUsers = async () => {
-  //   try {
-  //     const response = await sdk.getUserRestaurants();
-  //     if (response?.getUserRestaurants) {
-  //       const formattedRestaurant = response.getUserRestaurants.map((res) => ({
-  //         ...res,
-  //       }));
-  //       setRestaurants(formattedRestaurant);
-
-  //       try {
-  //         const res = await sdk.getRestaurantDetails();
-  //         setSelectedRestaurant(res?.getRestaurantDetails?.name?.value);
-
-  //         if (res?.getRestaurantDetails?.taxRates?.length === 0) {
-  //           setisShowTaxSettings(true);
-  //           const formattedTaxRate = res?.getRestaurantDetails?.taxRates.map(
-  //             (res) => ({
-  //               id: res._id,
-  //               name: res.name?.value,
-  //               salesTax: res.salesTax?.value,
-  //               default: res.default,
-  //             })
-  //           );
-  //           setTaxRate(formattedTaxRate[0]);
-  //         }
-
-  //         if (!res) {
-  //           try {
-  //             const res = await sdk.setRestaurantIdAsCookie({
-  //               id: formattedRestaurant[0]?._id,
-  //             });
-  //             if (res) {
-  //               setSelectedRestaurant(formattedRestaurant[0]?.name?.value);
-  //             }
-  //           } catch (error) {
-  //             console.error("Failed to fetch restaurant users:", error);
-  //           }
-  //         } else {
-  //           setSelectedRestaurant(res?.getRestaurantDetails?.name?.value);
-  //         }
-  //       } catch (error) {
-  //         await sdk.setRestaurantIdAsCookie({
-  //           id: formattedRestaurant[0]?._id,
-  //         });
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.error("Failed to fetch restaurant users:", error);
-  //   } finally {
-  //     // setLoading(false);
-  //   }
-  // };
   const fetchRestaurantUsers = async () => {
     try {
       const response = await sdk.getUserRestaurants();
@@ -132,32 +80,45 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
         try {
           const res = await sdk.getRestaurantDetails();
-          const taxRates = res?.getRestaurantDetails?.taxRates;
-          setSelectedRestaurant(res?.getRestaurantDetails?.name?.value || "");
+          setSelectedRestaurant(res?.getRestaurantDetails?.name?.value);
 
-          if (taxRates?.length) {
-            const taxRate = taxRates[0];
-            setInitialFormValues({
-              name: taxRate.name.value,
-              salesTax: taxRate.salesTax.value.toString(),
-              default: taxRate.default,
-            });
-            setValue("name", taxRate.name.value);
-            setValue("salesTax", taxRate.salesTax.value.toString());
-            setIsSwitchChecked(taxRate.default);
-          } else {
+          if (res?.getRestaurantDetails?.taxRates?.length === 0) {
             setisShowTaxSettings(true);
+            const formattedTaxRate = res?.getRestaurantDetails?.taxRates.map(
+              (res) => ({
+                id: res._id,
+                name: res.name?.value,
+                salesTax: res.salesTax?.value,
+                default: res.default,
+              })
+            );
+            setTaxRate(formattedTaxRate[0]);
+          }
+
+          if (!res) {
+            try {
+              const res = await sdk.setRestaurantIdAsCookie({
+                id: formattedRestaurant[0]?._id,
+              });
+              if (res) {
+                setSelectedRestaurant(formattedRestaurant[0]?.name?.value);
+              }
+            } catch (error) {
+              console.error("Failed to fetch restaurant users:", error);
+            }
+          } else {
+            setSelectedRestaurant(res?.getRestaurantDetails?.name?.value);
           }
         } catch (error) {
-          const res = await sdk.setRestaurantIdAsCookie({
+          await sdk.setRestaurantIdAsCookie({
             id: formattedRestaurant[0]?._id,
           });
-
-          // setSelectedRestaurant(res?.getRestaurantDetails?.name?.value || "");
         }
       }
     } catch (error) {
       console.error("Failed to fetch restaurant users:", error);
+    } finally {
+      // setLoading(false);
     }
   };
 
@@ -259,93 +220,86 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             isOpen={isShowTaxSettings}
             onClose={handleCloseTaxSettings}
           >
-            {initialFormValues.name === "" &&
-            initialFormValues.salesTax === "" ? (
-              <div className="text-center text-gray-700">
-                Please enter the tax rate details.
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div className="mb-4">
+                <label
+                  className="block mb-2 text-sm font-medium text-left text-gray-700"
+                  htmlFor="name"
+                >
+                  Name
+                </label>
+                <Controller
+                  name="name"
+                  control={control}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      placeholder="Enter name"
+                      id="name"
+                      className="input input-primary"
+                      onChange={(e) => {
+                        field.onChange(e);
+                        handleInputChange();
+                      }}
+                    />
+                  )}
+                />
               </div>
-            ) : (
-              <form onSubmit={handleSubmit(onSubmit)}>
-                <div className="mb-4">
-                  <label
-                    className="block mb-2 text-sm font-medium text-left text-gray-700"
-                    htmlFor="name"
-                  >
-                    Name
-                  </label>
-                  <Controller
-                    name="name"
-                    control={control}
-                    render={({ field }) => (
-                      <input
-                        {...field}
-                        placeholder="Enter name"
-                        id="name"
-                        className="input input-primary"
-                        onChange={(e) => {
-                          field.onChange(e);
-                          handleInputChange();
-                        }}
-                      />
-                    )}
-                  />
-                </div>
 
-                <div className="mb-4">
-                  <label
-                    className="block mb-2 text-sm font-medium text-left text-gray-700"
-                    htmlFor="salesTax"
-                  >
-                    Sales Tax
-                  </label>
-                  <Controller
-                    name="salesTax"
-                    control={control}
-                    render={({ field }) => (
-                      <input
-                        {...field}
-                        id="salesTax"
-                        type="number"
-                        placeholder="Enter Sales Tax"
-                        className="input input-primary"
-                        onChange={(e) => {
-                          field.onChange(e);
-                          handleInputChange();
-                        }}
-                      />
-                    )}
-                  />
-                </div>
+              <div className="mb-4">
+                <label
+                  className="block mb-2 text-sm font-medium text-left text-gray-700"
+                  htmlFor="salesTax"
+                >
+                  Sales Tax
+                </label>
+                <Controller
+                  name="salesTax"
+                  control={control}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      id="salesTax"
+                      type="number"
+                      placeholder="Enter Sales Tax"
+                      className="input input-primary"
+                      onChange={(e) => {
+                        field.onChange(e);
+                        handleInputChange();
+                      }}
+                    />
+                  )}
+                />
+              </div>
 
-                <div className="mb-4 flex justify-between items-center ">
-                  <label
-                    className="block mb-2 text-sm font-medium text-left text-gray-700"
-                    htmlFor="default"
-                  >
-                    Default
-                  </label>
-                  <CustomSwitch
-                    checked={isSwitchChecked}
-                    onChange={() => {
-                      setIsSwitchChecked(!isSwitchChecked);
-                      handleInputChange();
-                    }}
-                    label="Default"
-                    className="ml-2"
-                  />
-                </div>
+              <div className="mb-4 flex justify-between items-center ">
+                <label
+                  className="block mb-2 text-sm font-medium text-left text-gray-700"
+                  htmlFor="default"
+                >
+                  Default
+                </label>
+                <CustomSwitch
+                  checked={isSwitchChecked}
+                  onChange={() => {
+                    setIsSwitchChecked(!isSwitchChecked);
+                    handleInputChange();
+                  }}
+                  label="Default"
+                  className="ml-2"
+                />
+              </div>
 
-                <div className="flex items-center justify-end">
-                  <CButton
-                    variant={ButtonType.Primary}
-                    type="submit"
-                    disabled={!isSaveButtonEnabled}
-                  >
-                    Save
-                  </CButton>
-                </div>
-              </form>
-            )}
+              <div className="flex items-center justify-end">
+                <CButton
+                  variant={ButtonType.Primary}
+                  type="submit"
+                  disabled={!isSaveButtonEnabled}
+                >
+                  Save
+                </CButton>
+              </div>
+            </form>
           </ReusableModal>
           <div />
         </div>

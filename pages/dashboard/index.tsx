@@ -23,7 +23,7 @@ type UserRepo = {
 };
 
 const Dashboard: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
-  const { setSelectedMenu, isShowSetupPanel } = useGlobalStore();
+  const { setSelectedMenu } = useGlobalStore();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState<

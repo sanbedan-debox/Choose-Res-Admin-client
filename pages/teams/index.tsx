@@ -6,6 +6,7 @@ import RoopTable from "@/components/common/table/table";
 import MainLayout from "@/components/layouts/mainBodyLayout";
 import Loader from "@/components/loader";
 import AddTeamMemberForm from "@/components/modules/userManagement/forms/addTeamMemberForm";
+import { UserStatus } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
 import useUserManagementStore from "@/store/userManagement";
 import { sdk } from "@/utils/graphqlClient";
@@ -22,13 +23,11 @@ const Teams: NextPageWithLayout = () => {
   const [teamMembers, setTeamMembers] = useState<
     {
       _id: string;
-      name: string;
+      firstName: string;
       email: string;
       phone: string;
       role: string;
       onboardingStatus: string;
-      createdAt: string;
-      updatedAt: string;
     }[]
   >([]);
   const [showDeleteConfirmationModal, setshowDeleteConfirmationModal] =
@@ -45,17 +44,15 @@ const Teams: NextPageWithLayout = () => {
     setTableLoading(true);
     try {
       const response = await sdk.getTeamMembers();
-      if (response && response.getTeamMembers) {
+      if (response && response?.getTeamMembers) {
         setTeamMembers(
-          response.getTeamMembers.map((el) => ({
-            _id: el?._id,
-            name: el?.firstName,
-            email: el?.email,
-            phone: el?.phone,
-            role: el?.role,
-            onboardingStatus: el?.onboardingStatus,
-            createdAt: el?.createdAt,
-            updatedAt: el?.updatedAt,
+          response?.getTeamMembers?.map((el) => ({
+            _id: el?._id?._id ?? "",
+            firstName: el?.firstName ?? "",
+            email: el?.email ?? "",
+            phone: el?.phone ?? "",
+            role: el?.role ?? "",
+            onboardingStatus: el?.status ?? "",
           }))
         );
       }
@@ -99,9 +96,13 @@ const Teams: NextPageWithLayout = () => {
     </div>
   );
   const headings = [
-    { title: "Name", dataKey: "name" },
-    { title: "Desc", dataKey: "desc" },
-    { title: "Price", dataKey: "price" },
+    { title: "First Name", dataKey: "firstName" },
+    { title: "Last Name", dataKey: "lastName" },
+    { title: "email", dataKey: "email" },
+    { title: "phone", dataKey: "phone" },
+    { title: "role", dataKey: "role" },
+    { title: "status", dataKey: "status" },
+
     {
       title: "Actions",
       dataKey: "name.value",

@@ -17,13 +17,50 @@ query MeUser {
     status
     email
     phone
-    accountPreferences {
-      whatsApp
-      email
+    ownerUserId
+    role
+    businessInfo {
+      businessName
+      ein
+      businessType
+      estimatedRevenue
+      employeeSize
+      establishedAt
+      address {
+        addressLine1 {
+          value
+        }
+        addressLine2 {
+          value
+        }
+        state {
+          _id
+          value
+        }
+        city {
+          value
+        }
+        postcode {
+          value
+        }
+        coordinate {
+          coordinates
+        }
+        place {
+          placeId
+          displayName
+        }
+      }
+    }
+    restaurants {
+      id
+      name {
+        value
+      }
+      status
     }
   }
 }
-
 # Query to verify OTP for login
 query VerifyOtpForLogin($key: String!, $input: String!, $otp: String!) {
   verifyOtpForLogin(key: $key, input: $input, otp: $otp)

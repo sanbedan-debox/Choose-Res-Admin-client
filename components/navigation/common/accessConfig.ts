@@ -48,9 +48,9 @@ export const modules = [
     icon: "rewards",
   },
   {
-    name: "User Management",
+    name: "Team Management",
     roles: ["admin", "master", "normal"],
-    route: "/user",
+    route: "/teams",
     icon: "user",
   },
   {
