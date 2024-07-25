@@ -233,18 +233,12 @@ export type Business = {
   businessName?: Maybe<Scalars['String']['output']>;
   businessType?: Maybe<BusinessTypeEnum>;
   createdAt: Scalars['DateTimeISO']['output'];
-  dob?: Maybe<Scalars['DateTimeISO']['output']>;
   ein?: Maybe<Scalars['String']['output']>;
-  email: Scalars['String']['output'];
   employeeSize?: Maybe<StaffCountEnum>;
   establishedAt?: Maybe<Scalars['String']['output']>;
   estimatedRevenue?: Maybe<EstimatedRevenueEnum>;
-  phone: Scalars['String']['output'];
-  restaurants?: Maybe<Array<RestaurantInfo>>;
-  status: StatusEnum;
-  teams: Array<Teams>;
   updatedAt: Scalars['DateTimeISO']['output'];
-  user: User;
+  user: UserInfo;
 };
 
 /** Business type enum */
@@ -947,7 +941,7 @@ export type MutationRemoveModifierGroupFromItemArgs = {
 
 
 export type MutationRemoveTeamMemberArgs = {
-  teamId: Scalars['String']['input'];
+  id: Scalars['String']['input'];
 };
 
 
@@ -1275,7 +1269,6 @@ export type RegisterBusinessInput = {
   address?: InputMaybe<AddressInfoInput>;
   businessName?: InputMaybe<Scalars['String']['input']>;
   businessType?: InputMaybe<BusinessTypeEnum>;
-  dob?: InputMaybe<Scalars['DateTimeISO']['input']>;
   ein?: InputMaybe<Scalars['String']['input']>;
   employeeSize?: InputMaybe<StaffCountEnum>;
   establishedAt?: InputMaybe<Scalars['String']['input']>;
@@ -1397,6 +1390,19 @@ export enum StatusEnum {
   Inactive = 'inactive'
 }
 
+export type SubUser = {
+  __typename?: 'SubUser';
+  _id?: Maybe<User>;
+  createdAt: Scalars['DateTimeISO']['output'];
+  email: Scalars['String']['output'];
+  firstName: Scalars['String']['output'];
+  lastName: Scalars['String']['output'];
+  phone: Scalars['String']['output'];
+  role: Scalars['String']['output'];
+  status: UserStatus;
+  updatedAt: Scalars['DateTimeISO']['output'];
+};
+
 export type TaxRate = {
   __typename?: 'TaxRate';
   _id: Scalars['ID']['output'];
@@ -1425,24 +1431,9 @@ export type TaxRateInput = {
 
 export type Teams = {
   __typename?: 'Teams';
-  _id: Scalars['ID']['output'];
-  accountPreferences?: Maybe<AccountPreference>;
-  createdAt: Scalars['DateTimeISO']['output'];
-  email: Scalars['String']['output'];
-  firstName: Scalars['String']['output'];
-  lastName: Scalars['String']['output'];
-  onboardingStatus: TeamsOnboardingEnum;
-  phone: Scalars['String']['output'];
-  role: Scalars['String']['output'];
-  updatedAt: Scalars['DateTimeISO']['output'];
-  user?: Maybe<User>;
+  _id?: Maybe<User>;
+  subUsers: Array<SubUser>;
 };
-
-/** Team member onboarding status enum. */
-export enum TeamsOnboardingEnum {
-  Completed = 'completed',
-  EmailPending = 'emailPending'
-}
 
 export type TestEmailInput = {
   emails: Scalars['String']['input'];
@@ -1560,18 +1551,31 @@ export type User = {
   _id: Scalars['ID']['output'];
   accessHistory?: Maybe<Array<AccessHistory>>;
   accountPreferences?: Maybe<AccountPreference>;
+  businessInfo?: Maybe<Business>;
   createdAt: Scalars['DateTimeISO']['output'];
   email: Scalars['String']['output'];
   firstName: Scalars['String']['output'];
   lastLoggedIn: Scalars['DateTimeISO']['output'];
   lastLoggedOut: Scalars['DateTimeISO']['output'];
   lastName: Scalars['String']['output'];
+  ownerUserId?: Maybe<Scalars['String']['output']>;
   phone: Scalars['String']['output'];
+  restaurants?: Maybe<Array<RestaurantInfo>>;
   role: UserRole;
   status: UserStatus;
   statusUpdatedBy?: Maybe<Admin>;
   updatedAt: Scalars['DateTimeISO']['output'];
   verificationRejections?: Maybe<Array<RejectRecord>>;
+};
+
+export type UserInfo = {
+  __typename?: 'UserInfo';
+  _id: User;
+  email: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  phone: Scalars['String']['output'];
+  status: UserStatus;
 };
 
 /** User roles  */
@@ -1589,7 +1593,8 @@ export enum UserStatus {
   InternalVerificationPending = 'internalVerificationPending',
   OnboardingPending = 'onboardingPending',
   PaymentPending = 'paymentPending',
-  RestaurantOnboardingPending = 'restaurantOnboardingPending'
+  RestaurantOnboardingPending = 'restaurantOnboardingPending',
+  SubUserEmailVerificationPending = 'subUserEmailVerificationPending'
 }
 
 export type VerifyUserDetails = {
@@ -1658,7 +1663,7 @@ export type VerifyUserDetailsMutation = { __typename?: 'Mutation', verifyUserDet
 export type GetBusinessDetailsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetBusinessDetailsQuery = { __typename?: 'Query', getBusinessDetails: { __typename?: 'Business', businessName?: string | null, estimatedRevenue?: EstimatedRevenueEnum | null, employeeSize?: StaffCountEnum | null, businessType?: BusinessTypeEnum | null, restaurants?: Array<{ __typename?: 'RestaurantInfo', id: string, name: { __typename?: 'MasterCommon', value: string } }> | null } };
+export type GetBusinessDetailsQuery = { __typename?: 'Query', getBusinessDetails: { __typename?: 'Business', businessName?: string | null, estimatedRevenue?: EstimatedRevenueEnum | null, employeeSize?: StaffCountEnum | null, businessType?: BusinessTypeEnum | null, ein?: string | null, address?: { __typename?: 'AddressInfo', addressLine1: { __typename?: 'MasterCommon', value: string }, addressLine2?: { __typename?: 'MasterCommon', value: string } | null, state: { __typename?: 'MasterCommon', value: string }, city: { __typename?: 'MasterCommon', value: string }, postcode: { __typename?: 'MasterCommon', value: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string } | null } | null } };
 
 export type ChangeCategoryStatusMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -1998,7 +2003,7 @@ export type CompleteBusinessOnboardingMutation = { __typename?: 'Mutation', comp
 export type GetBusinessOnboardingDetailsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetBusinessOnboardingDetailsQuery = { __typename?: 'Query', getBusinessOnboardingDetails: { __typename?: 'Business', ein?: string | null, businessName?: string | null, employeeSize?: StaffCountEnum | null, dob?: any | null, establishedAt?: string | null, businessType?: BusinessTypeEnum | null, estimatedRevenue?: EstimatedRevenueEnum | null, address?: { __typename?: 'AddressInfo', addressLine1: { __typename?: 'MasterCommon', value: string }, addressLine2?: { __typename?: 'MasterCommon', value: string } | null, state: { __typename?: 'MasterCommon', _id: string, value: string }, city: { __typename?: 'MasterCommon', value: string }, postcode: { __typename?: 'MasterCommon', value: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string, placeId: string } | null } | null } };
+export type GetBusinessOnboardingDetailsQuery = { __typename?: 'Query', getBusinessOnboardingDetails: { __typename?: 'Business', ein?: string | null, businessName?: string | null, employeeSize?: StaffCountEnum | null, establishedAt?: string | null, businessType?: BusinessTypeEnum | null, estimatedRevenue?: EstimatedRevenueEnum | null, address?: { __typename?: 'AddressInfo', addressLine1: { __typename?: 'MasterCommon', value: string }, addressLine2?: { __typename?: 'MasterCommon', value: string } | null, state: { __typename?: 'MasterCommon', _id: string, value: string }, city: { __typename?: 'MasterCommon', value: string }, postcode: { __typename?: 'MasterCommon', value: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string, placeId: string } | null } | null } };
 
 export type RestaurantOnboardingMutationVariables = Exact<{
   input: UpdateRestaurantDetailsInput;
@@ -2058,7 +2063,7 @@ export type AddTeamMemberMutation = { __typename?: 'Mutation', addTeamMember: bo
 export type GetTeamMembersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetTeamMembersQuery = { __typename?: 'Query', getTeamMembers: Array<{ __typename?: 'Teams', _id: string, firstName: string, lastName: string, email: string, phone: string, role: string, onboardingStatus: TeamsOnboardingEnum, createdAt: any, updatedAt: any }> };
+export type GetTeamMembersQuery = { __typename?: 'Query', getTeamMembers: Array<{ __typename?: 'Teams', _id?: { __typename?: 'User', firstName: string, lastName: string } | null, subUsers: Array<{ __typename?: 'SubUser', firstName: string, lastName: string, email: string, phone: string, role: string, status: UserStatus }> }> };
 
 export type RemoveTeamMemberMutationVariables = Exact<{
   teamId: Scalars['String']['input'];
@@ -2115,13 +2120,31 @@ export const GetBusinessDetailsDocument = gql`
     businessName
     estimatedRevenue
     employeeSize
-    employeeSize
     businessType
-    restaurants {
-      name {
+    ein
+    businessType
+    address {
+      addressLine1 {
         value
       }
-      id
+      addressLine2 {
+        value
+      }
+      state {
+        value
+      }
+      city {
+        value
+      }
+      postcode {
+        value
+      }
+      coordinate {
+        coordinates
+      }
+      place {
+        displayName
+      }
     }
   }
 }
@@ -2650,7 +2673,6 @@ export const GetBusinessOnboardingDetailsDocument = gql`
       }
     }
     employeeSize
-    dob
     establishedAt
     businessType
     estimatedRevenue
@@ -2784,21 +2806,24 @@ export const AddTeamMemberDocument = gql`
 export const GetTeamMembersDocument = gql`
     query getTeamMembers {
   getTeamMembers {
-    _id
-    firstName
-    lastName
-    email
-    phone
-    role
-    onboardingStatus
-    createdAt
-    updatedAt
+    _id {
+      firstName
+      lastName
+    }
+    subUsers {
+      firstName
+      lastName
+      email
+      phone
+      role
+      status
+    }
   }
 }
     `;
 export const RemoveTeamMemberDocument = gql`
     mutation removeTeamMember($teamId: String!) {
-  removeTeamMember(teamId: $teamId)
+  removeTeamMember(id: $teamId)
 }
     `;
 

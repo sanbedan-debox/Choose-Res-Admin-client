@@ -65,7 +65,6 @@ query getBusinessOnboardingDetails {
       }
     }
     employeeSize
-    dob
     establishedAt
     businessType
     estimatedRevenue

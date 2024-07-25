@@ -4,18 +4,20 @@ mutation addTeamMember($AddTeamMemberInput: AddTeamMemberInput!) {
 
 query getTeamMembers {
   getTeamMembers {
-    _id
-    firstName
-    lastName
-    email
-    phone
-    role
-    onboardingStatus
-    createdAt
-    updatedAt
+    _id {
+      firstName
+      lastName
+    }
+    subUsers {
+      firstName
+      lastName
+      email
+      phone
+      role
+      status
+    }
   }
 }
-
 mutation removeTeamMember($teamId: String!) {
-  removeTeamMember(teamId: $teamId)
+  removeTeamMember(id: $teamId)
 }

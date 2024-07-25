@@ -46,18 +46,18 @@ const User: NextPageWithLayout = () => {
     try {
       const response = await sdk.getTeamMembers();
       if (response && response.getTeamMembers) {
-        setTeamMembers(
-          response.getTeamMembers.map((el) => ({
-            _id: el?._id,
-            name: el?.firstName,
-            email: el?.email,
-            phone: el?.phone,
-            role: el?.role,
-            onboardingStatus: el?.onboardingStatus,
-            createdAt: el?.createdAt,
-            updatedAt: el?.updatedAt,
-          }))
-        );
+        // setTeamMembers(
+        //   response?.getTeamMembers?.subUsers.map((el) => ({
+        //     _id: el?._id,
+        //     name: el?.firstName,
+        //     email: el?.email,
+        //     phone: el?.phone,
+        //     role: el?.role,
+        //     onboardingStatus: el?.onboardingStatus,
+        //     createdAt: el?.createdAt,
+        //     updatedAt: el?.updatedAt,
+        //   }))
+        // );
       }
     } catch (error: any) {
       const errorMessage = extractErrorMessage(error);

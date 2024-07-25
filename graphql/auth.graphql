@@ -48,13 +48,31 @@ query getBusinessDetails {
     businessName
     estimatedRevenue
     employeeSize
-    employeeSize
     businessType
-    restaurants {
-      name {
+    ein
+    businessType
+    address {
+      addressLine1 {
         value
       }
-      id
+      addressLine2 {
+        value
+      }
+      state {
+        value
+      }
+      city {
+        value
+      }
+      postcode {
+        value
+      }
+      coordinate {
+        coordinates
+      }
+      place {
+        displayName
+      }
     }
   }
 }

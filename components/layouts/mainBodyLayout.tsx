@@ -11,6 +11,7 @@ import CustomSwitch from "../common/customSwitch/customSwitch";
 import CButton from "../common/button/button";
 import { ButtonType } from "../common/button/interface";
 import useAuthStore from "@/store/auth";
+import { useRouter } from "next/router";
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [initialFormValues, setInitialFormValues] = useState({
@@ -66,6 +67,8 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const selectedRestaurantId = cookies.restaurantId;
   const { setSelectedRestaurantTaxRate } = useRestaurantsStore();
   const { setTaxRate } = useAuthStore();
+  const router = useRouter();
+
   // const fetchRestaurantUsers = async () => {
   //   try {
   //     const response = await sdk.getUserRestaurants();
@@ -130,26 +133,27 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         try {
           const res = await sdk.getRestaurantDetails();
           const taxRates = res?.getRestaurantDetails?.taxRates;
+          setSelectedRestaurant(res?.getRestaurantDetails?.name?.value || "");
 
           if (taxRates?.length) {
             const taxRate = taxRates[0];
             setInitialFormValues({
               name: taxRate.name.value,
-              salesTax: taxRate.salesTax.value.toString(), // Convert to string for form
+              salesTax: taxRate.salesTax.value.toString(),
               default: taxRate.default,
             });
             setValue("name", taxRate.name.value);
-            setValue("salesTax", taxRate.salesTax.value.toString()); // Convert to string for form
+            setValue("salesTax", taxRate.salesTax.value.toString());
             setIsSwitchChecked(taxRate.default);
           } else {
             setisShowTaxSettings(true);
           }
-
-          setSelectedRestaurant(res?.getRestaurantDetails?.name?.value || "");
         } catch (error) {
-          await sdk.setRestaurantIdAsCookie({
+          const res = await sdk.setRestaurantIdAsCookie({
             id: formattedRestaurant[0]?._id,
           });
+
+          // setSelectedRestaurant(res?.getRestaurantDetails?.name?.value || "");
         }
       }
     } catch (error) {
