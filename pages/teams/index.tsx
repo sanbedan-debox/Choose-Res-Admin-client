@@ -24,6 +24,7 @@ const Teams: NextPageWithLayout = () => {
     {
       _id: string;
       firstName: string;
+      lastName: string;
       email: string;
       phone: string;
       role: string;
@@ -49,6 +50,7 @@ const Teams: NextPageWithLayout = () => {
           response?.getTeamMembers?.map((el) => ({
             _id: el?._id?._id ?? "",
             firstName: el?.firstName ?? "",
+            lastName: el?.lastName ?? "",
             email: el?.email ?? "",
             phone: el?.phone ?? "",
             role: el?.role ?? "",
@@ -101,7 +103,7 @@ const Teams: NextPageWithLayout = () => {
     { title: "email", dataKey: "email" },
     { title: "phone", dataKey: "phone" },
     { title: "role", dataKey: "role" },
-    { title: "status", dataKey: "status" },
+    { title: "status", dataKey: "onboardingStatus" },
 
     {
       title: "Actions",

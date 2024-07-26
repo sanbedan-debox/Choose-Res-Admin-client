@@ -1047,7 +1047,7 @@ const AddItemForm = () => {
             type="submit"
           >
             <div className="flex justify-center items-center">
-              {isEditItem ? "Save Menu" : "Add Menu"}
+              {isEditItem ? "Save Item" : "Add Item"}
               {!isEditItem ? (
                 <IoIosAddCircleOutline className="text-xl ml-1" />
               ) : (

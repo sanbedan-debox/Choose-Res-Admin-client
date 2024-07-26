@@ -437,7 +437,7 @@ const AddCategoryForm = () => {
           className="w-full"
         >
           <div className="flex justify-center items-center ">
-            {isEditCats ? "Save Menu" : "Add Menu"}
+            {isEditCats ? "Save Category" : "Add Category"}
             {!isEditCats ? (
               <IoIosAddCircleOutline className="text-xl ml-1" />
             ) : (
