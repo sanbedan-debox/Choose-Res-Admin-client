@@ -49,7 +49,7 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
   const [copyPerformed, setCopyPerformed] = useState<boolean>(false);
 
   useEffect(() => {
-    console.log(availability);
+    console.log("hello from availibility", availability);
     const firstFilledDayIndex = availability.findIndex(
       (day) => day.active && day.hours.length > 0
     );
@@ -95,8 +95,8 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
     });
 
     setAvailability(newHours);
-    setCopyPerformed(true); // Set flag to indicate copy has been performed
-    setCopiedDayIndex(null); // Clear copiedDayIndex to disable copying
+    setCopyPerformed(true);
+    setCopiedDayIndex(null);
   };
 
   const validateAvailability = (data: Availability[]) => {

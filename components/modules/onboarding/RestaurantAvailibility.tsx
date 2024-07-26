@@ -109,6 +109,7 @@ const RestaurantAvailability = () => {
       value: time.toISOString(),
     };
   });
+
   const reverseFormatAvailability = (
     formattedAvailability: FormattedAvailability[]
   ): Availability[] => {
@@ -170,11 +171,10 @@ const RestaurantAvailability = () => {
         setCoords(cords);
       }
     }
-
-    const originalAvailability = reverseFormatAvailability(
-      availabilityHours ?? []
-    );
-    setAvailability(originalAvailability);
+    if (availabilityHours.length > 0) {
+      const originalAvailability = reverseFormatAvailability(availabilityHours);
+      setAvailability(originalAvailability);
+    }
   }, [
     setValue,
     addressLine1,
@@ -197,7 +197,7 @@ const RestaurantAvailability = () => {
       setBtnLoading(true);
 
       const formattedAvailability = formatAvailability(availability);
-      setAvailability(formattedAvailability);
+      console.log("availiility after fomating and submitting", availability);
       const response = await sdk.restaurantOnboarding({
         input: {
           address: {
@@ -227,8 +227,6 @@ const RestaurantAvailability = () => {
             value: data.timezone.value,
           },
           availability: formattedAvailability,
-
-          // availability: formattedSampleInput,
         },
       });
       setToastData({

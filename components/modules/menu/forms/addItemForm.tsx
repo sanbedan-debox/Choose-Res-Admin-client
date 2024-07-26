@@ -173,7 +173,7 @@ const AddItemForm = () => {
       const updatedPricings = menuItems.map((menu) => ({
         menuType: menu.type,
         price: {
-          value: parseFloat(watch("price")),
+          value: parseFloat(watch("price").toString()),
         },
       }));
 

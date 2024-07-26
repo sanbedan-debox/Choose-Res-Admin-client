@@ -50,6 +50,7 @@ const SetupGuide: React.FC<{ steps: Step[] }> = ({ steps }) => {
     { name: string; id: string }[]
   >([]);
   useEffect(() => {
+    console.log("Tax rate", taxRate);
     async function fetchPendingRestaurants() {
       try {
         const response = await sdk.getUserRestaurantsPending();
@@ -107,7 +108,7 @@ const SetupGuide: React.FC<{ steps: Step[] }> = ({ steps }) => {
           style={{ width: "7%" }}
         ></div>
       </div>
-      {!taxRate && (
+      {taxRate === undefined && (
         <div
           className="flex cursor-pointer hover:bg-primary hover:bg-opacity-10 items-center bg-primary bg-opacity-5 p-4 rounded-md mb-4"
           onClick={() => setisShowTaxSettings(true)}

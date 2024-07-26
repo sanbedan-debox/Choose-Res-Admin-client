@@ -56,6 +56,10 @@ const OnboardingPage = ({ repo }: HomePageProps) => {
   } = RestaurantOnboardingStore();
 
   useEffect(() => {
+    console.log(
+      "Onboarding availibility hehheheh server side",
+      repo?.availability
+    );
     setRestaurantName(repo?.name?.value);
     setRestaurantType(repo?.type);
     setRestaurantCategory(repo?.category);

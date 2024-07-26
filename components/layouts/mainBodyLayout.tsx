@@ -53,6 +53,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
       fetchRestaurantUsers();
       setisShowTaxSettings(false);
+      router.reload();
     } catch (error) {
       console.error("Error submitting tax rate:", error);
     }
