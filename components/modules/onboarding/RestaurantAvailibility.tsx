@@ -5,7 +5,6 @@ import useGlobalStore from "@/store/global";
 import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
 import AsyncSelect from "react-select/async";
-import { DateTime } from "luxon";
 import debounce from "lodash.debounce";
 import { useEffect, useState } from "react";
 import CButton from "@/components/common/button/button";
@@ -14,8 +13,10 @@ import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import RestaurantOnboardingStore from "@/store/restaurantOnboarding";
 import useMasterStore from "@/store/masters";
-import AvailabilityForm from "@/components/common/availibility/availibility";
-import { timeZoneOptions } from "./interface/interface";
+
+import AvailabilityComponent from "@/components/common/timingAvailibility/timingAvailibility";
+import { AvailabilityInput, Day } from "@/generated/graphql";
+import moment from "moment";
 
 interface IFormData {
   addressLine1: string;
@@ -26,45 +27,6 @@ interface IFormData {
   postcode: string;
   locationType: { value: string; label: string };
   timezone: { id: string; value: string } | null;
-  regularHours: {
-    Monday: {
-      from: { label: string; value: string };
-      to: { label: string; value: string };
-    }[];
-    Tuesday: {
-      from: { label: string; value: string };
-      to: { label: string; value: string };
-    }[];
-    Wednesday: {
-      from: { label: string; value: string };
-      to: { label: string; value: string };
-    }[];
-    Thursday: {
-      from: { label: string; value: string };
-      to: { label: string; value: string };
-    }[];
-    Friday: {
-      from: { label: string; value: string };
-      to: { label: string; value: string };
-    }[];
-    Saturday: {
-      from: { label: string; value: string };
-      to: { label: string; value: string };
-    }[];
-    Sunday: {
-      from: { label: string; value: string };
-      to: { label: string; value: string };
-    }[];
-  };
-  activeDays: {
-    Monday: boolean;
-    Tuesday: boolean;
-    Wednesday: boolean;
-    Thursday: boolean;
-    Friday: boolean;
-    Saturday: boolean;
-    Sunday: boolean;
-  };
 }
 
 type PlacesType = {
@@ -84,41 +46,91 @@ const RestaurantAvailability = () => {
     setValue,
     getValues,
   } = useForm<IFormData>({
-    defaultValues: {
-      regularHours: {
-        Monday: [
-          { from: { label: "", value: "" }, to: { label: "", value: "" } },
-        ],
-        Tuesday: [
-          { from: { label: "", value: "" }, to: { label: "", value: "" } },
-        ],
-        Wednesday: [
-          { from: { label: "", value: "" }, to: { label: "", value: "" } },
-        ],
-        Thursday: [
-          { from: { label: "", value: "" }, to: { label: "", value: "" } },
-        ],
-        Friday: [
-          { from: { label: "", value: "" }, to: { label: "", value: "" } },
-        ],
-        Saturday: [
-          { from: { label: "", value: "" }, to: { label: "", value: "" } },
-        ],
-        Sunday: [
-          { from: { label: "", value: "" }, to: { label: "", value: "" } },
-        ],
-      },
-      activeDays: {
-        Monday: false,
-        Tuesday: false,
-        Wednesday: false,
-        Thursday: false,
-        Friday: false,
-        Saturday: false,
-        Sunday: false,
-      },
-    },
+    defaultValues: {},
   });
+  interface Availability {
+    day: Day;
+    hours: {
+      start: { label: string; value: string };
+      end: { label: string; value: string };
+    }[];
+    active: boolean;
+  }
+  const [availability, setAvailability] = useState<Availability[]>([
+    { day: Day.Sunday, hours: [], active: false },
+    { day: Day.Monday, hours: [], active: false },
+    { day: Day.Tuesday, hours: [], active: false },
+    { day: Day.Wednesday, hours: [], active: false },
+    { day: Day.Thursday, hours: [], active: false },
+    { day: Day.Friday, hours: [], active: false },
+    { day: Day.Saturday, hours: [], active: false },
+  ]);
+  const formatAvailability = (
+    availability: Availability[]
+  ): AvailabilityInput[] => {
+    const dayMap: { [key: string]: Day } = {
+      Sunday: Day.Sunday,
+      Monday: Day.Monday,
+      Tuesday: Day.Tuesday,
+      Wednesday: Day.Wednesday,
+      Thursday: Day.Thursday,
+      Friday: Day.Friday,
+      Saturday: Day.Saturday,
+    };
+
+    return availability.map((item) => ({
+      day: dayMap[item.day],
+      hours: item.hours.map((hour) => ({
+        start: new Date(hour.start.value).toISOString(),
+        end: new Date(hour.end.value).toISOString(),
+      })),
+      active: item.active,
+    }));
+  };
+  type TimeOption = {
+    label: string;
+    value: string;
+  };
+  type FormattedAvailability = {
+    day: Day;
+    hours: {
+      start: string;
+      end: string;
+    }[];
+    active: boolean;
+  };
+
+  const timeOptions: TimeOption[] = Array.from({ length: 24 * 2 }, (_, i) => {
+    const time = moment()
+      .startOf("day")
+      .add(30 * i, "minutes");
+    return {
+      label: time.format("hh:mm A"),
+      value: time.toISOString(),
+    };
+  });
+  const reverseFormatAvailability = (
+    formattedAvailability: FormattedAvailability[]
+  ): Availability[] => {
+    const timeMap = new Map<string, string>(
+      timeOptions.map((option) => [option.value, option.label])
+    );
+
+    return formattedAvailability.map((item) => ({
+      day: item.day,
+      hours: item.hours.map((hour) => ({
+        start: {
+          label: timeMap.get(hour.start) || "",
+          value: hour.start,
+        },
+        end: {
+          label: timeMap.get(hour.end) || "",
+          value: hour.end,
+        },
+      })),
+      active: item.active,
+    }));
+  };
 
   const { statesOptions, timezonesOptions } = useMasterStore();
 
@@ -140,109 +152,7 @@ const RestaurantAvailability = () => {
     setTimeZone,
     setPostcode,
     setPlace,
-    setAvailabilityHours,
   } = RestaurantOnboardingStore();
-
-  function reformatAvailability(data: any[]): any {
-    const defaultValues: any = {
-      regularHours: {
-        Monday: [
-          { from: { label: "", value: "" }, to: { label: "", value: "" } },
-        ],
-        Tuesday: [
-          { from: { label: "", value: "" }, to: { label: "", value: "" } },
-        ],
-        Wednesday: [
-          { from: { label: "", value: "" }, to: { label: "", value: "" } },
-        ],
-        Thursday: [
-          { from: { label: "", value: "" }, to: { label: "", value: "" } },
-        ],
-        Friday: [
-          { from: { label: "", value: "" }, to: { label: "", value: "" } },
-        ],
-        Saturday: [
-          { from: { label: "", value: "" }, to: { label: "", value: "" } },
-        ],
-        Sunday: [
-          { from: { label: "", value: "" }, to: { label: "", value: "" } },
-        ],
-      },
-      activeDays: {
-        Monday: false,
-        Tuesday: false,
-        Wednesday: false,
-        Thursday: false,
-        Friday: false,
-        Saturday: false,
-        Sunday: false,
-      },
-    };
-
-    const reformattedData: any = { ...defaultValues };
-
-    const generateTimeOptions = () => {
-      const options: { value: string; label: string }[] = [];
-      const periods = ["AM", "PM"];
-
-      for (let hour = 0; hour < 24; hour++) {
-        for (let minute = 0; minute < 60; minute += 15) {
-          const period = periods[Math.floor(hour / 12)];
-          const displayHour = hour % 12 === 0 ? 12 : hour % 12;
-          const displayMinute = minute === 0 ? "00" : minute.toString();
-          const time = `${displayHour}:${displayMinute} ${period}`;
-
-          const date = new Date();
-          date.setHours(hour, minute, 0, 0);
-
-          const isoTime = date.toISOString();
-
-          options.push({ value: isoTime, label: time });
-        }
-      }
-      return options;
-    };
-
-    const timeOptions = generateTimeOptions();
-
-    data &&
-      data.forEach((item) => {
-        const day = item.day;
-        const hours = item.hours;
-        const active = item.active;
-
-        reformattedData.regularHours[day] = hours.map((hour: any) => ({
-          from: {
-            label:
-              timeOptions.find((option) => {
-                const optionDate = new Date(option.value);
-                const hourStartDate = new Date(hour.start);
-                return (
-                  optionDate.getHours() === hourStartDate.getHours() &&
-                  optionDate.getMinutes() === hourStartDate.getMinutes()
-                );
-              })?.label || "",
-            value: hour.start,
-          },
-          to: {
-            label:
-              timeOptions.find((option) => {
-                const optionDate = new Date(option.value);
-                const hourEndDate = new Date(hour.end);
-                return (
-                  optionDate.getHours() === hourEndDate.getHours() &&
-                  optionDate.getMinutes() === hourEndDate.getMinutes()
-                );
-              })?.label || "",
-            value: hour.end,
-          },
-        }));
-
-        reformattedData.activeDays[day] = active;
-      });
-
-    return reformattedData;
-  }
 
   useEffect(() => {
     setValue("addressLine1", addressLine1);
@@ -260,9 +170,11 @@ const RestaurantAvailability = () => {
         setCoords(cords);
       }
     }
-    const originalFormat = reformatAvailability(availabilityHours);
-    setValue("regularHours", originalFormat.regularHours);
-    setValue("activeDays", originalFormat.activeDays);
+
+    const originalAvailability = reverseFormatAvailability(
+      availabilityHours ?? []
+    );
+    setAvailability(originalAvailability);
   }, [
     setValue,
     addressLine1,
@@ -283,64 +195,9 @@ const RestaurantAvailability = () => {
         return;
       }
       setBtnLoading(true);
-      const formattedData = Object.keys(data.regularHours).map((day) => ({
-        Day: day,
-        hours: data.regularHours[
-          day as
-            | "Monday"
-            | "Tuesday"
-            | "Wednesday"
-            | "Thursday"
-            | "Friday"
-            | "Saturday"
-            | "Sunday"
-        ]
-          .filter((slot: any) => slot.from && slot.to)
-          .map((slot: any) => ({
-            start: slot.from,
-            end: slot.to,
-          })),
-        active:
-          data.activeDays[
-            day as
-              | "Monday"
-              | "Tuesday"
-              | "Wednesday"
-              | "Thursday"
-              | "Friday"
-              | "Saturday"
-              | "Sunday"
-          ],
-      }));
 
-      const formatData = (formattedData: any[]): any[] => {
-        const currentDate = DateTime.now().toISO();
-        const endcurrentDate = DateTime.now().plus({ minutes: 90 }).toISO();
-        return formattedData.map((dayData) => {
-          const { Day, hours, active } = dayData;
-
-          const formattedHours = hours.map((hour: any) => {
-            let start = hour.start.value || currentDate;
-            let end = hour.end.value || endcurrentDate;
-
-            return {
-              start,
-              end,
-            };
-          });
-
-          return {
-            day: Day,
-            hours: formattedHours,
-            active,
-          };
-        });
-      };
-
-      const formattedSampleInput = formatData(formattedData);
-
-      setAvailabilityHours(formattedSampleInput);
-
+      const formattedAvailability = formatAvailability(availability);
+      setAvailability(formattedAvailability);
       const response = await sdk.restaurantOnboarding({
         input: {
           address: {
@@ -369,7 +226,9 @@ const RestaurantAvailability = () => {
             _id: data.timezone.id,
             value: data.timezone.value,
           },
-          availability: formattedSampleInput,
+          availability: formattedAvailability,
+
+          // availability: formattedSampleInput,
         },
       });
       setToastData({
@@ -602,18 +461,6 @@ const RestaurantAvailability = () => {
                 label: option?.label ?? "",
               });
             }}
-            // defaultOptions={[
-            //   { value: "One", label: "One" },
-            //   { value: "One", label: "One" },
-            //   { value: "One", label: "One" },
-            //   { value: "One", label: "One" },
-            //   { value: "One", label: "One" },
-            //   { value: "One", label: "One" },
-            //   { value: "One", label: "One" },
-            //   { value: "One", label: "One" },
-            //   { value: "One", label: "One" },
-            //   { value: "One", label: "One" },
-            // ]}
             loadOptions={debouncedLoadOptions}
           />
           {errors.location && (
@@ -663,7 +510,7 @@ const RestaurantAvailability = () => {
         </div>
 
         <div>
-          <AvailabilityForm
+          {/* <AvailabilityForm
             control={control}
             errors={errors}
             getValues={getValues}
@@ -671,6 +518,11 @@ const RestaurantAvailability = () => {
             setValue={setValue}
             watch={watch}
             key={null}
+          /> */}
+
+          <AvailabilityComponent
+            availability={availability}
+            setAvailability={setAvailability}
           />
         </div>
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
@@ -10,6 +10,8 @@ import ReusableModal from "@/components/common/modal/modal";
 import { extractErrorMessage, isValidNameAlphabetic } from "@/utils/utilFUncs";
 import { UserRole } from "@/generated/graphql";
 import CustomSwitchCard from "@/components/common/customSwitchCard/customSwitchCard";
+import ArrowCard from "@/components/common/arrowCard/arrowCard";
+import useUserManagementStore from "@/store/userManagement";
 
 interface IFormInput {
   firstName: string;
@@ -19,6 +21,7 @@ interface IFormInput {
   role: { value: string; label: string };
   whatsApp: boolean;
   emailPref: boolean;
+  restaurant: { value: string; label: string };
 }
 
 const userRoleOptions: any[] = [
@@ -31,6 +34,11 @@ const userRoleOptions: any[] = [
 const AddTeamMemberForm = () => {
   const [btnLoading, setBtnLoading] = useState(false);
   const { setToastData } = useGlobalStore();
+  const [restaurantDropdownOptions, setRestaurantDropdownOptions] = useState<
+    { label: string; value: string }[]
+  >([]);
+  const { isAddTeamMemberModalOpen, setIsAddTeamMemberModalOpen } =
+    useUserManagementStore();
 
   const {
     handleSubmit,
@@ -55,7 +63,7 @@ const AddTeamMemberForm = () => {
       }
 
       setBtnLoading(true);
-
+      console.log(restaurantDropdownOptions);
       const res = await sdk.addTeamMember({
         AddTeamMemberInput: {
           firstName: data.firstName,
@@ -63,6 +71,7 @@ const AddTeamMemberForm = () => {
           email: data.email,
           phone: data.phone,
           role: data.role.value as UserRole,
+          restaurants: [data.restaurant.value],
           accountPreferences: {
             whatsApp: data.whatsApp,
             email: data.emailPref,
@@ -74,6 +83,7 @@ const AddTeamMemberForm = () => {
           type: "success",
           message: "Team Member Added Successfully",
         });
+        setIsAddTeamMemberModalOpen(false);
       }
 
       setBtnLoading(false);
@@ -86,6 +96,28 @@ const AddTeamMemberForm = () => {
       });
     }
   };
+
+  useEffect(() => {
+    const fetchUserRestaurants = async () => {
+      try {
+        const response = await sdk.getUserRestaurants();
+        const options = response.getUserRestaurants.map(
+          (restaurant: { name: { value: string }; id: string }) => ({
+            label: restaurant.name.value,
+            value: restaurant.id,
+          })
+        );
+        setRestaurantDropdownOptions(options);
+      } catch (error) {
+        setToastData({
+          type: "error",
+          message: extractErrorMessage(error),
+        });
+      }
+    };
+
+    fetchUserRestaurants();
+  }, []);
 
   return (
     <motion.div
@@ -220,6 +252,41 @@ const AddTeamMemberForm = () => {
             </p>
           )}
         </div>
+        {restaurantDropdownOptions.length > 0 ? (
+          <div className="col-span-2">
+            <label
+              htmlFor="restaurant"
+              className="block mb-2 text-sm font-medium text-left text-gray-700"
+            >
+              Restaurant
+            </label>
+            <Controller
+              name="restaurant"
+              control={control}
+              rules={{ required: "Restaurant is required" }}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  options={restaurantDropdownOptions}
+                  className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+                  classNamePrefix="react-select"
+                  placeholder="Select Restaurant"
+                />
+              )}
+            />
+            {errors.restaurant && (
+              <p className="text-red-500 text-sm text-start">
+                {errors.restaurant.message}
+              </p>
+            )}
+          </div>
+        ) : (
+          <ArrowCard
+            title="Add Restaurant"
+            caption="Sorry you dont have any Restaurant,Please add one before adding team-members"
+            href="/onboarding-restaurant/restaurant-welcome"
+          />
+        )}
 
         <div className="col-span-2">
           <CustomSwitchCard

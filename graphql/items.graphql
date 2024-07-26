@@ -26,6 +26,10 @@ query getItems {
       _id
       value
     }
+    visibility {
+      menuType
+      status
+    }
   }
 }
 
@@ -68,6 +72,20 @@ query getItem($id: String!) {
     }
     createdAt
     updatedAt
+    price {
+      _id
+      value
+    }
+    visibility {
+      menuType
+      status
+    }
+    priceOptions {
+      menuType
+      price {
+        value
+      }
+    }
   }
 }
 mutation addItem($input: AddItemInput!, $modifierGroups: [String!]!) {

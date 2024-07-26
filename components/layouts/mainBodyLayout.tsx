@@ -84,7 +84,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           setSelectedRestaurant(res?.getRestaurantDetails?.name?.value);
 
           if (res?.getRestaurantDetails?.taxRates?.length === 0) {
-            setisShowTaxSettings(true);
+            // setisShowTaxSettings(true);
             const formattedTaxRate = res?.getRestaurantDetails?.taxRates.map(
               (res) => ({
                 id: res._id,
@@ -99,7 +99,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           if (!res) {
             try {
               const res = await sdk.setRestaurantIdAsCookie({
-                id: formattedRestaurant[0]?._id,
+                id: formattedRestaurant[0]?.id,
               });
               if (res) {
                 setSelectedRestaurant(formattedRestaurant[0]?.name?.value);
@@ -115,7 +115,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           }
         } catch (error) {
           await sdk.setRestaurantIdAsCookie({
-            id: formattedRestaurant[0]?._id,
+            id: formattedRestaurant[0]?.id,
           });
           setSelectedRestaurant(formattedRestaurant[0]?.name?.value);
         }
@@ -150,77 +150,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         <Navbar />
         <div className="flex-1 h-auto overflow-y-auto p-6 mt-16 children scrollbar-hide ">
           {children}
-          {/* <ReusableModal
-            title="Tax Rate"
-            isOpen={isShowTaxSettings}
-            onClose={handleCloseTaxSettings}
-          >
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <div className="mb-4">
-                <label
-                  className="block mb-2 text-sm font-medium text-left text-gray-700"
-                  htmlFor="name"
-                >
-                  Name
-                </label>
-                <Controller
-                  name="name"
-                  control={control}
-                  render={({ field }) => (
-                    <input
-                      {...field}
-                      placeholder="Enter name"
-                      id="name"
-                      className="input input-primary"
-                    />
-                  )}
-                />
-              </div>
 
-              <div className="mb-4">
-                <label
-                  className="block mb-2 text-sm font-medium text-left text-gray-700"
-                  htmlFor="salesTax"
-                >
-                  Sales Tax
-                </label>
-                <Controller
-                  name="salesTax"
-                  control={control}
-                  render={({ field }) => (
-                    <input
-                      {...field}
-                      id="salesTax"
-                      type="number"
-                      placeholder="Enter Sales Tax"
-                      className="input input-primary"
-                    />
-                  )}
-                />
-              </div>
-
-              <div className="mb-4 flex justify-between items-center ">
-                <label
-                  className="block mb-2 text-sm font-medium text-left text-gray-700"
-                  htmlFor="default"
-                >
-                  Default
-                </label>
-                <CustomSwitch
-                  checked={isSwitchChecked}
-                  onChange={() => setIsSwitchChecked(!isSwitchChecked)}
-                  label="Default"
-                  className="ml-2"
-                />
-              </div>
-
-              <div className="flex items-center justify-end">
-                <CButton variant={ButtonType.Primary} type="submit">
-                  Save
-                </CButton>
-              </div>
-            </form>
-          </ReusableModal> */}
           <ReusableModal
             title="Tax Rate"
             isOpen={isShowTaxSettings}

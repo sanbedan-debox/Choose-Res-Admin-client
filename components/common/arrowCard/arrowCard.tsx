@@ -11,7 +11,7 @@ interface ArrowCardProps {
 const ArrowCard: FC<ArrowCardProps> = ({ title, caption, href }) => {
   return (
     <Link href={href} passHref>
-      <div className="block p-4 transition-transform transform bg-white shadow-lg rounded-lg hover:scale-105">
+      <div className="block p-4 transition-transform transform bg-white shadow-lg rounded-lg ">
         <div className="flex justify-between items-center">
           <div className="flex flex-col">
             <h3 className="text-lg font-semibold">{title}</h3>

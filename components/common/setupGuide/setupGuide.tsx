@@ -1,5 +1,5 @@
 import useGlobalStore from "@/store/global";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { AiOutlineUser, AiOutlineSetting } from "react-icons/ai";
 import { BiFoodMenu } from "react-icons/bi";
 import { FiMonitor } from "react-icons/fi";
@@ -7,6 +7,9 @@ import { MdOutlinePointOfSale } from "react-icons/md";
 import useAuthStore from "@/store/auth";
 import CButton from "../button/button";
 import { ButtonType } from "../button/interface";
+import { sdk } from "@/utils/graphqlClient";
+import { useRouter } from "next/router";
+import useRestaurantsStore from "@/store/restaurant";
 
 interface Step {
   icon: JSX.Element;
@@ -17,6 +20,7 @@ interface Step {
 
 const SetupGuide: React.FC<{ steps: Step[] }> = ({ steps }) => {
   const { firstName } = useAuthStore();
+  const router = useRouter();
 
   const { setisShowSetupPanel } = useGlobalStore();
   const handleShowSetup = () => {
@@ -42,6 +46,38 @@ const SetupGuide: React.FC<{ steps: Step[] }> = ({ steps }) => {
   const formattedDate = `${currentDate.getDate()} ${
     months[currentDate.getMonth()]
   }`;
+  const [restaurants, setRestaurants] = useState<
+    { name: string; id: string }[]
+  >([]);
+  useEffect(() => {
+    async function fetchPendingRestaurants() {
+      try {
+        const response = await sdk.getUserRestaurantsPending();
+        const restaurantsIncomplete = response.getUserRestaurantsPending.map(
+          (res) => ({
+            name: res.name.value,
+            id: res.id,
+          })
+        );
+        setRestaurants(restaurantsIncomplete);
+      } catch (error) {
+        console.error("Failed to fetch pending restaurants:", error);
+      }
+    }
+
+    fetchPendingRestaurants();
+  }, []);
+  const { setSelectedRestaurantTaxRate, selectedRestaurantTaxRate } =
+    useRestaurantsStore();
+  const { setTaxRate, taxRate } = useAuthStore();
+
+  const completeRes = async (id: string) => {
+    const res = await sdk.setRestaurantIdAsCookie({ id });
+    if (res.setRestaurantIdAsCookie) {
+      router.push("/onboarding-restaurant/restaurant-basic-information");
+    }
+  };
+  const { isShowTaxSettings, setisShowTaxSettings } = useGlobalStore();
 
   return (
     <div className="bg-white p-4 rounded shadow-md">
@@ -70,6 +106,33 @@ const SetupGuide: React.FC<{ steps: Step[] }> = ({ steps }) => {
           className="absolute bg-blue-600 h-full"
           style={{ width: "7%" }}
         ></div>
+      </div>
+      {!taxRate && (
+        <div
+          className="flex cursor-pointer hover:bg-primary hover:bg-opacity-10 items-center bg-primary bg-opacity-5 p-4 rounded-md mb-4"
+          onClick={() => setisShowTaxSettings(true)}
+        >
+          <div className="flex flex-col">
+            <span className="text-lg font-semibold">No Tax rate found</span>
+            <span className="text-sm text-gray-500">
+              Comments: No tax rate was found. Select here to fill the tax rate.
+            </span>
+          </div>
+        </div>
+      )}
+
+      <div className="grid grid-cols-2 gap-4 mb-4">
+        {restaurants.map((restaurant, index) => (
+          <div
+            key={index}
+            className="flex cursor-pointer hover:bg-primary hover:bg-opacity-10 items-center bg-primary bg-opacity-5 p-4 rounded-md space-x-2"
+            onClick={() => {
+              completeRes(restaurant.id);
+            }}
+          >
+            <span className="text-sm font-semibold">{restaurant.name}</span>
+          </div>
+        ))}
       </div>
       <div className="grid grid-cols-2 gap-4">
         {steps.map((step, index) => (

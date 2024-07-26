@@ -103,7 +103,7 @@ const Teams: NextPageWithLayout = () => {
     { title: "email", dataKey: "email" },
     { title: "phone", dataKey: "phone" },
     { title: "role", dataKey: "role" },
-    { title: "status", dataKey: "onboardingStatus" },
+    { title: "Onboarding status", dataKey: "onboardingStatus" },
 
     {
       title: "Actions",

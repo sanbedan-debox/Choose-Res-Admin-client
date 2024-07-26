@@ -3,7 +3,7 @@ query getUserRestaurants {
     name {
       value
     }
-    _id
+    id
     status
   }
 }
@@ -39,4 +39,13 @@ mutation addTaxRate($input: TaxRateInput!) {
 
 mutation addTaxRateInRestaurant($taxRateId: String!) {
   addTaxRateInRestaurant(taxRateId: $taxRateId)
+}
+
+query getUserRestaurantsPending {
+  getUserRestaurantsPending {
+    name {
+      value
+    }
+    id
+  }
 }
