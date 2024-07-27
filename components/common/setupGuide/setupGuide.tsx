@@ -10,6 +10,7 @@ import { ButtonType } from "../button/interface";
 import { sdk } from "@/utils/graphqlClient";
 import { useRouter } from "next/router";
 import useRestaurantsStore from "@/store/restaurant";
+import { FaArrowRight } from "react-icons/fa";
 
 interface Step {
   icon: JSX.Element;
@@ -121,20 +122,27 @@ const SetupGuide: React.FC<{ steps: Step[] }> = ({ steps }) => {
           </div>
         </div>
       )}
-
-      <div className="grid grid-cols-2 gap-4 mb-4">
-        {restaurants.map((restaurant, index) => (
-          <div
-            key={index}
-            className="flex cursor-pointer hover:bg-primary hover:bg-opacity-10 items-center bg-primary bg-opacity-5 p-4 rounded-md space-x-2"
-            onClick={() => {
-              completeRes(restaurant.id);
-            }}
-          >
-            <span className="text-sm font-semibold">{restaurant.name}</span>
-          </div>
-        ))}
+      <div>
+        <p className="block mb-2 text-xl font-semibold text-left text-gray-700">
+          Complete your Incomplete Restaurants,Complete Now !
+        </p>
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          {restaurants.map((restaurant, index) => (
+            <div
+              onClick={() => {
+                completeRes(restaurant.id);
+              }}
+              className="block p-4 transition-transform transform bg-primary bg-opacity-5 shadow-lg rounded-lg "
+            >
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-semibold">{restaurant.name}</h3>
+                <FaArrowRight className="w-5 h-5 text-primary" />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
+
       <div className="grid grid-cols-2 gap-4">
         {steps.map((step, index) => (
           <div

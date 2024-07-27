@@ -60,6 +60,21 @@ const formatBeverageCategory = (value: BeverageCategory) => {
 const RestaurantAdditionalInformation = () => {
   const { setToastData } = useGlobalStore();
   const router = useRouter();
+  const [isFormChanged, setIsFormChanged] = useState(false);
+  const checkFormChanges = () => {
+    if (
+      instagramLink ||
+      facebookLink ||
+      twitterLink ||
+      (beverageCategory && beverageCategory.length > 0) ||
+      (foodType && foodType.length > 0) ||
+      meatType
+    ) {
+      setIsFormChanged(true);
+    } else {
+      setIsFormChanged(false);
+    }
+  };
 
   const {
     handleSubmit,
@@ -85,6 +100,8 @@ const RestaurantAdditionalInformation = () => {
   } = useRestaurantInfoStore();
 
   useEffect(() => {
+    checkFormChanges();
+
     setValue("instagramLink", instagramLink);
     setValue("facebookLink", facebookLink);
     setValue("twitterLink", twitterLink);
@@ -138,6 +155,10 @@ const RestaurantAdditionalInformation = () => {
       if (response.restaurantOnboarding) {
         const res = await sdk.completeRestaurantOnboarding();
         if (res.completeRestaurantOnboarding) {
+          // const set = await sdk.setRestaurantIdAsCookie({
+          //   id: res.completeRestaurantOnboarding || "",
+          // });
+
           setToastData({
             message: "Restaurant Added successfully!",
             type: "success",
@@ -377,11 +398,11 @@ const RestaurantAdditionalInformation = () => {
 
         <CButton
           loading={btnLoading}
-          className="w-full"
+          className="w-full mt-8"
           type="submit"
           variant={ButtonType.Primary}
         >
-          Submit
+          {isFormChanged ? "Submit" : "Skip and Continue"}
         </CButton>
       </form>
     </motion.div>

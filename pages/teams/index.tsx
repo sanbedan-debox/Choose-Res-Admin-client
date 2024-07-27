@@ -87,14 +87,6 @@ const Teams: NextPageWithLayout = () => {
         className="text-primary text-md cursor-pointer"
         onClick={() => handleDeleteMember(rowData._id)}
       />
-      {/* <FaEdit
-        className="text-primary text-md cursor-pointer"
-        onClick={() => handleEditItem(rowData._id)}
-      />
-      <IoDuplicateOutline
-        className="text-primary text-md cursor-pointer"
-        onClick={() => handleDuplcateCategory(rowData._id)}
-      /> */}
     </div>
   );
   const headings = [

@@ -4,8 +4,32 @@ import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import { useRouter } from "next/router";
 import useGlobalStore from "@/store/global";
+import { sdk } from "@/utils/graphqlClient";
+import { useEffect } from "react";
 
 const WelcomeRestaurantOnboarding = () => {
+  const { setisVerificationToRestaurantAdd } = useGlobalStore();
+
+  const fetchOnboardingjump = async () => {
+    try {
+      const res = await sdk.meUserInResOnboarding();
+
+      if (res && res.meUser) {
+        console.log(res);
+        const { status } = res.meUser;
+        if (status === "internalVerificationPending") {
+          console.log(status);
+          setisVerificationToRestaurantAdd(true);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching menu data:", error);
+    }
+  };
+  useEffect(() => {
+    fetchOnboardingjump();
+  }, []);
+
   const router = useRouter();
   const { isVerificationToRestaurantAdd } = useGlobalStore();
   const textheading = isVerificationToRestaurantAdd

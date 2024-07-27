@@ -58,17 +58,14 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
     }
   }, [availability, copiedDayIndex, copyPerformed]);
 
+  const defaultStartTime = timeOptions[0];
+  const defaultEndTime = timeOptions[timeOptions.length - 1];
+
   const handleAddHours = (index: number) => {
     const newHours = [...availability];
     newHours[index].hours.push({
-      start: {
-        label: moment().format("hh:mm A"),
-        value: moment().toISOString(),
-      },
-      end: {
-        label: moment().add(30, "minutes").format("hh:mm A"),
-        value: moment().add(30, "minutes").toISOString(),
-      },
+      start: defaultStartTime,
+      end: defaultEndTime,
     });
     const validationResult = validateAvailability(newHours);
     if (!validationResult.success) {
@@ -86,15 +83,23 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
   };
 
   const handleCopyHours = (dayIndex: number) => {
-    const newHours = [...availability];
-    const hoursToCopy = newHours[dayIndex].hours;
+    const newAvailability = [...availability];
+    const hoursToCopy = newAvailability[dayIndex].hours.map((hour) => ({
+      start: { ...hour.start },
+      end: { ...hour.end },
+    }));
 
-    newHours.forEach((day) => {
-      day.active = true;
-      day.hours = [...hoursToCopy];
+    newAvailability.forEach((day) => {
+      if (!day.active || day.hours.length === 0) {
+        day.active = true;
+        day.hours = hoursToCopy.map((hour) => ({
+          start: { ...hour.start },
+          end: { ...hour.end },
+        }));
+      }
     });
 
-    setAvailability(newHours);
+    setAvailability(newAvailability);
     setCopyPerformed(true);
     setCopiedDayIndex(null);
   };

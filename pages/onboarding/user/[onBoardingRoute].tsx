@@ -16,6 +16,7 @@ type HomePageProps = {
   repo: {
     pagePath: string;
     address: any;
+    businessName: any;
     businessType: any;
     ein: any;
     employeeSize: any;
@@ -37,10 +38,12 @@ const OnboardingPage = ({ repo }: HomePageProps) => {
     setbusinessType,
     setein,
     setemployeeSize,
+    setbusinessName,
     setestimatedRevenue,
   } = useOnboardingStore();
 
   useEffect(() => {
+    setbusinessName(repo.businessName);
     setbusinessType(repo.businessType);
     setein(repo.ein);
     setemployeeSize(repo.employeeSize);
@@ -115,13 +118,20 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
     );
 
     if (response && response.getBusinessOnboardingDetails) {
-      const { address, businessType, ein, employeeSize, estimatedRevenue } =
-        response.getBusinessOnboardingDetails;
+      const {
+        address,
+        businessType,
+        ein,
+        employeeSize,
+        estimatedRevenue,
+        businessName,
+      } = response.getBusinessOnboardingDetails;
       return {
         props: {
           repo: {
             pagePath: context.query["onBoardingRoute"]?.toString() ?? "",
             businessType,
+            businessName,
             ein,
             employeeSize,
             estimatedRevenue,
@@ -136,6 +146,7 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
             pagePath: context.query["onBoardingRoute"]?.toString() ?? "",
             businessType: null,
             ein: null,
+            businessName: null,
             employeeSize: null,
             estimatedRevenue: null,
             address: null,

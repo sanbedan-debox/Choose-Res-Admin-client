@@ -1775,6 +1775,13 @@ export type GetBusinessDetailsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetBusinessDetailsQuery = { __typename?: 'Query', getBusinessDetails: { __typename?: 'Business', businessName?: string | null, estimatedRevenue?: EstimatedRevenueEnum | null, employeeSize?: StaffCountEnum | null, businessType?: BusinessTypeEnum | null, ein?: string | null, address?: { __typename?: 'AddressInfo', addressLine1: { __typename?: 'MasterCommon', value: string }, addressLine2?: { __typename?: 'MasterCommon', value: string } | null, state: { __typename?: 'MasterCommon', value: string }, city: { __typename?: 'MasterCommon', value: string }, postcode: { __typename?: 'MasterCommon', value: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string } | null } | null } };
 
+export type UpdateTaxRateMutationVariables = Exact<{
+  input: UpdateTaxRateInput;
+}>;
+
+
+export type UpdateTaxRateMutation = { __typename?: 'Mutation', updateTaxRate: boolean };
+
 export type ChangeCategoryStatusMutationVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
@@ -2132,6 +2139,11 @@ export type GetRestaurantOnboardingDataQueryVariables = Exact<{ [key: string]: n
 
 export type GetRestaurantOnboardingDataQuery = { __typename?: 'Query', getRestaurantOnboardingData: { __typename?: 'Restaurant', brandingLogo?: string | null, website?: string | null, category?: Array<RestaurantCategory> | null, beverageCategory?: Array<BeverageCategory> | null, foodType?: Array<FoodType> | null, meatType?: MeatType | null, type?: RestaurantType | null, name: { __typename?: 'MasterCommon', value: string }, address?: { __typename?: 'AddressInfo', addressLine1: { __typename?: 'MasterCommon', value: string }, addressLine2?: { __typename?: 'MasterCommon', value: string } | null, state: { __typename?: 'MasterCommon', _id: string, value: string }, city: { __typename?: 'MasterCommon', value: string }, postcode: { __typename?: 'MasterCommon', value: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string, placeId: string } | null } | null, socialInfo?: { __typename?: 'SocialInfo', facebook?: string | null, instagram?: string | null, twitter?: string | null } | null, availability?: Array<{ __typename?: 'Availability', day: string, active: boolean, hours: Array<{ __typename?: 'Hours', start: any, end: any }> }> | null, timezone?: { __typename?: 'MasterCommon', _id: string, value: string } | null, dineInCapacity?: { __typename?: 'MasterCommonNumber', value: number } | null } };
 
+export type MeUserInResOnboardingQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MeUserInResOnboardingQuery = { __typename?: 'Query', meUser: { __typename?: 'User', status: UserStatus } };
+
 export type GetUserRestaurantsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -2300,6 +2312,11 @@ export const GetBusinessDetailsDocument = gql`
       }
     }
   }
+}
+    `;
+export const UpdateTaxRateDocument = gql`
+    mutation updateTaxRate($input: UpdateTaxRateInput!) {
+  updateTaxRate(input: $input)
 }
     `;
 export const ChangeCategoryStatusDocument = gql`
@@ -2922,6 +2939,13 @@ export const GetRestaurantOnboardingDataDocument = gql`
   }
 }
     `;
+export const MeUserInResOnboardingDocument = gql`
+    query meUserInResOnboarding {
+  meUser {
+    status
+  }
+}
+    `;
 export const GetUserRestaurantsDocument = gql`
     query getUserRestaurants {
   getUserRestaurants {
@@ -3033,6 +3057,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     getBusinessDetails(variables?: GetBusinessDetailsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetBusinessDetailsQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetBusinessDetailsQuery>(GetBusinessDetailsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getBusinessDetails', 'query', variables);
+    },
+    updateTaxRate(variables: UpdateTaxRateMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UpdateTaxRateMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<UpdateTaxRateMutation>(UpdateTaxRateDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'updateTaxRate', 'mutation', variables);
     },
     changeCategoryStatus(variables: ChangeCategoryStatusMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<ChangeCategoryStatusMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<ChangeCategoryStatusMutation>(ChangeCategoryStatusDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'changeCategoryStatus', 'mutation', variables);
@@ -3192,6 +3219,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     getRestaurantOnboardingData(variables?: GetRestaurantOnboardingDataQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetRestaurantOnboardingDataQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetRestaurantOnboardingDataQuery>(GetRestaurantOnboardingDataDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getRestaurantOnboardingData', 'query', variables);
+    },
+    meUserInResOnboarding(variables?: MeUserInResOnboardingQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<MeUserInResOnboardingQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<MeUserInResOnboardingQuery>(MeUserInResOnboardingDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'meUserInResOnboarding', 'query', variables);
     },
     getUserRestaurants(variables?: GetUserRestaurantsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetUserRestaurantsQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetUserRestaurantsQuery>(GetUserRestaurantsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getUserRestaurants', 'query', variables);

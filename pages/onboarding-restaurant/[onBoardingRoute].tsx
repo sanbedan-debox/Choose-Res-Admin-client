@@ -53,6 +53,7 @@ const OnboardingPage = ({ repo }: HomePageProps) => {
     setTimeZone,
     setTwitterLink,
     setAvailabilityHours,
+    setbrandingLogo,
   } = RestaurantOnboardingStore();
 
   useEffect(() => {
@@ -60,6 +61,7 @@ const OnboardingPage = ({ repo }: HomePageProps) => {
       "Onboarding availibility hehheheh server side",
       repo?.availability
     );
+    setbrandingLogo(repo?.brandingLogo);
     setRestaurantName(repo?.name?.value);
     setRestaurantType(repo?.type);
     setRestaurantCategory(repo?.category);
@@ -80,6 +82,7 @@ const OnboardingPage = ({ repo }: HomePageProps) => {
     setTimeZone(repo?.timezone);
     setTwitterLink(repo?.socialInfo?.twitter);
     setAvailabilityHours(repo?.availability);
+    setbrandingLogo(repo?.brandingLogo);
   }, [
     repo,
     setRestaurantName,

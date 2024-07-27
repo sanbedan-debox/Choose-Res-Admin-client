@@ -18,7 +18,6 @@ type NextPageWithLayout = React.FC & {
 const PaymentPending: NextPageWithLayout = (props: any) => {
   const resto = props.restaurants;
   const router = useRouter();
-  const { setisVerificationToRestaurantAdd } = useGlobalStore();
   return (
     <div className="text-black ">
       <h1 className="text-4xl font-bold text-gray-800 mb-2">
@@ -35,7 +34,6 @@ const PaymentPending: NextPageWithLayout = (props: any) => {
 
       {resto <= 0 ? (
         <Link
-          onClick={() => setisVerificationToRestaurantAdd(true)}
           href="/onboarding-restaurant/restaurant-welcome"
           className="btn p-0  hover:scale-105 transition-all  mb-12"
         >

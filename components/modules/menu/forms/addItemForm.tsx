@@ -183,6 +183,18 @@ const AddItemForm = () => {
       console.error("Error fetching menu data:", error);
     }
   };
+  useEffect(() => {
+    if (pricingOptions.length > 0) {
+      setPricingOptions((prevPricingOptions) =>
+        prevPricingOptions.map((option) => ({
+          ...option,
+          price: {
+            value: parseFloat(watch("price").toString()),
+          },
+        }))
+      );
+    }
+  }, [watch("price")]);
 
   const reverseFormatAvailability = (
     formattedAvailability: FormattedAvailability[]
@@ -228,9 +240,14 @@ const AddItemForm = () => {
         setValue("isGlutenFree", item.isGlutenFree);
         setValue("isHalal", item.isHalal);
         setValue("isVegan", item.isVegan);
-        setVisibilities(item.visibility);
+        const formattedVisibilities = item.visibility.map((visibility) => ({
+          menuType: visibility.menuType,
+          status: visibility.status,
+        }));
+        setVisibilities(formattedVisibilities);
+        console.log("set Visibility:", visibilities);
+        console.log("Item Visibility:", item.visibility);
         setPricingOptions(item.priceOptions);
-        // setVisibilities(item.);
         const formateditemlist = item?.modifierGroup.map((el) => ({
           _id: el?.id,
           name: el?.name?.value ?? "",
@@ -238,12 +255,14 @@ const AddItemForm = () => {
         setSelectedItems(formateditemlist);
         setTempSelectedItems(formateditemlist);
         setprevItemsbfrEdit(formateditemlist);
-        setPreviewUrl(item.image || "");
 
-        const originalAvailability = reverseFormatAvailability(
-          item?.availability ?? []
-        );
-        setAvailability(originalAvailability);
+        setPreviewUrl(item.image || "");
+        if (item?.availability) {
+          const originalAvailability = reverseFormatAvailability(
+            item?.availability
+          );
+          setAvailability(originalAvailability);
+        }
       } catch (error) {
         const errorMessage = extractErrorMessage(error);
         setToastData({
@@ -293,7 +312,10 @@ const AddItemForm = () => {
       }
 
       const statusSub = data.status ? StatusEnum.Active : StatusEnum.Inactive;
-      let updateInput: any = { _id: editItemId || "" };
+      let updateInput: any = {
+        _id: editItemId || "",
+        priceOptions: pricingOptions,
+      };
       let hasChanges = false;
       const imgUrl = await handleLogoUpload();
 

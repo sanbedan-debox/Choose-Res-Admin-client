@@ -4,7 +4,6 @@ import Sidebar from "../navigation/sidebar";
 import { sdk } from "@/utils/graphqlClient";
 import useRestaurantsStore from "@/store/restaurant";
 import { useForm, Controller } from "react-hook-form";
-import { parseCookies } from "nookies";
 import ReusableModal from "../common/modal/modal";
 import useGlobalStore from "@/store/global";
 import CustomSwitch from "../common/customSwitch/customSwitch";
@@ -21,6 +20,8 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     default: false,
   });
   const [isSaveButtonEnabled, setIsSaveButtonEnabled] = useState(false);
+  const [buttonTitle, setButtonTitle] = useState("Add");
+  const [isButtonVisible, setIsButtonVisible] = useState(true);
 
   const { control, handleSubmit, getValues, setValue } = useForm({
     defaultValues: {
@@ -34,28 +35,55 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   const onSubmit = async (data: any) => {
     try {
-      const taxRateInput = {
-        name: { value: data.name },
-        salesTax: { value: parseFloat(data.salesTax) },
-        default: isSwitchChecked,
-      };
+      const currentFormValues = getValues();
+      const changedData: any = { _id: existingTaxRateId };
 
-      const taxRateResponse = await sdk.addTaxRate({
-        input: taxRateInput,
-      });
-
-      if (taxRateResponse?.addTaxRate) {
-        await sdk.addTaxRateInRestaurant({
-          taxRateId: taxRateResponse.addTaxRate,
-        });
-        setSelectedRestaurantTaxRate(taxRateResponse?.addTaxRate);
+      if (currentFormValues.name !== initialFormValues.name) {
+        changedData.name = { value: currentFormValues.name };
+      }
+      if (currentFormValues.salesTax !== initialFormValues.salesTax) {
+        changedData.salesTax = {
+          value: parseFloat(currentFormValues.salesTax),
+        };
+      }
+      if (isSwitchChecked !== initialFormValues.default) {
+        changedData.default = isSwitchChecked;
       }
 
+      const hasChanges = Object.keys(changedData).length > 1;
+
+      if (existingTaxRateId && hasChanges) {
+        await sdk.updateTaxRate({
+          input: changedData,
+        });
+        setToastData({
+          message: "Tax rate updated successfully",
+          type: "success",
+        });
+      } else if (!existingTaxRateId) {
+        const taxRateInput = {
+          name: { value: data.name },
+          salesTax: { value: parseFloat(data.salesTax) },
+          default: isSwitchChecked,
+        };
+
+        const taxRateResponse = await sdk.addTaxRate({ input: taxRateInput });
+        if (taxRateResponse?.addTaxRate) {
+          await sdk.addTaxRateInRestaurant({
+            taxRateId: taxRateResponse.addTaxRate,
+          });
+          setSelectedRestaurantTaxRate(taxRateResponse?.addTaxRate);
+        }
+        setToastData({
+          message: "Tax rate added successfully",
+          type: "success",
+        });
+      }
       fetchRestaurantUsers();
       setisShowTaxSettings(false);
-      router.reload();
     } catch (error) {
       console.error("Error submitting tax rate:", error);
+      setToastData({ message: extractErrorMessage(error), type: "error" });
     }
   };
 
@@ -65,12 +93,12 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     selectedRestaurant,
     refreshRestaurantChange,
   } = useRestaurantsStore();
-  const cookies = parseCookies();
-  const selectedRestaurantId = cookies.restaurantId;
   const { setSelectedRestaurantTaxRate } = useRestaurantsStore();
   const { setTaxRate } = useAuthStore();
   const router = useRouter();
-
+  const [existingTaxRateId, setExistingTaxRateId] = useState<string | null>(
+    null
+  );
   const fetchRestaurantUsers = async () => {
     try {
       const response = await sdk.getUserRestaurants();
@@ -82,28 +110,48 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
         try {
           const res = await sdk.getRestaurantDetails();
-          setSelectedRestaurant(res?.getRestaurantDetails?.name?.value);
+          if (res?.getRestaurantDetails) {
+            const restaurantDetails = res.getRestaurantDetails;
 
-          if (res?.getRestaurantDetails?.taxRates?.length === 0) {
-            // setisShowTaxSettings(true);
-            const formattedTaxRate = res?.getRestaurantDetails?.taxRates.map(
-              (res) => ({
-                id: res._id,
-                name: res.name?.value,
-                salesTax: res.salesTax?.value,
-                default: res.default,
-              })
-            );
-            setTaxRate(formattedTaxRate[0]);
-          }
+            setSelectedRestaurant(restaurantDetails.name?.value || "");
 
-          if (!res) {
+            const taxRates = restaurantDetails.taxRates ?? [];
+            if (taxRates.length > 0) {
+              const existingTaxRate = taxRates[0];
+
+              setValue("name", existingTaxRate.name?.value || "");
+              setValue(
+                "salesTax",
+                existingTaxRate.salesTax?.value.toString() || ""
+              );
+              setValue("default", existingTaxRate.default || false);
+
+              setIsSaveButtonEnabled(false);
+              setExistingTaxRateId(existingTaxRate._id);
+              setIsButtonVisible(false); // Hide the button initially
+            } else {
+              setIsSaveButtonEnabled(true);
+              setExistingTaxRateId(null); // Ensure ID is null if no tax rate exists
+              setButtonTitle("Add"); // Set button title to "Add"
+              setIsButtonVisible(true); // Show the button initially
+            }
+
+            const formattedTaxRate = taxRates.map((rate) => ({
+              id: rate._id,
+              name: rate.name?.value,
+              salesTax: rate.salesTax?.value,
+              default: rate.default,
+            }));
+            setTaxRate(formattedTaxRate[0] || {});
+          } else {
             try {
               const res = await sdk.setRestaurantIdAsCookie({
                 id: formattedRestaurant[0]?.id,
               });
               if (res) {
-                setSelectedRestaurant(formattedRestaurant[0]?.name?.value);
+                setSelectedRestaurant(
+                  formattedRestaurant[0]?.name?.value || ""
+                );
               }
             } catch (error) {
               setToastData({
@@ -111,29 +159,31 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 type: "error",
               });
             }
-          } else {
-            setSelectedRestaurant(res?.getRestaurantDetails?.name?.value);
           }
         } catch (error) {
           await sdk.setRestaurantIdAsCookie({
             id: formattedRestaurant[0]?.id,
           });
-          setSelectedRestaurant(formattedRestaurant[0]?.name?.value);
+          setSelectedRestaurant(formattedRestaurant[0]?.name?.value || "");
         }
       }
     } catch (error) {
       console.error("Failed to fetch restaurant users:", error);
     } finally {
-      // setLoading(false);
     }
   };
+
   const { setToastData } = useGlobalStore();
 
   const handleInputChange = () => {
     const currentFormValues = getValues();
     const hasChanges =
-      JSON.stringify(currentFormValues) !== JSON.stringify(initialFormValues);
+      currentFormValues.name !== initialFormValues.name ||
+      currentFormValues.salesTax !== initialFormValues.salesTax ||
+      currentFormValues.default !== initialFormValues.default;
     setIsSaveButtonEnabled(hasChanges);
+    setButtonTitle("Update"); // Set button title to "Update" on changes
+    setIsButtonVisible(true); // Show the button on changes
   };
 
   useEffect(() => {
@@ -228,13 +278,15 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               </div>
 
               <div className="flex items-center justify-end">
-                <CButton
-                  variant={ButtonType.Primary}
-                  type="submit"
-                  disabled={!isSaveButtonEnabled}
-                >
-                  Save
-                </CButton>
+                {isButtonVisible && (
+                  <CButton
+                    variant={ButtonType.Primary}
+                    type="submit"
+                    disabled={!isSaveButtonEnabled}
+                  >
+                    {buttonTitle}
+                  </CButton>
+                )}
               </div>
             </form>
           </ReusableModal>

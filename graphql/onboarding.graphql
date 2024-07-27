@@ -176,3 +176,9 @@ query getRestaurantOnboardingData {
     }
   }
 }
+
+query meUserInResOnboarding {
+  meUser {
+    status
+  }
+}

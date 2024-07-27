@@ -58,8 +58,6 @@ const RestaurantBasicInformation = () => {
   const router = useRouter();
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [logoURL, setLogoURL] = useState<string | null>(null);
 
   const {
     handleSubmit,
@@ -80,6 +78,7 @@ const RestaurantBasicInformation = () => {
     setRestaurantCategory,
     dineInCapacity,
     setDineInCapacity,
+    brandingLogo,
   } = RestaurantOnboardingStore();
 
   useEffect(() => {
@@ -88,6 +87,7 @@ const RestaurantBasicInformation = () => {
     setValue("restaurantType", restaurantType);
     setValue("restaurantCategory", restaurantCategory);
     setValue("dineInCapacity", dineInCapacity);
+    setPreviewUrl(brandingLogo || "");
   }, [
     restaurantName,
     restaurantWebsite,
@@ -110,8 +110,6 @@ const RestaurantBasicInformation = () => {
   );
   const handleLogoUpload = async () => {
     if (logoFile) {
-      setIsUploading(true);
-
       const formData = new FormData();
       formData.append("file", logoFile);
       formData.append("upload_preset", "restaurants-branding-logo");
@@ -123,8 +121,7 @@ const RestaurantBasicInformation = () => {
 
       const cloudinaryUrl = response?.secure_url;
       setPreviewUrl(cloudinaryUrl);
-      setLogoURL(cloudinaryUrl);
-      setIsUploading(false);
+
       return cloudinaryUrl;
     }
   };
@@ -133,7 +130,6 @@ const RestaurantBasicInformation = () => {
     if (file) {
       // Update state to store the selected file
       setLogoFile(file);
-      setIsUploading(false); // Remove the initial set to true to delay upload
 
       // Set the preview URL for the selected image
       const objectUrl = URL.createObjectURL(file);
@@ -422,7 +418,9 @@ const RestaurantBasicInformation = () => {
               />
             )}
           />
-
+          <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
+            You can select multiple categories for your restaurant
+          </p>
           {errors.restaurantCategory && (
             <p className="text-red-500 text-sm text-start">
               {errors.restaurantCategory.message}

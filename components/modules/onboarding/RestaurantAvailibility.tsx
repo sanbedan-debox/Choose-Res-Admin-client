@@ -171,7 +171,7 @@ const RestaurantAvailability = () => {
         setCoords(cords);
       }
     }
-    if (availabilityHours.length > 0) {
+    if (availabilityHours && availabilityHours?.length > 0) {
       const originalAvailability = reverseFormatAvailability(availabilityHours);
       setAvailability(originalAvailability);
     }

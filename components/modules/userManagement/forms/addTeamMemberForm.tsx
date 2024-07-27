@@ -21,7 +21,7 @@ interface IFormInput {
   role: { value: string; label: string };
   whatsApp: boolean;
   emailPref: boolean;
-  restaurant: { value: string; label: string };
+  restaurant: { value: string; label: string }[];
 }
 
 const userRoleOptions: any[] = [
@@ -63,6 +63,8 @@ const AddTeamMemberForm = () => {
       }
 
       setBtnLoading(true);
+      const restaurantIds = data.restaurant.map((rest) => rest.value);
+
       console.log(restaurantDropdownOptions);
       const res = await sdk.addTeamMember({
         AddTeamMemberInput: {
@@ -71,7 +73,7 @@ const AddTeamMemberForm = () => {
           email: data.email,
           phone: data.phone,
           role: data.role.value as UserRole,
-          restaurants: [data.restaurant.value],
+          restaurants: restaurantIds,
           accountPreferences: {
             whatsApp: data.whatsApp,
             email: data.emailPref,
@@ -266,6 +268,7 @@ const AddTeamMemberForm = () => {
               rules={{ required: "Restaurant is required" }}
               render={({ field }) => (
                 <Select
+                  isMulti
                   {...field}
                   options={restaurantDropdownOptions}
                   className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
