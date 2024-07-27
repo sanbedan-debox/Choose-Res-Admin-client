@@ -119,7 +119,7 @@ const AddTeamMemberForm = () => {
     };
 
     fetchUserRestaurants();
-  }, []);
+  }, [isAddTeamMemberModalOpen]);
 
   return (
     <motion.div
