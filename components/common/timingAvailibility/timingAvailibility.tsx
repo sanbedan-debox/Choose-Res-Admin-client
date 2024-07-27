@@ -196,15 +196,15 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
       )}
       {availability.map((day, index) => (
         <div key={index} style={{ marginBottom: "20px" }}>
-          <div
-            className="text-start"
-            style={{ fontWeight: "bold", marginBottom: "10px" }}
-          >
-            {daysOfWeek.find((d) => d.value === day.day)?.label ||
-              "Unknown Day"}
-          </div>
           {day.active && (
             <div>
+              <div
+                className="text-start"
+                style={{ fontWeight: "bold", marginBottom: "10px" }}
+              >
+                {daysOfWeek.find((d) => d.value === day.day)?.label ||
+                  "Unknown Day"}
+              </div>
               {day.hours.map((hour, hourIndex) => (
                 <div
                   key={hourIndex}
