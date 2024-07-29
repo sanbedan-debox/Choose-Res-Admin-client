@@ -185,14 +185,18 @@ const AddItemForm = () => {
   };
   useEffect(() => {
     if (pricingOptions.length > 0) {
-      setPricingOptions((prevPricingOptions) =>
-        prevPricingOptions.map((option) => ({
-          ...option,
-          price: {
-            value: parseFloat(watch("price").toString()),
-          },
-        }))
-      );
+      const newPrice = parseFloat(watch("price").toString());
+
+      if (isNaN(newPrice) || newPrice <= 0) {
+        setPricingOptions((prevPricingOptions) =>
+          prevPricingOptions.map((option) => ({
+            ...option,
+            price: {
+              value: newPrice,
+            },
+          }))
+        );
+      }
     }
   }, [watch("price")]);
 
@@ -245,6 +249,13 @@ const AddItemForm = () => {
           status: visibility.status as StatusEnum,
         }));
         setVisibilities(formattedVisibilities);
+        const formattedPricingOption = item.priceOptions.map((price) => ({
+          menuType: price.menuType,
+          price: {
+            value: price.price.value,
+          },
+        }));
+        setPricingOptions(formattedPricingOption);
         console.log("set Visibility:", visibilities);
         console.log("Item Visibility:", item.visibility);
         setPricingOptions(item.priceOptions);
@@ -682,9 +693,11 @@ const AddItemForm = () => {
     setShowConfirmationModal(false);
   };
 
-  const handlePriceChange = (newPrice: number, index: number) => {
+  const handlePriceChange = (newPrice: string, index: number) => {
     const updatedPricingOptions = [...pricingOptions];
-    updatedPricingOptions[index].price.value = newPrice;
+    updatedPricingOptions[index].price.value = roundOffPrice(
+      parseFloat(newPrice.toString())
+    );
     setPricingOptions(updatedPricingOptions);
   };
 

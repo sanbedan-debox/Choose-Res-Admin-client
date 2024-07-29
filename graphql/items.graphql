@@ -30,6 +30,12 @@ query getItems {
       menuType
       status
     }
+    priceOptions {
+      price {
+        value
+      }
+      menuType
+    }
   }
 }
 

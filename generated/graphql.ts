@@ -1864,7 +1864,7 @@ export type DeleteItemMutation = { __typename?: 'Mutation', deleteItem: boolean 
 export type GetItemsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetItemsQuery = { __typename?: 'Query', getItems: Array<{ __typename?: 'Item', _id: string, status: StatusEnum, name: { __typename?: 'MasterCommon', value: string }, desc: { __typename?: 'MasterCommon', value: string }, modifierGroup: Array<{ __typename?: 'ModifierGroupInfo', id: string, name: { __typename?: 'MasterCommon', _id: string, value: string } }>, price: { __typename?: 'MasterCommonNumber', _id: string, value: number }, visibility: Array<{ __typename?: 'Visibility', menuType: MenuTypeEnum, status: StatusEnum }> }> };
+export type GetItemsQuery = { __typename?: 'Query', getItems: Array<{ __typename?: 'Item', _id: string, status: StatusEnum, name: { __typename?: 'MasterCommon', value: string }, desc: { __typename?: 'MasterCommon', value: string }, modifierGroup: Array<{ __typename?: 'ModifierGroupInfo', id: string, name: { __typename?: 'MasterCommon', _id: string, value: string } }>, price: { __typename?: 'MasterCommonNumber', _id: string, value: number }, visibility: Array<{ __typename?: 'Visibility', menuType: MenuTypeEnum, status: StatusEnum }>, priceOptions: Array<{ __typename?: 'PriceOptions', menuType: MenuTypeEnum, price: { __typename?: 'MasterCommonNumber', value: number } }> }> };
 
 export type GetItemQueryVariables = Exact<{
   id: Scalars['String']['input'];
@@ -2457,6 +2457,12 @@ export const GetItemsDocument = gql`
     visibility {
       menuType
       status
+    }
+    priceOptions {
+      price {
+        value
+      }
+      menuType
     }
   }
 }
