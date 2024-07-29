@@ -2199,6 +2199,13 @@ export type RemoveTeamMemberMutationVariables = Exact<{
 
 export type RemoveTeamMemberMutation = { __typename?: 'Mutation', removeTeamMember: boolean };
 
+export type VerifyTeamEmailMutationVariables = Exact<{
+  token: Scalars['String']['input'];
+}>;
+
+
+export type VerifyTeamEmailMutation = { __typename?: 'Mutation', verifyTeamEmail: boolean };
+
 
 export const LogoutDocument = gql`
     query Logout {
@@ -3029,6 +3036,11 @@ export const RemoveTeamMemberDocument = gql`
   removeTeamMember(id: $teamId)
 }
     `;
+export const VerifyTeamEmailDocument = gql`
+    mutation verifyTeamEmail($token: String!) {
+  verifyTeamEmail(token: $token)
+}
+    `;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string, variables?: any) => Promise<T>;
 
@@ -3249,6 +3261,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     removeTeamMember(variables: RemoveTeamMemberMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<RemoveTeamMemberMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<RemoveTeamMemberMutation>(RemoveTeamMemberDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'removeTeamMember', 'mutation', variables);
+    },
+    verifyTeamEmail(variables: VerifyTeamEmailMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<VerifyTeamEmailMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<VerifyTeamEmailMutation>(VerifyTeamEmailDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'verifyTeamEmail', 'mutation', variables);
     }
   };
 }

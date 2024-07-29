@@ -28,7 +28,9 @@ export const extractErrorMessage = (error: any): string => {
 export const roundOffPrice = (price: number) => {
     const decimalPart = price % 1;
 
-    if (decimalPart < 0.50) {
+    if (decimalPart === 0) {
+        return price;
+    } else if (decimalPart < 0.50) {
         return Math.floor(price) + 0.49;
     } else {
         return Math.floor(price) + 0.99;

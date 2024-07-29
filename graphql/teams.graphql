@@ -19,3 +19,9 @@ query getTeamMembers {
 mutation removeTeamMember($teamId: String!) {
   removeTeamMember(id: $teamId)
 }
+
+
+
+mutation verifyTeamEmail($token:String!){
+  verifyTeamEmail(token:$token)
+}

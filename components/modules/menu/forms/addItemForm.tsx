@@ -650,7 +650,8 @@ const AddItemForm = () => {
   const handleToggleSwitch = () => {
     if (visibilities.length > 1) {
       if (watch("status")) {
-        setValue("status", !watch("status"));
+        // setValue("status", !watch("status"));
+        setShowConfirmationModal(true);
       } else {
         setShowConfirmationModal(true);
       }
@@ -671,7 +672,7 @@ const AddItemForm = () => {
     setValue("status", !watch("status"));
     const updatedVisibilities = visibilities.map((vib) => ({
       menuType: vib.menuType,
-      status: StatusEnum.Active,
+      status: watch("status") ? StatusEnum.Active : StatusEnum.Inactive,
     }));
     setVisibilities(updatedVisibilities);
     setShowConfirmationModal(false);
@@ -679,6 +680,12 @@ const AddItemForm = () => {
   const handleRejection = async () => {
     setValue("status", !watch("status"));
     setShowConfirmationModal(false);
+  };
+
+  const handlePriceChange = (newPrice: number, index: number) => {
+    const updatedPricingOptions = [...pricingOptions];
+    updatedPricingOptions[index].price.value = newPrice;
+    setPricingOptions(updatedPricingOptions);
   };
 
   return (
@@ -781,6 +788,50 @@ const AddItemForm = () => {
               </p>
             )}
           </div>
+          {pricingOptions && (
+            <div className="mb-1">
+              <label
+                htmlFor="visibilityOptions"
+                className="block mb-2 text-sm font-medium text-left text-gray-700"
+              >
+                Pricing Options
+              </label>
+              <div className="grid grid-cols-1 gap-4">
+                {pricingOptions?.map((option, index) => (
+                  <div
+                    key={index}
+                    className="flex justify-between items-center p-4 border rounded-md shadow-sm bg-white"
+                  >
+                    <div>
+                      <h3 className="font-semibold text-start text-md">
+                        {option?.menuType}
+                      </h3>
+                      <p className="text-gray-600 text-sm">
+                        You can Modify the price for this menu that the
+                        customers will see
+                      </p>
+                    </div>
+                    <input
+                      type="number"
+                      value={option?.price?.value || ""}
+                      onChange={(e) => handlePriceChange(e.target.value, index)}
+                      className="input input-primary w-20"
+                      placeholder="Enter item price"
+                      style={{ appearance: "textfield" }}
+                      inputMode="decimal"
+                      step="0.01"
+                      onWheel={(e) => e.preventDefault()}
+                      onKeyDown={(e) => {
+                        if (e.key === "e" || e.key === "-" || e.key === "+") {
+                          e.preventDefault();
+                        }
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="col-span-1">
             <label className="block mb-2 text-lg font-medium text-left text-gray-700">
