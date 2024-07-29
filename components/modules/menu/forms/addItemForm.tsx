@@ -168,7 +168,7 @@ const AddItemForm = () => {
 
       const updatedVisibilities = menuItems.map((menu) => ({
         menuType: menu.type,
-        status: StatusEnum.Inactive,
+        status: StatusEnum.Inactive as StatusEnum,
       }));
       const updatedPricings = menuItems.map((menu) => ({
         menuType: menu.type,
@@ -242,7 +242,7 @@ const AddItemForm = () => {
         setValue("isVegan", item.isVegan);
         const formattedVisibilities = item.visibility.map((visibility) => ({
           menuType: visibility.menuType,
-          status: visibility.status,
+          status: visibility.status as StatusEnum,
         }));
         setVisibilities(formattedVisibilities);
         console.log("set Visibility:", visibilities);
@@ -274,8 +274,8 @@ const AddItemForm = () => {
   };
 
   useEffect(() => {
-    fetchItemData();
     fetchMenuData();
+    fetchItemData();
   }, [editItemId, setValue, setToastData]);
 
   useEffect(() => {
@@ -315,6 +315,7 @@ const AddItemForm = () => {
       let updateInput: any = {
         _id: editItemId || "",
         priceOptions: pricingOptions,
+        visibility: visibilities,
       };
       let hasChanges = false;
       const imgUrl = await handleLogoUpload();
@@ -881,39 +882,41 @@ const AddItemForm = () => {
               </p>
             )}
           </div>
-          <div className="mb-1">
-            <label
-              htmlFor="visibilityOptions"
-              className="block mb-2 text-sm font-medium text-left text-gray-700"
-            >
-              Visibility Options
-            </label>
-            <div className="grid grid-cols-1 gap-4">
-              {visibilities?.map((visibility, index) => (
-                <CustomSwitchCard
-                  key={index}
-                  label={visibility.menuType}
-                  title={visibility.menuType}
-                  caption={`Do you want to activate for this type ${visibility.menuType}?`}
-                  switchChecked={visibility.status === StatusEnum.Active}
-                  onSwitchChange={() => {
-                    const updatedVisibilities = visibilities.map((vib) =>
-                      vib.menuType === visibility.menuType
-                        ? {
-                            ...vib,
-                            status:
-                              vib.status === StatusEnum.Active
-                                ? StatusEnum.Inactive
-                                : StatusEnum.Active,
-                          }
-                        : vib
-                    );
-                    setVisibilities(updatedVisibilities);
-                  }}
-                />
-              ))}
+          {visibilities && (
+            <div className="mb-1">
+              <label
+                htmlFor="visibilityOptions"
+                className="block mb-2 text-sm font-medium text-left text-gray-700"
+              >
+                Visibility Options
+              </label>
+              <div className="grid grid-cols-1 gap-4">
+                {visibilities?.map((visibility, index) => (
+                  <CustomSwitchCard
+                    key={index}
+                    label={visibility.menuType}
+                    title={visibility.menuType}
+                    caption={`Do you want to activate for this type ${visibility.menuType}?`}
+                    switchChecked={visibility.status === StatusEnum.Active}
+                    onSwitchChange={() => {
+                      const updatedVisibilities = visibilities.map((vib) =>
+                        vib.menuType === visibility.menuType
+                          ? {
+                              ...vib,
+                              status:
+                                vib.status === StatusEnum.Active
+                                  ? StatusEnum.Inactive
+                                  : StatusEnum.Active,
+                            }
+                          : vib
+                      );
+                      setVisibilities(updatedVisibilities);
+                    }}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
+          )}
           <div>
             <label
               htmlFor="Options"
@@ -1075,12 +1078,12 @@ const AddItemForm = () => {
       </ReusableModal>
       <ReusableModal
         title="Confirm Status Change"
-        comments="Do you want to change for All the menus"
+        comments="Do you want to change the visibility for All the menus"
         isOpen={showConfirmationModal}
         onClose={handleCloseConfirmationModal}
-        width="sm"
+        width="md"
       >
-        <div className="flex justify-end mt-4">
+        <div className="flex justify-end mt-4 space-x-4">
           <CButton
             loading={btnLoading}
             variant={ButtonType.Outlined}

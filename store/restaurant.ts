@@ -6,7 +6,7 @@ type RestaurantStates = {
   selectedRestaurant: string;
   setSelectedRestaurant: (location: string) => void;
   selectedRestaurantTaxRate: string;
-  setSelectedRestaurantTaxRate: (location: string) => void;
+  setSelectedRestaurantTaxRate: (tax: string) => void;
   refreshRestaurantChange: boolean;
   setRefreshRestaurantChange: (res: boolean) => void;
 

@@ -140,19 +140,17 @@ const AddCategoryForm = () => {
       };
 
       let hasChanges = false;
-
-      if (data.name !== changesMenu[0]?.name.value) {
-        updateInput.name = {
-          value: data.name,
-        };
+      const addChange = (field: string, newValue: any) => {
+        updateInput[field] = { value: newValue };
         hasChanges = true;
+      };
+
+      if (data.name !== changesMenu?.name?.value) {
+        addChange("name", data.name);
       }
 
-      if (data.description !== changesMenu[0]?.desc.value) {
-        updateInput.desc = {
-          value: data.description,
-        };
-        hasChanges = true;
+      if (data.description !== changesMenu?.desc?.value) {
+        addChange("desc", data.description);
       }
 
       setBtnLoading(true);

@@ -123,6 +123,23 @@ const Navbar: React.FC = () => {
       setSuggestions([]);
     }
   }, [searchQuery]);
+
+  const handleAddRestaurant = async () => {
+    try {
+      const res = await sdk.setRestaurantIdAsCookie({
+        id: "",
+      });
+      if (res.setRestaurantIdAsCookie) {
+        router.push("/onboarding-restaurant/restaurant-basic-information");
+      }
+    } catch (error) {
+      const errorMessage = extractErrorMessage(error);
+      setToastData({
+        type: "error",
+        message: errorMessage,
+      });
+    }
+  };
   return (
     <nav
       className={`text-black p-4 bg-white fixed top-0 z-10 transition-all duration-300 ${
@@ -170,29 +187,29 @@ const Navbar: React.FC = () => {
                         </div>
                       ))
                     ) : (
-                      <Link
+                      <div
                         className="block px-4 py-2 text-sm hover:bg-primary hover:text-white"
-                        href="/onboarding-restaurant/restaurant-basic-information"
+                        onClick={() => handleAddRestaurant()}
                       >
                         <CButton variant={ButtonType.Primary}>
                           Add Restaurant
                         </CButton>
-                      </Link>
+                      </div>
                     )}
-                    <Link
-                      className="block px-4 py-2 text-sm hover:bg-primary hover:text-white"
-                      href="/onboarding-restaurant/restaurant-basic-information"
+                    <div
+                      className="block px-4 cursor-pointer py-2 text-sm hover:bg-primary hover:text-white"
+                      onClick={() => handleAddRestaurant()}
                     >
                       Add Restaurant
-                    </Link>
+                    </div>
                   </div>
                 </div>
               )}
             </div>
           ) : (
-            <Link href="/onboarding-restaurant/restaurant-basic-information">
+            <div onClick={() => handleAddRestaurant()}>
               <CButton variant={ButtonType.Primary}>Add Restaurant</CButton>
-            </Link>
+            </div>
           )}
         </div>
 

@@ -125,7 +125,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 existingTaxRate.salesTax?.value.toString() || ""
               );
               setValue("default", existingTaxRate.default || false);
-
+              setSelectedRestaurantTaxRate(existingTaxRate._id);
               setIsSaveButtonEnabled(false);
               setExistingTaxRateId(existingTaxRate._id);
               setIsButtonVisible(false); // Hide the button initially
