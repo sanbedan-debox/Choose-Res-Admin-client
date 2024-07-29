@@ -508,16 +508,6 @@ const RestaurantAvailability = () => {
         </div>
 
         <div>
-          {/* <AvailabilityForm
-            control={control}
-            errors={errors}
-            getValues={getValues}
-            register={register}
-            setValue={setValue}
-            watch={watch}
-            key={null}
-          /> */}
-
           <AvailabilityComponent
             availability={availability}
             setAvailability={setAvailability}

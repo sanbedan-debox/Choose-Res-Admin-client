@@ -132,7 +132,7 @@ const SetupGuide: React.FC<{ steps: Step[] }> = ({ steps }) => {
               onClick={() => {
                 completeRes(restaurant.id);
               }}
-              className="block p-4 transition-transform transform bg-primary bg-opacity-5 shadow-lg rounded-lg "
+              className="block p-4 cursor-pointer transition-transform transform bg-primary bg-opacity-5 shadow-lg rounded-lg "
             >
               <div className="flex justify-between items-center">
                 <h3 className="text-lg font-semibold">{restaurant.name}</h3>
@@ -143,7 +143,7 @@ const SetupGuide: React.FC<{ steps: Step[] }> = ({ steps }) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      {/* <div className="grid grid-cols-2 gap-4">
         {steps.map((step, index) => (
           <div
             key={index}
@@ -159,7 +159,7 @@ const SetupGuide: React.FC<{ steps: Step[] }> = ({ steps }) => {
         <div className="flex cursor-pointer hover:bg-primary hover:bg-opacity-10 items-center bg-primary bg-opacity-5 p-4 rounded-md space-x-2">
           <span className="text-sm font-semibold">+ View all steps</span>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

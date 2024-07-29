@@ -25,7 +25,7 @@ type UserRepo = {
 };
 
 const Dashboard: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
-  const { setSelectedMenu } = useGlobalStore();
+  const { setSelectedMenu, isShowSetupPanel } = useGlobalStore();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState<
@@ -77,58 +77,7 @@ const Dashboard: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
     return <Loader />;
   }
 
-  return (
-    <div>
-      <DynamicSetupGuide />
-    </div>
-    // <div className="p-4">
-    //   <div className="text-2xl font-semibold">Welcome, {repo.firstName}!</div>
-    //   <div className="mt-4 flex">
-    //     <input
-    //       type="text"
-    //       placeholder="What are you looking for..."
-    //       className="input input-primary w-full"
-    //       value={searchQuery}
-    //       onChange={(e) => setSearchQuery(e.target.value)}
-    //     />
-    //     {suggestions.length > 0 && (
-    //       <ul className="absolute bg-white border border-gray-200 mt-9 rounded-lg shadow-lg">
-    //         {suggestions.map((suggestion) => (
-    //           <a key={suggestion.name} href="href={suggestion.link}">
-    //             <li
-    //               key={suggestion.name}
-    //               className="hover:bg-primary hover:text-white p-2"
-    //             >
-    //               <p>{suggestion.name}</p>
-    //             </li>
-    //           </a>
-    //         ))}
-    //       </ul>
-    //     )}
-    //   </div>
-
-    //   <div className="mt-6 grid grid-cols-1 lg:grid-cols-4 gap-4">
-    //     <div className="col-span-1">
-    //       <QuickActions />
-    //     </div>
-    //     <div className="col-span-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-    //       <StatCard title="Net Sales" value="$0" />
-    //       <StatCard title="Labor Cost % of Net Sales" value="-" />
-    //       <StatCard title="Discounts" value="$0" />
-    //       <QrCard />
-    //       <StatCard
-    //         title="Net Sales by Category"
-    //         value="Sorry, you have no net sales by category data to display at this time."
-    //       />
-    //       <StatCard
-    //         title="Net Sales by Item"
-    //         value="Sorry, you have no net sales by items data to display at this time."
-    //       />
-    //       <BreakdownTable />
-    //     </div>
-    //   </div>
-    // </div>
-  );
+  return <div>{isShowSetupPanel && <DynamicSetupGuide />}</div>;
 };
 
 Dashboard.getLayout = function getLayout(page: React.ReactNode) {

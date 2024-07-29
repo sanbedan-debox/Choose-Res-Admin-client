@@ -170,6 +170,7 @@ const AddItemForm = () => {
         menuType: menu.type,
         status: StatusEnum.Inactive as StatusEnum,
       }));
+
       const updatedPricings = menuItems.map((menu) => ({
         menuType: menu.type,
         price: {
@@ -178,21 +179,25 @@ const AddItemForm = () => {
       }));
 
       setVisibilities(updatedVisibilities);
+      console.log("Fetch Menus", pricingOptions);
+
       setPricingOptions(updatedPricings);
     } catch (error) {
       console.error("Error fetching menu data:", error);
     }
   };
   useEffect(() => {
-    if (pricingOptions.length > 0) {
-      setPricingOptions((prevPricingOptions) =>
-        prevPricingOptions.map((option) => ({
-          ...option,
-          price: {
-            value: parseFloat(watch("price").toString()),
-          },
-        }))
-      );
+    if (!isEditItem) {
+      if (pricingOptions.length > 0) {
+        setPricingOptions((prevPricingOptions) =>
+          prevPricingOptions.map((option) => ({
+            ...option,
+            price: {
+              value: parseFloat(watch("price").toString()),
+            },
+          }))
+        );
+      }
     }
   }, [watch("price")]);
 
@@ -254,7 +259,6 @@ const AddItemForm = () => {
         setPricingOptions(formattedPricingOption);
         console.log("set Visibility:", visibilities);
         console.log("Item Visibility:", item.visibility);
-        setPricingOptions(item.priceOptions);
         const formateditemlist = item?.modifierGroup.map((el) => ({
           _id: el?.id,
           name: el?.name?.value ?? "",
@@ -797,12 +801,9 @@ const AddItemForm = () => {
               </p>
             )}
           </div>
-          {pricingOptions && (
+          {pricingOptions.length > 0 && (
             <div className="mb-1">
-              <label
-                htmlFor="visibilityOptions"
-                className="block mb-2 text-sm font-medium text-left text-gray-700"
-              >
+              <label className="block mb-2 text-sm font-medium text-left text-gray-700">
                 Pricing Options
               </label>
               <div className="grid grid-cols-1 gap-4">
@@ -942,7 +943,7 @@ const AddItemForm = () => {
               </p>
             )}
           </div>
-          {visibilities && (
+          {visibilities.length > 0 && (
             <div className="mb-1">
               <label
                 htmlFor="visibilityOptions"
