@@ -185,18 +185,14 @@ const AddItemForm = () => {
   };
   useEffect(() => {
     if (pricingOptions.length > 0) {
-      const newPrice = parseFloat(watch("price").toString());
-
-      if (isNaN(newPrice) || newPrice <= 0) {
-        setPricingOptions((prevPricingOptions) =>
-          prevPricingOptions.map((option) => ({
-            ...option,
-            price: {
-              value: newPrice,
-            },
-          }))
-        );
-      }
+      setPricingOptions((prevPricingOptions) =>
+        prevPricingOptions.map((option) => ({
+          ...option,
+          price: {
+            value: parseFloat(watch("price").toString()),
+          },
+        }))
+      );
     }
   }, [watch("price")]);
 
