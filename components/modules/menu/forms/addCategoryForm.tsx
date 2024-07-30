@@ -321,10 +321,10 @@ const AddCategoryForm = () => {
         }
       } else {
         // EDIT CATEGORIES
-        hasChanges &&
-          (await sdk.updateCategory({
-            input: updateInput,
-          }));
+
+        await sdk.updateCategory({
+          input: updateInput,
+        });
 
         isMenuAdded &&
           (await sdk.addItemToCategory({
