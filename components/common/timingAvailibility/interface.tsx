@@ -1,4 +1,4 @@
-import { Day } from "@/generated/graphql";
+import { AvailabilityInput, Day } from "@/generated/graphql";
 import moment from "moment";
 
 export interface Availability {
