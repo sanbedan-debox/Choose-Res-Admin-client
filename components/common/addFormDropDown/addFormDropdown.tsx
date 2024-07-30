@@ -5,6 +5,7 @@ import { ButtonType } from "@/components/common/button/interface";
 
 import { BsArrowUpRightCircle } from "react-icons/bs";
 import { IoIosAddCircleOutline } from "react-icons/io";
+import CustomSwitch from "../customSwitch/customSwitch";
 
 interface Props {
   title: string;
@@ -61,13 +62,21 @@ const AddFormDropdown: React.FC<Props> = ({
         <ul>
           {filteredItems?.map((item) => (
             <li key={item._id} className="flex items-center p-2 border-b">
-              <input
+              {/* <input
                 aria-label="Add item"
                 type="checkbox"
                 checked={tempSelectedItems.some(
                   (selectedItem) => selectedItem._id === item._id
                 )}
                 onChange={() => handleItemClick(item)}
+                className="mr-2"
+              /> */}
+              <CustomSwitch
+                checked={tempSelectedItems.some(
+                  (selectedItem) => selectedItem._id === item._id
+                )}
+                onChange={() => handleItemClick(item)}
+                label="Add item"
                 className="mr-2"
               />
               <div className="flex flex-1 justify-between">
