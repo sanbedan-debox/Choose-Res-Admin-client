@@ -5,6 +5,10 @@ import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
 import { sdk } from "@/utils/graphqlClient";
 import MainLayout from "@/components/layouts/mainBodyLayout";
+import MenuSection from "@/components/common/menuSection/menuSection";
+import BusinessInformationForm from "@/components/modules/profile/forms/businessInformationForm";
+import LocationDetailsForm from "@/components/modules/profile/forms/locationDetailsForm";
+import IdentityVerificationForm from "@/components/modules/profile/forms/identityVerificationForm";
 
 type NextPageWithLayout = React.FC & {
   getLayout?: (page: React.ReactNode) => React.ReactNode;
@@ -27,12 +31,30 @@ const Profile: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
   if (!repo) {
     return <Loader />;
   }
+  const contentList = [
+    {
+      id: "businessInformation",
+      title: "Business Information",
+      Component: BusinessInformationForm,
+    },
+    {
+      id: "locationDetails",
+      title: "Location Details",
+      Component: LocationDetailsForm,
+    },
+    {
+      id: "identityVerification",
+      title: "Identity Verification",
+      Component: IdentityVerificationForm,
+    },
+  ];
 
   return (
     <div className="text-black">
-      <p>Welcome, {repo.firstName}!</p>
+      {/* <p>Welcome, {repo.firstName}!</p>
       <p>Welcome, {repo.email}!</p>
-      <p>Your id: {repo._id}</p>
+      <p>Your id: {repo._id}</p> */}
+      <MenuSection contentList={contentList} />
     </div>
   );
 };
