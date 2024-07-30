@@ -221,7 +221,7 @@ const RestaurantAdditionalInformation = () => {
             {...register("instagramLink", {
               pattern: {
                 value:
-                  /^(https?:\/\/)?(www\.)?instagram\.com\/[a-zA-Z0-9_-]{1,}$/i,
+                  /(?:(?:http|https):\/\/)?(?:www\.)?(?:instagram\.com|instagr\.am)\/([A-Za-z0-9-_\.]+)/im,
                 message: "Invalid Instagram link format",
               },
             })}
@@ -249,7 +249,7 @@ const RestaurantAdditionalInformation = () => {
             {...register("facebookLink", {
               pattern: {
                 value:
-                  /^(https?:\/\/)?(www\.)?facebook\.com\/[a-zA-Z0-9_-]{1,}$/i,
+                  /(?:https?:\/\/)?(?:www\.)?(mbasic.facebook|m\.facebook|facebook|fb)\.(com|me)\/(?:(?:\w\.)*#!\/)?(?:pages\/)?(?:[\w\-\.]*\/)*([\w\-\.]*)/gi,
                 message: "Invalid Facebook link format",
               },
             })}

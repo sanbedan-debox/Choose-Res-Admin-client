@@ -74,6 +74,11 @@ query getCategory($id: String!) {
       }
       status
     }
+    visibility {
+      menuType
+      status
+    }
+
     # availability
     createdAt
     updatedAt

@@ -249,16 +249,19 @@ const AddItemForm = () => {
           menuType: visibility.menuType,
           status: visibility.status as StatusEnum,
         }));
-        setVisibilities(formattedVisibilities);
+        if (formattedVisibilities.length > 0) {
+          setVisibilities(formattedVisibilities);
+        }
         const formattedPricingOption = item.priceOptions.map((price) => ({
           menuType: price.menuType,
           price: {
             value: price.price.value,
           },
         }));
-        setPricingOptions(formattedPricingOption);
-        console.log("set Visibility:", visibilities);
-        console.log("Item Visibility:", item.visibility);
+        if (formattedPricingOption.length > 0) {
+          setPricingOptions(formattedPricingOption);
+        }
+
         const formateditemlist = item?.modifierGroup.map((el) => ({
           _id: el?.id,
           name: el?.name?.value ?? "",
@@ -764,12 +767,12 @@ const AddItemForm = () => {
               htmlFor="price"
               className="block mb-2 text-sm font-medium text-left text-gray-700"
             >
-              Price
+              Base Price
             </label>
             <input
               type="number"
               {...register("price", {
-                required: "Price is required",
+                required: "Base Price is required",
                 pattern: {
                   value: /^\d+(\.\d{1,2})?$/,
                   message: "Enter a valid price (e.g., 7.99)",

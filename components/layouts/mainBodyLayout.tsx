@@ -79,6 +79,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           type: "success",
         });
       }
+      router.reload();
       fetchRestaurantUsers();
       setisShowTaxSettings(false);
     } catch (error) {
@@ -87,12 +88,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     }
   };
 
-  const {
-    setRestaurants,
-    setSelectedRestaurant,
-    selectedRestaurant,
-    refreshRestaurantChange,
-  } = useRestaurantsStore();
+  const { setRestaurants, setSelectedRestaurant } = useRestaurantsStore();
   const { setSelectedRestaurantTaxRate } = useRestaurantsStore();
   const { setTaxRate } = useAuthStore();
   const router = useRouter();
@@ -128,12 +124,12 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               setSelectedRestaurantTaxRate(existingTaxRate._id);
               setIsSaveButtonEnabled(false);
               setExistingTaxRateId(existingTaxRate._id);
-              setIsButtonVisible(false); // Hide the button initially
+              setIsButtonVisible(false);
             } else {
               setIsSaveButtonEnabled(true);
-              setExistingTaxRateId(null); // Ensure ID is null if no tax rate exists
-              setButtonTitle("Add"); // Set button title to "Add"
-              setIsButtonVisible(true); // Show the button initially
+              setExistingTaxRateId(null);
+              setButtonTitle("Add");
+              setIsButtonVisible(true);
             }
 
             const formattedTaxRate = taxRates.map((rate) => ({
@@ -182,8 +178,8 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       currentFormValues.salesTax !== initialFormValues.salesTax ||
       currentFormValues.default !== initialFormValues.default;
     setIsSaveButtonEnabled(hasChanges);
-    setButtonTitle("Update"); // Set button title to "Update" on changes
-    setIsButtonVisible(true); // Show the button on changes
+    setButtonTitle("Update");
+    setIsButtonVisible(true);
   };
 
   useEffect(() => {

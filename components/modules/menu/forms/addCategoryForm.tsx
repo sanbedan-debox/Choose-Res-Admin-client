@@ -10,7 +10,11 @@ import {
   isValidNameAlphabetic,
 } from "@/utils/utilFUncs";
 import useGlobalStore from "@/store/global";
-import { FilterOperatorsEnum } from "@/generated/graphql";
+import {
+  FilterOperatorsEnum,
+  MenuTypeEnum,
+  StatusEnum,
+} from "@/generated/graphql";
 import useMenuOptionsStore from "@/store/menuOptions";
 import useMenuCategoryStore from "@/store/menuCategory";
 import FormAddTable from "@/components/common/table/formTable";
@@ -21,6 +25,7 @@ import useMenuItemsStore from "@/store/menuItems";
 import ReusableModal from "@/components/common/modal/modal";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import { RiEditCircleLine } from "react-icons/ri";
+import CustomSwitchCard from "@/components/common/customSwitchCard/customSwitchCard";
 
 interface IFormInput {
   name: string;
@@ -50,7 +55,6 @@ const AddCategoryForm = () => {
     ItemsDropDownType[]
   >([]);
 
-  //HELP
   const [changesMenu, setChangesMenu] = useState<any>([]);
   const { setEditItemId, setisEditItem } = useMenuItemsStore();
 
@@ -76,37 +80,69 @@ const AddCategoryForm = () => {
     control,
   } = useForm<IFormInput>();
 
-  useEffect(() => {
-    const fetchItemData = async () => {
-      if (editCatsId) {
-        try {
-          const response = await sdk.getCategory({ id: editCatsId });
-          const item = response.getCategory;
-          setChangesMenu(response.getCategory);
-          setValue("name", item.name.value);
-          const nameDup = generateUniqueName(item?.name?.value);
-          if (isDuplicateCats) {
-            setValue("name", nameDup);
-          }
-          setValue("description", item.desc.value);
-          const formateditemlist = item?.items.map((el) => ({
-            _id: el.id,
-            name: el?.name?.value ?? "",
-            price: el?.price?.value ?? "",
-            image: el?.image ?? "",
-          }));
-          setSelectedItems(formateditemlist);
-          setTempSelectedItems(formateditemlist);
-          setprevItemsbfrEdit(formateditemlist);
-        } catch (error) {
-          const errorMessage = extractErrorMessage(error);
-          setToastData({
-            type: "error",
-            message: errorMessage,
-          });
+  const [visibilities, setVisibilities] = useState<
+    {
+      menuType: MenuTypeEnum;
+      status: StatusEnum;
+    }[]
+  >([]);
+  const fetchMenuData = async () => {
+    try {
+      const response = await sdk.getMenuByRestaurant();
+      const menuItems = response.getMenuByRestaurant.map((menu) => ({
+        name: menu.name.value,
+        type: menu.type,
+      }));
+
+      const updatedVisibilities = menuItems.map((menu) => ({
+        menuType: menu.type,
+        status: StatusEnum.Inactive as StatusEnum,
+      }));
+
+      setVisibilities(updatedVisibilities);
+    } catch (error) {
+      console.error("Error fetching menu data:", error);
+    }
+  };
+  const fetchItemData = async () => {
+    if (editCatsId) {
+      try {
+        const response = await sdk.getCategory({ id: editCatsId });
+        const item = response.getCategory;
+        setChangesMenu(response.getCategory);
+        setValue("name", item.name.value);
+        const nameDup = generateUniqueName(item?.name?.value);
+        if (isDuplicateCats) {
+          setValue("name", nameDup);
         }
+        setValue("description", item.desc.value);
+        const formateditemlist = item?.items.map((el) => ({
+          _id: el.id,
+          name: el?.name?.value ?? "",
+          price: el?.price?.value ?? "",
+          image: el?.image ?? "",
+        }));
+        const formattedVisibilities = item.visibility.map((visibility) => ({
+          menuType: visibility.menuType,
+          status: visibility.status as StatusEnum,
+        }));
+        if (formattedVisibilities.length > 0) {
+          setVisibilities(formattedVisibilities);
+        }
+        setSelectedItems(formateditemlist);
+        setTempSelectedItems(formateditemlist);
+        setprevItemsbfrEdit(formateditemlist);
+      } catch (error) {
+        const errorMessage = extractErrorMessage(error);
+        setToastData({
+          type: "error",
+          message: errorMessage,
+        });
       }
-    };
+    }
+  };
+  useEffect(() => {
+    fetchMenuData();
 
     fetchItemData();
   }, [editCatsId, setValue, setToastData]);
@@ -137,6 +173,7 @@ const AddCategoryForm = () => {
 
       const updateInput: any = {
         _id: editCatsId || "",
+        visibility: visibilities,
       };
 
       let hasChanges = false;
@@ -172,6 +209,7 @@ const AddCategoryForm = () => {
               value: data.description,
             },
             items: selectedItemsIds,
+            visibility: visibilities,
           },
         });
 
@@ -427,7 +465,41 @@ const AddCategoryForm = () => {
             The Items on your category (eg. Pizza,Burger,Chocolate Cake).
           </p>
         </div>
-
+        {visibilities.length > 0 && (
+          <div className="mb-1">
+            <label
+              htmlFor="visibilityOptions"
+              className="block mb-2 text-sm font-medium text-left text-gray-700"
+            >
+              Visibility Options
+            </label>
+            <div className="grid grid-cols-1 gap-4">
+              {visibilities?.map((visibility, index) => (
+                <CustomSwitchCard
+                  key={index}
+                  label={visibility.menuType}
+                  title={visibility.menuType}
+                  caption={`Do you want to activate for this type ${visibility.menuType}?`}
+                  switchChecked={visibility.status === StatusEnum.Active}
+                  onSwitchChange={() => {
+                    const updatedVisibilities = visibilities.map((vib) =>
+                      vib.menuType === visibility.menuType
+                        ? {
+                            ...vib,
+                            status:
+                              vib.status === StatusEnum.Active
+                                ? StatusEnum.Inactive
+                                : StatusEnum.Active,
+                          }
+                        : vib
+                    );
+                    setVisibilities(updatedVisibilities);
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        )}
         <CButton
           loading={btnLoading}
           variant={ButtonType.Primary}

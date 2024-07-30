@@ -155,6 +155,58 @@ const RestaurantAvailability = () => {
     setPlace,
   } = RestaurantOnboardingStore();
 
+  async function fetchBusinessDetails() {
+    try {
+      const response = await sdk.getBusinessDetails();
+      const businessDetails = response.getBusinessDetails.address;
+
+      setValue("addressLine1", businessDetails?.addressLine1?.value || "");
+      setAddressLine1(businessDetails?.addressLine1?.value || "");
+
+      setValue("addressLine2", businessDetails?.addressLine2?.value || "");
+      setAddressLine2(businessDetails?.addressLine2?.value || "");
+
+      setValue("city", businessDetails?.city?.value || "");
+      setCity(businessDetails?.city?.value || "");
+
+      setValue("state", {
+        id: businessDetails?.state?._id || "",
+        value: businessDetails?.state?.value || "",
+      });
+      setState({
+        id: businessDetails?.state?._id || "",
+        value: businessDetails?.state?.value || "",
+      });
+
+      setValue("postcode", businessDetails?.postcode?.value || "");
+      setPostcode(businessDetails?.postcode?.value || "");
+
+      setSelectedPlace({
+        label: businessDetails?.place?.displayName || "",
+        value: businessDetails?.place?.displayName || "",
+      });
+      setPlace({
+        displayName: businessDetails?.place?.displayName || "",
+        placeId: businessDetails?.place?.placeId || "",
+      });
+
+      const coordinates = businessDetails?.coordinate?.coordinates;
+      if (coordinates && coordinates.length === 2) {
+        setCoords(coordinates);
+        setCords([coordinates[0], coordinates[1]]);
+      } else {
+        setCoords([0, 0]);
+        setCords([0, 0]);
+      }
+    } catch (error) {
+      console.error("Failed to fetch business details:", error);
+      setToastData({
+        type: "error",
+        message: "Failed to fetch business details",
+      });
+    }
+  }
+
   useEffect(() => {
     setValue("addressLine1", addressLine1);
     setValue("addressLine2", addressLine2);
@@ -292,9 +344,18 @@ const RestaurantAvailability = () => {
         className="space-y-4 md:space-y-3 w-full max-w-2xl"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <label className="block mb-2 text-lg font-medium text-left text-gray-700">
-          Address
-        </label>
+        <div className="flex justify-between items-center">
+          <label className="block mb-2 text-lg font-medium text-left text-gray-700">
+            Address
+          </label>
+          <button
+            type="button"
+            className="text-sm text-blue-500 hover:underline focus:outline-none"
+            onClick={fetchBusinessDetails}
+          >
+            Copy address from business details
+          </button>
+        </div>
         <div className="col-span-2">
           <label className="block mb-2 text-sm font-medium text-left text-gray-700">
             Address Line 1

@@ -96,6 +96,7 @@ query getBusinessDetails {
         value
       }
       state {
+        _id
         value
       }
       city {
@@ -109,6 +110,7 @@ query getBusinessDetails {
       }
       place {
         displayName
+        placeId
       }
     }
   }

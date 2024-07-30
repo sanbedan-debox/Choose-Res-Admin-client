@@ -72,6 +72,7 @@ const SetupGuide: React.FC<{ steps: Step[] }> = ({ steps }) => {
   const { setSelectedRestaurantTaxRate, selectedRestaurantTaxRate } =
     useRestaurantsStore();
   const { setTaxRate, taxRate } = useAuthStore();
+  console.log("fgeagfebfea", taxRate);
 
   const completeRes = async (id: string) => {
     const res = await sdk.setRestaurantIdAsCookie({ id });
@@ -109,7 +110,7 @@ const SetupGuide: React.FC<{ steps: Step[] }> = ({ steps }) => {
           style={{ width: "7%" }}
         ></div>
       </div>
-      {taxRate === undefined && (
+      {!taxRate.salesTax && (
         <div
           className="flex cursor-pointer hover:bg-primary hover:bg-opacity-10 items-center bg-primary bg-opacity-5 p-4 rounded-md mb-4"
           onClick={() => setisShowTaxSettings(true)}
@@ -117,31 +118,33 @@ const SetupGuide: React.FC<{ steps: Step[] }> = ({ steps }) => {
           <div className="flex flex-col">
             <span className="text-lg font-semibold">No Tax rate found</span>
             <span className="text-sm text-gray-500">
-              Comments: No tax rate was found. Select here to fill the tax rate.
+              No tax rate was found. Select here to fill the tax rate.
             </span>
           </div>
         </div>
       )}
-      <div>
-        <p className="block mb-2 text-xl font-semibold text-left text-gray-700">
-          Complete your Incomplete Restaurants,Complete Now !
-        </p>
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          {restaurants.map((restaurant, index) => (
-            <div
-              onClick={() => {
-                completeRes(restaurant.id);
-              }}
-              className="block p-4 cursor-pointer transition-transform transform bg-primary bg-opacity-5 shadow-lg rounded-lg "
-            >
-              <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold">{restaurant.name}</h3>
-                <FaArrowRight className="w-5 h-5 text-primary" />
+      {restaurants.length > 0 && (
+        <div>
+          <p className="block mb-2 text-xl font-semibold text-left text-gray-700">
+            Complete your Incomplete Restaurants,Complete Now !
+          </p>
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            {restaurants.map((restaurant, index) => (
+              <div
+                onClick={() => {
+                  completeRes(restaurant.id);
+                }}
+                className="block p-4 cursor-pointer transition-transform transform bg-primary bg-opacity-5 shadow-lg rounded-lg "
+              >
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-semibold">{restaurant.name}</h3>
+                  <FaArrowRight className="w-5 h-5 text-primary" />
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* <div className="grid grid-cols-2 gap-4">
         {steps.map((step, index) => (

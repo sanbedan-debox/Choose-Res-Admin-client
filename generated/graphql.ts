@@ -121,6 +121,7 @@ export type AddModifierInput = {
 };
 
 export type AddPermissionInput = {
+  isFunction?: Scalars['Boolean']['input'];
   preselect: Array<UserRole>;
   type: PermissionTypeEnum;
 };
@@ -1092,6 +1093,7 @@ export type Permission = {
   _id: Scalars['ID']['output'];
   createdAt: Scalars['DateTimeISO']['output'];
   createdBy: Admin;
+  isFunction: Scalars['Boolean']['output'];
   preselect: Array<UserRole>;
   type: PermissionTypeEnum;
   updatedAt: Scalars['DateTimeISO']['output'];
@@ -1100,11 +1102,22 @@ export type Permission = {
 
 /** Enum to store the types of permissions that can be given to sub-users */
 export enum PermissionTypeEnum {
-  EditAccount = 'EditAccount',
-  MenuManagement = 'MenuManagement',
+  AddRestaurant = 'AddRestaurant',
+  Cms = 'CMS',
+  Customers = 'Customers',
+  Dashboard = 'Dashboard',
+  Integrations = 'Integrations',
+  Marketing = 'Marketing',
+  Menu = 'Menu',
+  Offers = 'Offers',
+  Orders = 'Orders',
+  PaymentManagement = 'PaymentManagement',
   Reports = 'Reports',
-  RestaurantManagement = 'RestaurantManagement',
-  UsersManagement = 'UsersManagement'
+  Rewards = 'Rewards',
+  UpdateBusiness = 'UpdateBusiness',
+  UpdateRestaurant = 'UpdateRestaurant',
+  UpdateTax = 'UpdateTax',
+  UserManagement = 'UserManagement'
 }
 
 export type PlaceDetail = {
@@ -1682,7 +1695,8 @@ export enum UserRole {
   Accountant = 'Accountant',
   Manager = 'Manager',
   MarketingPartner = 'MarketingPartner',
-  Owner = 'Owner'
+  Owner = 'Owner',
+  Staff = 'Staff'
 }
 
 /** UserStatus type enum  */
@@ -1773,7 +1787,7 @@ export type VerifyUserDetailsMutation = { __typename?: 'Mutation', verifyUserDet
 export type GetBusinessDetailsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetBusinessDetailsQuery = { __typename?: 'Query', getBusinessDetails: { __typename?: 'Business', businessName?: string | null, estimatedRevenue?: EstimatedRevenueEnum | null, employeeSize?: StaffCountEnum | null, businessType?: BusinessTypeEnum | null, ein?: string | null, address?: { __typename?: 'AddressInfo', addressLine1: { __typename?: 'MasterCommon', value: string }, addressLine2?: { __typename?: 'MasterCommon', value: string } | null, state: { __typename?: 'MasterCommon', value: string }, city: { __typename?: 'MasterCommon', value: string }, postcode: { __typename?: 'MasterCommon', value: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string } | null } | null } };
+export type GetBusinessDetailsQuery = { __typename?: 'Query', getBusinessDetails: { __typename?: 'Business', businessName?: string | null, estimatedRevenue?: EstimatedRevenueEnum | null, employeeSize?: StaffCountEnum | null, businessType?: BusinessTypeEnum | null, ein?: string | null, address?: { __typename?: 'AddressInfo', addressLine1: { __typename?: 'MasterCommon', value: string }, addressLine2?: { __typename?: 'MasterCommon', value: string } | null, state: { __typename?: 'MasterCommon', _id: string, value: string }, city: { __typename?: 'MasterCommon', value: string }, postcode: { __typename?: 'MasterCommon', value: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string, placeId: string } | null } | null } };
 
 export type UpdateTaxRateMutationVariables = Exact<{
   input: UpdateTaxRateInput;
@@ -1830,7 +1844,7 @@ export type GetCategoryQueryVariables = Exact<{
 }>;
 
 
-export type GetCategoryQuery = { __typename?: 'Query', getCategory: { __typename?: 'Category', _id: string, status: StatusEnum, createdAt: any, updatedAt: any, name: { __typename?: 'MasterCommon', value: string }, desc: { __typename?: 'MasterCommon', value: string }, items: Array<{ __typename?: 'ItemInfo', id: string, image?: string | null, status: StatusEnum, name?: { __typename?: 'MasterCommon', value: string } | null, _id: { __typename?: 'Item', _id: string }, price: { __typename?: 'MasterCommonNumber', value: number } }> } };
+export type GetCategoryQuery = { __typename?: 'Query', getCategory: { __typename?: 'Category', _id: string, status: StatusEnum, createdAt: any, updatedAt: any, name: { __typename?: 'MasterCommon', value: string }, desc: { __typename?: 'MasterCommon', value: string }, items: Array<{ __typename?: 'ItemInfo', id: string, image?: string | null, status: StatusEnum, name?: { __typename?: 'MasterCommon', value: string } | null, _id: { __typename?: 'Item', _id: string }, price: { __typename?: 'MasterCommonNumber', value: number } }>, visibility: Array<{ __typename?: 'Visibility', menuType: MenuTypeEnum, status: StatusEnum }> } };
 
 export type UpdateCategoryMutationVariables = Exact<{
   input: UpdateCategoryInput;
@@ -2303,6 +2317,7 @@ export const GetBusinessDetailsDocument = gql`
         value
       }
       state {
+        _id
         value
       }
       city {
@@ -2316,6 +2331,7 @@ export const GetBusinessDetailsDocument = gql`
       }
       place {
         displayName
+        placeId
       }
     }
   }
@@ -2405,6 +2421,10 @@ export const GetCategoryDocument = gql`
       price {
         value
       }
+      status
+    }
+    visibility {
+      menuType
       status
     }
     createdAt
