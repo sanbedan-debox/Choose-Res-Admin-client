@@ -18,13 +18,47 @@ query getRestaurantDetails {
     name {
       value
     }
+    availability {
+      day
+      hours {
+        start
+        end
+      }
+      active
+    }
+
     brandingLogo
     website
+    address {
+      addressLine1 {
+        value
+      }
+      addressLine2 {
+        value
+      }
+      state {
+        value
+      }
+      city {
+        value
+      }
+      postcode {
+        value
+      }
+      coordinate {
+        coordinates
+      }
+      place {
+        displayName
+        placeId
+      }
+    }
     taxRates {
       _id
       name {
         value
       }
+
       salesTax {
         value
       }

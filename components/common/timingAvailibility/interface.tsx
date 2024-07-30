@@ -1,0 +1,107 @@
+import { Day } from "@/generated/graphql";
+import moment from "moment";
+
+export interface Availability {
+  day: Day;
+  hours: {
+    start: { label: string; value: string };
+    end: { label: string; value: string };
+  }[];
+  active: boolean;
+}
+
+export interface AvailabilityComponentProps {
+  availability: Availability[];
+  setAvailability: React.Dispatch<React.SetStateAction<Availability[]>>;
+}
+
+export const daysOfWeek = [
+  { value: "Sunday", label: "Sunday" },
+  { value: "Monday", label: "Monday" },
+  { value: "Tuesday", label: "Tuesday" },
+  { value: "Wednesday", label: "Wednesday" },
+  { value: "Thursday", label: "Thursday" },
+  { value: "Friday", label: "Friday" },
+  { value: "Saturday", label: "Saturday" },
+];
+
+export type TimeOption = {
+  label: string;
+  value: string;
+};
+export type FormattedAvailability = {
+  day: Day;
+  hours: {
+    start: string;
+    end: string;
+  }[];
+  active: boolean;
+};
+
+export const timeOptions: TimeOption[] = Array.from(
+  { length: 24 * 2 },
+  (_, i) => {
+    const time = moment()
+      .startOf("day")
+      .add(30 * i, "minutes");
+    return {
+      label: time.format("hh:mm A"),
+      value: time.toISOString(),
+    };
+  }
+);
+
+export const reverseFormatAvailability = (
+  formattedAvailability: FormattedAvailability[]
+): Availability[] => {
+  const timeMap = new Map<string, string>(
+    timeOptions.map((option) => [option.value, option.label])
+  );
+
+  return formattedAvailability.map((item) => ({
+    day: item.day,
+    hours: item.hours.map((hour) => ({
+      start: {
+        label: timeMap.get(hour.start) || "",
+        value: hour.start,
+      },
+      end: {
+        label: timeMap.get(hour.end) || "",
+        value: hour.end,
+      },
+    })),
+    active: item.active,
+  }));
+};
+
+export interface Availability {
+  day: Day;
+  hours: {
+    start: { label: string; value: string };
+    end: { label: string; value: string };
+  }[];
+  active: boolean;
+}
+
+export const formatAvailability = (
+  availability: Availability[]
+): AvailabilityInput[] => {
+  const dayMap: { [key: string]: Day } = {
+    Sunday: Day.Sunday,
+    Monday: Day.Monday,
+    Tuesday: Day.Tuesday,
+    Wednesday: Day.Wednesday,
+    Thursday: Day.Thursday,
+    Friday: Day.Friday,
+    Saturday: Day.Saturday,
+  };
+
+  return availability.map((item) => ({
+    day: dayMap[item.day],
+    hours: item.hours.map((hour) => ({
+      start: new Date(hour.start.value).toISOString(),
+      end: new Date(hour.end.value).toISOString(),
+    })),
+    active: item.active,
+  }));
+};

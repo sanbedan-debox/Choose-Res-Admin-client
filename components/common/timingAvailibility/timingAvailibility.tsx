@@ -7,30 +7,7 @@ import useGlobalStore from "@/store/global";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import CustomSwitch from "../customSwitch/customSwitch";
 import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
-
-interface Availability {
-  day: Day;
-  hours: {
-    start: { label: string; value: string };
-    end: { label: string; value: string };
-  }[];
-  active: boolean;
-}
-
-interface AvailabilityComponentProps {
-  availability: Availability[];
-  setAvailability: React.Dispatch<React.SetStateAction<Availability[]>>;
-}
-
-const daysOfWeek = [
-  { value: "Sunday", label: "Sunday" },
-  { value: "Monday", label: "Monday" },
-  { value: "Tuesday", label: "Tuesday" },
-  { value: "Wednesday", label: "Wednesday" },
-  { value: "Thursday", label: "Thursday" },
-  { value: "Friday", label: "Friday" },
-  { value: "Saturday", label: "Saturday" },
-];
+import { AvailabilityComponentProps, daysOfWeek } from "./interface";
 
 const timeOptions = Array.from({ length: 24 * 2 }, (_, i) => {
   const time = moment()
@@ -48,17 +25,17 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
 }) => {
   const [validationErrors, setValidationErrors] = useState<string | null>(null);
   const [copiedDayIndex, setCopiedDayIndex] = useState<number | null>(null);
-  const [copyPerformed, setCopyPerformed] = useState<boolean>(false);
+  // const [copyPerformed, setCopyPerformed] = useState<boolean>(false);
 
   useEffect(() => {
     console.log("hello from availibility", availability);
     const firstFilledDayIndex = availability.findIndex(
       (day) => day.active && day.hours.length > 0
     );
-    if (firstFilledDayIndex >= 0 && copiedDayIndex === null && !copyPerformed) {
+    if (firstFilledDayIndex >= 0 && copiedDayIndex === null) {
       setCopiedDayIndex(firstFilledDayIndex);
     }
-  }, [availability, copiedDayIndex, copyPerformed]);
+  }, [availability, copiedDayIndex]);
 
   const defaultStartTime = timeOptions[0];
   const defaultEndTime = timeOptions[timeOptions.length - 1];
@@ -96,7 +73,7 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
     });
 
     setAvailability(newAvailability);
-    setCopyPerformed(true);
+    // setCopyPerformed(true);
     setCopiedDayIndex(null);
   };
 
@@ -262,7 +239,7 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
                       </button>
                     </>
                   )}
-                  {copiedDayIndex === index && !copyPerformed && (
+                  {copiedDayIndex === index && (
                     <button
                       className="text-primary text-sm "
                       type="button"
