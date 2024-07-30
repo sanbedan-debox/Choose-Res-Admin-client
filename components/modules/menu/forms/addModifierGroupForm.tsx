@@ -60,7 +60,6 @@ const AddModifierGroupForm = () => {
     setEditModGroupId,
     setisEditModGroup,
     isDuplicateModifierGroup,
-    setisDuplicateModifierGroup,
   } = useModGroupStore();
   const [modifierssOption, setModifiersOption] = useState<any[]>([]);
   const [confirmationRemoval, setConfirmationRemoval] = useState(false);
@@ -246,6 +245,31 @@ const AddModifierGroupForm = () => {
         });
         return;
       }
+      if (
+        (parsedMinSelection > 0 &&
+          selectedItemsIds.length < parsedMinSelection) ||
+        (parsedMaxSelection > 0 && selectedItemsIds.length > parsedMaxSelection)
+      ) {
+        if (
+          parsedMinSelection > 0 &&
+          selectedItemsIds.length < parsedMinSelection
+        ) {
+          setToastData({
+            type: "error",
+            message: `Please select at least ${parsedMinSelection} items.`,
+          });
+        } else if (
+          parsedMaxSelection > 0 &&
+          selectedItemsIds.length > parsedMaxSelection
+        ) {
+          setToastData({
+            type: "error",
+            message: `You can select up to ${parsedMaxSelection} items only.`,
+          });
+        }
+        return;
+      }
+
       const updateInput: any = {
         _id: editModGroupId || "",
       };
@@ -490,7 +514,7 @@ const AddModifierGroupForm = () => {
             )}
           </div>
 
-          <div className="mb-1">
+          <div className="mb-14">
             <label
               htmlFor="optional"
               className="block mb-2 text-sm font-medium text-left text-gray-700"

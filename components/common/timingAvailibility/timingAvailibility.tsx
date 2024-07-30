@@ -7,7 +7,11 @@ import useGlobalStore from "@/store/global";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import CustomSwitch from "../customSwitch/customSwitch";
 import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
-import { AvailabilityComponentProps, daysOfWeek } from "./interface";
+import {
+  Availability,
+  AvailabilityComponentProps,
+  daysOfWeek,
+} from "./interface";
 
 const timeOptions = Array.from({ length: 24 * 2 }, (_, i) => {
   const time = moment()
@@ -25,7 +29,6 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
 }) => {
   const [validationErrors, setValidationErrors] = useState<string | null>(null);
   const [copiedDayIndex, setCopiedDayIndex] = useState<number | null>(null);
-  // const [copyPerformed, setCopyPerformed] = useState<boolean>(false);
 
   useEffect(() => {
     console.log("hello from availibility", availability);
@@ -40,12 +43,28 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
   const defaultStartTime = timeOptions[0];
   const defaultEndTime = timeOptions[timeOptions.length - 1];
 
+  // FUNCTIONS WITH VALIDATION
   const handleAddHours = (index: number) => {
     const newHours = [...availability];
     newHours[index].hours.push({
       start: defaultStartTime,
       end: defaultEndTime,
     });
+
+    const { success, error, invalidFields } = validateAvailability(newHours);
+    if (!success) {
+      setToastData({
+        message: extractErrorMessage(error!),
+        type: "error",
+      });
+
+      invalidFields.forEach(({ dayIndex, hourIndex, field }) => {
+        newHours[dayIndex].hours[hourIndex][field] =
+          field === "start" ? defaultStartTime : defaultEndTime;
+      });
+      setAvailability(newHours);
+      return;
+    }
 
     setAvailability(newHours);
     setValidationErrors(null);
@@ -54,6 +73,22 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
   const handleRemoveHours = (dayIndex: number, hourIndex: number) => {
     const newHours = [...availability];
     newHours[dayIndex].hours.splice(hourIndex, 1);
+
+    const { success, error, invalidFields } = validateAvailability(newHours);
+    if (!success) {
+      setToastData({
+        message: extractErrorMessage(error!),
+        type: "error",
+      });
+
+      invalidFields.forEach(({ dayIndex, hourIndex, field }) => {
+        newHours[dayIndex].hours[hourIndex][field] =
+          field === "start" ? defaultStartTime : defaultEndTime;
+      });
+      setAvailability(newHours);
+      return;
+    }
+
     setAvailability(newHours);
   };
 
@@ -72,47 +107,77 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
       }));
     });
 
+    const { success, error, invalidFields } =
+      validateAvailability(newAvailability);
+    if (!success) {
+      setToastData({
+        message: extractErrorMessage(error!),
+        type: "error",
+      });
+
+      // Reset invalid dropdowns
+      invalidFields.forEach(({ dayIndex, hourIndex, field }) => {
+        newAvailability[dayIndex].hours[hourIndex][field] =
+          field === "start" ? defaultStartTime : defaultEndTime;
+      });
+      setAvailability(newAvailability);
+      return;
+    }
+
     setAvailability(newAvailability);
-    // setCopyPerformed(true);
     setCopiedDayIndex(null);
   };
 
-  // const validateAvailability = (data: Availability[]) => {
-  //   let error = null;
-  //   data.forEach((day) => {
-  //     if (day.active) {
-  //       day.hours.forEach((hour, index) => {
-  //         if (moment(hour.start.value).isAfter(moment(hour.end.value))) {
-  //           error = `Start time cannot be after end time on ${day.day}`;
-  //         }
-  //         for (let i = 0; i < day.hours.length; i++) {
-  //           if (i !== index) {
-  //             if (
-  //               moment(hour.start.value).isBefore(
-  //                 moment(day.hours[i].end.value)
-  //               ) &&
-  //               moment(hour.end.value).isAfter(moment(day.hours[i].start.value))
-  //             ) {
-  //               error = `Overlapping hours on ${day.day}`;
-  //             }
-  //           }
-  //         }
-  //       });
-  //     }
-  //   });
-  //   return { success: error === null, error };
-  // };
+  const validateAvailability = (data: Availability[]) => {
+    let error: string | null = null;
+    const invalidFields: {
+      dayIndex: number;
+      hourIndex: number;
+      field: "start" | "end";
+    }[] = [];
+
+    data.forEach((day, dayIndex) => {
+      if (day.active) {
+        day.hours.forEach((hour, hourIndex) => {
+          if (moment(hour.start.value).isAfter(moment(hour.end.value))) {
+            error = `Start time cannot be after end time on ${
+              daysOfWeek.find((d) => d.value === day.day)?.label
+            }`;
+            invalidFields.push({ dayIndex, hourIndex, field: "start" });
+          }
+          for (let i = 0; i < day.hours.length; i++) {
+            if (i !== hourIndex) {
+              if (
+                moment(hour.start.value).isBefore(
+                  moment(day.hours[i].end.value)
+                ) &&
+                moment(hour.end.value).isAfter(moment(day.hours[i].start.value))
+              ) {
+                error = `Overlapping hours on ${
+                  daysOfWeek.find((d) => d.value === day.day)?.label
+                }`;
+                invalidFields.push({ dayIndex, hourIndex, field: "start" });
+              }
+            }
+          }
+        });
+      }
+    });
+
+    return { success: error === null, error, invalidFields };
+  };
 
   const { setToastData } = useGlobalStore();
-  // useEffect(() => {
-  //   const res = validateAvailability(availability);
-  //   if (res.error) {
-  //     setToastData({
-  //       message: extractErrorMessage(res.error),
-  //       type: "error",
-  //     });
-  //   }
-  // }, [availability]);
+
+  useEffect(() => {
+    const res = validateAvailability(availability);
+    if (res.error) {
+      setToastData({
+        message: extractErrorMessage(res.error),
+        type: "error",
+      });
+    }
+  }, [availability]);
 
   return (
     <div>
