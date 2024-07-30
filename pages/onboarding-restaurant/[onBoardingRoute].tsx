@@ -151,16 +151,16 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
   }
 
   try {
-    const res_id = cookies.restaurant_onboarding_id;
-    // if (!res_id) {
-    //   return {
-    //     props: {
-    //       repo: {
-    //         pagePath: context.query["onBoardingRoute"]?.toString() ?? "",
-    //       },
-    //     },
-    //   };
-    // }
+    const res_id = cookies.restaurantOnboarding;
+    if (!res_id) {
+      return {
+        props: {
+          repo: {
+            pagePath: context.query["onBoardingRoute"]?.toString() ?? "",
+          },
+        },
+      };
+    }
 
     const response = await sdk.getRestaurantOnboardingData(
       {},

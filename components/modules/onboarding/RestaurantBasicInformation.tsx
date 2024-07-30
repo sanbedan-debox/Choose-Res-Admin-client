@@ -185,7 +185,7 @@ const RestaurantBasicInformation = () => {
 
   return (
     <motion.div
-      className="z-10 w-full min-h-full max-w-md flex flex-col items-center space-y-5 text-center"
+      className="z-10 w-full min-h-full max-w-lg flex flex-col items-center space-y-5 text-center"
       variants={{
         hidden: { opacity: 0, scale: 0.95 },
         show: {

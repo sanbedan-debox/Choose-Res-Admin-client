@@ -67,11 +67,11 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
       start: defaultStartTime,
       end: defaultEndTime,
     });
-    const validationResult = validateAvailability(newHours);
-    if (!validationResult.success) {
-      setValidationErrors(validationResult.error);
-      return;
-    }
+    // const validationResult = validateAvailability(newHours);
+    // if (!validationResult.success) {
+    //   setValidationErrors(validationResult.error);
+    //   return;
+    // }
     setAvailability(newHours);
     setValidationErrors(null);
   };
@@ -104,116 +104,77 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
     setCopiedDayIndex(null);
   };
 
-  const validateAvailability = (data: Availability[]) => {
-    let error = null;
-    data.forEach((day) => {
-      if (day.active) {
-        day.hours.forEach((hour, index) => {
-          if (moment(hour.start.value).isAfter(moment(hour.end.value))) {
-            error = `Start time cannot be after end time on ${day.day}`;
-          }
-          for (let i = 0; i < day.hours.length; i++) {
-            if (i !== index) {
-              if (
-                moment(hour.start.value).isBefore(
-                  moment(day.hours[i].end.value)
-                ) &&
-                moment(hour.end.value).isAfter(moment(day.hours[i].start.value))
-              ) {
-                error = `Overlapping hours on ${day.day}`;
-              }
-            }
-          }
-        });
-      }
-    });
-    return { success: error === null, error };
-  };
+  // const validateAvailability = (data: Availability[]) => {
+  //   let error = null;
+  //   data.forEach((day) => {
+  //     if (day.active) {
+  //       day.hours.forEach((hour, index) => {
+  //         if (moment(hour.start.value).isAfter(moment(hour.end.value))) {
+  //           error = `Start time cannot be after end time on ${day.day}`;
+  //         }
+  //         for (let i = 0; i < day.hours.length; i++) {
+  //           if (i !== index) {
+  //             if (
+  //               moment(hour.start.value).isBefore(
+  //                 moment(day.hours[i].end.value)
+  //               ) &&
+  //               moment(hour.end.value).isAfter(moment(day.hours[i].start.value))
+  //             ) {
+  //               error = `Overlapping hours on ${day.day}`;
+  //             }
+  //           }
+  //         }
+  //       });
+  //     }
+  //   });
+  //   return { success: error === null, error };
+  // };
 
   const { setToastData } = useGlobalStore();
-  useEffect(() => {
-    const res = validateAvailability(availability);
-    if (res.error) {
-      setToastData({
-        message: extractErrorMessage(res.error),
-        type: "error",
-      });
-    }
-  }, [availability]);
+  // useEffect(() => {
+  //   const res = validateAvailability(availability);
+  //   if (res.error) {
+  //     setToastData({
+  //       message: extractErrorMessage(res.error),
+  //       type: "error",
+  //     });
+  //   }
+  // }, [availability]);
 
   return (
     <div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginBottom: "10px",
-        }}
-      >
-        {daysOfWeek.map((day, index) => (
-          <div key={index} style={{ display: "flex", alignItems: "center" }}>
-            <button
-              className={`rounded-full w-8 h-8 flex items-center justify-center cursor-pointer text-white ${
-                availability.find((av) => av.day === day.value)?.active
-                  ? "bg-primary"
-                  : "bg-gray-400"
-              }`}
-              type="button"
-              onClick={() => {
-                const newAvailability = [...availability];
-                const dayIndex = newAvailability.findIndex(
-                  (av) => av.day === day.value
-                );
-                newAvailability[dayIndex].active =
-                  !newAvailability[dayIndex].active;
-                if (
-                  newAvailability[dayIndex].active &&
-                  newAvailability[dayIndex].hours.length === 0
-                ) {
-                  handleAddHours(dayIndex);
-                }
-                setAvailability(newAvailability);
-              }}
-            >
-              {day.label[0]}
-            </button>
-            {copiedDayIndex === index && !copyPerformed && (
-              <button
-                className="text-primary ml-2"
-                type="button"
-                onClick={() => handleCopyHours(index)}
-              >
-                Copy times to all
-              </button>
-            )}
-          </div>
-        ))}
-      </div>
       {validationErrors && (
-        <div className="text-red-500" style={{ marginBottom: "10px" }}>
-          {validationErrors}
-        </div>
+        <div className="text-red-500 mb-2">{validationErrors}</div>
       )}
       {availability.map((day, index) => (
-        <div key={index} style={{ marginBottom: "20px" }}>
-          {day.active && (
-            <div>
-              <div
-                className="text-start"
-                style={{ fontWeight: "bold", marginBottom: "10px" }}
-              >
+        <div key={index} className="mb-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center" style={{ width: "200px" }}>
+              <input
+                type="checkbox"
+                checked={day.active}
+                onChange={() => {
+                  const newAvailability = [...availability];
+                  newAvailability[index].active =
+                    !newAvailability[index].active;
+                  if (
+                    newAvailability[index].active &&
+                    newAvailability[index].hours.length === 0
+                  ) {
+                    handleAddHours(index);
+                  }
+                  setAvailability(newAvailability);
+                }}
+                className="mr-2"
+              />
+              <div className="font-bold text-sm">
                 {daysOfWeek.find((d) => d.value === day.day)?.label ||
                   "Unknown Day"}
               </div>
+            </div>
+            <div className="flex flex-col" style={{ width: "600px" }}>
               {day.hours.map((hour, hourIndex) => (
-                <div
-                  key={hourIndex}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    marginBottom: "10px",
-                  }}
-                >
+                <div key={hourIndex} className="flex items-center mb-2">
                   <Select
                     options={timeOptions}
                     value={hour.start}
@@ -223,6 +184,7 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
                         selectedOption!;
                       setAvailability(newAvailability);
                     }}
+                    isDisabled={!day.active}
                     styles={{
                       container: (base) => ({
                         ...base,
@@ -240,6 +202,7 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
                         selectedOption!;
                       setAvailability(newAvailability);
                     }}
+                    isDisabled={!day.active}
                     styles={{
                       container: (base) => ({
                         ...base,
@@ -248,26 +211,53 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
                       }),
                     }}
                   />
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveHours(index, hourIndex)}
-                    style={{ marginRight: "10px" }}
-                  >
-                    <FaMinus />
-                  </button>
-                  {hourIndex === day.hours.length - 1 && (
-                    <button
-                      type="button"
-                      onClick={() => handleAddHours(index)}
-                      style={{ marginRight: "10px" }}
-                    >
-                      <FaPlus />
-                    </button>
-                  )}
                 </div>
               ))}
             </div>
-          )}
+            <div
+              className="flex items-end justify-end"
+              style={{ width: "230px" }}
+            >
+              {day.active && (
+                <>
+                  {day.hours.length > 0 && (
+                    <>
+                      {day.hours.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleRemoveHours(index, day.hours.length - 1)
+                          }
+                          className="mr-1"
+                          disabled={!day.active}
+                        >
+                          <FaMinus />
+                        </button>
+                      )}
+
+                      <button
+                        type="button"
+                        onClick={() => handleAddHours(index)}
+                        className="mr-1"
+                        disabled={!day.active}
+                      >
+                        <FaPlus />
+                      </button>
+                    </>
+                  )}
+                  {copiedDayIndex === index && !copyPerformed && (
+                    <button
+                      className="text-primary text-sm "
+                      type="button"
+                      onClick={() => handleCopyHours(index)}
+                    >
+                      Copy to all
+                    </button>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
         </div>
       ))}
     </div>

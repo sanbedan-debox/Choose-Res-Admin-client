@@ -71,7 +71,7 @@ const Teams: NextPageWithLayout = () => {
 
   useEffect(() => {
     fetchTeamMembers();
-  }, []);
+  }, [isAddTeamMemberModalOpen]);
 
   const handleDeleteMember = (_id: string) => {
     setshowDeleteConfirmationModal(true);

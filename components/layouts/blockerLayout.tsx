@@ -13,11 +13,6 @@ type Props = {
 const BlockerLayouout = ({ children }: Props) => {
   const router = useRouter();
   const { pathname, query } = router;
-  const { onBoardingRoute } = query;
-
-  const handleBackClick = () => {
-    router.back();
-  };
 
   return (
     <div className="bg-white text-black min-h-screen flex flex-col justify-between">

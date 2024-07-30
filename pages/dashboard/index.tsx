@@ -10,6 +10,9 @@ import QuickActions from "@/components/common/quickLinks/quickLink";
 import MainLayout from "@/components/layouts/mainBodyLayout";
 import { Searchfeatures } from "@/utils/searchFeatures";
 import DynamicSetupGuide from "@/components/common/setupGuide/setupGuide";
+import IncompleteRestaurants from "@/components/common/incompleteRestaurant/incompleteRestaurant";
+import { useRouter } from "next/router";
+import QuickActionsDashboard from "@/components/common/quickAction/quickAction";
 
 type NextPageWithLayout = React.FC & {
   getLayout?: (page: React.ReactNode) => React.ReactNode;
@@ -27,22 +30,7 @@ type UserRepo = {
 const Dashboard: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
   const { setSelectedMenu, isShowSetupPanel } = useGlobalStore();
 
-  const [searchQuery, setSearchQuery] = useState("");
-  const [suggestions, setSuggestions] = useState<
-    { name: string; link: string }[]
-  >([]);
-
-  useEffect(() => {
-    if (searchQuery.length > 0) {
-      const filteredSuggestions = Searchfeatures.filter((feature) =>
-        feature.name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      setSuggestions(filteredSuggestions);
-    } else {
-      setSuggestions([]);
-    }
-  }, [searchQuery]);
-
+  const router = useRouter();
   const {
     setEmail,
     setFirstName,
@@ -73,11 +61,93 @@ const Dashboard: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
     setSelectedMenu("dashboard");
   }, [setSelectedMenu]);
 
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
   if (!repo) {
     return <Loader />;
   }
 
-  return <div>{isShowSetupPanel && <DynamicSetupGuide />}</div>;
+  const completeRes = async (id: string) => {
+    console.log(`Completing restaurant with id: ${id}`); // Added log
+    const res = await sdk.setRestaurantIdAsCookie({ id });
+    if (res.setRestaurantIdAsCookie) {
+      router.push("/onboarding-restaurant/restaurant-basic-information");
+    }
+  };
+
+  const [restaurants, setRestaurants] = useState<
+    { name: string; id: string }[]
+  >([]);
+
+  useEffect(() => {
+    async function fetchPendingRestaurants() {
+      try {
+        const response = await sdk.getUserRestaurantsPending();
+        const restaurantsIncomplete = response.getUserRestaurantsPending.map(
+          (res) => ({
+            name: res.name.value,
+            id: res.id,
+          })
+        );
+        setRestaurants(restaurantsIncomplete);
+      } catch (error) {
+        console.error("Failed to fetch pending restaurants:", error);
+      }
+    }
+
+    fetchPendingRestaurants();
+  }, []);
+
+  const { setisShowSetupPanel, setisShowTaxSettings } = useGlobalStore();
+
+  const actions = [
+    {
+      name: "Set Tax Rate",
+      link: "#",
+      onClick: () => setisShowTaxSettings(true),
+    },
+  ];
+
+  const { firstName } = useAuthStore();
+  const currentDate = new Date();
+  const formattedDate = `${currentDate.getDate()} ${
+    months[currentDate.getMonth()]
+  }`;
+
+  return (
+    <div className="p-4">
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex items-center space-x-2">
+          <span className="text-lg font-semibold">Welcome</span>
+          <span className="text-lg font-bold">{firstName}</span>
+          <span className="text-sm">|</span>
+          <span className="text-sm font-semibold">Date</span>
+          <span className="text-sm font-bold">{formattedDate}</span>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4 mb-4">
+        <QuickActionsDashboard actions={actions} />
+        <IncompleteRestaurants
+          restaurants={restaurants}
+          completeRes={completeRes}
+        />
+      </div>
+    </div>
+  );
 };
 
 Dashboard.getLayout = function getLayout(page: React.ReactNode) {
@@ -178,58 +248,3 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 };
-
-const StatCard = ({ title, value }: { title: string; value: string }) => (
-  <div className="bg-white shadow rounded-lg p-4 hover:scale-105 transition-transform">
-    <h3 className="font-semibold">{title}</h3>
-    <p className="mt-2">{value}</p>
-  </div>
-);
-
-const QrCard = () => (
-  <div className="bg-white shadow rounded-lg p-4 flex flex-col items-center justify-center hover:scale-105 transition-transform">
-    <div className="text-center">
-      <img
-        src="/path/to/qr-code.png"
-        alt="QR Code"
-        className="w-24 h-24 mx-auto"
-      />
-      <p className="mt-2">Choose Now, the free mobile operator application</p>
-      <div className="flex space-x-2 mt-4">
-        <button className="btn btn-primary">Skip</button>
-        <button className="btn btn-secondary">Learn more</button>
-      </div>
-    </div>
-  </div>
-);
-
-const BreakdownTable = () => (
-  <div className="bg-white shadow rounded-lg p-4 hover:scale-105 transition-transform col-span-2">
-    <h3 className="font-semibold mb-4">Breakdown</h3>
-    <table className="w-full text-left">
-      <thead>
-        <tr>
-          <th>Time</th>
-          <th>Net Sales</th>
-          <th>Labor Cost</th>
-          <th>Labor %</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>4 AM</td>
-          <td>$0</td>
-          <td>$0</td>
-          <td>$0</td>
-        </tr>
-        <tr>
-          <td>5 AM</td>
-          <td>$0</td>
-          <td>$0</td>
-          <td>$0</td>
-        </tr>
-        {/* Add more rows as needed */}
-      </tbody>
-    </table>
-  </div>
-);

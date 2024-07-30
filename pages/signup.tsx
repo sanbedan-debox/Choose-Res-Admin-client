@@ -138,6 +138,7 @@ const Signup: FC = () => {
       const response = await sdk.verifyUserDetails({ input });
 
       if (response.verifyUserDetails) {
+        setShowModal(false);
         setToastData({ message: "Verification Successful", type: "success" });
         router.replace("/onboarding/user/intro");
         // reset();

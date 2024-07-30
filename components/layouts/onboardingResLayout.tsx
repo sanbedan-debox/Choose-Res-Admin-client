@@ -19,6 +19,7 @@ const steps = [
   "restaurant-availibility",
   "restaurant-additional-info",
 ];
+const journeySteps = steps.slice(1);
 
 const OnboardingRestaurantLayout = ({ children }: Props) => {
   const router = useRouter();
@@ -74,12 +75,13 @@ const OnboardingRestaurantLayout = ({ children }: Props) => {
   const hideBackButtonPaths = ["/onboarding/user/intro"];
   const showBackButton = !hideBackButtonPaths.includes(pathname);
 
-  const currentStepIndex = steps.indexOf(onBoardingRoute as string);
+  const currentStepIndex = journeySteps.indexOf(onBoardingRoute as string);
 
-  const progressPercentage = ((currentStepIndex + 1) / steps.length) * 100;
+  const progressPercentage =
+    ((currentStepIndex + 1) / journeySteps.length) * 100;
 
   return (
-    <div className="bg-white min-h-screen  text-black flex flex-col">
+    <div className="bg-white min-h-screen text-black flex flex-col">
       <div className="flex items-center justify-between px-4 py-2 border-b">
         {showBackButton && (
           <button
@@ -93,12 +95,36 @@ const OnboardingRestaurantLayout = ({ children }: Props) => {
           <Image src={logo1} alt="Logo" width={140} height={140} />
         </div>
       </div>
-      <div className="relative h-2 bg-gray-200">
-        <div
-          className="absolute top-0 left-0 h-full bg-primary"
-          style={{ width: `${progressPercentage}%` }}
-        ></div>
+
+      <div className="flex flex-col items-center">
+        <div className="flex items-center  w-full justify-between ">
+          {journeySteps.map((step, index) => (
+            <div
+              key={step}
+              className={`flex-1 text-center py-2 font-bold border-b-[1px] border-l-[1px] border-r-[1px] border-gray-300  ${
+                index === currentStepIndex
+                  ? "text-white bg-primary font-bold"
+                  : "text-white"
+              }`}
+            >
+              <p
+                className={`text-sm ${
+                  index === currentStepIndex ? "text-white" : "text-primary"
+                }`}
+              >
+                {index === 0
+                  ? "Basic Information"
+                  : index === 1
+                  ? "Location"
+                  : index === 2
+                  ? "Additional Information"
+                  : ""}
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
+
       <div className="flex-grow flex items-center justify-center p-4">
         <AnimatePresence mode="wait">{children}</AnimatePresence>
       </div>

@@ -11,6 +11,8 @@ import {
 } from "@/utils/utilFUncs";
 import useGlobalStore from "@/store/global";
 import {
+  AvailabilityInput,
+  Day,
   FilterOperatorsEnum,
   MenuTypeEnum,
   StatusEnum,
@@ -26,6 +28,8 @@ import ReusableModal from "@/components/common/modal/modal";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import { RiEditCircleLine } from "react-icons/ri";
 import CustomSwitchCard from "@/components/common/customSwitchCard/customSwitchCard";
+import AvailabilityComponent from "@/components/common/timingAvailibility/timingAvailibility";
+import moment from "moment";
 
 interface IFormInput {
   name: string;
@@ -86,6 +90,89 @@ const AddCategoryForm = () => {
       status: StatusEnum;
     }[]
   >([]);
+  interface Availability {
+    day: Day;
+    hours: {
+      start: { label: string; value: string };
+      end: { label: string; value: string };
+    }[];
+    active: boolean;
+  }
+  const timeOptions: TimeOption[] = Array.from({ length: 24 * 2 }, (_, i) => {
+    const time = moment()
+      .startOf("day")
+      .add(30 * i, "minutes");
+    return {
+      label: time.format("hh:mm A"),
+      value: time.toISOString(),
+    };
+  });
+
+  const formatAvailability = (
+    availability: Availability[]
+  ): AvailabilityInput[] => {
+    const dayMap: { [key: string]: Day } = {
+      Sunday: Day.Sunday,
+      Monday: Day.Monday,
+      Tuesday: Day.Tuesday,
+      Wednesday: Day.Wednesday,
+      Thursday: Day.Thursday,
+      Friday: Day.Friday,
+      Saturday: Day.Saturday,
+    };
+
+    return availability.map((item) => ({
+      day: dayMap[item.day],
+      hours: item.hours.map((hour) => ({
+        start: new Date(hour.start.value).toISOString(),
+        end: new Date(hour.end.value).toISOString(),
+      })),
+      active: item.active,
+    }));
+  };
+  type TimeOption = {
+    label: string;
+    value: string;
+  };
+  type FormattedAvailability = {
+    day: Day;
+    hours: {
+      start: string;
+      end: string;
+    }[];
+    active: boolean;
+  };
+  const reverseFormatAvailability = (
+    formattedAvailability: FormattedAvailability[]
+  ): Availability[] => {
+    const timeMap = new Map<string, string>(
+      timeOptions.map((option) => [option.value, option.label])
+    );
+
+    return formattedAvailability.map((item) => ({
+      day: item.day,
+      hours: item.hours.map((hour) => ({
+        start: {
+          label: timeMap.get(hour.start) || "",
+          value: hour.start,
+        },
+        end: {
+          label: timeMap.get(hour.end) || "",
+          value: hour.end,
+        },
+      })),
+      active: item.active,
+    }));
+  };
+  const [availability, setAvailability] = useState<Availability[]>([
+    { day: Day.Sunday, hours: [], active: false },
+    { day: Day.Monday, hours: [], active: false },
+    { day: Day.Tuesday, hours: [], active: false },
+    { day: Day.Wednesday, hours: [], active: false },
+    { day: Day.Thursday, hours: [], active: false },
+    { day: Day.Friday, hours: [], active: false },
+    { day: Day.Saturday, hours: [], active: false },
+  ]);
   const fetchMenuData = async () => {
     try {
       const response = await sdk.getMenuByRestaurant();
@@ -128,6 +215,12 @@ const AddCategoryForm = () => {
         }));
         if (formattedVisibilities.length > 0) {
           setVisibilities(formattedVisibilities);
+        }
+        if (item?.availability) {
+          const originalAvailability = reverseFormatAvailability(
+            item?.availability
+          );
+          setAvailability(originalAvailability);
         }
         setSelectedItems(formateditemlist);
         setTempSelectedItems(formateditemlist);
@@ -189,6 +282,7 @@ const AddCategoryForm = () => {
       if (data.description !== changesMenu?.desc?.value) {
         addChange("desc", data.description);
       }
+      const formattedAvailability = formatAvailability(availability);
 
       setBtnLoading(true);
       const prevSelectedMenuIds = prevItemsbfrEdit.map((item) => item._id);
@@ -210,6 +304,7 @@ const AddCategoryForm = () => {
             },
             items: selectedItemsIds,
             visibility: visibilities,
+            availability: formattedAvailability,
           },
         });
 
@@ -500,6 +595,11 @@ const AddCategoryForm = () => {
             </div>
           </div>
         )}
+
+        <AvailabilityComponent
+          availability={availability}
+          setAvailability={setAvailability}
+        />
         <CButton
           loading={btnLoading}
           variant={ButtonType.Primary}

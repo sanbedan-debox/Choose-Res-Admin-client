@@ -6,7 +6,7 @@ const MenuManagement: React.FC = () => {
     <div className="flex flex-col space-y-4">
       <ArrowCard
         title="Menu builder"
-        caption="Our newest tool for creating and managing menus with improved workflows and streamlined settings. Manually select and create your menus."
+        caption="Create or Edit your menu manually"
         href="/menu/menu-builder/menu"
       />
       <ArrowCard

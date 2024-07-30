@@ -317,7 +317,7 @@ const RestaurantAvailability = () => {
 
   return (
     <motion.div
-      className="z-10 flex flex-col w-full max-w-md items-center space-y-5 text-center"
+      className="z-10 flex flex-col w-full max-w-lg items-center space-y-5 text-center"
       variants={{
         hidden: { opacity: 0, scale: 0.95 },
         show: {

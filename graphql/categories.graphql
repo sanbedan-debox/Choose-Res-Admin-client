@@ -79,7 +79,14 @@ query getCategory($id: String!) {
       status
     }
 
-    # availability
+    availability {
+      day
+      hours {
+        start
+        end
+      }
+      active
+    }
     createdAt
     updatedAt
   }
