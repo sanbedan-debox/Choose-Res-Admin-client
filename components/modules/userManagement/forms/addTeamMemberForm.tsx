@@ -47,7 +47,12 @@ const AddTeamMemberForm = () => {
     register,
     watch,
     setValue,
-  } = useForm<IFormInput>();
+  } = useForm<IFormInput>({
+    defaultValues: {
+      whatsApp: false,
+      emailPref: false,
+    },
+  });
 
   const onSubmit = async (data: IFormInput) => {
     try {
@@ -290,25 +295,26 @@ const AddTeamMemberForm = () => {
             href="/onboarding-restaurant/restaurant-welcome"
           />
         )}
+        <div className="grid grid-cols-2 gap-2">
+          <div className="">
+            <CustomSwitchCard
+              label="WhatsApp Notifications"
+              title="Enable WhatsApp Notifications"
+              caption="Toggle to enable or disable WhatsApp notifications"
+              switchChecked={watch("whatsApp")}
+              onSwitchChange={() => setValue("whatsApp", !watch("whatsApp"))}
+            />
+          </div>
 
-        <div className="col-span-2">
-          <CustomSwitchCard
-            label="WhatsApp Notifications"
-            title="Enable WhatsApp Notifications"
-            caption="Toggle to enable or disable WhatsApp notifications"
-            switchChecked={watch("whatsApp")}
-            onSwitchChange={() => setValue("whatsApp", !watch("whatsApp"))}
-          />
-        </div>
-
-        <div className="col-span-2">
-          <CustomSwitchCard
-            label="Email Notifications"
-            title="Enable Email Notifications"
-            caption="Toggle to enable or disable email notifications"
-            switchChecked={watch("emailPref")}
-            onSwitchChange={() => setValue("emailPref", !watch("emailPref"))}
-          />
+          <div className="">
+            <CustomSwitchCard
+              label="Email Notifications"
+              title="Enable Email Notifications"
+              caption="Toggle to enable or disable email notifications"
+              switchChecked={watch("emailPref")}
+              onSwitchChange={() => setValue("emailPref", !watch("emailPref"))}
+            />
+          </div>
         </div>
 
         <CButton

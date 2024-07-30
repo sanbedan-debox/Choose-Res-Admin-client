@@ -5,6 +5,8 @@ import { FaPlus, FaMinus } from "react-icons/fa";
 import { Day } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
 import { extractErrorMessage } from "@/utils/utilFUncs";
+import CustomSwitch from "../customSwitch/customSwitch";
+import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
 
 interface Availability {
   day: Day;
@@ -67,11 +69,7 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
       start: defaultStartTime,
       end: defaultEndTime,
     });
-    // const validationResult = validateAvailability(newHours);
-    // if (!validationResult.success) {
-    //   setValidationErrors(validationResult.error);
-    //   return;
-    // }
+
     setAvailability(newHours);
     setValidationErrors(null);
   };
@@ -90,13 +88,11 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
     }));
 
     newAvailability.forEach((day) => {
-      if (!day.active || day.hours.length === 0) {
-        day.active = true;
-        day.hours = hoursToCopy.map((hour) => ({
-          start: { ...hour.start },
-          end: { ...hour.end },
-        }));
-      }
+      day.active = true;
+      day.hours = hoursToCopy.map((hour) => ({
+        start: { ...hour.start },
+        end: { ...hour.end },
+      }));
     });
 
     setAvailability(newAvailability);
@@ -150,7 +146,7 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
         <div key={index} className="mb-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center" style={{ width: "200px" }}>
-              <input
+              {/* <input
                 type="checkbox"
                 checked={day.active}
                 onChange={() => {
@@ -166,7 +162,28 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
                   setAvailability(newAvailability);
                 }}
                 className="mr-2"
+              /> */}
+              <CustomSwitch
+                checked={day.active}
+                onChange={() => {
+                  const newAvailability = [...availability];
+                  newAvailability[index].active =
+                    !newAvailability[index].active;
+                  if (
+                    newAvailability[index].active &&
+                    newAvailability[index].hours.length === 0
+                  ) {
+                    handleAddHours(index);
+                  }
+                  setAvailability(newAvailability);
+                }}
+                label={
+                  daysOfWeek.find((d) => d.value === day.day)?.label ||
+                  "Unknown Day"
+                }
+                className="mr-2"
               />
+
               <div className="font-bold text-sm">
                 {daysOfWeek.find((d) => d.value === day.day)?.label ||
                   "Unknown Day"}
@@ -228,20 +245,20 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
                           onClick={() =>
                             handleRemoveHours(index, day.hours.length - 1)
                           }
-                          className="mr-1"
+                          className="mr-1 text-2xl hover:text-primary"
                           disabled={!day.active}
                         >
-                          <FaMinus />
+                          <CiCircleMinus />
                         </button>
                       )}
 
                       <button
                         type="button"
                         onClick={() => handleAddHours(index)}
-                        className="mr-1"
+                        className="mr-1 text-2xl hover:text-primary"
                         disabled={!day.active}
                       >
-                        <FaPlus />
+                        <CiCirclePlus />
                       </button>
                     </>
                   )}

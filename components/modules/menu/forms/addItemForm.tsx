@@ -1085,7 +1085,9 @@ const AddItemForm = () => {
               Modifier Groups allow your customer to customize an item
             </p>
           </div>
-
+          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
+            Availibility
+          </label>
           <AvailabilityComponent
             availability={availability}
             setAvailability={setAvailability}

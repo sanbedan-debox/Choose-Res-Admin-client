@@ -120,7 +120,10 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 "salesTax",
                 existingTaxRate.salesTax?.value.toString() || ""
               );
-              setValue("default", existingTaxRate.default || false);
+              setValue(
+                "default",
+                (existingTaxRate?.default as boolean) || false
+              );
               setSelectedRestaurantTaxRate(existingTaxRate._id);
               setIsSaveButtonEnabled(false);
               setExistingTaxRateId(existingTaxRate._id);

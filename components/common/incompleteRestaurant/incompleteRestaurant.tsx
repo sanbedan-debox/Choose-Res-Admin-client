@@ -11,7 +11,7 @@ const IncompleteRestaurants: React.FC<IncompleteRestaurantsProps> = ({
   completeRes,
 }) => {
   return (
-    <div className="bg-primary bg-opacity-5 shadow-lg rounded-lg p-4 h-64 overflow-y-auto scrollbar-hide">
+    <div className="shadow-lg rounded-lg p-4 h-64 overflow-y-auto scrollbar-hide">
       <h2 className="text-lg font-semibold mb-4">Pending Restaurants</h2>
       {restaurants.length === 0 ? (
         <p className="text-center text-gray-600">No incomplete restaurants</p>
@@ -24,7 +24,7 @@ const IncompleteRestaurants: React.FC<IncompleteRestaurantsProps> = ({
                   console.log(`Clicked restaurant id: ${restaurant.id}`);
                   completeRes(restaurant.id);
                 }}
-                className="block p-4 cursor-pointer transition-transform transform bg-primary bg-opacity-5 shadow-lg rounded-lg"
+                className="block p-4 cursor-pointer transition-transform transform  shadow-lg rounded-lg"
               >
                 <div className="flex justify-between items-center">
                   <span>

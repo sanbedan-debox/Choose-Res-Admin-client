@@ -25,7 +25,7 @@ import { MdArrowOutward } from "react-icons/md";
 import AddFormDropdown from "@/components/common/addFormDropDown/addFormDropdown";
 import useMenuItemsStore from "@/store/menuItems";
 import ReusableModal from "@/components/common/modal/modal";
-import { IoIosAddCircleOutline } from "react-icons/io";
+import { IoIosAddCircleOutline, IoIosCloseCircleOutline } from "react-icons/io";
 import { RiEditCircleLine } from "react-icons/ri";
 import CustomSwitchCard from "@/components/common/customSwitchCard/customSwitchCard";
 import AvailabilityComponent from "@/components/common/timingAvailibility/timingAvailibility";
@@ -399,16 +399,17 @@ const AddCategoryForm = () => {
   };
 
   const renderActions = (rowData: ItemsDropDownType) => (
-    <div className="flex space-x-2 justify-center">
-      <FaTrash
-        className="text-red-600 cursor-pointer"
+    <div className="flex space-x-2 justify-center items-center">
+      {/* <FaTrash */}
+      <IoIosCloseCircleOutline
+        className="text-red-400 text-lg cursor-pointer"
         onClick={() => {
           setConfirmationRemoval(true);
           setRemovingId(rowData?._id);
         }}
       />
       <MdArrowOutward
-        className="text-primary cursor-pointer"
+        className="text-primary  cursor-pointer"
         onClick={() => handleEditItem(rowData?._id)}
       />
     </div>
@@ -444,7 +445,7 @@ const AddCategoryForm = () => {
       dataKey: "name",
       render: (item: { _id: string }) => (
         <div className="flex space-x-2 justify-center">
-          <MdArrowOutward
+          <IoIosCloseCircleOutline
             className="text-primary cursor-pointer"
             onClick={() => handleEditItem(item._id)}
           />
@@ -595,7 +596,9 @@ const AddCategoryForm = () => {
             </div>
           </div>
         )}
-
+        <label className="block mb-2 text-sm font-medium text-left text-gray-700">
+          Availibility
+        </label>
         <AvailabilityComponent
           availability={availability}
           setAvailability={setAvailability}

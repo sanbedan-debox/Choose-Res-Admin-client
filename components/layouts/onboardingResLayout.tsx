@@ -101,17 +101,13 @@ const OnboardingRestaurantLayout = ({ children }: Props) => {
           {journeySteps.map((step, index) => (
             <div
               key={step}
-              className={`flex-1 text-center py-2 font-bold border-b-[1px] border-l-[1px] border-r-[1px] border-gray-300  ${
-                index === currentStepIndex
+              className={`flex-1 text-sm text-center py-2 font-bold border-b-[1px] border-l-[1px] border-r-[1px] border-gray-300  ${
+                index <= currentStepIndex
                   ? "text-white bg-primary font-bold"
-                  : "text-white"
+                  : "text-black"
               }`}
             >
-              <p
-                className={`text-sm ${
-                  index === currentStepIndex ? "text-white" : "text-primary"
-                }`}
-              >
+              <p>
                 {index === 0
                   ? "Basic Information"
                   : index === 1

@@ -567,7 +567,9 @@ const RestaurantAvailability = () => {
             </p>
           )}
         </div>
-
+        <label className="block mb-2 text-sm font-medium text-left text-gray-700">
+          Select Restaturant Timings
+        </label>
         <div>
           <AvailabilityComponent
             availability={availability}
