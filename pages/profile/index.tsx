@@ -1,6 +1,6 @@
 import Loader from "@/components/loader";
 import useGlobalStore from "@/store/global";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
 import { sdk } from "@/utils/graphqlClient";
@@ -9,6 +9,7 @@ import MenuSection from "@/components/common/menuSection/menuSection";
 import BusinessInformationForm from "@/components/modules/profile/forms/businessInformationForm";
 import LocationDetailsForm from "@/components/modules/profile/forms/locationDetailsForm";
 import IdentityVerificationForm from "@/components/modules/profile/forms/identityVerificationForm";
+import useProfileStore from "@/store/profile";
 
 type NextPageWithLayout = React.FC & {
   getLayout?: (page: React.ReactNode) => React.ReactNode;
@@ -22,15 +23,64 @@ type UserRepo = {
 
 const Profile: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
   const { setSelectedMenu } = useGlobalStore();
-  const [loading, setLoading] = React.useState(true);
+  const {
+    setAddressLine1,
+    setAddressLine2,
+    setCity,
+    setCords,
+    setPlace,
+    setPostcode,
+    setState,
+    setbusinessName,
+    setbusinessType,
+    setein,
+    setemployeeSize,
+    setestablishedAt,
+    setestimatedRevenue,
+  } = useProfileStore();
+
+  const [loading, setLoading] = useState(true);
+
+  const fetchBusinessDetails = async () => {
+    try {
+      const response = await sdk.getBusinessDetails();
+      const {
+        businessType,
+        businessName,
+        employeeSize,
+        estimatedRevenue,
+        address,
+        ein,
+      } = response.getBusinessDetails;
+      setAddressLine1(address?.addressLine1?.value || "");
+      setAddressLine2(address?.addressLine2?.value || "");
+      setCity(address?.city?.value || "");
+      setCords(address?.coordinate?.coordinates || [0, 0]);
+      setPlace({
+        displayName: address?.place?.displayName || "",
+        placeId: address?.place?.placeId || "",
+      });
+      setPostcode(address?.postcode?.value || "");
+      setState({
+        id: address?.state?._id || "",
+        value: address?.state?.value || "",
+      });
+      setbusinessName(businessName || "");
+      setbusinessType(businessType || "");
+      setein(ein || "");
+      setemployeeSize(employeeSize || "");
+      setestimatedRevenue(estimatedRevenue || "");
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching business details:", error);
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    setSelectedMenu("dashboard");
-  }, [setSelectedMenu]);
+    fetchBusinessDetails();
+  }, []);
 
-  if (!repo) {
-    return <Loader />;
-  }
   const contentList = [
     {
       id: "businessInformation",
@@ -49,11 +99,12 @@ const Profile: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
     },
   ];
 
+  if (loading) {
+    return <Loader />;
+  }
+
   return (
     <div className="text-black">
-      {/* <p>Welcome, {repo.firstName}!</p>
-      <p>Welcome, {repo.email}!</p>
-      <p>Your id: {repo._id}</p> */}
       <MenuSection contentList={contentList} />
     </div>
   );
@@ -62,7 +113,6 @@ const Profile: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
 Profile.getLayout = function getLayout(page: React.ReactNode) {
   return <MainLayout>{page}</MainLayout>;
 };
-
 export default Profile;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {

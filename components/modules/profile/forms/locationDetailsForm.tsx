@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Select from "react-select";
 import AsyncSelect from "react-select/async";
 import debounce from "lodash.debounce";
 import useMasterStore from "@/store/masters";
-import useOnboardingStore from "@/store/onboarding";
+import useProfileStore from "@/store/profile";
 import { sdk } from "@/utils/graphqlClient";
 
 interface IFormInput {
@@ -51,56 +51,26 @@ const UserLocationForm: React.FC = () => {
     setPostcode,
     setCords,
     setPlace,
-  } = useOnboardingStore();
+  } = useProfileStore();
 
-  const [addressLine1State, setAddressLine1State] = useState(addressLine1);
-  const [addressLine2State, setAddressLine2State] = useState(addressLine2);
-  const [cityState, setCityState] = useState(city);
-  const [stateState, setStateState] = useState(state);
-  const [postcodeState, setPostcodeState] = useState(postcode);
+  const [formState, setFormState] = useState<IFormInput>({
+    addressLine1,
+    addressLine2,
+    city,
+    state,
+    postcode,
+    location: { label: place?.displayName ?? "", value: place?.placeId ?? "" },
+  });
+
   const [selectedPlace, setSelectedPlace] = useState<PlacesType | null>(null);
-  const [coords, setCoords] = useState<number[]>([]);
+  const [coords, setCoords] = useState<number[]>(cords);
   const [errors, setErrors] = useState<Partial<IFormInput>>({});
-
-  useEffect(() => {
-    setAddressLine1State(addressLine1);
-    setAddressLine2State(addressLine2);
-    setCityState(city);
-    setStateState(state);
-    setPostcodeState(postcode);
-    if (place?.displayName && place?.placeId) {
-      setSelectedPlace({ label: place.displayName, value: place.placeId });
-    }
-    if (cords[0] !== 0 && cords[1] !== 0) {
-      setCoords(cords);
-    }
-  }, [addressLine1, addressLine2, city, state, postcode, place, cords]);
 
   const debouncedLoadOptions = debounce(loadOptions, 800);
 
-  //   const handleSubmit = () => {
-  //     const newErrors: Partial<IFormInput> = {};
-
-  //     if (!addressLine1State)
-  //       newErrors.addressLine1 = "Address Line 1 is required";
-  //     if (!cityState) newErrors.city = "City is required";
-  //     if (!stateState) newErrors.state = "State is required";
-  //     if (!postcodeState) newErrors.postcode = "Zipcode is required";
-  //     if (!selectedPlace) newErrors.location = "Location is required";
-
-  //     if (Object.keys(newErrors).length > 0) {
-  //       setErrors(newErrors);
-  //       return;
-  //     }
-
-  //     setAddressLine1(addressLine1State);
-  //     setAddressLine2(addressLine2State);
-  //     setCity(cityState);
-  //     setState(stateState);
-  //     setPostcode(postcodeState);
-  //     setPlace(selectedPlace);
-  //     setCords(coords);
-  //   };
+  const handleInputChange = (field: keyof IFormInput, value: any) => {
+    setFormState((prev) => ({ ...prev, [field]: value }));
+  };
 
   return (
     <div className="z-10 flex flex-col w-full max-w-lg items-center space-y-5 text-center">
@@ -111,8 +81,8 @@ const UserLocationForm: React.FC = () => {
           </label>
           <input
             type="text"
-            value={addressLine1State}
-            onChange={(e) => setAddressLine1State(e.target.value)}
+            value={formState.addressLine1}
+            onChange={(e) => handleInputChange("addressLine1", e.target.value)}
             className="input input-primary"
             placeholder="Address Line 1"
           />
@@ -129,8 +99,8 @@ const UserLocationForm: React.FC = () => {
           </label>
           <input
             type="text"
-            value={addressLine2State}
-            onChange={(e) => setAddressLine2State(e.target.value)}
+            value={formState.addressLine2}
+            onChange={(e) => handleInputChange("addressLine2", e.target.value)}
             className="input input-primary"
             placeholder="Address Line 2 (optional)"
           />
@@ -148,8 +118,8 @@ const UserLocationForm: React.FC = () => {
             </label>
             <input
               type="text"
-              value={cityState}
-              onChange={(e) => setCityState(e.target.value)}
+              value={formState.city}
+              onChange={(e) => handleInputChange("city", e.target.value)}
               className="input input-primary"
               placeholder="City"
             />
@@ -172,9 +142,9 @@ const UserLocationForm: React.FC = () => {
               className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
               classNamePrefix="react-select"
               placeholder="Select State"
-              value={stateState}
+              value={formState.state}
               onChange={(option) => {
-                setStateState(option);
+                handleInputChange("state", option);
                 setState({
                   id: option?.id ?? "",
                   value: option?.value ?? "",
@@ -190,8 +160,8 @@ const UserLocationForm: React.FC = () => {
           </label>
           <input
             type="text"
-            value={postcodeState}
-            onChange={(e) => setPostcodeState(e.target.value)}
+            value={formState.postcode}
+            onChange={(e) => handleInputChange("postcode", e.target.value)}
             className="input input-primary"
             placeholder="Zipcode"
           />
@@ -237,11 +207,6 @@ const UserLocationForm: React.FC = () => {
             }}
             loadOptions={debouncedLoadOptions}
           />
-          {errors.location && (
-            <p className="text-red-500 text-sm text-start">
-              {/* {errors.location} */}
-            </p>
-          )}
         </div>
       </form>
     </div>

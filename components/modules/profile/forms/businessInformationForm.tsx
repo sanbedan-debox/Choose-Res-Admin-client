@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import { sdk } from "@/utils/graphqlClient";
-import useOnboardingStore from "@/store/onboarding";
+import useProfileStore from "@/store/profile";
 import {
   BusinessTypeEnum,
   EstimatedRevenueEnum,
@@ -56,41 +56,16 @@ const formatEstimatedRevenueEnum = (value: EstimatedRevenueEnum) => {
 };
 
 const BusinessInformationForm: React.FC = () => {
-  const [businessType, setBusinessType] = useState<string>("");
-  const [businessName, setBusinessName] = useState<string>("");
-  const [employees, setEmployees] = useState<string>("");
-  const [revenue, setRevenue] = useState<string>("");
-
   const {
+    businessType,
+    businessName,
+    employeeSize,
+    estimatedRevenue,
     setbusinessType,
     setbusinessName,
     setemployeeSize,
     setestimatedRevenue,
-  } = useOnboardingStore();
-
-  useEffect(() => {
-    const fetchBusinessDetails = async () => {
-      try {
-        const response = await sdk.getBusinessDetails();
-        const { businessType, businessName, employeeSize, estimatedRevenue } =
-          response.getBusinessDetails;
-
-        setBusinessType(businessType || "");
-        setBusinessName(businessName || "");
-        setEmployees(employeeSize || "");
-        setRevenue(estimatedRevenue || "");
-
-        setbusinessType(businessType || "");
-        setbusinessName(businessName || "");
-        setemployeeSize(employeeSize || "");
-        setestimatedRevenue(estimatedRevenue || "");
-      } catch (error) {
-        console.error("Error fetching business details:", error);
-      }
-    };
-
-    fetchBusinessDetails();
-  }, [setbusinessType, setbusinessName, setemployeeSize, setestimatedRevenue]);
+  } = useProfileStore();
 
   const BusinessType = Object.values(BusinessTypeEnum).map((val) => ({
     value: val.toString(),
@@ -122,7 +97,6 @@ const BusinessInformationForm: React.FC = () => {
             options={BusinessType}
             value={BusinessType.find((option) => option.value === businessType)}
             onChange={(option) => {
-              setBusinessType(option?.value || "");
               setbusinessType(option?.value || "");
             }}
             className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
@@ -142,7 +116,6 @@ const BusinessInformationForm: React.FC = () => {
             type="text"
             value={businessName}
             onChange={(e) => {
-              setBusinessName(e.target.value);
               setbusinessName(e.target.value);
             }}
             id="businessName"
@@ -161,9 +134,8 @@ const BusinessInformationForm: React.FC = () => {
           <Select
             id="employees"
             options={employeSize}
-            value={employeSize.find((option) => option.value === employees)}
+            value={employeSize.find((option) => option.value === employeeSize)}
             onChange={(option) => {
-              setEmployees(option?.value || "");
               setemployeeSize(option?.value || "");
             }}
             className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
@@ -182,9 +154,10 @@ const BusinessInformationForm: React.FC = () => {
           <Select
             id="revenue"
             options={revenueOptions}
-            value={revenueOptions.find((option) => option.value === revenue)}
+            value={revenueOptions.find(
+              (option) => option.value === estimatedRevenue
+            )}
             onChange={(option) => {
-              setRevenue(option?.value || "");
               setestimatedRevenue(option?.value || "");
             }}
             className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
