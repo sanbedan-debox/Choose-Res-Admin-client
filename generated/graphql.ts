@@ -2040,7 +2040,7 @@ export type GetModifierGroupQueryVariables = Exact<{
 }>;
 
 
-export type GetModifierGroupQuery = { __typename?: 'Query', getModifierGroup: { __typename?: 'ModifierGroup', _id: string, pricingType: PriceTypeEnum, optional: boolean, name: { __typename?: 'MasterCommon', value: string }, modifiers: Array<{ __typename?: 'ModifierInfo', id: string, name: { __typename?: 'MasterCommon', value: string }, price: { __typename?: 'MasterCommonNumber', value: number } }>, maxSelections: { __typename?: 'MasterCommonNumber', value: number } } };
+export type GetModifierGroupQuery = { __typename?: 'Query', getModifierGroup: { __typename?: 'ModifierGroup', _id: string, pricingType: PriceTypeEnum, optional: boolean, name: { __typename?: 'MasterCommon', value: string }, modifiers: Array<{ __typename?: 'ModifierInfo', id: string, name: { __typename?: 'MasterCommon', value: string }, price: { __typename?: 'MasterCommonNumber', value: number } }>, maxSelections: { __typename?: 'MasterCommonNumber', value: number }, minSelections: { __typename?: 'MasterCommonNumber', value: number } } };
 
 export type RemoveModifierFromModifierGroupMutationVariables = Exact<{
   modifierGroupId: Scalars['String']['input'];
@@ -2774,6 +2774,9 @@ export const GetModifierGroupDocument = gql`
       id
     }
     maxSelections {
+      value
+    }
+    minSelections {
       value
     }
   }

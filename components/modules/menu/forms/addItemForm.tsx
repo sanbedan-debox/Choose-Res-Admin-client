@@ -303,7 +303,7 @@ const AddItemForm = () => {
       if (!data.price || data.price <= 0) {
         setToastData({
           message:
-            "An item cannot be added without pricing, please add a numerical value that is greater than zero to save and continue",
+            "An item cannot be added without price, please add a numerical value that is greater than zero to save and continue",
           type: "error",
         });
       }
@@ -1046,28 +1046,29 @@ const AddItemForm = () => {
               Modifier Groups allow your customer to customize an item
             </p>
           </div>
-          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-            Availibility
-          </label>
-
-          <div className="flex items-center mb-4">
-            <input
-              type="checkbox"
-              id="useRestaurantTimings"
-              checked={useRestaurantTimings}
-              onChange={handleCheckboxChange}
-              className="mr-2"
-            />
-            <label htmlFor="useRestaurantTimings">
-              Use Restaurant Timings for this Item
+          <div>
+            <label className="block mb-2 text-sm font-medium text-left text-gray-700">
+              Availibility
             </label>
+
+            <div className="flex items-center mb-4">
+              <input
+                type="checkbox"
+                id="useRestaurantTimings"
+                checked={useRestaurantTimings}
+                onChange={handleCheckboxChange}
+                className="mr-2"
+              />
+              <label htmlFor="useRestaurantTimings">
+                Use Restaurant Timings for this Item
+              </label>
+            </div>
+
+            <AvailabilityComponent
+              availability={availability}
+              setAvailability={setAvailability}
+            />
           </div>
-
-          <AvailabilityComponent
-            availability={availability}
-            setAvailability={setAvailability}
-          />
-
           <CButton
             loading={btnLoading}
             variant={ButtonType.Primary}

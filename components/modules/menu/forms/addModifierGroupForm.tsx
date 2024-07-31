@@ -138,7 +138,7 @@ const AddModifierGroupForm = () => {
             setValue("name", nameDup);
           }
           setValue("maxSelections", item?.maxSelections?.value || 1);
-          // setValue("minSelections", item.maxSelections?.value || 0);
+          setValue("minSelections", item.maxSelections?.value || 0);
           setValue("optional", item.optional || false);
           const selectedPriceType = PricingTypeOptions.find(
             (option) => option.value === item?.pricingType
@@ -245,30 +245,38 @@ const AddModifierGroupForm = () => {
         });
         return;
       }
-      if (
-        (parsedMinSelection > 0 &&
-          selectedItemsIds.length < parsedMinSelection) ||
-        (parsedMaxSelection > 0 && selectedItemsIds.length > parsedMaxSelection)
-      ) {
-        if (
-          parsedMinSelection > 0 &&
-          selectedItemsIds.length < parsedMinSelection
-        ) {
-          setToastData({
-            type: "error",
-            message: `Please select at least ${parsedMinSelection} items.`,
-          });
-        } else if (
-          parsedMaxSelection > 0 &&
-          selectedItemsIds.length > parsedMaxSelection
-        ) {
-          setToastData({
-            type: "error",
-            message: `You can select up to ${parsedMaxSelection} items only.`,
-          });
-        }
-        return;
-      }
+
+      // if (
+      //   (parsedMinSelection > 0 &&
+      //     selectedItemsIds.length < parsedMinSelection) ||
+      //   (parsedMaxSelection > 0 && selectedItemsIds.length > parsedMaxSelection)
+      // ) {
+      //   if (
+      //     parsedMinSelection > 0 &&
+      //     selectedItemsIds.length >= parsedMinSelection
+      //   ) {
+      //     setToastData({
+      //       type: "error",
+      //       message: `Please select at least ${parsedMinSelection} modifiers.`,
+      //     });
+      //   }
+      //   if (
+      //     parsedMaxSelection > 0 &&
+      //     selectedItemsIds.length <= parsedMaxSelection
+      //   ) {
+      //     console.log(
+      //       "parsedMaxSelection,selectedL",
+      //       parsedMaxSelection,
+      //       selectedItems,
+      //       selectedItemsIds
+      //     );
+      //     setToastData({
+      //       type: "error",
+      //       message: `You have to atleast select ${parsedMaxSelection} modifiers only.`,
+      //     });
+      //   }
+      //   return;
+      // }
 
       const updateInput: any = {
         _id: editModGroupId || "",
@@ -287,6 +295,10 @@ const AddModifierGroupForm = () => {
 
       if (data.maxSelections !== changesMenu?.maxSelections?.value) {
         addChange("maxSelections", data.maxSelections);
+        hasChanges = true;
+      }
+      if (data.minSelections !== changesMenu?.minSelections?.value) {
+        addChange("minSelections", data.maxSelections);
         hasChanges = true;
       }
 
@@ -319,11 +331,9 @@ const AddModifierGroupForm = () => {
         });
       } else {
         // EDIT/UPDATE ITEM API
-        if (hasChanges) {
-          await sdk.updateModifierGroup({
-            input: updateInput,
-          });
-        }
+        await sdk.updateModifierGroup({
+          input: updateInput,
+        });
 
         isMenuAdded &&
           (await sdk.addModifierToModifierGroup({

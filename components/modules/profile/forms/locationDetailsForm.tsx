@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import AsyncSelect from "react-select/async";
 import debounce from "lodash.debounce";
@@ -71,6 +71,12 @@ const UserLocationForm: React.FC = () => {
   const handleInputChange = (field: keyof IFormInput, value: any) => {
     setFormState((prev) => ({ ...prev, [field]: value }));
   };
+  useEffect(() => {
+    setSelectedPlace({
+      label: place?.displayName,
+      value: place?.placeId,
+    });
+  }, []);
 
   return (
     <div className="z-10 flex flex-col w-full max-w-lg items-center space-y-5 text-center">
