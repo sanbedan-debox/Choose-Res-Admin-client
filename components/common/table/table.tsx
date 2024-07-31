@@ -328,7 +328,7 @@ const RoopTable: React.FC<TableProps> = ({
           </div>
 
           {data.length > 0 && (
-            <div className="flex justify-between items-center mt-4">
+            <div className="flex justify-between items-center mt-5">
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}

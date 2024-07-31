@@ -71,7 +71,7 @@ const Menu: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
           <ArrowCard
             title="Have Clover?"
             caption="Pull your menu from Clover!"
-            href="/menu/menu-builder/menu"
+            href={`https://sandbox.dev.clover.com/oauth/v2/authorize?client_id=${process.env.NEXT_PUBLIC_CLOVER_APP_ID}`}
           />
           <ArrowCard
             title="Compare menu tools"

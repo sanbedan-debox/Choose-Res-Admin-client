@@ -6,7 +6,7 @@ import RoopTable from "@/components/common/table/table";
 import MainLayout from "@/components/layouts/mainBodyLayout";
 import Loader from "@/components/loader";
 import AddTeamMemberForm from "@/components/modules/userManagement/forms/addTeamMemberForm";
-import { UserStatus } from "@/generated/graphql";
+import { UserRole, UserStatus } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
 import useUserManagementStore from "@/store/userManagement";
 import { sdk } from "@/utils/graphqlClient";
@@ -16,6 +16,46 @@ import { FaTrash } from "react-icons/fa";
 
 type NextPageWithLayout = React.FC & {
   getLayout?: (page: React.ReactNode) => React.ReactNode;
+};
+
+const formatUserStatus = (status: UserStatus): string => {
+  switch (status) {
+    case UserStatus.Active:
+      return "Active";
+    case UserStatus.Blocked:
+      return "Blocked";
+    case UserStatus.InternalVerificationPending:
+      return "Internal Verification Pending";
+    case UserStatus.OnboardingPending:
+      return "Onboarding Pending";
+    case UserStatus.PaymentPending:
+      return "Payment Pending";
+    case UserStatus.RestaurantOnboardingPending:
+      return "Restaurant Onboarding Pending";
+    case UserStatus.SubUserEmailVerificationPending:
+      return "Email Verification Pending";
+
+    default:
+      return "";
+  }
+};
+
+const formatUserRole = (role: UserRole): string => {
+  switch (role) {
+    case UserRole.Owner:
+      return "Owner";
+    case UserRole.Staff:
+      return "Staff";
+    case UserRole.Manager:
+      return "Manager";
+    case UserRole.Accountant:
+      return "Accountant";
+    case UserRole.MarketingPartner:
+      return "Marketing Partner";
+
+    default:
+      return "";
+  }
 };
 
 const Teams: NextPageWithLayout = () => {
@@ -92,10 +132,22 @@ const Teams: NextPageWithLayout = () => {
   const headings = [
     { title: "First Name", dataKey: "firstName" },
     { title: "Last Name", dataKey: "lastName" },
-    { title: "email", dataKey: "email" },
-    { title: "phone", dataKey: "phone" },
-    { title: "role", dataKey: "role" },
-    { title: "Onboarding status", dataKey: "onboardingStatus" },
+    { title: "Email", dataKey: "email" },
+    { title: "Phone", dataKey: "phone" },
+    {
+      title: "Role",
+      dataKey: "role",
+      // render: (rowData: { role: string }) => {
+      //   return <p>{formatUserRole(rowData.role as UserRole)}</p>;
+      // },
+    },
+    {
+      title: "Status",
+      dataKey: "onboardingStatus",
+      render: (rowData: { onboardingStatus: UserStatus }) => {
+        return <p>{formatUserStatus(rowData.onboardingStatus)}</p>;
+      },
+    },
 
     {
       title: "Actions",

@@ -76,10 +76,6 @@ const Dashboard: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
     "December",
   ];
 
-  if (!repo) {
-    return <Loader />;
-  }
-
   const completeRes = async (id: string) => {
     console.log(`Completing restaurant with id: ${id}`); // Added log
     const res = await sdk.setRestaurantIdAsCookie({ id });
@@ -127,6 +123,10 @@ const Dashboard: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
     months[currentDate.getMonth()]
   }`;
 
+  if (!repo) {
+    return <Loader />;
+  }
+
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-4">
@@ -139,12 +139,14 @@ const Dashboard: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-6 gap-4 mb-4">
         <QuickActionsDashboard actions={actions} />
-        <IncompleteRestaurants
-          restaurants={restaurants}
-          completeRes={completeRes}
-        />
+        {restaurants.length > 0 && (
+          <IncompleteRestaurants
+            restaurants={restaurants}
+            completeRes={completeRes}
+          />
+        )}
       </div>
     </div>
   );

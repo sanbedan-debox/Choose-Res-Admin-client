@@ -6,18 +6,17 @@ type QuickActionsProps = {
 
 const QuickActionsDashboard: React.FC<QuickActionsProps> = ({ actions }) => {
   return (
-    <div className=" shadow-lg rounded-lg p-4 h-64 overflow-y-auto scrollbar-hide">
-      <h2 className="text-lg font-semibold mb-4">Quick Actions</h2>
+    <div className="bg-white shadow rounded-lg p-4 h-auto overflow-y-auto scrollbar-hide col-span-2">
+      <h2 className="text-lg font-semibold mb-2">Quick Actions</h2>
       <ul>
         {actions.map((action, index) => (
-          <li key={index} className="mb-2">
-            <a
-              href="#"
+          <li key={action.name} className="mb-2">
+            <button
               onClick={action.onClick}
-              className="text-primary hover:underline"
+              className="text-primary hover:scale-105 transition-all text-sm"
             >
               {action.name}
-            </a>
+            </button>
           </li>
         ))}
       </ul>
