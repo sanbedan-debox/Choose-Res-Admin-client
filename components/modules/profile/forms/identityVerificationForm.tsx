@@ -10,25 +10,15 @@ const IdentityVerificationForm: React.FC = () => {
   }, [ein]);
 
   return (
-    <div className="z-10 flex flex-col w-full max-w-lg items-center space-y-5 text-center">
-      <form className="space-y-4 md:space-y-3 w-full max-w-2xl">
-        <div className="col-span-2">
-          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-            EIN
-          </label>
-          <input
-            type="text"
-            value={einState}
-            onChange={(e) => setEinState(e.target.value)}
-            // onBlur={() => setEin(einState)}
-            className="input input-primary"
-            placeholder="EIN"
-          />
-          <p className="text-gray-400 text-xs text-start mt-1">
-            Enter your 9-digits EIN number in this format XX-XXXXXXX
-          </p>
-        </div>
-      </form>
+    <div className="space-y-4 md:space-y-3 w-full ">
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-semibold">Verified Information</h2>
+      </div>
+      <div className="text-left text-sm text-gray-600">
+        <p>
+          <strong>EIN:</strong> {ein}
+        </p>
+      </div>
     </div>
   );
 };

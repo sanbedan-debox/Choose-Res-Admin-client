@@ -72,7 +72,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           await sdk.addTaxRateInRestaurant({
             taxRateId: taxRateResponse.addTaxRate,
           });
-          setSelectedRestaurantTaxRate(taxRateResponse?.addTaxRate);
+          setSelectedRestaurantTaxRateId(taxRateResponse?.addTaxRate);
         }
         setToastData({
           message: "Tax rate added successfully",
@@ -89,7 +89,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   };
 
   const { setRestaurants, setSelectedRestaurant } = useRestaurantsStore();
-  const { setSelectedRestaurantTaxRate } = useRestaurantsStore();
+  const { setSelectedRestaurantTaxRateId } = useRestaurantsStore();
   const { setTaxRate } = useAuthStore();
   const router = useRouter();
   const [existingTaxRateId, setExistingTaxRateId] = useState<string | null>(
@@ -124,7 +124,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 "default",
                 (existingTaxRate?.default as boolean) || false
               );
-              setSelectedRestaurantTaxRate(existingTaxRate._id);
+              setSelectedRestaurantTaxRateId(existingTaxRate._id);
               setIsSaveButtonEnabled(false);
               setExistingTaxRateId(existingTaxRate._id);
               setIsButtonVisible(false);

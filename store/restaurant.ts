@@ -5,8 +5,8 @@ type RestaurantStates = {
   setRestaurants: (res: any) => void;
   selectedRestaurant: string;
   setSelectedRestaurant: (location: string) => void;
-  selectedRestaurantTaxRate: string;
-  setSelectedRestaurantTaxRate: (tax: string) => void;
+  selectedRestaurantTaxRateId: string;
+  setSelectedRestaurantTaxRateId: (tax: string) => void;
   refreshRestaurantChange: boolean;
   setRefreshRestaurantChange: (res: boolean) => void;
 
@@ -15,8 +15,8 @@ type RestaurantStates = {
 const useRestaurantsStore = create<RestaurantStates>((set) => ({
   selectedRestaurant: "",
   setSelectedRestaurant: (selectedRestaurant) => set({ selectedRestaurant }),
-  selectedRestaurantTaxRate: "",
-  setSelectedRestaurantTaxRate: (selectedRestaurantTaxRate) => set({ selectedRestaurantTaxRate }),
+  selectedRestaurantTaxRateId: "",
+  setSelectedRestaurantTaxRateId: (selectedRestaurantTaxRateId) => set({ selectedRestaurantTaxRateId }),
   selectedRestaurantId: "",
   restaurants: [],
   setRestaurants: (res) => set({ restaurants: res }),

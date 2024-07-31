@@ -9,30 +9,30 @@ const MenuSection: React.FC<MenuSectionProps> = ({ contentList }) => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const sectionRefs = useRef<HTMLElement[]>([]);
 
-  useEffect(() => {
-    const handleScroll = (entries: IntersectionObserverEntry[]) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          setActiveId(entry.target.id);
-          window.history.replaceState(null, "", `?section=${entry.target.id}`);
-        }
-      });
-    };
+  // useEffect(() => {
+  //   const handleScroll = (entries: IntersectionObserverEntry[]) => {
+  //     entries.forEach((entry) => {
+  //       if (entry.isIntersecting) {
+  //         setActiveId(entry.target.id);
+  //         window.history.replaceState(null, "", `?section=${entry.target.id}`);
+  //       }
+  //     });
+  //   };
 
-    const observer = new IntersectionObserver(handleScroll, {
-      root: null,
-      rootMargin: "0px",
-      threshold: 0.6,
-    });
+  //   const observer = new IntersectionObserver(handleScroll, {
+  //     root: null,
+  //     rootMargin: "0px",
+  //     threshold: 0.6,
+  //   });
 
-    sectionRefs.current.forEach((section) => {
-      observer.observe(section);
-    });
+  //   sectionRefs.current.forEach((section) => {
+  //     observer.observe(section);
+  //   });
 
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
+  //   return () => {
+  //     observer.disconnect();
+  //   };
+  // }, []);
 
   const handleNavLinkClick = (id: string) => {
     const targetSection = document.getElementById(id);
@@ -76,12 +76,11 @@ const MenuSection: React.FC<MenuSectionProps> = ({ contentList }) => {
                 if (el) sectionRefs.current.push(el);
               }}
             >
-              <h2 className="text-2xl font-bold mb-4">{content.title}</h2>
               <content.Component />
             </section>
             {index < contentList.length - 1 && (
               <div className="w-full mb-4 bg-primary rounded-md bg-opacity-45 h-1"></div>
-            )}{" "}
+            )}
           </>
         ))}
       </main>

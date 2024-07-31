@@ -2220,6 +2220,11 @@ export type VerifyTeamEmailMutationVariables = Exact<{
 
 export type VerifyTeamEmailMutation = { __typename?: 'Mutation', verifyTeamEmail: boolean };
 
+export type GetAllPermissionsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllPermissionsQuery = { __typename?: 'Query', getAllPermissions: Array<{ __typename?: 'Permission', _id: string, type: PermissionTypeEnum, preselect: Array<UserRole>, isFunction: boolean }> };
+
 
 export const LogoutDocument = gql`
     query Logout {
@@ -3110,6 +3115,16 @@ export const VerifyTeamEmailDocument = gql`
   verifyTeamEmail(token: $token)
 }
     `;
+export const GetAllPermissionsDocument = gql`
+    query getAllPermissions {
+  getAllPermissions {
+    _id
+    type
+    preselect
+    isFunction
+  }
+}
+    `;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string, variables?: any) => Promise<T>;
 
@@ -3333,6 +3348,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     verifyTeamEmail(variables: VerifyTeamEmailMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<VerifyTeamEmailMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<VerifyTeamEmailMutation>(VerifyTeamEmailDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'verifyTeamEmail', 'mutation', variables);
+    },
+    getAllPermissions(variables?: GetAllPermissionsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetAllPermissionsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetAllPermissionsQuery>(GetAllPermissionsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getAllPermissions', 'query', variables);
     }
   };
 }

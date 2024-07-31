@@ -53,8 +53,6 @@ const AddModifierForm = () => {
 
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [logoURL, setLogoURL] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchItemData = async () => {
@@ -161,8 +159,6 @@ const AddModifierForm = () => {
 
   const handleLogoUpload = async () => {
     if (logoFile) {
-      setIsUploading(true);
-
       const formData = new FormData();
       formData.append("file", logoFile);
       formData.append("upload_preset", "modifier-images");
@@ -174,8 +170,7 @@ const AddModifierForm = () => {
 
       const cloudinaryUrl = response?.secure_url;
       setPreviewUrl(cloudinaryUrl);
-      setLogoURL(cloudinaryUrl);
-      setIsUploading(false);
+
       return cloudinaryUrl;
     }
   };
@@ -183,7 +178,6 @@ const AddModifierForm = () => {
     const file = e.target.files?.[0] || null;
     if (file) {
       setLogoFile(file);
-      setIsUploading(false);
 
       const objectUrl = URL.createObjectURL(file);
       setPreviewUrl(objectUrl);

@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import moment from "moment";
-import { FaPlus, FaMinus } from "react-icons/fa";
-import { Day } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import CustomSwitch from "../customSwitch/customSwitch";
@@ -31,7 +29,6 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
   const [copiedDayIndex, setCopiedDayIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    console.log("hello from availibility", availability);
     const firstFilledDayIndex = availability.findIndex(
       (day) => day.active && day.hours.length > 0
     );
@@ -188,23 +185,6 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
         <div key={index} className="mb-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center" style={{ width: "200px" }}>
-              {/* <input
-                type="checkbox"
-                checked={day.active}
-                onChange={() => {
-                  const newAvailability = [...availability];
-                  newAvailability[index].active =
-                    !newAvailability[index].active;
-                  if (
-                    newAvailability[index].active &&
-                    newAvailability[index].hours.length === 0
-                  ) {
-                    handleAddHours(index);
-                  }
-                  setAvailability(newAvailability);
-                }}
-                className="mr-2"
-              /> */}
               <CustomSwitch
                 checked={day.active}
                 onChange={() => {
@@ -277,7 +257,7 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
               className="flex items-end justify-end"
               style={{ width: "230px" }}
             >
-              {day.active && (
+              {/* {day.active && (
                 <>
                   {day.hours.length > 0 && (
                     <>
@@ -313,6 +293,42 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
                       Copy to all
                     </button>
                   )}
+                </>
+              )} */}
+              {day.active && (
+                <>
+                  {day.hours.length > 0 && (
+                    <>
+                      {day.hours.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleRemoveHours(index, day.hours.length - 1)
+                          }
+                          className="mr-1 text-2xl hover:text-primary"
+                          disabled={!day.active}
+                        >
+                          <CiCircleMinus />
+                        </button>
+                      )}
+
+                      <button
+                        type="button"
+                        onClick={() => handleAddHours(index)}
+                        className="mr-1 text-2xl hover:text-primary"
+                        disabled={!day.active}
+                      >
+                        <CiCirclePlus />
+                      </button>
+                    </>
+                  )}
+                  <button
+                    className="text-primary text-sm "
+                    type="button"
+                    onClick={() => handleCopyHours(index)}
+                  >
+                    Copy to all
+                  </button>
                 </>
               )}
             </div>

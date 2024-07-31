@@ -20,8 +20,15 @@ mutation removeTeamMember($teamId: String!) {
   removeTeamMember(id: $teamId)
 }
 
+mutation verifyTeamEmail($token: String!) {
+  verifyTeamEmail(token: $token)
+}
 
-
-mutation verifyTeamEmail($token:String!){
-  verifyTeamEmail(token:$token)
+query getAllPermissions {
+  getAllPermissions {
+    _id
+    type
+    preselect
+    isFunction
+  }
 }

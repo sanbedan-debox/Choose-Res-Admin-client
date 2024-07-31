@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
@@ -12,19 +11,10 @@ import { UserRole } from "@/generated/graphql";
 import CustomSwitchCard from "@/components/common/customSwitchCard/customSwitchCard";
 import ArrowCard from "@/components/common/arrowCard/arrowCard";
 import useUserManagementStore from "@/store/userManagement";
+import useAddTeamMemberFormStore from "@/pages/teams/store/addTeamMemberStore";
+import { IoArrowBackCircleOutline } from "react-icons/io5";
 
-interface IFormInput {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  role: { value: string; label: string };
-  whatsApp: boolean;
-  emailPref: boolean;
-  restaurant: { value: string; label: string }[];
-}
-
-const userRoleOptions: any[] = [
+const userRoleOptions = [
   { value: UserRole.Owner, label: "Owner" },
   { value: UserRole.Manager, label: "Manager" },
   { value: UserRole.MarketingPartner, label: "Marketing Partner" },
@@ -34,31 +24,30 @@ const userRoleOptions: any[] = [
 const AddTeamMemberForm = () => {
   const [btnLoading, setBtnLoading] = useState(false);
   const { setToastData } = useGlobalStore();
+  const { isAddTeamMemberModalOpen, setIsAddTeamMemberModalOpen } =
+    useUserManagementStore();
+  const { form, setFormValue, resetForm } = useAddTeamMemberFormStore();
   const [restaurantDropdownOptions, setRestaurantDropdownOptions] = useState<
     { label: string; value: string }[]
   >([]);
-  const { isAddTeamMemberModalOpen, setIsAddTeamMemberModalOpen } =
-    useUserManagementStore();
 
-  const {
-    handleSubmit,
-    formState: { errors },
-    control,
-    register,
-    watch,
-    setValue,
-  } = useForm<IFormInput>({
-    defaultValues: {
-      whatsApp: false,
-      emailPref: false,
-    },
-  });
+  const [showPermissions, setShowPermissions] = useState(false);
+  const [permissions, setPermissions] = useState<
+    {
+      type: string;
+      _id: string;
+      isTicked: boolean;
+      preselect: string[];
+    }[]
+  >([]);
 
-  const onSubmit = async (data: IFormInput) => {
+  const onSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+
     try {
       if (
-        !isValidNameAlphabetic(data.firstName) ||
-        !isValidNameAlphabetic(data.lastName)
+        !isValidNameAlphabetic(form.firstName) ||
+        !isValidNameAlphabetic(form.lastName)
       ) {
         setToastData({
           message: "Please use only alphabets for first and last names.",
@@ -68,29 +57,35 @@ const AddTeamMemberForm = () => {
       }
 
       setBtnLoading(true);
-      const restaurantIds = data.restaurant.map((rest) => rest.value);
+      const restaurantIds = form.restaurant.map(
+        (rest: { value: string }) => rest.value
+      );
 
-      console.log(restaurantDropdownOptions);
       const res = await sdk.addTeamMember({
         AddTeamMemberInput: {
-          firstName: data.firstName,
-          lastName: data.lastName,
-          email: data.email,
-          phone: data.phone,
-          role: data.role.value as UserRole,
+          firstName: form.firstName,
+          lastName: form.lastName,
+          email: form.email,
+          phone: form.phone,
+          role: form.role.value as UserRole,
           restaurants: restaurantIds,
           accountPreferences: {
-            whatsApp: data.whatsApp,
-            email: data.emailPref,
+            whatsApp: form.whatsApp,
+            email: form.emailPref,
           },
+          // permissions: Object.keys(form.permissions).filter(
+          //   (key) => form.permissions[key]
+          // ),
         },
       });
+
       if (res) {
         setToastData({
           type: "success",
           message: "Team Member Added Successfully",
         });
         setIsAddTeamMemberModalOpen(false);
+        resetForm();
       }
 
       setBtnLoading(false);
@@ -105,27 +100,68 @@ const AddTeamMemberForm = () => {
   };
 
   useEffect(() => {
-    const fetchUserRestaurants = async () => {
-      try {
-        const response = await sdk.getUserRestaurants();
-        const options = response.getUserRestaurants.map(
-          (restaurant: { name: { value: string }; id: string }) => ({
-            label: restaurant.name.value,
-            value: restaurant.id,
-          })
-        );
-        setRestaurantDropdownOptions(options);
-      } catch (error) {
-        setToastData({
-          type: "error",
-          message: extractErrorMessage(error),
-        });
-      }
-    };
+    setPermissions((prevPermissions) =>
+      prevPermissions.map((permission) => ({
+        ...permission,
+        isTicked: permission.preselect.includes(form.role?.value || ""),
+      }))
+    );
+  }, [form.role]);
 
+  const fetchPermissions = async () => {
+    try {
+      const response = await sdk.getAllPermissions();
+      const formattedPermissions = response.getAllPermissions.map(
+        (permission) => ({
+          type: permission.type,
+          _id: permission._id,
+          isTicked: false,
+          preselect: permission.preselect,
+        })
+      );
+      setPermissions(formattedPermissions);
+    } catch (error) {
+      setToastData({
+        type: "error",
+        message: extractErrorMessage(error),
+      });
+    }
+  };
+  const handlePermissionChange = (type: string) => {
+    setPermissions((prevPermissions) =>
+      prevPermissions.map((permission) =>
+        permission.type === type
+          ? { ...permission, isTicked: !permission.isTicked }
+          : permission
+      )
+    );
+  };
+
+  const fetchUserRestaurants = async () => {
+    try {
+      const response = await sdk.getUserRestaurants();
+      const options = response.getUserRestaurants.map(
+        (restaurant: { name: { value: string }; id: string }) => ({
+          label: restaurant.name.value,
+          value: restaurant.id,
+        })
+      );
+      setRestaurantDropdownOptions(options);
+    } catch (error) {
+      setToastData({
+        type: "error",
+        message: extractErrorMessage(error),
+      });
+    }
+  };
+  useEffect(() => {
+    fetchPermissions();
     fetchUserRestaurants();
   }, [isAddTeamMemberModalOpen]);
 
+  const handleBack = () => {
+    setShowPermissions(false);
+  };
   return (
     <motion.div
       className="z-10 w-full min-h-full max-w-2xl flex flex-col items-center space-y-5 text-center"
@@ -136,196 +172,204 @@ const AddTeamMemberForm = () => {
     >
       <div className="flex flex-col items-center space-y-5 text-center">
         <h1 className="font-display max-w-2xl font-semibold text-2xl">
-          Add a new team member
+          {showPermissions ? "Assign Permissions" : "Add a new team member"}
         </h1>
         <p className="max-w-md text-accent-foreground/80 text-sm">
-          Fill in the details to add a new team member.
+          {showPermissions
+            ? "Select permissions to assign to the new team member."
+            : "Fill in the details to add a new team member."}
         </p>
       </div>
 
-      <form
-        className="space-y-4 md:space-y-3 w-full max-w-2xl"
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <div className="col-span-2">
-          <label
-            htmlFor="firstName"
-            className="block mb-2 text-sm font-medium text-left text-gray-700"
-          >
-            First Name
-          </label>
-          <input
-            type="text"
-            {...register("firstName", { required: "First name is required" })}
-            id="firstName"
-            className="input input-primary"
-            placeholder="Enter first name"
-          />
-          {errors.firstName && (
-            <p className="text-red-500 text-sm text-start">
-              {errors.firstName.message}
-            </p>
-          )}
-        </div>
-
-        <div className="col-span-2">
-          <label
-            htmlFor="lastName"
-            className="block mb-2 text-sm font-medium text-left text-gray-700"
-          >
-            Last Name
-          </label>
-          <input
-            type="text"
-            {...register("lastName", { required: "Last name is required" })}
-            id="lastName"
-            className="input input-primary"
-            placeholder="Enter last name"
-          />
-          {errors.lastName && (
-            <p className="text-red-500 text-sm text-start">
-              {errors.lastName.message}
-            </p>
-          )}
-        </div>
-
-        <div className="col-span-2">
-          <label
-            htmlFor="email"
-            className="block mb-2 text-sm font-medium text-left text-gray-700"
-          >
-            Email
-          </label>
-          <input
-            type="email"
-            {...register("email", { required: "Email is required" })}
-            id="email"
-            className="input input-primary"
-            placeholder="Enter email"
-          />
-          {errors.email && (
-            <p className="text-red-500 text-sm text-start">
-              {errors.email.message}
-            </p>
-          )}
-        </div>
-
-        <div className="col-span-2">
-          <label
-            htmlFor="phone"
-            className="block mb-2 text-sm font-medium text-left text-gray-700"
-          >
-            Phone
-          </label>
-          <input
-            type="text"
-            {...register("phone", { required: "Phone number is required" })}
-            id="phone"
-            className="input input-primary"
-            placeholder="Enter phone number"
-          />
-          {errors.phone && (
-            <p className="text-red-500 text-sm text-start">
-              {errors.phone.message}
-            </p>
-          )}
-        </div>
-
-        <div className="col-span-2">
-          <label
-            htmlFor="role"
-            className="block mb-2 text-sm font-medium text-left text-gray-700"
-          >
-            Role
-          </label>
-          <Controller
-            name="role"
-            control={control}
-            rules={{ required: "Role is required" }}
-            render={({ field }) => (
-              <Select
-                {...field}
-                id="role"
-                options={userRoleOptions}
-                className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
-                classNamePrefix="react-select"
-                placeholder="Select role"
-              />
-            )}
-          />
-          {errors.role && (
-            <p className="text-red-500 text-sm text-start">
-              {errors.role.message}
-            </p>
-          )}
-        </div>
-        {restaurantDropdownOptions.length > 0 ? (
+      {!showPermissions ? (
+        <form
+          className="space-y-4 md:space-y-3 w-full max-w-2xl"
+          onSubmit={onSubmit}
+        >
           <div className="col-span-2">
             <label
-              htmlFor="restaurant"
+              htmlFor="firstName"
               className="block mb-2 text-sm font-medium text-left text-gray-700"
             >
-              Restaurant
+              First Name
             </label>
-            <Controller
-              name="restaurant"
-              control={control}
-              rules={{ required: "Restaurant is required" }}
-              render={({ field }) => (
-                <Select
-                  isMulti
-                  {...field}
-                  options={restaurantDropdownOptions}
-                  className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
-                  classNamePrefix="react-select"
-                  placeholder="Select Restaurant"
-                />
-              )}
-            />
-            {errors.restaurant && (
-              <p className="text-red-500 text-sm text-start">
-                {errors.restaurant.message}
-              </p>
-            )}
-          </div>
-        ) : (
-          <ArrowCard
-            title="Add Restaurant"
-            caption="Sorry you dont have any Restaurant,Please add one before adding team-members"
-            href="/onboarding-restaurant/restaurant-welcome"
-          />
-        )}
-        <div className="grid grid-cols-2 gap-2">
-          <div className="">
-            <CustomSwitchCard
-              label="WhatsApp Notifications"
-              title="Enable WhatsApp Notifications"
-              caption="Toggle to enable or disable WhatsApp notifications"
-              switchChecked={watch("whatsApp")}
-              onSwitchChange={() => setValue("whatsApp", !watch("whatsApp"))}
+            <input
+              type="text"
+              id="firstName"
+              className="input input-primary"
+              placeholder="Enter first name"
+              value={form.firstName}
+              onChange={(e) => setFormValue("firstName", e.target.value)}
             />
           </div>
 
-          <div className="">
-            <CustomSwitchCard
-              label="Email Notifications"
-              title="Enable Email Notifications"
-              caption="Toggle to enable or disable email notifications"
-              switchChecked={watch("emailPref")}
-              onSwitchChange={() => setValue("emailPref", !watch("emailPref"))}
+          <div className="col-span-2">
+            <label
+              htmlFor="lastName"
+              className="block mb-2 text-sm font-medium text-left text-gray-700"
+            >
+              Last Name
+            </label>
+            <input
+              type="text"
+              id="lastName"
+              className="input input-primary"
+              placeholder="Enter last name"
+              value={form.lastName}
+              onChange={(e) => setFormValue("lastName", e.target.value)}
             />
           </div>
-        </div>
 
-        <CButton
-          loading={btnLoading}
-          variant={ButtonType.Primary}
-          type="submit"
-          className="w-full"
+          <div className="col-span-2">
+            <label
+              htmlFor="email"
+              className="block mb-2 text-sm font-medium text-left text-gray-700"
+            >
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              className="input input-primary"
+              placeholder="Enter email"
+              value={form.email}
+              onChange={(e) => setFormValue("email", e.target.value)}
+            />
+          </div>
+
+          <div className="col-span-2">
+            <label
+              htmlFor="phone"
+              className="block mb-2 text-sm font-medium text-left text-gray-700"
+            >
+              Phone
+            </label>
+            <input
+              type="text"
+              id="phone"
+              className="input input-primary"
+              placeholder="Enter phone number"
+              value={form.phone}
+              onChange={(e) => setFormValue("phone", e.target.value)}
+            />
+          </div>
+
+          <div className="col-span-2">
+            <label
+              htmlFor="role"
+              className="block mb-2 text-sm font-medium text-left text-gray-700"
+            >
+              Role
+            </label>
+            <Select
+              id="role"
+              options={userRoleOptions}
+              className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+              classNamePrefix="react-select"
+              placeholder="Select role"
+              value={form.role}
+              onChange={(selectedOption) =>
+                setFormValue("role", selectedOption)
+              }
+            />
+          </div>
+
+          {restaurantDropdownOptions.length > 0 ? (
+            <div className="col-span-2">
+              <label
+                htmlFor="restaurant"
+                className="block mb-2 text-sm font-medium text-left text-gray-700"
+              >
+                Restaurant
+              </label>
+              <Select
+                isMulti
+                id="restaurant"
+                options={restaurantDropdownOptions}
+                className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+                classNamePrefix="react-select"
+                placeholder="Select restaurants"
+                value={form.restaurant}
+                onChange={(selectedOptions) =>
+                  setFormValue("restaurant", selectedOptions)
+                }
+              />
+            </div>
+          ) : null}
+
+          <div className="grid grid-cols-2 gap-2">
+            <div className="">
+              <CustomSwitchCard
+                classNameDiv="h-full"
+                label="WhatsApp Notifications"
+                title="Enable WhatsApp Notifications"
+                caption="Toggle to enable or disable WhatsApp notifications"
+                switchChecked={form.whatsApp}
+                onSwitchChange={() => setFormValue("whatsApp", !form.whatsApp)}
+              />
+            </div>
+
+            <div className="">
+              <CustomSwitchCard
+                classNameDiv="h-full"
+                label="Email Notifications"
+                title="Enable Email Notifications"
+                caption="Toggle to enable or disable email notifications"
+                switchChecked={form.emailPref}
+                onSwitchChange={() =>
+                  setFormValue("emailPref", !form.emailPref)
+                }
+              />
+            </div>
+          </div>
+
+          <div className="pt-5 col-span-2 w-full flex justify-center items-center">
+            <CButton
+              loading={btnLoading}
+              variant={ButtonType.Primary}
+              type="button"
+              className="w-full"
+              onClick={() => setShowPermissions(true)}
+            >
+              Continue with Permissions
+            </CButton>
+          </div>
+        </form>
+      ) : (
+        <form
+          className="space-y-4 md:space-y-3 w-full max-w-2xl"
+          onSubmit={onSubmit}
         >
-          Add Team Member
-        </CButton>
-      </form>
+          <div
+            onClick={handleBack}
+            className="flex justify-between items-center mb-4"
+          >
+            <IoArrowBackCircleOutline className="text-3xl hover:text-primary cursor-pointer" />
+          </div>
+
+          {permissions.map((permission) => (
+            <CustomSwitchCard
+              key={permission._id}
+              label={`Do you want to give this user permission for ${permission.type}?`}
+              title={permission?.type || ""}
+              caption={`Toggle to enable or disable ${permission.type} permission`}
+              switchChecked={permission.isTicked}
+              onSwitchChange={() => handlePermissionChange(permission.type)}
+            />
+          ))}
+
+          <div className="pt-5 col-span-2 w-full flex justify-center items-center">
+            <CButton
+              loading={btnLoading}
+              variant={ButtonType.Primary}
+              type="submit"
+              className="w-full"
+            >
+              Add Team Member
+            </CButton>
+          </div>
+        </form>
+      )}
     </motion.div>
   );
 };

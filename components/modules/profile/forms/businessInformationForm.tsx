@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Select from "react-select";
+import { FaEdit } from "react-icons/fa";
 import { sdk } from "@/utils/graphqlClient";
 import useProfileStore from "@/store/profile";
 import {
@@ -7,6 +8,11 @@ import {
   EstimatedRevenueEnum,
   StaffCountEnum,
 } from "@/generated/graphql";
+import ReusableModal from "@/components/common/modal/modal";
+import CButton from "@/components/common/button/button";
+import { ButtonType } from "@/components/common/button/interface";
+import useGlobalStore from "@/store/global";
+import { extractErrorMessage } from "@/utils/utilFUncs";
 
 const formatBusinessTypeEnum = (value: BusinessTypeEnum) => {
   switch (value) {
@@ -67,6 +73,9 @@ const BusinessInformationForm: React.FC = () => {
     setestimatedRevenue,
   } = useProfileStore();
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isFormChanged, setIsFormChanged] = useState(false);
+
   const BusinessType = Object.values(BusinessTypeEnum).map((val) => ({
     value: val.toString(),
     label: formatBusinessTypeEnum(val),
@@ -82,90 +91,199 @@ const BusinessInformationForm: React.FC = () => {
     label: formatEstimatedRevenueEnum(val),
   }));
 
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setIsFormChanged(false);
+  };
+
+  const handleFormChange = () => {
+    setIsFormChanged(true);
+  };
+
+  const { setToastData } = useGlobalStore();
+  const [btnLoading, setBtnLoading] = useState(false);
+
+  const updateBusinessInfo = async () => {
+    if (!isFormChanged) {
+      handleCloseModal();
+      return;
+    }
+    try {
+      setBtnLoading(true);
+      const businessTypeValue = businessType as BusinessTypeEnum;
+      const estimatedRevenueValue = estimatedRevenue as EstimatedRevenueEnum;
+      const employeeSizeValue = employeeSize as StaffCountEnum;
+      const response = await sdk.businessOnboarding({
+        input: {
+          businessName: businessName,
+
+          businessType: businessTypeValue,
+          estimatedRevenue: estimatedRevenueValue,
+
+          employeeSize: employeeSizeValue,
+        },
+      });
+      setToastData({
+        message: "Business details updated successfully!",
+        type: "success",
+      });
+    } catch (error: any) {
+      const errorMessage = extractErrorMessage(error);
+      setToastData({
+        type: "error",
+        message: errorMessage,
+      });
+    } finally {
+      setBtnLoading(false);
+    }
+  };
+
   return (
-    <div className="z-10 w-full flex flex-col items-start space-y-5 text-center">
-      <div className="space-y-4 md:space-y-3 w-full max-w-2xl">
-        <div className="col-span-2">
-          <label
-            htmlFor="businessType"
-            className="block mb-2 text-sm font-medium text-left text-gray-700"
-          >
-            What kind of business are you
-          </label>
-          <Select
-            id="businessType"
-            options={BusinessType}
-            value={BusinessType.find((option) => option.value === businessType)}
-            onChange={(option) => {
-              setbusinessType(option?.value || "");
-            }}
-            className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
-            classNamePrefix="react-select"
-            placeholder="Select business type"
+    <div className="w-full flex flex-col items-start space-y-5">
+      <div className="space-y-4 md:space-y-3 w-full ">
+        <div className="flex justify-between items-center">
+          <h2 className="text-xl font-semibold">Business Information</h2>
+          <FaEdit
+            className="text-xl cursor-pointer"
+            onClick={handleOpenModal}
           />
         </div>
-
-        <div className="col-span-2">
-          <label
-            htmlFor="businessName"
-            className="block mb-2 text-sm font-medium text-left text-gray-700"
-          >
-            What is your business legal name
-          </label>
-          <input
-            type="text"
-            value={businessName}
-            onChange={(e) => {
-              setbusinessName(e.target.value);
-            }}
-            id="businessName"
-            className="input input-primary"
-            placeholder="Enter your business name"
-          />
-        </div>
-
-        <div className="col-span-2">
-          <label
-            htmlFor="employees"
-            className="block mb-2 text-sm font-medium text-left text-gray-700"
-          >
-            What is your staff count
-          </label>
-          <Select
-            id="employees"
-            options={employeSize}
-            value={employeSize.find((option) => option.value === employeeSize)}
-            onChange={(option) => {
-              setemployeeSize(option?.value || "");
-            }}
-            className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
-            classNamePrefix="react-select"
-            placeholder="Select number of staffs"
-          />
-        </div>
-
-        <div className="col-span-2">
-          <label
-            htmlFor="revenue"
-            className="block mb-2 text-sm font-medium text-left text-gray-700"
-          >
-            What is your estimated annual revenue
-          </label>
-          <Select
-            id="revenue"
-            options={revenueOptions}
-            value={revenueOptions.find(
-              (option) => option.value === estimatedRevenue
+        <div className="text-left text-sm text-gray-600">
+          <p>
+            <strong>Business Type:</strong>{" "}
+            {formatBusinessTypeEnum(businessType as BusinessTypeEnum)}
+          </p>
+          <p>
+            <strong>Business Name:</strong> {businessName}
+          </p>
+          <p>
+            <strong>Staff Count:</strong>{" "}
+            {formatStaffCountEnum(employeeSize as StaffCountEnum)}
+          </p>
+          <p>
+            <strong>Estimated Revenue:</strong>{" "}
+            {formatEstimatedRevenueEnum(
+              estimatedRevenue as EstimatedRevenueEnum
             )}
-            onChange={(option) => {
-              setestimatedRevenue(option?.value || "");
-            }}
-            className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
-            classNamePrefix="react-select"
-            placeholder="Select estimated Revenue"
-          />
+          </p>
         </div>
       </div>
+
+      <ReusableModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        title="Edit Business Information"
+        width="md"
+      >
+        <div className="space-y-4 md:space-y-3 w-full max-w-2xl">
+          <div className="col-span-2">
+            <label
+              htmlFor="businessType"
+              className="block mb-2 text-sm font-medium text-left text-gray-700"
+            >
+              What kind of business are you
+            </label>
+            <Select
+              id="businessType"
+              options={BusinessType}
+              value={BusinessType.find(
+                (option) => option.value === businessType
+              )}
+              onChange={(option) => {
+                setbusinessType(option?.value || "");
+                handleFormChange();
+              }}
+              className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+              classNamePrefix="react-select"
+              placeholder="Select business type"
+            />
+          </div>
+
+          <div className="col-span-2">
+            <label
+              htmlFor="businessName"
+              className="block mb-2 text-sm font-medium text-left text-gray-700"
+            >
+              What is your business legal name
+            </label>
+            <input
+              type="text"
+              value={businessName}
+              onChange={(e) => {
+                setbusinessName(e.target.value);
+                handleFormChange();
+              }}
+              id="businessName"
+              className="input input-primary"
+              placeholder="Enter your business name"
+            />
+          </div>
+
+          <div className="col-span-2">
+            <label
+              htmlFor="employees"
+              className="block mb-2 text-sm font-medium text-left text-gray-700"
+            >
+              What is your staff count
+            </label>
+            <Select
+              id="employees"
+              options={employeSize}
+              value={employeSize.find(
+                (option) => option.value === employeeSize
+              )}
+              onChange={(option) => {
+                setemployeeSize(option?.value || "");
+                handleFormChange();
+              }}
+              className="mt-1  text-sm rounded-lg w-full focus:outline-none text-left"
+              classNamePrefix="react-select"
+              placeholder="Select number of staffs"
+            />
+          </div>
+
+          <div className="col-span-2">
+            <label
+              htmlFor="revenue"
+              className="block mb-2 text-sm font-medium text-left text-gray-700"
+            >
+              What is your estimated annual revenue
+            </label>
+            <Select
+              id="revenue"
+              options={revenueOptions}
+              value={revenueOptions.find(
+                (option) => option.value === estimatedRevenue
+              )}
+              onChange={(option) => {
+                setestimatedRevenue(option?.value || "");
+                handleFormChange();
+              }}
+              className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+              classNamePrefix="react-select"
+              placeholder="Select estimated Revenue"
+            />
+          </div>
+        </div>
+        <div className="flex justify-end mt-4">
+          <CButton
+            type="submit"
+            loading={btnLoading}
+            // disabled={!isFormChanged}
+            className="w-full"
+            variant={ButtonType.Primary}
+            onClick={() => {
+              updateBusinessInfo();
+            }}
+          >
+            Update
+          </CButton>
+        </div>
+      </ReusableModal>
     </div>
   );
 };

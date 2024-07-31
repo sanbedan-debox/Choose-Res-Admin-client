@@ -190,23 +190,34 @@ const AddItemForm = () => {
         setValue("isGlutenFree", item.isGlutenFree);
         setValue("isHalal", item.isHalal);
         setValue("isVegan", item.isVegan);
-        const formattedVisibilities = item.visibility.map((visibility) => ({
-          menuType: visibility.menuType,
-          status: visibility.status as StatusEnum,
-        }));
-        if (formattedVisibilities.length > 0) {
-          setVisibilities(formattedVisibilities);
-        }
-        const formattedPricingOption = item.priceOptions.map((price) => ({
-          menuType: price.menuType,
-          price: {
-            value: price.price.value,
-          },
-        }));
-        if (formattedPricingOption.length > 0) {
-          setPricingOptions(formattedPricingOption);
-        }
+        // const formattedVisibilities = item.visibility.map((visibility) => ({
+        //   menuType: visibility.menuType,
+        //   status: visibility.status as StatusEnum,
+        // }));
+        // if (formattedVisibilities.length > 0) {
+        //   setVisibilities(formattedVisibilities);
+        // }
 
+        const updatedVisibilities = visibilities.map((currentVisibility) => {
+          const itemVisibility = item.visibility.find(
+            (visibility) => visibility.menuType === currentVisibility.menuType
+          );
+          return itemVisibility
+            ? { ...currentVisibility, status: itemVisibility.status }
+            : currentVisibility;
+        });
+
+        setVisibilities(updatedVisibilities);
+        const updatedPricingOptions = pricingOptions.map((currentOption) => {
+          const itemOption = item.priceOptions.find(
+            (price) => price.menuType === currentOption.menuType
+          );
+          return itemOption
+            ? { ...currentOption, price: { value: itemOption.price.value } }
+            : currentOption;
+        });
+
+        setPricingOptions(updatedPricingOptions);
         const formateditemlist = item?.modifierGroup.map((el) => ({
           _id: el?.id,
           name: el?.name?.value ?? "",

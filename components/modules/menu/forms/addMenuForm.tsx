@@ -14,7 +14,7 @@ import { FilterOperatorsEnum, MenuTypeEnum } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
 import useMenuOptionsStore from "@/store/menuOptions";
 import FormAddTable from "@/components/common/table/formTable";
-import { FaTrash } from "react-icons/fa";
+import { FaArrowRight, FaTrash } from "react-icons/fa";
 import AddFormDropdown from "@/components/common/addFormDropDown/addFormDropdown";
 import { MdArrowOutward } from "react-icons/md";
 import useMenuMenuStore from "@/store/menumenu";
@@ -68,7 +68,6 @@ const AddMenuForm = () => {
   } = useMenuMenuStore();
   const { seteditCatsId, setisEditCats } = useMenuCategoryStore();
   const { setisAddCategoryModalOpen } = useMenuOptionsStore();
-  const { taxRate } = useAuthStore();
   const { setisShowTaxSettings } = useGlobalStore();
   const {
     handleSubmit,
@@ -77,7 +76,11 @@ const AddMenuForm = () => {
     setValue,
     register,
   } = useForm<IFormInput>();
-  const { selectedRestaurantTaxRate } = useRestaurantsStore();
+  const { taxRate } = useAuthStore();
+  useEffect(() => {
+    console.log(taxRate);
+  }, [taxRate]);
+
   const onSubmit = async (data: IFormInput) => {
     try {
       if (!isDuplicateMenu) {
@@ -102,7 +105,7 @@ const AddMenuForm = () => {
 
       const updateInput: any = {
         _id: editMenuId || "",
-        taxRateId: selectedRestaurantTaxRate || "",
+        taxRateId: taxRate?.id || "",
       };
       const selectedMenuType = menuTypeOptions.find(
         (option) => option.value === changesMenu[0]?.type
@@ -125,7 +128,7 @@ const AddMenuForm = () => {
               value: data.name,
             },
             categories: selectedItemsIds,
-            taxRateId: selectedRestaurantTaxRate || "",
+            taxRateId: taxRate?.id || "",
           },
         });
       } else {
@@ -436,7 +439,7 @@ const AddMenuForm = () => {
             Select the categories and items you want to be in this menu.
           </p>
         </div>
-        {!taxRate ? (
+        {!taxRate?.salesTax ? (
           <div
             className="flex justify-between items-center p-4 border rounded-md shadow-sm bg-white cursor-pointer"
             onClick={() => setisShowTaxSettings(true)}
@@ -449,6 +452,7 @@ const AddMenuForm = () => {
                 Please add tax rate to apply for this item
               </p>
             </div>
+            <FaArrowRight className="w-5 h-5 text-primary" />
           </div>
         ) : (
           <div
@@ -461,7 +465,7 @@ const AddMenuForm = () => {
                 The Menu will be having an tax rate of, To add new click here.
               </p>
             </div>
-            <div>{taxRate?.salesTax} %</div>
+            <span>{taxRate?.salesTax} %</span>
           </div>
         )}
 

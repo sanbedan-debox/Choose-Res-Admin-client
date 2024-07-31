@@ -50,6 +50,9 @@ const SetupGuide: React.FC<{ steps: Step[] }> = ({ steps }) => {
   const [restaurants, setRestaurants] = useState<
     { name: string; id: string }[]
   >([]);
+
+  const { taxRate } = useAuthStore();
+
   useEffect(() => {
     console.log("Tax rate", taxRate);
     async function fetchPendingRestaurants() {
@@ -69,11 +72,6 @@ const SetupGuide: React.FC<{ steps: Step[] }> = ({ steps }) => {
 
     fetchPendingRestaurants();
   }, []);
-  const { setSelectedRestaurantTaxRate, selectedRestaurantTaxRate } =
-    useRestaurantsStore();
-  const { setTaxRate, taxRate } = useAuthStore();
-  console.log("fgeagfebfea", taxRate);
-
   const completeRes = async (id: string) => {
     const res = await sdk.setRestaurantIdAsCookie({ id });
     if (res.setRestaurantIdAsCookie) {

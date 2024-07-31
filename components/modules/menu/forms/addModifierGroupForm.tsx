@@ -31,6 +31,7 @@ interface IFormInput {
   pricingType: { value: string; label: string };
   maxSelections: number;
   minSelections: number;
+  commonPrice?: number;
 }
 
 const AddModifierGroupForm = () => {
@@ -191,22 +192,61 @@ const AddModifierGroupForm = () => {
     setEditModId(id);
     setisEditMod(true);
   };
+  const renderActions = (rowData: { _id: string }) => (
+    <div className="flex space-x-2 justify-center">
+      <FaTrash
+        className="text-red-600 cursor-pointer"
+        onClick={() => {
+          setConfirmationRemoval(true);
+          setRemovingId(rowData?._id);
+        }}
+      />
+    </div>
+  );
+  const data = selectedItems.map((item) => ({
+    ...item,
+    actions: renderActions(item),
+  }));
 
-  const headingsDropdown = [
-    { title: "Price", dataKey: "price" },
-    {
-      title: "Actions",
-      dataKey: "name",
-      render: (item: { _id: string }) => (
-        <div className="flex space-x-2 justify-center">
-          <MdArrowOutward
-            className="text-primary cursor-pointer"
-            onClick={() => handleEditItem(item._id)}
-          />
-        </div>
-      ),
-    },
-  ];
+  const headings =
+    watch("pricingType")?.value === PriceTypeEnum.IndividualPrice
+      ? [
+          { title: "Price", dataKey: "price" },
+          { title: "Actions", dataKey: "name", render: renderActions },
+        ]
+      : [{ title: "Actions", dataKey: "name", render: renderActions }];
+
+  const headingsDropdown =
+    watch("pricingType")?.value === PriceTypeEnum.IndividualPrice
+      ? [
+          { title: "Price", dataKey: "price" },
+          {
+            title: "Actions",
+            dataKey: "name",
+            render: (item: { _id: string }) => (
+              <div className="flex space-x-2 justify-center">
+                <MdArrowOutward
+                  className="text-primary cursor-pointer"
+                  onClick={() => handleEditItem(item._id)}
+                />
+              </div>
+            ),
+          },
+        ]
+      : [
+          {
+            title: "Actions",
+            dataKey: "name",
+            render: (item: { _id: string }) => (
+              <div className="flex space-x-2 justify-center">
+                <MdArrowOutward
+                  className="text-primary cursor-pointer"
+                  onClick={() => handleEditItem(item._id)}
+                />
+              </div>
+            ),
+          },
+        ];
 
   const onSubmit = async (data: IFormInput) => {
     try {
@@ -246,38 +286,6 @@ const AddModifierGroupForm = () => {
         return;
       }
 
-      // if (
-      //   (parsedMinSelection > 0 &&
-      //     selectedItemsIds.length < parsedMinSelection) ||
-      //   (parsedMaxSelection > 0 && selectedItemsIds.length > parsedMaxSelection)
-      // ) {
-      //   if (
-      //     parsedMinSelection > 0 &&
-      //     selectedItemsIds.length >= parsedMinSelection
-      //   ) {
-      //     setToastData({
-      //       type: "error",
-      //       message: `Please select at least ${parsedMinSelection} modifiers.`,
-      //     });
-      //   }
-      //   if (
-      //     parsedMaxSelection > 0 &&
-      //     selectedItemsIds.length <= parsedMaxSelection
-      //   ) {
-      //     console.log(
-      //       "parsedMaxSelection,selectedL",
-      //       parsedMaxSelection,
-      //       selectedItems,
-      //       selectedItemsIds
-      //     );
-      //     setToastData({
-      //       type: "error",
-      //       message: `You have to atleast select ${parsedMaxSelection} modifiers only.`,
-      //     });
-      //   }
-      //   return;
-      // }
-
       const updateInput: any = {
         _id: editModGroupId || "",
       };
@@ -312,6 +320,10 @@ const AddModifierGroupForm = () => {
         hasChanges = true;
       }
 
+      // if (data.pricingType.value === PriceTypeEnum.SamePrice) {
+      //   updateInput.commonPrice = { value: data.commonPrice };
+      // }
+
       if (!isEditModGroup) {
         await sdk.addModifierGroup({
           input: {
@@ -328,6 +340,7 @@ const AddModifierGroupForm = () => {
             pricingType: data.pricingType.value as PriceTypeEnum,
           },
           modifiers: selectedItemsIds,
+          // commonPrice: data.pricingType.value === PriceTypeEnum.SamePrice ? { value: data.commonPrice } : undefined,
         });
       } else {
         // EDIT/UPDATE ITEM API
@@ -369,21 +382,6 @@ const AddModifierGroupForm = () => {
   const handleMaxCountChange = (count: number) => {
     setValue("maxSelections", count);
   };
-  const renderActions = (rowData: { _id: string }) => (
-    <div className="flex space-x-2 justify-center">
-      <FaTrash
-        className="text-red-600 cursor-pointer"
-        onClick={() => {
-          setConfirmationRemoval(true);
-          setRemovingId(rowData?._id);
-        }}
-      />
-    </div>
-  );
-  const data = selectedItems.map((item) => ({
-    ...item,
-    actions: renderActions(item),
-  }));
 
   const handleRemoveModifiers = async () => {
     setSelectedItems((prevSelected) =>
@@ -409,11 +407,6 @@ const AddModifierGroupForm = () => {
     }
     setConfirmationRemoval(false);
   };
-
-  const headings = [
-    { title: "Price", dataKey: "price" },
-    { title: "Actions", dataKey: "name", render: renderActions },
-  ];
 
   const handleAddClick = () => {
     setIsModalOpen(true);
@@ -482,7 +475,6 @@ const AddModifierGroupForm = () => {
                 title="Maximum"
                 initialValue={1}
                 onCountChange={handleMaxCountChange}
-                showLimit
               />
               <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
                 Select the Minimum number of modifiers a customer must select
@@ -523,8 +515,32 @@ const AddModifierGroupForm = () => {
               </p>
             )}
           </div>
+          {watch("pricingType")?.value === PriceTypeEnum.SamePrice && (
+            <div className="">
+              <label
+                htmlFor="commonPrice"
+                className="block mb-2 text-sm font-medium text-left text-gray-700"
+              >
+                Common Price
+              </label>
+              <input
+                type="number"
+                {...register("commonPrice", {
+                  required: "Common Price is required",
+                })}
+                id="commonPrice"
+                className="input input-primary"
+                placeholder="Enter common price"
+              />
+              {errors.commonPrice && (
+                <p className="text-red-500 text-sm text-start">
+                  {errors.commonPrice.message}
+                </p>
+              )}
+            </div>
+          )}
 
-          <div className="mb-14">
+          <div className="">
             <label
               htmlFor="optional"
               className="block mb-2 text-sm font-medium text-left text-gray-700"
