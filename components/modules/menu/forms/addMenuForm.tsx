@@ -102,6 +102,7 @@ const AddMenuForm = () => {
 
       const updateInput: any = {
         _id: editMenuId || "",
+        taxRateId: selectedRestaurantTaxRate || "",
       };
       const selectedMenuType = menuTypeOptions.find(
         (option) => option.value === changesMenu[0]?.type

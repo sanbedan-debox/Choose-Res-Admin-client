@@ -2040,7 +2040,7 @@ export type GetModifierGroupQueryVariables = Exact<{
 }>;
 
 
-export type GetModifierGroupQuery = { __typename?: 'Query', getModifierGroup: { __typename?: 'ModifierGroup', _id: string, pricingType: PriceTypeEnum, optional: boolean, name: { __typename?: 'MasterCommon', value: string }, modifiers: Array<{ __typename?: 'ModifierInfo', id: string, name: { __typename?: 'MasterCommon', value: string }, price: { __typename?: 'MasterCommonNumber', value: number } }>, maxSelections: { __typename?: 'MasterCommonNumber', value: number } } };
+export type GetModifierGroupQuery = { __typename?: 'Query', getModifierGroup: { __typename?: 'ModifierGroup', _id: string, pricingType: PriceTypeEnum, optional: boolean, name: { __typename?: 'MasterCommon', value: string }, modifiers: Array<{ __typename?: 'ModifierInfo', id: string, name: { __typename?: 'MasterCommon', value: string }, price: { __typename?: 'MasterCommonNumber', value: number } }>, maxSelections: { __typename?: 'MasterCommonNumber', value: number }, minSelections: { __typename?: 'MasterCommonNumber', value: number } } };
 
 export type RemoveModifierFromModifierGroupMutationVariables = Exact<{
   modifierGroupId: Scalars['String']['input'];
@@ -2173,7 +2173,7 @@ export type SetRestaurantIdAsCookieQuery = { __typename?: 'Query', setRestaurant
 export type GetRestaurantDetailsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetRestaurantDetailsQuery = { __typename?: 'Query', getRestaurantDetails: { __typename?: 'Restaurant', _id: string, brandingLogo?: string | null, website?: string | null, name: { __typename?: 'MasterCommon', value: string }, taxRates?: Array<{ __typename?: 'TaxRateInfo', _id: string, default: boolean, name: { __typename?: 'MasterCommon', value: string }, salesTax: { __typename?: 'MasterCommonNumber', value: number } }> | null } };
+export type GetRestaurantDetailsQuery = { __typename?: 'Query', getRestaurantDetails: { __typename?: 'Restaurant', _id: string, brandingLogo?: string | null, website?: string | null, name: { __typename?: 'MasterCommon', value: string }, availability?: Array<{ __typename?: 'Availability', day: string, active: boolean, hours: Array<{ __typename?: 'Hours', start: any, end: any }> }> | null, address?: { __typename?: 'AddressInfo', addressLine1: { __typename?: 'MasterCommon', value: string }, addressLine2?: { __typename?: 'MasterCommon', value: string } | null, state: { __typename?: 'MasterCommon', value: string }, city: { __typename?: 'MasterCommon', value: string }, postcode: { __typename?: 'MasterCommon', value: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string, placeId: string } | null } | null, taxRates?: Array<{ __typename?: 'TaxRateInfo', _id: string, default: boolean, name: { __typename?: 'MasterCommon', value: string }, salesTax: { __typename?: 'MasterCommonNumber', value: number } }> | null } };
 
 export type AddTaxRateMutationVariables = Exact<{
   input: TaxRateInput;
@@ -2776,6 +2776,9 @@ export const GetModifierGroupDocument = gql`
     maxSelections {
       value
     }
+    minSelections {
+      value
+    }
   }
 }
     `;
@@ -3010,8 +3013,40 @@ export const GetRestaurantDetailsDocument = gql`
     name {
       value
     }
+    availability {
+      day
+      hours {
+        start
+        end
+      }
+      active
+    }
     brandingLogo
     website
+    address {
+      addressLine1 {
+        value
+      }
+      addressLine2 {
+        value
+      }
+      state {
+        value
+      }
+      city {
+        value
+      }
+      postcode {
+        value
+      }
+      coordinate {
+        coordinates
+      }
+      place {
+        displayName
+        placeId
+      }
+    }
     taxRates {
       _id
       name {

@@ -146,7 +146,7 @@ const AddModifierForm = () => {
       setisDuplicateMods(false);
       setToastData({
         type: "success",
-        message: "Item Added Successfully",
+        message: "Modifier Added Successfully",
       });
     } catch (error: any) {
       const errorMessage = extractErrorMessage(error);
@@ -366,7 +366,7 @@ const AddModifierForm = () => {
             </div>
           </div>
 
-          <div className="mb-1">
+          <div className="mb-5 ">
             <label
               htmlFor="optional"
               className="block mb-2 text-sm font-medium text-left text-gray-700"

@@ -54,9 +54,11 @@ query getModifierGroup($id: String!) {
     maxSelections {
       value
     }
+    minSelections {
+      value
+    }
   }
 }
-
 mutation removeModifierFromModifierGroup(
   $modifierGroupId: String!
   $modifierId: String!
