@@ -40,6 +40,13 @@ query getModifierGroup($id: String!) {
     name {
       value
     }
+    price {
+      value
+    }
+    desc {
+      value
+    }
+
     pricingType
     optional
     modifiers {

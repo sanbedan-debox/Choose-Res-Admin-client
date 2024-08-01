@@ -81,31 +81,18 @@ const Profile: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
     fetchBusinessDetails();
   }, []);
 
-  const contentList = [
-    {
-      id: "businessInformation",
-      title: "Business Information",
-      Component: BusinessInformationForm,
-    },
-    {
-      id: "locationDetails",
-      title: "Location Details",
-      Component: LocationDetailsForm,
-    },
-    {
-      id: "identityVerification",
-      title: "Identity Verification",
-      Component: IdentityVerificationForm,
-    },
-  ];
-
   if (loading) {
     return <Loader />;
   }
 
   return (
-    <div className="text-black">
-      <MenuSection contentList={contentList} />
+    <div className="flex flex-col">
+      {/* <MenuSection contentList={contentList} /> */}
+      <BusinessInformationForm />
+      <br />
+      <LocationDetailsForm />
+      <br />
+      <IdentityVerificationForm />
     </div>
   );
 };

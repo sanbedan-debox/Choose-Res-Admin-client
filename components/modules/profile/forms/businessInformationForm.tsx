@@ -117,7 +117,7 @@ const BusinessInformationForm: React.FC = () => {
       const businessTypeValue = businessType as BusinessTypeEnum;
       const estimatedRevenueValue = estimatedRevenue as EstimatedRevenueEnum;
       const employeeSizeValue = employeeSize as StaffCountEnum;
-      const response = await sdk.businessOnboarding({
+      const response = await sdk.updateUserProfile({
         input: {
           businessName: businessName,
 
@@ -131,6 +131,7 @@ const BusinessInformationForm: React.FC = () => {
         message: "Business details updated successfully!",
         type: "success",
       });
+      setIsModalOpen(false);
     } catch (error: any) {
       const errorMessage = extractErrorMessage(error);
       setToastData({

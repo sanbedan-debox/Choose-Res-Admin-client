@@ -23,7 +23,7 @@ interface IFormInput {
   isItemFromMenu: boolean;
 
   name: string;
-  optional: boolean;
+  preSelect: boolean;
   maxSelections: number;
   desc: string;
   minSelections: number;
@@ -35,6 +35,7 @@ interface ItemOption {
   _id: string;
   name: string;
   price: number;
+  desc: string;
   priceOptions: any[];
 }
 
@@ -79,6 +80,7 @@ const AddModifierForm = () => {
       const formattedItems = response.getItems.map((item: any) => ({
         _id: item._id,
         name: item.name.value,
+        desc: item.desc.value,
         price: item.price.value,
         priceOptions: item.priceOptions,
       }));
@@ -104,7 +106,10 @@ const AddModifierForm = () => {
         if (isDuplicateMods) {
           setValue("name", nameDup);
         }
-        // setValue("desc", item.);
+        setValue("desc", item.desc.value);
+        setValue("preSelect", item.preSelect);
+        setValue("isItemFromMenu", item.isItem);
+        setIsItemFromMenu(item.isItem);
         setValue("price", item.price.value);
       } catch (error) {
         const errorMessage = extractErrorMessage(error);
@@ -149,8 +154,8 @@ const AddModifierForm = () => {
       addChange("price", data.price);
     }
 
-    if (data.optional !== changesModifiers?.preSelect) {
-      updateInput.preSelect = data.optional;
+    if (data.preSelect !== changesModifiers?.preSelect) {
+      updateInput.preSelect = data.preSelect;
       hasChanges = true;
     }
 
@@ -163,13 +168,17 @@ const AddModifierForm = () => {
 
           await sdk.addModifier({
             input: {
+              desc: {
+                value: data.desc,
+              },
+              isItem: isItemFromMenu,
               name: {
                 value: data.name,
               },
               price: {
                 value: parsedPrice,
               },
-              preSelect: data.optional,
+              preSelect: data.preSelect,
             },
           })
         : await sdk.updateModifier({
@@ -222,12 +231,6 @@ const AddModifierForm = () => {
       setPreviewUrl(objectUrl);
     }
   };
-  // useEffect(() => {
-  //   if (selectedItem) {
-  //     setValue("name", selectedItem.name);
-  //     setValue("price", selectedItem.price);
-  //   }
-  // }, [selectedItem, setValue]);
 
   return (
     <motion.div
@@ -424,6 +427,31 @@ const AddModifierForm = () => {
             </div>
           </div>
 
+          <div className="">
+            <label
+              htmlFor="optional"
+              className="block mb-2 text-sm font-medium text-left text-gray-700"
+            >
+              optional
+            </label>
+
+            <CustomSwitchCard
+              label="Pre Select"
+              title="Pre Select"
+              caption="If its checked,Then Modifier will be preselected"
+              switchChecked={watch("preSelect")}
+              onSwitchChange={() => setValue("preSelect", !watch("preSelect"))}
+            />
+            <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
+              Turn on if you want to make this modifiers optional
+            </p>
+
+            {errors.preSelect && (
+              <p className="text-red-500 text-sm text-start">
+                {errors.preSelect.message}
+              </p>
+            )}
+          </div>
           <CButton
             loading={btnLoading}
             variant={ButtonType.Primary}
@@ -474,6 +502,7 @@ const AddModifierForm = () => {
                     setSelectedItem(item);
                     setValue("name", item.name);
                     setValue("price", selectedPrice);
+                    setValue("desc", item.desc);
                     setShowItemModal(false);
                   }}
                 >

@@ -107,14 +107,18 @@ export type AddMenuInput = {
 };
 
 export type AddModifierGroupInput = {
+  desc: MasterCommonInput;
   maxSelections: MasterCommonInputNumber;
   minSelections: MasterCommonInputNumber;
   name: MasterCommonInput;
   optional: Scalars['Boolean']['input'];
+  price: MasterCommonInputNumber;
   pricingType: PriceTypeEnum;
 };
 
 export type AddModifierInput = {
+  desc: MasterCommonInput;
+  isItem: Scalars['Boolean']['input'];
   name: MasterCommonInput;
   preSelect: Scalars['Boolean']['input'];
   price: MasterCommonInputNumber;
@@ -146,6 +150,7 @@ export type AddTeamMemberInput = {
   email: Scalars['String']['input'];
   firstName: Scalars['String']['input'];
   lastName: Scalars['String']['input'];
+  permissions: Array<UserPermissionInput>;
   phone: Scalars['String']['input'];
   restaurants: Array<Scalars['String']['input']>;
   role: UserRole;
@@ -619,6 +624,8 @@ export type Modifier = {
   __typename?: 'Modifier';
   _id: Scalars['ID']['output'];
   createdAt: Scalars['DateTimeISO']['output'];
+  desc: MasterCommon;
+  isItem: Scalars['Boolean']['output'];
   name: MasterCommon;
   preSelect: Scalars['Boolean']['output'];
   price: MasterCommonNumber;
@@ -631,11 +638,13 @@ export type ModifierGroup = {
   __typename?: 'ModifierGroup';
   _id: Scalars['ID']['output'];
   createdAt: Scalars['DateTimeISO']['output'];
+  desc: MasterCommon;
   maxSelections: MasterCommonNumber;
   minSelections: MasterCommonNumber;
   modifiers: Array<ModifierInfo>;
   name: MasterCommon;
   optional: Scalars['Boolean']['output'];
+  price: MasterCommonNumber;
   pricingType: PriceTypeEnum;
   restaurantId: Restaurant;
   status: StatusEnum;
@@ -654,8 +663,11 @@ export type ModifierGroupInfo = {
 export type ModifierInfo = {
   __typename?: 'ModifierInfo';
   _id: Modifier;
+  desc: MasterCommon;
   id: Scalars['String']['output'];
+  isItem: Scalars['Boolean']['output'];
   name: MasterCommon;
+  preSelect: Scalars['Boolean']['output'];
   price: MasterCommonNumber;
 };
 
@@ -1600,15 +1612,19 @@ export type UpdateMenuInput = {
 
 export type UpdateModifierGroupInput = {
   _id: Scalars['String']['input'];
+  desc?: InputMaybe<MasterCommonInput>;
   maxSelections?: InputMaybe<MasterCommonInputNumber>;
   minSelections?: InputMaybe<MasterCommonInputNumber>;
   name?: InputMaybe<MasterCommonInput>;
   optional?: InputMaybe<Scalars['Boolean']['input']>;
+  price?: InputMaybe<MasterCommonInputNumber>;
   pricingType?: InputMaybe<PriceTypeEnum>;
 };
 
 export type UpdateModifierInput = {
   _id: Scalars['String']['input'];
+  desc?: InputMaybe<MasterCommonInput>;
+  isItem?: InputMaybe<Scalars['Boolean']['input']>;
   name?: InputMaybe<MasterCommonInput>;
   preSelect?: InputMaybe<Scalars['Boolean']['input']>;
   price?: InputMaybe<MasterCommonInputNumber>;
@@ -1671,6 +1687,7 @@ export type User = {
   lastLoggedOut: Scalars['DateTimeISO']['output'];
   lastName: Scalars['String']['output'];
   ownerUserId?: Maybe<Scalars['String']['output']>;
+  permissions: Array<UserPermission>;
   phone: Scalars['String']['output'];
   restaurants?: Maybe<Array<RestaurantInfo>>;
   role: UserRole;
@@ -1688,6 +1705,18 @@ export type UserInfo = {
   name: Scalars['String']['output'];
   phone: Scalars['String']['output'];
   status: UserStatus;
+};
+
+export type UserPermission = {
+  __typename?: 'UserPermission';
+  status: Scalars['Boolean']['output'];
+  type: PermissionTypeEnum;
+};
+
+export type UserPermissionInput = {
+  _id: Scalars['String']['input'];
+  status: Scalars['Boolean']['input'];
+  type: PermissionTypeEnum;
 };
 
 /** User roles  */
@@ -1981,7 +2010,7 @@ export type GetMenusByTypeQueryVariables = Exact<{
 }>;
 
 
-export type GetMenusByTypeQuery = { __typename?: 'Query', getMenusByType: Array<{ __typename?: 'Menu', _id: string, status: StatusEnum, createdAt: any, updatedAt: any, type: MenuTypeEnum, name: { __typename?: 'MasterCommon', value: string }, categories: Array<{ __typename?: 'CategoryInfo', status: StatusEnum, name?: { __typename?: 'MasterCommon', value: string, _id: string } | null, _id: { __typename?: 'Category', _id: string } }> }> };
+export type GetMenusByTypeQuery = { __typename?: 'Query', getMenusByType: Array<{ __typename?: 'Menu', _id: string, status: StatusEnum, createdAt: any, updatedAt: any, type: MenuTypeEnum, name: { __typename?: 'MasterCommon', value: string }, availability?: Array<{ __typename?: 'Availability', day: string, active: boolean, hours: Array<{ __typename?: 'Hours', start: any, end: any }> }> | null, taxes: { __typename?: 'TaxRateInfo', _id: string, default: boolean, salesTax: { __typename?: 'MasterCommonNumber', value: number, _id: string } }, categories: Array<{ __typename?: 'CategoryInfo', status: StatusEnum, name?: { __typename?: 'MasterCommon', value: string, _id: string } | null, _id: { __typename?: 'Category', _id: string } }> }> };
 
 export type UpdateMenuMutationVariables = Exact<{
   input: UpdateMenuInput;
@@ -2040,7 +2069,7 @@ export type GetModifierGroupQueryVariables = Exact<{
 }>;
 
 
-export type GetModifierGroupQuery = { __typename?: 'Query', getModifierGroup: { __typename?: 'ModifierGroup', _id: string, pricingType: PriceTypeEnum, optional: boolean, name: { __typename?: 'MasterCommon', value: string }, modifiers: Array<{ __typename?: 'ModifierInfo', id: string, name: { __typename?: 'MasterCommon', value: string }, price: { __typename?: 'MasterCommonNumber', value: number } }>, maxSelections: { __typename?: 'MasterCommonNumber', value: number }, minSelections: { __typename?: 'MasterCommonNumber', value: number } } };
+export type GetModifierGroupQuery = { __typename?: 'Query', getModifierGroup: { __typename?: 'ModifierGroup', _id: string, pricingType: PriceTypeEnum, optional: boolean, name: { __typename?: 'MasterCommon', value: string }, price: { __typename?: 'MasterCommonNumber', value: number }, desc: { __typename?: 'MasterCommon', value: string }, modifiers: Array<{ __typename?: 'ModifierInfo', id: string, name: { __typename?: 'MasterCommon', value: string }, price: { __typename?: 'MasterCommonNumber', value: number } }>, maxSelections: { __typename?: 'MasterCommonNumber', value: number }, minSelections: { __typename?: 'MasterCommonNumber', value: number } } };
 
 export type RemoveModifierFromModifierGroupMutationVariables = Exact<{
   modifierGroupId: Scalars['String']['input'];
@@ -2089,7 +2118,7 @@ export type GetModifierQueryVariables = Exact<{
 }>;
 
 
-export type GetModifierQuery = { __typename?: 'Query', getModifier: { __typename?: 'Modifier', _id: string, name: { __typename?: 'MasterCommon', value: string }, price: { __typename?: 'MasterCommonNumber', value: number } } };
+export type GetModifierQuery = { __typename?: 'Query', getModifier: { __typename?: 'Modifier', _id: string, isItem: boolean, preSelect: boolean, desc: { __typename?: 'MasterCommon', value: string }, name: { __typename?: 'MasterCommon', value: string }, price: { __typename?: 'MasterCommonNumber', value: number } } };
 
 export type UpdateModifierMutationVariables = Exact<{
   input: UpdateModifierInput;
@@ -2679,6 +2708,22 @@ export const GetMenusByTypeDocument = gql`
     createdAt
     updatedAt
     type
+    availability {
+      day
+      hours {
+        start
+        end
+      }
+      active
+    }
+    taxes {
+      _id
+      salesTax {
+        value
+        _id
+      }
+      default
+    }
     categories {
       name {
         value
@@ -2767,6 +2812,12 @@ export const GetModifierGroupDocument = gql`
     name {
       value
     }
+    price {
+      value
+    }
+    desc {
+      value
+    }
     pricingType
     optional
     modifiers {
@@ -2835,6 +2886,11 @@ export const GetModifierDocument = gql`
     query getModifier($id: String!) {
   getModifier(id: $id) {
     _id
+    desc {
+      value
+    }
+    isItem
+    preSelect
     name {
       value
     }

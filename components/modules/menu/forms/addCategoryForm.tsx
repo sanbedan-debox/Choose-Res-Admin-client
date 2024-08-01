@@ -95,6 +95,13 @@ const AddCategoryForm = () => {
     }[]
   >([]);
 
+  const [incomingvisibilities, setIncomingVisibilities] = useState<
+    {
+      menuType: MenuTypeEnum;
+      status: StatusEnum;
+    }[]
+  >([]);
+
   const [useRestaurantTimings, setUseRestaurantTimings] = useState(false);
   const handleCheckboxChange = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -159,6 +166,7 @@ const AddCategoryForm = () => {
       console.error("Error fetching menu data:", error);
     }
   };
+
   const fetchItemData = async () => {
     if (editCatsId) {
       try {
@@ -177,19 +185,15 @@ const AddCategoryForm = () => {
           price: el?.price?.value ?? "",
           image: el?.image ?? "",
         }));
-        const formattedVisibilities = item.visibility.map((visibility) => ({
-          menuType: visibility.menuType,
-          status: visibility.status as StatusEnum,
-        }));
-        if (formattedVisibilities.length > 0) {
-          setVisibilities(formattedVisibilities);
-        }
+
+        setVisibilities(item.visibility);
         if (item?.availability) {
           const originalAvailability = reverseFormatAvailability(
             item?.availability
           );
           setAvailability(originalAvailability);
         }
+        setIncomingVisibilities(item.visibility);
         setSelectedItems(formateditemlist);
         setTempSelectedItems(formateditemlist);
         setprevItemsbfrEdit(formateditemlist);
@@ -231,9 +235,11 @@ const AddCategoryForm = () => {
           return;
         }
       }
+      const formattedAvailability = formatAvailability(availability);
 
       const updateInput: any = {
         _id: editCatsId || "",
+        availability: formattedAvailability,
         visibility: visibilities,
       };
 
@@ -250,7 +256,6 @@ const AddCategoryForm = () => {
       if (data.description !== changesMenu?.desc?.value) {
         addChange("desc", data.description);
       }
-      const formattedAvailability = formatAvailability(availability);
 
       setBtnLoading(true);
       const prevSelectedMenuIds = prevItemsbfrEdit.map((item) => item._id);

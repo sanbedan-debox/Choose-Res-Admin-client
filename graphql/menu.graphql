@@ -65,6 +65,22 @@ query getMenusByType($id: String!) {
     createdAt
     updatedAt
     type
+    availability {
+      day
+      hours {
+        start
+        end
+      }
+      active
+    }
+    taxes {
+      _id
+      salesTax {
+        value
+        _id
+      }
+      default
+    }
     categories {
       name {
         value

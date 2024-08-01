@@ -45,14 +45,14 @@ const FormAddTable: React.FC<FormAddTableProps> = ({
         {title}
       </h2>
       {data?.length === 0 ? (
-        <div className="flex justify-start align-middle p-2 border rounded-md space-x-4">
-          <div className="flex text-xl text-primary items-center">
+        <div className="flex justify-start align-middle p-4 border rounded-md space-x-4">
+          <div className="flex text-xl text-gray-500 items-center">
             <ImFileEmpty />
           </div>
           <div className="flex flex-col">
-            <p className="text-md text-start font-semibold text-primary">
+            {/* <p className="text-md text-start font-semibold text-primary">
               {emptyMessage}
-            </p>
+            </p> */}
             <p className="text-sm text-gray-500 text-start">{emptyCaption}</p>
           </div>
         </div>

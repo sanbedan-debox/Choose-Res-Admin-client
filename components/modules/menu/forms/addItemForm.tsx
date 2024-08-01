@@ -201,34 +201,9 @@ const AddItemForm = () => {
         setValue("isHalal", item.isHalal);
         setValue("isVegan", item.isVegan);
 
-        // const formattedVisibilities = item.visibility.map((visibility) => ({
-        //   menuType: visibility.menuType,
-        //   status: visibility.status as StatusEnum,
-        // }));
-        // if (formattedVisibilities.length > 0) {
-        //   setVisibilities(formattedVisibilities);
-        // }
+        setVisibilities(item.visibility);
+        setPricingOptions(item?.priceOptions);
 
-        // const updatedVisibilities = visibilities.map((currentVisibility) => {
-        //   const itemVisibility = item.visibility.find(
-        //     (visibility) => visibility.menuType === currentVisibility.menuType
-        //   );
-        //   return itemVisibility
-        //     ? { ...currentVisibility, status: itemVisibility.status }
-        //     : currentVisibility;
-        // });
-
-        // setVisibilities(updatedVisibilities);
-        // const updatedPricingOptions = pricingOptions.map((currentOption) => {
-        //   const itemOption = item.priceOptions.find(
-        //     (price) => price.menuType === currentOption.menuType
-        //   );
-        //   return itemOption
-        //     ? { ...currentOption, price: { value: itemOption.price.value } }
-        //     : currentOption;
-        // });
-
-        // setPricingOptions(updatedPricingOptions);
         const formateditemlist = item?.modifierGroup.map((el) => ({
           _id: el?.id,
           name: el?.name?.value ?? "",
@@ -331,10 +306,14 @@ const AddItemForm = () => {
       }
 
       const statusSub = data.status ? StatusEnum.Active : StatusEnum.Inactive;
+      const formattedAvailability = formatAvailability(availability);
+      const parsedPrice = roundOffPrice(parseFloat(data.price.toString()));
+
       let updateInput: any = {
         _id: editItemId || "",
         priceOptions: pricingOptions,
         visibility: visibilities,
+        availability: formattedAvailability,
       };
       let hasChanges = false;
       const imgUrl = await handleLogoUpload();
@@ -352,13 +331,8 @@ const AddItemForm = () => {
         addChange("desc", data.desc);
       }
 
-      if (data.image !== changesMenu?.image?.value) {
-        updateInput.image = data.image;
-        hasChanges = true;
-      }
-
       if (data.price !== changesMenu?.price?.value) {
-        addChange("price", data.price);
+        addChange("price", parsedPrice);
       }
 
       if (data.status !== (changesMenu?.status === StatusEnum.Active)) {
@@ -406,12 +380,10 @@ const AddItemForm = () => {
         hasChanges = true;
       }
 
-      if (data.image !== changesMenu?.image) {
-        updateInput.image = imgUrl || "";
-        hasChanges = true;
-      }
-
-      const parsedPrice = roundOffPrice(parseFloat(data.price.toString()));
+      // if (data.image !== changesMenu?.image) {
+      //   updateInput.image = imgUrl || "";
+      //   hasChanges = true;
+      // }
 
       const prevSelectedMenuIds = prevItemsbfrEdit.map((item) => item._id);
       const selectedItemsIds = selectedItems.map((item) => item._id);
@@ -419,7 +391,6 @@ const AddItemForm = () => {
         (id) => !prevSelectedMenuIds.includes(id)
       );
       const isMenuAdded = addedMenuIds.length > 0;
-      const formattedAvailability = formatAvailability(availability);
 
       setBtnLoading(true);
       if (!isEditItem) {
@@ -605,11 +576,11 @@ const AddItemForm = () => {
     setIsModalOpen(true);
   };
 
-  const handleItemClick = (item: any) => {
+  const handleItemClick = (item: ItemsDropDownType) => {
     setTempSelectedItems((prevSelected) =>
       prevSelected.some((selectedItem) => selectedItem._id === item._id)
         ? prevSelected.filter((i) => i._id !== item._id)
-        : [item]
+        : [...prevSelected, item]
     );
   };
 
@@ -664,6 +635,16 @@ const AddItemForm = () => {
   const handleCloseConfirmationModal = () => {
     setShowConfirmationModal(false);
   };
+
+  useEffect(() => {
+    if (visibilities.length === 1) {
+      const updatedVisibilities = visibilities.map((vib) => ({
+        menuType: vib.menuType,
+        status: watch("status") ? StatusEnum.Active : StatusEnum.Inactive,
+      }));
+      setVisibilities(updatedVisibilities);
+    }
+  }, [watch("status")]);
 
   const handleConfirmation = async () => {
     setValue("status", !watch("status"));
@@ -787,7 +768,7 @@ const AddItemForm = () => {
               </p>
             )}
           </div>
-          {pricingOptions.length > 0 && (
+          {pricingOptions.length > 1 && (
             <div className="mb-1">
               <label className="block mb-2 text-sm font-medium text-left text-gray-700">
                 Pricing Options
@@ -929,7 +910,7 @@ const AddItemForm = () => {
               </p>
             )}
           </div>
-          {visibilities.length > 0 && (
+          {visibilities.length > 1 && (
             <div className="mb-1">
               <label
                 htmlFor="visibilityOptions"

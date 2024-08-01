@@ -8,6 +8,7 @@ import {
   extractErrorMessage,
   generateUniqueName,
   isValidNameAlphabetic,
+  roundOffPrice,
 } from "@/utils/utilFUncs";
 import { PriceTypeEnum } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
@@ -31,7 +32,8 @@ interface IFormInput {
   pricingType: { value: string; label: string };
   maxSelections: number;
   minSelections: number;
-  commonPrice?: number;
+  commonPrice: number;
+  desc: string;
 }
 
 const AddModifierGroupForm = () => {
@@ -125,6 +127,8 @@ const AddModifierGroupForm = () => {
     };
     fetch();
   }, [fetchMenuDatas, setToastData, selectedItems]);
+  const [minSelection, setMinSelection] = useState(0);
+  const [maxSelection, setMaxSelection] = useState(1);
   useEffect(() => {
     const fetchItemData = async () => {
       if (editModGroupId) {
@@ -138,8 +142,12 @@ const AddModifierGroupForm = () => {
           if (isDuplicateModifierGroup) {
             setValue("name", nameDup);
           }
-          setValue("maxSelections", item?.maxSelections?.value || 1);
-          setValue("minSelections", item.maxSelections?.value || 0);
+          setValue("minSelections", item?.minSelections?.value);
+          setMinSelection(item?.minSelections?.value);
+          setMaxSelection(item.maxSelections?.value);
+          setValue("maxSelections", item.maxSelections?.value);
+          setValue("desc", item?.desc?.value || "");
+          setValue("commonPrice", item?.price?.value || 0);
           setValue("optional", item.optional || false);
           const selectedPriceType = PricingTypeOptions.find(
             (option) => option.value === item?.pricingType
@@ -286,8 +294,20 @@ const AddModifierGroupForm = () => {
         return;
       }
 
+      const parsedPriceCommon = roundOffPrice(
+        parseFloat(data?.commonPrice?.toString())
+      );
+
       const updateInput: any = {
         _id: editModGroupId || "",
+        desc: {
+          value: data.desc || "",
+        },
+        pricingType: data.pricingType.value as PriceTypeEnum,
+
+        price: {
+          value: parsedPriceCommon || 0,
+        },
       };
       let hasChanges = false;
 
@@ -306,7 +326,7 @@ const AddModifierGroupForm = () => {
         hasChanges = true;
       }
       if (data.minSelections !== changesMenu?.minSelections?.value) {
-        addChange("minSelections", data.maxSelections);
+        addChange("minSelections", data.minSelections);
         hasChanges = true;
       }
 
@@ -314,19 +334,26 @@ const AddModifierGroupForm = () => {
         updateInput.optional = data.optional;
         hasChanges = true;
       }
-
-      if (data?.pricingType?.value !== changesMenu?.pricingType?.value) {
-        updateInput.pricingType = data.pricingType.value as PriceTypeEnum;
+      if (data.optional !== changesMenu?.optional) {
+        updateInput.optional = data.optional;
         hasChanges = true;
       }
 
-      // if (data.pricingType.value === PriceTypeEnum.SamePrice) {
-      //   updateInput.commonPrice = { value: data.commonPrice };
+      // if (data?.commonPrice !== changesMenu?.price?.value) {
+      //   updateInput.price.value = parsedPriceCommon || 0;
+      //   hasChanges = true;
       // }
 
       if (!isEditModGroup) {
         await sdk.addModifierGroup({
           input: {
+            price: {
+              value: parsedPriceCommon || 0,
+            },
+            desc: {
+              value: data.desc,
+            },
+
             name: {
               value: data.name,
             },
@@ -340,10 +367,8 @@ const AddModifierGroupForm = () => {
             pricingType: data.pricingType.value as PriceTypeEnum,
           },
           modifiers: selectedItemsIds,
-          // commonPrice: data.pricingType.value === PriceTypeEnum.SamePrice ? { value: data.commonPrice } : undefined,
         });
       } else {
-        // EDIT/UPDATE ITEM API
         await sdk.updateModifierGroup({
           input: updateInput,
         });
@@ -362,7 +387,7 @@ const AddModifierGroupForm = () => {
       setEditModGroupId(null);
       setToastData({
         type: "success",
-        message: "Item Added Successfully",
+        message: "Modifier Groups Added Successfully",
       });
     } catch (error: any) {
       const errorMessage = extractErrorMessage(error);
@@ -463,17 +488,33 @@ const AddModifierGroupForm = () => {
               </p>
             )}
           </div>
+          <div className="mb-1">
+            <label className="block mb-2 text-sm font-medium text-left text-gray-700">
+              Description
+            </label>
+            <textarea
+              {...register("desc", { required: "Description is required" })}
+              id="desc"
+              className="input input-primary"
+              placeholder="Enter item description"
+            />
+            {errors.desc && (
+              <p className="text-red-500 text-sm text-start">
+                {errors.desc.message}
+              </p>
+            )}
+          </div>
 
           <div className="flex flex-col space-y-3">
             <CountSelector
               title="Minimum"
-              initialValue={0}
+              initialValue={minSelection}
               onCountChange={handleMinCountChange}
             />
             <div className="flex flex-col">
               <CountSelector
                 title="Maximum"
-                initialValue={1}
+                initialValue={maxSelection}
                 onCountChange={handleMaxCountChange}
               />
               <p className="text-gray-500 text-xs mt-1 mx-1 text-start">

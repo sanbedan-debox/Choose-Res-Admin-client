@@ -386,7 +386,7 @@ const UserLocationForm: React.FC = () => {
     try {
       setBtnLoading(true);
 
-      const response = await sdk.businessOnboarding({
+      const response = await sdk.updateUserProfile({
         input: {
           address: {
             addressLine1: {
@@ -416,6 +416,7 @@ const UserLocationForm: React.FC = () => {
         message: "Business Location updated successfully!",
         type: "success",
       });
+      setIsModalOpen(false);
     } catch (error: any) {
       const errorMessage = extractErrorMessage(error);
       setToastData({

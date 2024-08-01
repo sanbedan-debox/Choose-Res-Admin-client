@@ -7,7 +7,7 @@ import { sdk } from "@/utils/graphqlClient";
 import useGlobalStore from "@/store/global";
 import ReusableModal from "@/components/common/modal/modal";
 import { extractErrorMessage, isValidNameAlphabetic } from "@/utils/utilFUncs";
-import { UserRole } from "@/generated/graphql";
+import { PermissionTypeEnum, UserRole } from "@/generated/graphql";
 import CustomSwitchCard from "@/components/common/customSwitchCard/customSwitchCard";
 import ArrowCard from "@/components/common/arrowCard/arrowCard";
 import useUserManagementStore from "@/store/userManagement";
@@ -41,6 +41,21 @@ const AddTeamMemberForm = () => {
     }[]
   >([]);
 
+  const formatPermissions = (
+    permissions: {
+      type: string;
+      _id: string;
+      isTicked: boolean;
+      preselect: string[];
+    }[]
+  ): any[] => {
+    return permissions.map((permission) => ({
+      type: permission.type,
+      status: permission.isTicked,
+      _id: permission._id,
+    }));
+  };
+
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
@@ -60,6 +75,7 @@ const AddTeamMemberForm = () => {
       const restaurantIds = form.restaurant.map(
         (rest: { value: string }) => rest.value
       );
+      const formattedPermissions = formatPermissions(permissions);
 
       const res = await sdk.addTeamMember({
         AddTeamMemberInput: {
@@ -73,9 +89,7 @@ const AddTeamMemberForm = () => {
             whatsApp: form.whatsApp,
             email: form.emailPref,
           },
-          // permissions: Object.keys(form.permissions).filter(
-          //   (key) => form.permissions[key]
-          // ),
+          permissions: formattedPermissions,
         },
       });
 
@@ -130,7 +144,7 @@ const AddTeamMemberForm = () => {
   const handlePermissionChange = (type: string) => {
     setPermissions((prevPermissions) =>
       prevPermissions.map((permission) =>
-        permission.type === type
+        permission.type === (type as PermissionTypeEnum)
           ? { ...permission, isTicked: !permission.isTicked }
           : permission
       )
@@ -194,15 +208,6 @@ const AddTeamMemberForm = () => {
     if (!emailPattern.test(form.email)) {
       setToastData({
         message: "Please enter a valid email address.",
-        type: "error",
-      });
-      return;
-    }
-
-    const phonePattern = /^[2-9]{1}[0-9]{9}$/;
-    if (!phonePattern.test(form.phone)) {
-      setToastData({
-        message: "Please enter a valid phone number.",
         type: "error",
       });
       return;
@@ -389,13 +394,6 @@ const AddTeamMemberForm = () => {
           className="space-y-4 md:space-y-3 w-full max-w-2xl"
           onSubmit={onSubmit}
         >
-          <div
-            onClick={handleBack}
-            className="flex justify-between items-center mb-4"
-          >
-            <IoArrowBackCircleOutline className="text-3xl hover:text-primary cursor-pointer" />
-          </div>
-
           {permissions.map((permission) => (
             <CustomSwitchCard
               key={permission._id}
@@ -407,7 +405,16 @@ const AddTeamMemberForm = () => {
             />
           ))}
 
-          <div className="pt-5 col-span-2 w-full flex justify-center items-center">
+          <div className="pt-5 col-span-2 w-full flex justify-center space-x-2 items-center">
+            <CButton
+              loading={btnLoading}
+              variant={ButtonType.Outlined}
+              type="submit"
+              className="w-full"
+              onClick={handleBack}
+            >
+              Go Back
+            </CButton>
             <CButton
               loading={btnLoading}
               variant={ButtonType.Primary}

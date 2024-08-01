@@ -21,6 +21,11 @@ mutation deleteModifier($id: String!) {
 query getModifier($id: String!) {
   getModifier(id: $id) {
     _id
+    desc {
+      value
+    }
+    isItem
+    preSelect
     name {
       value
     }

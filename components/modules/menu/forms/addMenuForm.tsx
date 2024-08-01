@@ -10,7 +10,7 @@ import {
   generateUniqueName,
   isValidNameAlphabetic,
 } from "@/utils/utilFUncs";
-import { FilterOperatorsEnum, MenuTypeEnum } from "@/generated/graphql";
+import { Day, FilterOperatorsEnum, MenuTypeEnum } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
 import useMenuOptionsStore from "@/store/menuOptions";
 import FormAddTable from "@/components/common/table/formTable";
@@ -24,6 +24,12 @@ import useRestaurantsStore from "@/store/restaurant";
 import useAuthStore from "@/store/auth";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import { RiEditCircleLine } from "react-icons/ri";
+import AvailabilityComponent from "@/components/common/timingAvailibility/timingAvailibility";
+import {
+  Availability,
+  formatAvailability,
+  reverseFormatAvailability,
+} from "@/components/common/timingAvailibility/interface";
 
 interface IFormInput {
   type: { value: string; label: string };
@@ -77,10 +83,53 @@ const AddMenuForm = () => {
     register,
   } = useForm<IFormInput>();
   const { taxRate } = useAuthStore();
-  useEffect(() => {
-    console.log(taxRate);
-  }, [taxRate]);
+  const [availability, setAvailability] = useState<Availability[]>([
+    { day: Day.Sunday, hours: [], active: false },
+    { day: Day.Monday, hours: [], active: false },
+    { day: Day.Tuesday, hours: [], active: false },
+    { day: Day.Wednesday, hours: [], active: false },
+    { day: Day.Thursday, hours: [], active: false },
+    { day: Day.Friday, hours: [], active: false },
+    { day: Day.Saturday, hours: [], active: false },
+  ]);
+  const [useRestaurantTimings, setUseRestaurantTimings] = useState(false);
 
+  const handleCheckboxChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const isChecked = event.target.checked;
+    setUseRestaurantTimings(isChecked);
+
+    if (isChecked) {
+      try {
+        const response = await sdk.getRestaurantDetails();
+        const restaurantAvailibility =
+          response.getRestaurantDetails?.availability;
+        if (restaurantAvailibility) {
+          const originalAvailability = reverseFormatAvailability(
+            restaurantAvailibility
+          );
+          console.log("originalAvailability:", originalAvailability);
+          setAvailability(originalAvailability);
+        }
+      } catch (error) {
+        setToastData({
+          type: "error",
+          message: "Failed to get Restaurant availibility",
+        });
+      }
+    } else {
+      setAvailability([
+        { day: Day.Sunday, hours: [], active: false },
+        { day: Day.Monday, hours: [], active: false },
+        { day: Day.Tuesday, hours: [], active: false },
+        { day: Day.Wednesday, hours: [], active: false },
+        { day: Day.Thursday, hours: [], active: false },
+        { day: Day.Friday, hours: [], active: false },
+        { day: Day.Saturday, hours: [], active: false },
+      ]);
+    }
+  };
   const onSubmit = async (data: IFormInput) => {
     try {
       if (!isDuplicateMenu) {
@@ -102,11 +151,16 @@ const AddMenuForm = () => {
         (id) => !prevSelectedMenuIds.includes(id)
       );
       const isMenuAdded = addedMenuIds.length > 0;
+      const formattedAvailability = formatAvailability(availability);
 
       const updateInput: any = {
         _id: editMenuId || "",
-        taxRateId: taxRate?.id || "",
+        availability: formattedAvailability,
       };
+
+      if (incomingTaxId !== taxRate?.id) {
+        updateInput.taxRateId = taxRate?.id;
+      }
       const selectedMenuType = menuTypeOptions.find(
         (option) => option.value === changesMenu[0]?.type
       );
@@ -129,6 +183,7 @@ const AddMenuForm = () => {
             },
             categories: selectedItemsIds,
             taxRateId: taxRate?.id || "",
+            availability: formattedAvailability,
           },
         });
       } else {
@@ -311,7 +366,7 @@ const AddMenuForm = () => {
   const handelCreateCategory = () => {
     setisAddCategoryModalOpen(true);
   };
-
+  const [incomingTaxId, setIncomingTaxId] = useState("");
   useEffect(() => {
     const fetchMenuData = async () => {
       if (editMenuId) {
@@ -334,9 +389,16 @@ const AddMenuForm = () => {
             name: el?.name?.value ?? "",
             length: 0,
           }));
+          if (menu[0]?.availability) {
+            const originalAvailability = reverseFormatAvailability(
+              menu[0]?.availability
+            );
+            setAvailability(originalAvailability);
+          }
           setSelectedItems(formateditemlist);
           setTempSelectedItems(formateditemlist);
           setprevItemsbfrEdit(formateditemlist);
+          setIncomingTaxId(menu[0]?.taxes?._id);
         } catch (error) {
           const errorMessage = extractErrorMessage(error);
           setToastData({
@@ -410,6 +472,7 @@ const AddMenuForm = () => {
                 {...field}
                 id="type"
                 options={menuTypeOptions}
+                isDisabled={isEditMenu}
                 className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
                 classNamePrefix="react-select"
                 placeholder="Select menu type"
@@ -425,6 +488,8 @@ const AddMenuForm = () => {
             </p>
           )}
         </div>
+
+        <br />
         <div>
           <FormAddTable
             data={data}
@@ -439,34 +504,76 @@ const AddMenuForm = () => {
             Select the categories and items you want to be in this menu.
           </p>
         </div>
+        <label className="block mb-2 text-sm font-medium text-left text-gray-700">
+          Availibility
+        </label>
+        <div className="flex items-center mb-4">
+          <input
+            type="checkbox"
+            id="useRestaurantTimings"
+            checked={useRestaurantTimings}
+            onChange={handleCheckboxChange}
+            className="mr-2"
+          />
+          <label htmlFor="useRestaurantTimings">
+            Use Restaurant Timings for this Item
+          </label>
+        </div>
+        <AvailabilityComponent
+          availability={availability}
+          setAvailability={setAvailability}
+        />
         {!taxRate?.salesTax ? (
-          <div
-            className="flex justify-between items-center p-4 border rounded-md shadow-sm bg-white cursor-pointer"
-            onClick={() => setisShowTaxSettings(true)}
-          >
-            <div>
-              <h3 className=" font-semibold text-start text-md">
-                Tax Rate was not found
-              </h3>
-              <p className="text-gray-600 text-sm">
-                Please add tax rate to apply for this item
-              </p>
+          <>
+            <br />
+            <div className="flex justify-between items-center p-4 border rounded-md shadow-sm bg-white cursor-pointer">
+              <div>
+                <h3 className="font-semibold text-start text-md">Tax Rate</h3>
+                <p className="text-gray-600 text-sm">
+                  {`It's mandatory to add a tax rate to make this menu available`}
+                </p>
+              </div>
+              <div>
+                <CButton
+                  loading={btnLoading}
+                  variant={ButtonType.Outlined}
+                  type="submit"
+                  className="w-full"
+                >
+                  <div className="flex justify-center items-center">
+                    Add Tax Rate
+                    <IoIosAddCircleOutline className="text-xl ml-1" />
+                  </div>
+                </CButton>
+              </div>
             </div>
-            <FaArrowRight className="w-5 h-5 text-primary" />
-          </div>
+            <br />
+                      
+          </>
         ) : (
-          <div
-            className="flex justify-between items-center p-4 border rounded-md shadow-sm bg-white cursor-pointer"
-            onClick={() => setisShowTaxSettings(true)}
-          >
-            <div>
-              <h3 className=" font-semibold text-start text-md">Tax Rate</h3>
-              <p className="text-gray-600 text-sm">
-                The Menu will be having an tax rate of, To add new click here.
-              </p>
+          <>
+            <br />
+            <div className="flex justify-between items-center p-4 border rounded-md shadow-sm bg-white opacity-50 cursor-not-allowed">
+              <div>
+                <h3 className="font-semibold text-start text-md">Tax Rate</h3>
+                <p className="text-gray-600 text-sm">
+                  {`It's applied to this menu and all the items in it`}
+                </p>
+              </div>
+              <div>{taxRate?.salesTax} %</div>
             </div>
-            <span>{taxRate?.salesTax} %</span>
-          </div>
+            <p className="text-gray-500 text-xs text-start">
+              To edit / update tax rate click{" "}
+              <span
+                onClick={() => setisShowTaxSettings(true)}
+                className="text-primary cursor-pointer"
+              >
+                here
+              </span>
+            </p>
+            <br />
+                      
+          </>
         )}
 
         <CButton
