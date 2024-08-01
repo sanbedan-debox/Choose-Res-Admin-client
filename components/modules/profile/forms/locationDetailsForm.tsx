@@ -301,6 +301,7 @@ import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import useGlobalStore from "@/store/global";
 import { extractErrorMessage } from "@/utils/utilFUncs";
+import { MdOutlineEdit } from "react-icons/md";
 
 interface IFormInput {
   addressLine1: string;
@@ -436,11 +437,11 @@ const UserLocationForm: React.FC = () => {
 
   return (
     <div className="z-10 flex flex-col w-full items-center space-y-5 text-center">
-      <div className="space-y-4 md:space-y-3 w-full text-left">
-        <div className="flex justify-between items-center">
+      <div className="bg-white p-4 rounded-lg space-y-4 md:space-y-3 w-full text-left">
+        <div className=" flex justify-between items-center">
           <h2 className="text-xl font-semibold">Location Details</h2>
-          <FaEdit
-            className="text-xl cursor-pointer"
+          <MdOutlineEdit
+            className="text-primary text-xl cursor-pointer"
             onClick={handleEditClick}
           />
         </div>

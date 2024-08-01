@@ -10,7 +10,7 @@ const IdentityVerificationForm: React.FC = () => {
   }, [ein]);
 
   return (
-    <div className="space-y-4 md:space-y-3 w-full ">
+    <div className="bg-white p-4 rounded-lg space-y-4 md:space-y-3 w-full ">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">Verified Information</h2>
       </div>

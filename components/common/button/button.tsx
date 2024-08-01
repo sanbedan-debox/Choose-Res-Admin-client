@@ -36,7 +36,7 @@ const CButton: React.FC<ReusableButtonProps> = ({
     <button
       type={type}
       onClick={onClick}
-      disabled={disabled || loading} // Disable button when loading
+      disabled={disabled || loading}
       className={`${buttonStyles[variant]} ${className} ${
         loading ? "flex items-center justify-center" : "" // Center content if loading
       } ${loading ? "opacity-50 cursor-not-allowed" : ""} ${
@@ -44,7 +44,11 @@ const CButton: React.FC<ReusableButtonProps> = ({
       }`}
     >
       {loading ? (
-        <FaSpinner className="animate-spin h-5 w-5 text-white" /> // Adjust spinner size and color
+        <FaSpinner
+          className={`animate-spin h-5 w-5 ${
+            variant === ButtonType.Outlined ? "text-primary" : " text-white"
+          }`}
+        /> // Adjust spinner size and color
       ) : (
         children // Display children when not loading
       )}

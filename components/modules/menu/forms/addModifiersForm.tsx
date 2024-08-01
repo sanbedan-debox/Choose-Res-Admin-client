@@ -151,7 +151,7 @@ const AddModifierForm = () => {
     }
 
     if (data.price !== changesModifiers?.price?.value) {
-      addChange("price", data.price);
+      addChange("price", parsedPrice);
     }
 
     if (data.preSelect !== changesModifiers?.preSelect) {
@@ -250,16 +250,16 @@ const AddModifierForm = () => {
           </h2>
         </div>
         <div className="col-span-2 grid grid-cols-1 gap-6">
-          <div className="mb-1 flex items-center">
+          <div className="w-full mb-1 flex items-center justify-between">
+            <label className="text-sm font-medium text-left text-gray-700">
+              Is this an Item from Menu ?
+            </label>
             <CustomSwitch
               checked={isItemFromMenu}
               onChange={() => setIsItemFromMenu(!isItemFromMenu)}
               label="Is item from menu"
               className="mr-2"
             />
-            <label className="text-sm font-medium text-left text-gray-700">
-              Is item from menu
-            </label>
           </div>
 
           <div className="mb-1">
@@ -269,6 +269,13 @@ const AddModifierForm = () => {
             >
               Display Name
             </label>
+
+            {isItemFromMenu && (
+              <p className="text-gray-600 text-xs mt-1 mb-1 text-start">
+                Tap on display name to select desired Item
+              </p>
+            )}
+
             <input
               type="text"
               {...register("name", { required: "Name is required" })}

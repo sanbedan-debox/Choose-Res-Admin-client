@@ -10,8 +10,10 @@ import useModGroupStore from "@/store/modifierGroup";
 import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import React, { useEffect, useState } from "react";
+import { BsCopy } from "react-icons/bs";
 import { FaTrash, FaEdit } from "react-icons/fa";
 import { IoDuplicateOutline } from "react-icons/io5";
+import { MdOutlineEdit } from "react-icons/md";
 
 const Modifiers: React.FC = () => {
   const [modifierGroups, setModifierGroups] = useState<any>();
@@ -86,12 +88,13 @@ const Modifiers: React.FC = () => {
         className="text-primary text-md cursor-pointer"
         onClick={() => handleDeleteItem(rowData._id)}
       /> */}
-      <FaEdit
-        className="text-primary text-md cursor-pointer"
+      <MdOutlineEdit
+        className="text-primary text-lg cursor-pointer"
         onClick={() => handleEditItem(rowData._id)}
       />
-      <IoDuplicateOutline
-        className="text-primary text-md cursor-pointer"
+
+      <BsCopy
+        className="text-primary text-lg cursor-pointer"
         onClick={() => handleDuplcateCategory(rowData._id)}
       />
     </div>

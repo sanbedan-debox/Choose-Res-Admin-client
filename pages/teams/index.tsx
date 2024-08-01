@@ -41,6 +41,7 @@ const formatUserStatus = (status: UserStatus): string => {
 };
 
 const formatUserRole = (role: UserRole): string => {
+  console.log("role from format", role);
   switch (role) {
     case UserRole.Owner:
       return "Owner";
@@ -137,8 +138,8 @@ const Teams: NextPageWithLayout = () => {
     {
       title: "Role",
       dataKey: "role",
-      // render: (rowData: { role: string }) => {
-      //   return <p>{formatUserRole(rowData.role as UserRole)}</p>;
+      // render: (rowData: { role: UserRole }) => {
+      //   return <p>{formatUserRole(rowData.role)}</p>;
       // },
     },
     {

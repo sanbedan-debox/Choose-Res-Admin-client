@@ -13,6 +13,7 @@ import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import useGlobalStore from "@/store/global";
 import { extractErrorMessage } from "@/utils/utilFUncs";
+import { MdOutlineEdit } from "react-icons/md";
 
 const formatBusinessTypeEnum = (value: BusinessTypeEnum) => {
   switch (value) {
@@ -145,11 +146,11 @@ const BusinessInformationForm: React.FC = () => {
 
   return (
     <div className="w-full flex flex-col items-start space-y-5">
-      <div className="space-y-4 md:space-y-3 w-full ">
+      <div className="bg-white p-4 rounded-xl space-y-4 md:space-y-3 w-full ">
         <div className="flex justify-between items-center">
           <h2 className="text-xl font-semibold">Business Information</h2>
-          <FaEdit
-            className="text-xl cursor-pointer"
+          <MdOutlineEdit
+            className="text-primary text-xl cursor-pointer"
             onClick={handleOpenModal}
           />
         </div>
