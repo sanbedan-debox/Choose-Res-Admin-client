@@ -270,6 +270,14 @@ const AddModifierGroupForm = () => {
           return;
         }
       }
+
+      if (!data.commonPrice || data.commonPrice <= 0) {
+        setToastData({
+          message:
+            "An Modifier Group cannot be added without price, please add a numerical value that is greater than zero to save and continue",
+          type: "error",
+        });
+      }
       const parsedMaxSelection =
         parseFloat(data?.maxSelections?.toString()) || 0;
       const parsedMinSelection =
@@ -562,7 +570,7 @@ const AddModifierGroupForm = () => {
                 htmlFor="commonPrice"
                 className="block mb-2 text-sm font-medium text-left text-gray-700"
               >
-                Common Price
+                Price
               </label>
               <input
                 type="number"

@@ -139,6 +139,13 @@ const AddModifierForm = () => {
       }
     }
 
+    if (!data.price || data.price <= 0) {
+      setToastData({
+        message:
+          "An Modifier cannot be added without price, please add a numerical value that is greater than zero to save and continue",
+        type: "error",
+      });
+    }
     const parsedPrice = roundOffPrice(parseFloat(data.price.toString()));
     let updateInput: any = { _id: editModId || "" };
     let hasChanges = false;
