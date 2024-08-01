@@ -184,7 +184,7 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
       {availability.map((day, index) => (
         <div key={index} className="mb-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center" style={{ width: "200px" }}>
+            <div className="flex items-center" style={{ width: "270px" }}>
               <CustomSwitch
                 checked={day.active}
                 onChange={() => {
@@ -211,7 +211,7 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
                   "Unknown Day"}
               </div>
             </div>
-            <div className="flex flex-col" style={{ width: "600px" }}>
+            <div className="flex flex-col" style={{ width: "790px" }}>
               {day.hours.map((hour, hourIndex) => (
                 <div key={hourIndex} className="flex items-center mb-2">
                   <Select
@@ -255,46 +255,8 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
             </div>
             <div
               className="flex items-end justify-end"
-              style={{ width: "230px" }}
+              style={{ width: "120px" }}
             >
-              {/* {day.active && (
-                <>
-                  {day.hours.length > 0 && (
-                    <>
-                      {day.hours.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() =>
-                            handleRemoveHours(index, day.hours.length - 1)
-                          }
-                          className="mr-1 text-2xl hover:text-primary"
-                          disabled={!day.active}
-                        >
-                          <CiCircleMinus />
-                        </button>
-                      )}
-
-                      <button
-                        type="button"
-                        onClick={() => handleAddHours(index)}
-                        className="mr-1 text-2xl hover:text-primary"
-                        disabled={!day.active}
-                      >
-                        <CiCirclePlus />
-                      </button>
-                    </>
-                  )}
-                  {copiedDayIndex === index && (
-                    <button
-                      className="text-primary text-sm "
-                      type="button"
-                      onClick={() => handleCopyHours(index)}
-                    >
-                      Copy to all
-                    </button>
-                  )}
-                </>
-              )} */}
               {day.active && (
                 <>
                   {day.hours.length > 0 && (
@@ -322,14 +284,21 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
                       </button>
                     </>
                   )}
-                  <button
-                    className="text-primary text-sm "
-                    type="button"
-                    onClick={() => handleCopyHours(index)}
-                  >
-                    Copy to all
-                  </button>
                 </>
+              )}
+            </div>
+            <div
+              className="flex items-center"
+              style={{ width: "150px", marginLeft: "10px" }}
+            >
+              {copiedDayIndex === index && (
+                <button
+                  className="text-primary text-sm"
+                  type="button"
+                  onClick={() => handleCopyHours(index)}
+                >
+                  Copy to all
+                </button>
               )}
             </div>
           </div>

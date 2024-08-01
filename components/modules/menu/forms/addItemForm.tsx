@@ -125,6 +125,16 @@ const AddItemForm = () => {
     }[]
   >([]);
 
+  useEffect(() => {
+    console.log("CHANGES IN VISIBILITY");
+    console.log(visibilities);
+  }, [visibilities]);
+
+  useEffect(() => {
+    console.log("CHANGES PRICINGS");
+    console.log(pricingOptions);
+  }, [pricingOptions]);
+
   const fetchMenuData = async () => {
     try {
       const response = await sdk.getMenuByRestaurant();
@@ -190,6 +200,7 @@ const AddItemForm = () => {
         setValue("isGlutenFree", item.isGlutenFree);
         setValue("isHalal", item.isHalal);
         setValue("isVegan", item.isVegan);
+
         // const formattedVisibilities = item.visibility.map((visibility) => ({
         //   menuType: visibility.menuType,
         //   status: visibility.status as StatusEnum,
@@ -198,26 +209,26 @@ const AddItemForm = () => {
         //   setVisibilities(formattedVisibilities);
         // }
 
-        const updatedVisibilities = visibilities.map((currentVisibility) => {
-          const itemVisibility = item.visibility.find(
-            (visibility) => visibility.menuType === currentVisibility.menuType
-          );
-          return itemVisibility
-            ? { ...currentVisibility, status: itemVisibility.status }
-            : currentVisibility;
-        });
+        // const updatedVisibilities = visibilities.map((currentVisibility) => {
+        //   const itemVisibility = item.visibility.find(
+        //     (visibility) => visibility.menuType === currentVisibility.menuType
+        //   );
+        //   return itemVisibility
+        //     ? { ...currentVisibility, status: itemVisibility.status }
+        //     : currentVisibility;
+        // });
 
-        setVisibilities(updatedVisibilities);
-        const updatedPricingOptions = pricingOptions.map((currentOption) => {
-          const itemOption = item.priceOptions.find(
-            (price) => price.menuType === currentOption.menuType
-          );
-          return itemOption
-            ? { ...currentOption, price: { value: itemOption.price.value } }
-            : currentOption;
-        });
+        // setVisibilities(updatedVisibilities);
+        // const updatedPricingOptions = pricingOptions.map((currentOption) => {
+        //   const itemOption = item.priceOptions.find(
+        //     (price) => price.menuType === currentOption.menuType
+        //   );
+        //   return itemOption
+        //     ? { ...currentOption, price: { value: itemOption.price.value } }
+        //     : currentOption;
+        // });
 
-        setPricingOptions(updatedPricingOptions);
+        // setPricingOptions(updatedPricingOptions);
         const formateditemlist = item?.modifierGroup.map((el) => ({
           _id: el?.id,
           name: el?.name?.value ?? "",

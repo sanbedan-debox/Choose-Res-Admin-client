@@ -16,8 +16,12 @@ import CustomSwitchCard from "@/components/common/customSwitchCard/customSwitchC
 import useModStore from "@/store/modifiers";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import { RiEditCircleLine } from "react-icons/ri";
+import CustomSwitch from "@/components/common/customSwitch/customSwitch";
+import ReusableModal from "@/components/common/modal/modal";
 
 interface IFormInput {
+  isItemFromMenu: boolean;
+
   name: string;
   optional: boolean;
   maxSelections: number;
@@ -25,6 +29,13 @@ interface IFormInput {
   minSelections: number;
   price: number;
   image: string;
+}
+
+interface ItemOption {
+  _id: string;
+  name: string;
+  price: number;
+  priceOptions: any[];
 }
 
 const AddModifierForm = () => {
@@ -54,32 +65,61 @@ const AddModifierForm = () => {
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchItemData = async () => {
-      if (editModId) {
-        try {
-          const response = await sdk.getModifier({ id: editModId });
-          const item = response.getModifier;
-          setChangesModifiers(item);
+  const [isItemFromMenu, setIsItemFromMenu] = useState(false);
+  const [showItemModal, setShowItemModal] = useState(false);
+  const [itemOptions, setItemOptions] = useState<ItemOption[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedItem, setSelectedItem] = useState<ItemOption | null>(null);
 
-          setValue("name", item.name.value);
-          const nameDup = generateUniqueName(item?.name?.value);
-          if (isDuplicateMods) {
-            setValue("name", nameDup);
-          }
-          // setValue("desc", item.);
-          setValue("price", item.price.value);
-        } catch (error) {
-          const errorMessage = extractErrorMessage(error);
-          setToastData({
-            type: "error",
-            message: errorMessage,
-          });
+  // const [items, setItems] = useState([]);
+
+  const fetchItems = async () => {
+    try {
+      const response = await sdk.getItems();
+      const formattedItems = response.getItems.map((item: any) => ({
+        _id: item._id,
+        name: item.name.value,
+        price: item.price.value,
+        priceOptions: item.priceOptions,
+      }));
+      setItemOptions(formattedItems);
+    } catch (error) {
+      const errorMessage = extractErrorMessage(error);
+      setToastData({
+        type: "error",
+        message: errorMessage,
+      });
+    }
+  };
+
+  const fetchModData = async () => {
+    if (editModId) {
+      try {
+        const response = await sdk.getModifier({ id: editModId });
+        const item = response.getModifier;
+        setChangesModifiers(item);
+
+        setValue("name", item.name.value);
+        const nameDup = generateUniqueName(item?.name?.value);
+        if (isDuplicateMods) {
+          setValue("name", nameDup);
         }
+        // setValue("desc", item.);
+        setValue("price", item.price.value);
+      } catch (error) {
+        const errorMessage = extractErrorMessage(error);
+        setToastData({
+          type: "error",
+          message: errorMessage,
+        });
       }
-    };
+    }
+  };
 
-    fetchItemData();
+  useEffect(() => {
+    fetchItems();
+
+    fetchModData();
   }, [editModId, setValue, setToastData]);
 
   const onSubmit = async (data: IFormInput) => {
@@ -132,8 +172,7 @@ const AddModifierForm = () => {
               preSelect: data.optional,
             },
           })
-        : // EDIT/UPDATE ITEM API
-          await sdk.updateModifier({
+        : await sdk.updateModifier({
             input: updateInput,
           });
 
@@ -183,6 +222,12 @@ const AddModifierForm = () => {
       setPreviewUrl(objectUrl);
     }
   };
+  // useEffect(() => {
+  //   if (selectedItem) {
+  //     setValue("name", selectedItem.name);
+  //     setValue("price", selectedItem.price);
+  //   }
+  // }, [selectedItem, setValue]);
 
   return (
     <motion.div
@@ -202,6 +247,18 @@ const AddModifierForm = () => {
           </h2>
         </div>
         <div className="col-span-2 grid grid-cols-1 gap-6">
+          <div className="mb-1 flex items-center">
+            <CustomSwitch
+              checked={isItemFromMenu}
+              onChange={() => setIsItemFromMenu(!isItemFromMenu)}
+              label="Is item from menu"
+              className="mr-2"
+            />
+            <label className="text-sm font-medium text-left text-gray-700">
+              Is item from menu
+            </label>
+          </div>
+
           <div className="mb-1">
             <label
               htmlFor="name"
@@ -213,8 +270,14 @@ const AddModifierForm = () => {
               type="text"
               {...register("name", { required: "Name is required" })}
               id="name"
-              className="input input-primary"
+              className={`input input-primary ${
+                isItemFromMenu ? "cursor-pointer" : "cursor-text"
+              }  `}
               placeholder="Enter Modifier name"
+              readOnly={isItemFromMenu}
+              onClick={
+                isItemFromMenu ? () => setShowItemModal(true) : undefined
+              }
             />
             <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
               This is the name your customer will see
@@ -225,6 +288,7 @@ const AddModifierForm = () => {
               </p>
             )}
           </div>
+
           <div className="mb-1">
             <label className="block mb-2 text-sm font-medium text-left text-gray-700">
               Description
@@ -360,29 +424,6 @@ const AddModifierForm = () => {
             </div>
           </div>
 
-          <div className="mb-5 ">
-            <label
-              htmlFor="optional"
-              className="block mb-2 text-sm font-medium text-left text-gray-700"
-            >
-              optional
-            </label>
-
-            <CustomSwitchCard
-              label="optional"
-              title="optional"
-              caption="If its checked ,you can use this modifer will become optional"
-              switchChecked={watch("optional")}
-              onSwitchChange={() => setValue("optional", !watch("optional"))}
-            />
-
-            {errors.optional && (
-              <p className="text-red-500 text-sm text-start">
-                {errors.optional.message}
-              </p>
-            )}
-          </div>
-
           <CButton
             loading={btnLoading}
             variant={ButtonType.Primary}
@@ -400,6 +441,48 @@ const AddModifierForm = () => {
           </CButton>
         </div>
       </form>
+      <ReusableModal
+        comments="Select any Item from the menu that you want to replace as a modifier"
+        isOpen={showItemModal}
+        onClose={() => setShowItemModal(false)}
+        title="Select Item"
+      >
+        <div className="space-y-4">
+          <input
+            type="text"
+            placeholder="Search items..."
+            // className="w-full p-2 border border-gray-300 rounded"
+            className="input input-primary"
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <div className="space-y-2">
+            {itemOptions
+              .filter((item) =>
+                item.name.toLowerCase().includes(searchTerm.toLowerCase())
+              )
+              .map((item) => (
+                <div
+                  key={item._id}
+                  className="p-2 border border-gray-300 rounded cursor-pointer hover:bg-primary hover:bg-opacity-5"
+                  onClick={() => {
+                    const onlineOrderingPrice = item.priceOptions.find(
+                      (option) => option.menuType === "OnlineOrdering"
+                    )?.price.value;
+
+                    const selectedPrice = onlineOrderingPrice ?? item.price;
+
+                    setSelectedItem(item);
+                    setValue("name", item.name);
+                    setValue("price", selectedPrice);
+                    setShowItemModal(false);
+                  }}
+                >
+                  {item.name}
+                </div>
+              ))}
+          </div>
+        </div>
+      </ReusableModal>
     </motion.div>
   );
 };

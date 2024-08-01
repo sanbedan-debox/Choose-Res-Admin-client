@@ -51,22 +51,48 @@ export const timeOptions: TimeOption[] = Array.from(
   }
 );
 
+// export const reverseFormatAvailability = (
+//   formattedAvailability: FormattedAvailability[]
+// ): Availability[] => {
+//   const timeMap = new Map<string, string>(
+//     timeOptions.map((option) => [option.value, option.label])
+//   );
+
+//   return formattedAvailability.map((item) => ({
+//     day: item.day,
+//     hours: item.hours.map((hour) => ({
+//       start: {
+//         label: timeMap.get(hour.start) || "",
+//         value: hour.start,
+//       },
+//       end: {
+//         label: timeMap.get(hour.end) || "",
+//         value: hour.end,
+//       },
+//     })),
+//     active: item.active,
+//   }));
+// };
+
 export const reverseFormatAvailability = (
   formattedAvailability: FormattedAvailability[]
 ): Availability[] => {
   const timeMap = new Map<string, string>(
-    timeOptions.map((option) => [option.value, option.label])
+    timeOptions.map((option) => [
+      moment(option.value).format("HH:mm"),
+      option.label,
+    ])
   );
 
   return formattedAvailability.map((item) => ({
     day: item.day,
     hours: item.hours.map((hour) => ({
       start: {
-        label: timeMap.get(hour.start) || "",
+        label: timeMap.get(moment(hour.start).format("HH:mm")) || "",
         value: hour.start,
       },
       end: {
-        label: timeMap.get(hour.end) || "",
+        label: timeMap.get(moment(hour.end).format("HH:mm")) || "",
         value: hour.end,
       },
     })),

@@ -162,6 +162,55 @@ const AddTeamMemberForm = () => {
   const handleBack = () => {
     setShowPermissions(false);
   };
+
+  const handleContinueClick = () => {
+    if (
+      !form.firstName ||
+      !form.lastName ||
+      !form.email ||
+      !form.phone ||
+      !form.role ||
+      form.restaurant.length === 0
+    ) {
+      setToastData({
+        message: "Please fill out all required fields.",
+        type: "error",
+      });
+      return;
+    }
+
+    if (
+      !isValidNameAlphabetic(form.firstName) ||
+      !isValidNameAlphabetic(form.lastName)
+    ) {
+      setToastData({
+        message: "Please use only alphabets for first and last names.",
+        type: "error",
+      });
+      return;
+    }
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(form.email)) {
+      setToastData({
+        message: "Please enter a valid email address.",
+        type: "error",
+      });
+      return;
+    }
+
+    const phonePattern = /^[2-9]{1}[0-9]{9}$/;
+    if (!phonePattern.test(form.phone)) {
+      setToastData({
+        message: "Please enter a valid phone number.",
+        type: "error",
+      });
+      return;
+    }
+
+    setShowPermissions(true);
+  };
+
   return (
     <motion.div
       className="z-10 w-full min-h-full max-w-2xl flex flex-col items-center space-y-5 text-center"
@@ -329,9 +378,9 @@ const AddTeamMemberForm = () => {
               variant={ButtonType.Primary}
               type="button"
               className="w-full"
-              onClick={() => setShowPermissions(true)}
+              onClick={handleContinueClick}
             >
-              Continue with Permissions
+              Save and Continue
             </CButton>
           </div>
         </form>
