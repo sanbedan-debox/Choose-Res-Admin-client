@@ -139,7 +139,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               id: rate._id,
               name: rate.name?.value,
               salesTax: rate.salesTax?.value,
-              default: rate.default,
+              default: true,
             }));
             setTaxRate(formattedTaxRate[0] || {});
           } else {
@@ -257,7 +257,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                   )}
                 />
               </div>
-
+              {/* 
               <div className="mb-4 flex justify-between items-center ">
                 <label
                   className="block mb-2 text-sm font-medium text-left text-gray-700"
@@ -274,7 +274,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                   label="Default"
                   className="ml-2"
                 />
-              </div>
+              </div> */}
 
               <div className="flex items-center justify-end">
                 {isButtonVisible && (

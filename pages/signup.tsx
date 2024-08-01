@@ -115,7 +115,7 @@ const Signup: FC = () => {
     reset();
     setOtpEmail("");
     setOtpWhatsApp("");
-    // setToastData({ message: "", type: "success" });
+    setToastData({ message: "OTP has been sent", type: "success" });
   };
 
   const onSubmitOtp: SubmitHandler<IOTPFormInput> = async (data) => {

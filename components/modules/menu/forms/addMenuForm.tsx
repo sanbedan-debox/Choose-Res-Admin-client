@@ -199,7 +199,7 @@ const AddMenuForm = () => {
 
         setToastData({
           type: "success",
-          message: "Category Updated Successfully",
+          message: "Category Added Successfully",
         });
         setisAddMenuModalOpen(false);
         setBtnLoading(false);
