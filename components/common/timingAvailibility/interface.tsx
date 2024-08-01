@@ -30,7 +30,7 @@ export type TimeOption = {
   value: string;
 };
 export type FormattedAvailability = {
-  day: Day;
+  day: string;
   hours: {
     start: string;
     end: string;
@@ -85,7 +85,7 @@ export const reverseFormatAvailability = (
   );
 
   return formattedAvailability.map((item) => ({
-    day: item.day,
+    day: item.day as Day,
     hours: item.hours.map((hour) => ({
       start: {
         label: timeMap.get(moment(hour.start).format("HH:mm")) || "",

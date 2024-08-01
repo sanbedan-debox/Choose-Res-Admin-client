@@ -281,74 +281,35 @@ const RestaurantAvailability = () => {
           <label className="block mb-2 text-lg font-medium text-left text-gray-700">
             Address
           </label>
-          <label
+          <button
+            type="button"
             className="text-sm text-primary flex items-center cursor-pointer"
             onClick={() => {
-              setIsChecked(!isChecked);
-              if (!isChecked) {
-                fetchBusinessDetails();
-              } else {
-                setValue("addressLine1", "");
-                setValue("addressLine2", "");
-                setValue("city", "");
-                setValue("postcode", "");
-                setValue("state", { id: "", value: "" });
-                setValue("location", { label: "", value: "" });
-                setAddressLine1("");
-                setAddressLine2("");
-                setCity("");
-                setPostcode("");
-                setState({ id: "", value: "" });
-                setSelectedPlace({
-                  label: "",
-                  value: "",
-                });
-                setPlace({
-                  displayName: "",
-                  placeId: "",
-                });
-                setCoords([]);
-                setCords([0, 0]);
-              }
+              setValue("addressLine1", addressLine1);
+              setValue("addressLine2", addressLine2);
+              setValue("city", city);
+              setValue("postcode", postcode);
+              setValue("state", state);
+              setValue("location", {
+                label: place?.displayName || "",
+                value: place?.placeId || "",
+              });
+              setAddressLine1(addressLine1);
+              setAddressLine2(addressLine2);
+              setCity(city);
+              setPostcode(postcode);
+              setState(state);
+              setSelectedPlace({
+                label: place?.displayName || "",
+                value: place?.placeId || "",
+              });
+              setCords(cords);
             }}
           >
-            <CustomSwitch
-              checked={isChecked}
-              onChange={() => {
-                setIsChecked(!isChecked);
-                if (!isChecked) {
-                  fetchBusinessDetails();
-                } else {
-                  setValue("addressLine1", "");
-                  setValue("addressLine2", "");
-                  setValue("city", "");
-                  setValue("postcode", "");
-                  setValue("state", { id: "", value: "" });
-                  setValue("location", { label: "", value: "" });
-                  setAddressLine1("");
-                  setAddressLine2("");
-                  setCity("");
-                  setPostcode("");
-                  setState({ id: "", value: "" });
-                  setSelectedPlace({
-                    label: "",
-                    value: "",
-                  });
-                  setPlace({
-                    displayName: "",
-                    placeId: "",
-                  });
-                  setCoords([]);
-                  setCords([0, 0]);
-                }
-              }}
-              label="Copy address from business details"
-              className="mr-2"
-            />
             <span className="ml-2 hover:underline">
               Copy address from business details
             </span>
-          </label>
+          </button>
         </div>
         <div className="col-span-2">
           <label className="block mb-2 text-sm font-medium text-left text-gray-700">

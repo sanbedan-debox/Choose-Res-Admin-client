@@ -9,7 +9,6 @@ import { UserStatus } from "@/generated/graphql";
 import QuickActions from "@/components/common/quickLinks/quickLink";
 import MainLayout from "@/components/layouts/mainBodyLayout";
 import { Searchfeatures } from "@/utils/searchFeatures";
-import DynamicSetupGuide from "@/components/common/setupGuide/setupGuide";
 import IncompleteRestaurants from "@/components/common/incompleteRestaurant/incompleteRestaurant";
 import { useRouter } from "next/router";
 import QuickActionsDashboard from "@/components/common/quickAction/quickAction";

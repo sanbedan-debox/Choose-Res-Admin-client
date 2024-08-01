@@ -19,6 +19,8 @@ type UserRepo = {
   _id: string;
   email: string;
   firstName: string;
+  lastName: string;
+  phone: string;
 };
 
 const Profile: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
@@ -87,7 +89,26 @@ const Profile: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
 
   return (
     <div className="flex flex-col">
-      {/* <MenuSection contentList={contentList} /> */}
+      <div className="bg-white p-4 rounded-lg space-y-4 md:space-y-3 w-full ">
+        <div className="flex justify-between items-center">
+          <h2 className="text-xl font-semibold">User Details</h2>
+        </div>
+        <div className="text-left text-sm text-gray-600">
+          <p>
+            <strong>First name</strong> {repo?.firstName}
+          </p>
+          <p>
+            <strong>Last name</strong> {repo?.lastName}
+          </p>
+          <p>
+            <strong>Email address</strong> {repo?.email}
+          </p>
+          <p>
+            <strong>Phone number</strong> {repo?.phone}
+          </p>
+        </div>
+      </div>
+      <br />
       <BusinessInformationForm />
       <br />
       <LocationDetailsForm />
@@ -124,13 +145,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     );
 
     if (response && response.meUser) {
-      const { _id, email, firstName } = response.meUser;
+      const { _id, email, firstName, lastName, phone } = response.meUser;
       return {
         props: {
           repo: {
             _id,
             email,
             firstName,
+            lastName,
+            phone,
           },
         },
       };
