@@ -179,7 +179,7 @@ const RestaurantAdditionalInformation = () => {
 
   return (
     <motion.div
-      className="z-10 w-full min-h-full max-w-lg flex flex-col items-center space-y-5 text-center"
+      className="z-10 w-full min-h-full max-w-2xl  flex flex-col items-center space-y-5 text-center"
       variants={{
         hidden: { opacity: 0, scale: 0.95 },
         show: {
@@ -197,7 +197,7 @@ const RestaurantAdditionalInformation = () => {
         variants={STAGGER_CHILD_VARIANTS}
         className="flex flex-col items-center space-y-5 text-center"
       >
-        <h1 className="font-display max-w-2xl font-semibold transition-colors text-2xl">
+        <h1 className="font-display max-w-2xl  font-semibold transition-colors text-2xl">
           Restaurant Basic Details
         </h1>
         <p className="max-w-md text-accent-foreground/80 transition-colors text-sm">
@@ -206,7 +206,7 @@ const RestaurantAdditionalInformation = () => {
       </motion.div>
 
       <form
-        className="space-y-4 md:space-y-3 w-full max-w-2xl"
+        className="space-y-4 md:space-y-3 w-full max-w-2xl "
         onSubmit={handleSubmit(onSubmit)}
       >
         <div className="col-span-2">

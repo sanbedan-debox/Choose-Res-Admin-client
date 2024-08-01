@@ -156,7 +156,7 @@ const UserInfo = () => {
 
   return (
     <motion.div
-      className="z-10 w-full max-w-lg flex flex-col items-center space-y-5 text-center"
+      className="z-10 w-full max-w-2xl  flex flex-col items-center space-y-5 text-center"
       variants={{
         hidden: { opacity: 0, scale: 0.95 },
         show: {
@@ -174,7 +174,7 @@ const UserInfo = () => {
         variants={STAGGER_CHILD_VARIANTS}
         className="flex flex-col items-center space-y-5 text-center"
       >
-        <h1 className="font-display max-w-2xl font-semibold transition-colors text-2xl">
+        <h1 className="font-display max-w-2xl  font-semibold transition-colors text-2xl">
           Tell us about your business
         </h1>
         <p className="max-w-md text-accent-foreground/80 transition-colors text-sm">

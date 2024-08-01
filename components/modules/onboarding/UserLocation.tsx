@@ -155,7 +155,7 @@ const UserLocation = () => {
 
   return (
     <motion.div
-      className="z-10 flex flex-col w-full max-w-lg items-center space-y-5 text-center"
+      className="z-10 flex flex-col w-full max-w-2xl  items-center space-y-5 text-center"
       variants={{
         hidden: { opacity: 0, scale: 0.95 },
         show: {
@@ -173,13 +173,13 @@ const UserLocation = () => {
         variants={STAGGER_CHILD_VARIANTS}
         className="flex flex-col items-center space-y-5 text-center"
       >
-        <h1 className="font-display max-w-md text-2xl font-semibold transition-colors">
+        <h1 className="font-display max-w-2xl  text-2xl font-semibold transition-colors">
           Location Details
         </h1>
       </motion.div>
 
       <form
-        className="space-y-4 md:space-y-3 w-full max-w-2xl"
+        className="space-y-4 md:space-y-3 w-full max-w-2xl "
         onSubmit={handleSubmit(onSubmit)}
       >
         <div className="col-span-2">
