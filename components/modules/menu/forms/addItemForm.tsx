@@ -246,6 +246,26 @@ const AddItemForm = () => {
   }, [isModalOpen, selectedItems, fetchMenuDatas, tempSelectedItems]);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [useRestaurantTimings, setUseRestaurantTimings] = useState(false);
+  const [subCategories, setSubCategories] = useState([]);
+
+  // useEffect(() => {
+  //   const fetchSubCategories = async () => {
+  //     try {
+  //       const data = await sdk.getSubCategories();
+  //       if (data.length === 0) {
+  //         setSubCategories([]);
+  //       } else {
+  //         setSubCategories(data);
+  //       }
+  //     } catch (error) {
+  //       console.error("Failed to fetch subcategories:", error);
+  //     } finally {
+  //       setLoadingSubCategories(false);
+  //     }
+  //   };
+
+  //   fetchSubCategories();
+  // }, []);
 
   const handleCheckboxChange = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -1072,6 +1092,42 @@ const AddItemForm = () => {
               setAvailability={setAvailability}
             />
           </div>
+          {subCategories.length === 0 ? (
+            <div>
+              <label
+                // htmlFor="Options"
+                className="block mb-2 text-sm font-medium text-left text-gray-700"
+              >
+                Sub Category
+              </label>
+              <input
+                type="text"
+                placeholder="Enter subcategory name"
+                // {...register("subCategoryName")}
+                className="input input-primary"
+              />
+            </div>
+          ) : (
+            <div className="mb-1">
+              <label
+                htmlFor="subCategory"
+                className="block mb-2 text-sm font-medium text-left text-gray-700"
+              >
+                Subcategory
+              </label>
+              <select
+                // {...register("subCategory")}
+                id="subCategory"
+                className="input input-primary"
+              >
+                {/* {subCategories.map((subCategory) => (
+                  <option key={subCategory.id} value={subCategory.id}>
+                    {subCategory.name}
+                  </option>
+                ))} */}
+              </select>
+            </div>
+          )}
           <CButton
             loading={btnLoading}
             variant={ButtonType.Primary}

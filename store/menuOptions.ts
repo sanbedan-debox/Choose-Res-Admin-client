@@ -9,6 +9,8 @@ type MenuOptionsState = {
   setisAddItemModalOpen: (open: boolean) => void;
   isAddCategoryModalOpen: boolean;
   setisAddCategoryModalOpen: (open: boolean) => void;
+  isAddSubCategoryModalOpen: boolean;
+  setisAddSubCategoryModalOpen: (open: boolean) => void;
   isAddMenuModalOpen: boolean;
   setisAddMenuModalOpen: (open: boolean) => void;
   fetchMenuDatas: boolean;
@@ -27,6 +29,9 @@ const useMenuOptionsStore = create<MenuOptionsState>((set) => ({
   isAddCategoryModalOpen: false,
   setisAddCategoryModalOpen: (open: boolean) =>
     set({ isAddCategoryModalOpen: open }),
+  isAddSubCategoryModalOpen: false,
+  setisAddSubCategoryModalOpen: (open: boolean) =>
+    set({ isAddSubCategoryModalOpen: open }),
   isAddMenuModalOpen: false,
   setisAddMenuModalOpen: (open: boolean) => set({ isAddMenuModalOpen: open }),
   fetchMenuDatas: false,
