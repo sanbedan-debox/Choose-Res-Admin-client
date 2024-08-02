@@ -5,23 +5,35 @@ import { FaArrowRight } from "react-icons/fa";
 interface ArrowCardProps {
   title: string;
   caption: string;
-  href: string;
+  href?: string;
+  onClick?: () => void;
 }
 
-const ArrowCard: FC<ArrowCardProps> = ({ title, caption, href }) => {
-  return (
-    <Link href={href} passHref>
-      <div className="block p-4 transition-transform transform bg-white shadow-lg rounded-lg ">
-        <div className="flex justify-between items-center">
-          <div className="flex flex-col">
-            <h3 className="text-lg font-semibold">{title}</h3>
-            <p className="text-sm text-gray-600">{caption}</p>
-          </div>
-          <FaArrowRight className="w-5 h-5 text-primary" />
+const ArrowCard: FC<ArrowCardProps> = ({ title, caption, href, onClick }) => {
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (onClick) {
+      e.preventDefault();
+      onClick();
+    }
+  };
+
+  const CardContent = (
+    <div className="block p-4 transition-transform transform bg-white shadow-lg rounded-lg cursor-pointer">
+      <div className="flex justify-between items-center">
+        <div className="flex flex-col">
+          <h3 className="text-lg font-semibold">{title}</h3>
+          <p className="text-sm text-gray-600">{caption}</p>
         </div>
+        <FaArrowRight className="w-5 h-5 text-primary" />
       </div>
-    </Link>
+    </div>
   );
+
+  if (href) {
+    return <Link href={href}>{CardContent}</Link>;
+  }
+
+  return <div onClick={handleClick}>{CardContent}</div>;
 };
 
 export default ArrowCard;
