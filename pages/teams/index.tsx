@@ -13,9 +13,22 @@ import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import React, { useEffect, useState } from "react";
 import { FaTrash } from "react-icons/fa";
+import useAddTeamMemberFormStore from "./store/addTeamMemberStore";
+import { parseCookies } from "nookies";
+import { GetServerSideProps } from "next";
+import useAuthStore from "@/store/auth";
 
 type NextPageWithLayout = React.FC & {
   getLayout?: (page: React.ReactNode) => React.ReactNode;
+};
+
+type UserRepo = {
+  _id: string;
+  email: string;
+  phone: string;
+  firstName: string;
+  lastName: string;
+  status: string;
 };
 
 const formatUserStatus = (status: UserStatus): string => {
@@ -41,7 +54,6 @@ const formatUserStatus = (status: UserStatus): string => {
 };
 
 const formatUserRole = (role: UserRole): string => {
-  console.log("role from format", role);
   switch (role) {
     case UserRole.Owner:
       return "Owner";
@@ -59,7 +71,38 @@ const formatUserRole = (role: UserRole): string => {
   }
 };
 
-const Teams: NextPageWithLayout = () => {
+const Teams: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
+  const {
+    setEmail,
+    setFirstName,
+    setLastName,
+    setPhone,
+    setStatus,
+    setUserId,
+  } = useAuthStore();
+  const { setSelectedMenu, isShowSetupPanel } = useGlobalStore();
+
+  useEffect(() => {
+    setUserId(repo?._id ?? "");
+    setEmail(repo?.email ?? "");
+    setPhone(repo?.phone ?? "");
+    setFirstName(repo?.firstName ?? "");
+    setLastName(repo?.lastName ?? "");
+    setStatus(repo?.status ?? "");
+  }, [
+    repo,
+    setEmail,
+    setFirstName,
+    setLastName,
+    setPhone,
+    setStatus,
+    setUserId,
+  ]);
+
+  useEffect(() => {
+    setSelectedMenu("Team Management");
+  }, [setSelectedMenu]);
+
   const [tableLoading, setTableLoading] = useState(false);
   const [teamMembers, setTeamMembers] = useState<
     {
@@ -156,12 +199,14 @@ const Teams: NextPageWithLayout = () => {
       render: renderActions,
     },
   ];
+  const { resetForm } = useAddTeamMemberFormStore();
 
   const mainActions = [
     {
       label: "Add Team Member",
       onClick: () => {
         setIsAddTeamMemberModalOpen(true);
+        resetForm();
       },
     },
   ];
@@ -241,3 +286,96 @@ Teams.getLayout = function getLayout(page: React.ReactNode) {
 };
 
 export default Teams;
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const cookies = parseCookies(context);
+  const token = cookies.accessToken;
+
+  if (!token) {
+    return {
+      redirect: {
+        destination: "/login",
+        permanent: false,
+      },
+    };
+  }
+
+  try {
+    const response = await sdk.MeUser(
+      {},
+      {
+        cookie: context.req.headers.cookie?.toString() ?? "",
+      }
+    );
+
+    if (response && response.meUser) {
+      const { _id, email, firstName, status, lastName, phone } =
+        response.meUser;
+
+      if (status === UserStatus.Blocked) {
+        return {
+          redirect: {
+            destination: "/account/blocked",
+            permanent: false,
+          },
+        };
+      } else if (status === UserStatus.OnboardingPending) {
+        return {
+          redirect: {
+            destination: "/onboarding/user/intro",
+            permanent: false,
+          },
+        };
+      } else if (status === UserStatus.PaymentPending) {
+        return {
+          redirect: {
+            destination: "/account/payment-pending",
+            permanent: false,
+          },
+        };
+      } else if (status === UserStatus.RestaurantOnboardingPending) {
+        return {
+          redirect: {
+            destination: "/onboarding-restaurant/restaurant-welcome",
+            permanent: false,
+          },
+        };
+      } else if (status === "internalVerificationPending") {
+        return {
+          redirect: {
+            destination: "/account/verification-pending",
+            permanent: false,
+          },
+        };
+      }
+
+      return {
+        props: {
+          repo: {
+            _id,
+            email,
+            phone,
+            firstName,
+            lastName,
+            status,
+          },
+        },
+      };
+    } else {
+      return {
+        redirect: {
+          destination: "/login",
+          permanent: false,
+        },
+      };
+    }
+  } catch (error) {
+    console.error("Failed to fetch user details:", error);
+    return {
+      redirect: {
+        destination: "/login",
+        permanent: false,
+      },
+    };
+  }
+};

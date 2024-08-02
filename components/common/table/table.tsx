@@ -366,6 +366,12 @@ const RoopTable: React.FC<TableProps> = ({
         <div className="flex flex-col space-y-4">
           <Select
             options={options}
+            classNames={{
+              option: (state) =>
+                `!text-sm hover:!bg-primary hover:!text-white focus:!bg-transparent  ${
+                  state.isSelected ? "!bg-primary text-white" : ""
+                }  `,
+            }}
             className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left text-black"
             placeholder="Select Column"
             value={options.find(
@@ -376,6 +382,12 @@ const RoopTable: React.FC<TableProps> = ({
             }
           />
           <Select
+            classNames={{
+              option: (state) =>
+                `!text-sm hover:!bg-primary hover:!text-white focus:!bg-transparent  ${
+                  state.isSelected ? "!bg-primary text-white" : ""
+                }  `,
+            }}
             options={operatorOptions}
             className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left text-black"
             placeholder="Select Operator"

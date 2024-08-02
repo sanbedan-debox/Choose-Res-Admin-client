@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CustomSwitch from "../customSwitch/customSwitch";
 import {
   IoIosAddCircleOutline,
@@ -24,10 +24,9 @@ const CountSelector: React.FC<CountSelectorProps> = ({
     setCount(newCount);
     onCountChange(newCount);
   };
-
-  const handleLimitToggle = () => {
-    setIsLimited(!isLimited);
-  };
+  useEffect(() => {
+    setCount(initialValue);
+  }, [initialValue]);
 
   return (
     <div className="">

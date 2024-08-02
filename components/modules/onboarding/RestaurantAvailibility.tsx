@@ -182,7 +182,6 @@ const RestaurantAvailability = () => {
       setBtnLoading(true);
 
       const formattedAvailability = formatAvailability(availability);
-      console.log("availiility after fomating and submitting", availability);
       const response = await sdk.restaurantOnboarding({
         input: {
           address: {
@@ -284,26 +283,8 @@ const RestaurantAvailability = () => {
           <button
             type="button"
             className="text-sm text-primary flex items-center cursor-pointer"
-            onClick={() => {
-              setValue("addressLine1", addressLine1);
-              setValue("addressLine2", addressLine2);
-              setValue("city", city);
-              setValue("postcode", postcode);
-              setValue("state", state);
-              setValue("location", {
-                label: place?.displayName || "",
-                value: place?.placeId || "",
-              });
-              setAddressLine1(addressLine1);
-              setAddressLine2(addressLine2);
-              setCity(city);
-              setPostcode(postcode);
-              setState(state);
-              setSelectedPlace({
-                label: place?.displayName || "",
-                value: place?.placeId || "",
-              });
-              setCords(cords);
+            onClick={async () => {
+              fetchBusinessDetails(); // Call the API to fetch business details
             }}
           >
             <span className="ml-2 hover:underline">
@@ -381,6 +362,12 @@ const RestaurantAvailability = () => {
               rules={{ required: "State is required" }}
               render={({ field }) => (
                 <Select
+                  classNames={{
+                    option: (state) =>
+                      `!text-sm hover:!bg-primary hover:!text-white focus:!bg-transparent  ${
+                        state.isSelected ? "!bg-primary text-white" : ""
+                      }  `,
+                  }}
                   {...field}
                   id="state"
                   options={statesOptions.map((el) => ({
@@ -494,6 +481,12 @@ const RestaurantAvailability = () => {
             rules={{ required: "Timezone is required" }}
             render={({ field }) => (
               <Select
+                classNames={{
+                  option: (state) =>
+                    `!text-sm hover:!bg-primary hover:!text-white focus:!bg-transparent  ${
+                      state.isSelected ? "!bg-primary text-white" : ""
+                    }  `,
+                }}
                 {...field}
                 id="timezone"
                 options={timezonesOptions.map((el) => ({

@@ -76,7 +76,6 @@ const Dashboard: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
   ];
 
   const completeRes = async (id: string) => {
-    console.log(`Completing restaurant with id: ${id}`); // Added log
     const res = await sdk.setRestaurantIdAsCookie({ id });
     if (res.setRestaurantIdAsCookie) {
       router.push("/onboarding-restaurant/restaurant-basic-information");

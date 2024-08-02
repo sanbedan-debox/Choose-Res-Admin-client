@@ -54,7 +54,6 @@
 //   const { taxRate } = useAuthStore();
 
 //   useEffect(() => {
-//     console.log("Tax rate", taxRate);
 //     async function fetchPendingRestaurants() {
 //       try {
 //         const response = await sdk.getUserRestaurantsPending();

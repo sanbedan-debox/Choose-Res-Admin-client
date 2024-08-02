@@ -535,6 +535,12 @@ const UserLocationForm: React.FC = () => {
                 State
               </label>
               <Select
+                classNames={{
+                  option: (state) =>
+                    `!text-sm hover:!bg-primary hover:!text-white focus:!bg-transparent  ${
+                      state.isSelected ? "!bg-primary text-white" : ""
+                    }  `,
+                }}
                 options={statesOptions.map((el) => ({
                   id: el.value,
                   value: el.label,

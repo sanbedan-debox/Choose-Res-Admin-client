@@ -95,7 +95,7 @@ const AddModifierForm = () => {
   };
 
   const fetchModData = async () => {
-    if (editModId) {
+    if (editModId && (isEditMod || isDuplicateMods)) {
       try {
         const response = await sdk.getModifier({ id: editModId });
         const item = response.getModifier;
@@ -197,6 +197,8 @@ const AddModifierForm = () => {
       setisEditMod(false);
       setEditModId(null);
       setisDuplicateMods(false);
+      setEditModId(null);
+
       setToastData({
         type: "success",
         message: "Modifier Added Successfully",

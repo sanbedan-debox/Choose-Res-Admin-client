@@ -306,6 +306,12 @@ const RestaurantAdditionalInformation = () => {
             control={control}
             render={({ field }) => (
               <Select
+                classNames={{
+                  option: (state) =>
+                    `!text-sm hover:!bg-primary hover:!text-white focus:!bg-transparent  ${
+                      state.isSelected ? "!bg-primary text-white" : ""
+                    }  `,
+                }}
                 {...field}
                 isMulti
                 id="beverageCategory"
@@ -344,6 +350,12 @@ const RestaurantAdditionalInformation = () => {
             control={control}
             render={({ field }) => (
               <Select
+                classNames={{
+                  option: (state) =>
+                    `!text-sm hover:!bg-primary hover:!text-white focus:!bg-transparent  ${
+                      state.isSelected ? "!bg-primary text-white" : ""
+                    }  `,
+                }}
                 {...field}
                 id="foodType"
                 options={foodTypeOptions}
@@ -378,6 +390,12 @@ const RestaurantAdditionalInformation = () => {
             control={control}
             render={({ field }) => (
               <Select
+                classNames={{
+                  option: (state) =>
+                    `!text-sm hover:!bg-primary hover:!text-white focus:!bg-transparent  ${
+                      state.isSelected ? "!bg-primary text-white" : ""
+                    }  `,
+                }}
                 {...field}
                 id="state"
                 options={meatTypeOptions}

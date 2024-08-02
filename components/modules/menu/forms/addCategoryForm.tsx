@@ -118,7 +118,6 @@ const AddCategoryForm = () => {
           const originalAvailability = reverseFormatAvailability(
             restaurantAvailibility
           );
-          console.log("originalAvailability:", originalAvailability);
           setAvailability(originalAvailability);
         }
       } catch (error) {
@@ -168,7 +167,7 @@ const AddCategoryForm = () => {
   };
 
   const fetchItemData = async () => {
-    if (editCatsId) {
+    if (editCatsId && (isEditCats || isDuplicateCats)) {
       try {
         const response = await sdk.getCategory({ id: editCatsId });
         const item = response.getCategory;
@@ -291,6 +290,7 @@ const AddCategoryForm = () => {
           setfetchMenuDatas(!fetchMenuDatas);
           setisDuplicateCats(false);
           setisEditCats(false);
+          setEditItemId(null);
         }
       } else {
         // EDIT CATEGORIES
@@ -310,6 +310,7 @@ const AddCategoryForm = () => {
         setisEditCats(false);
         setisAddCategoryModalOpen(false);
         setfetchMenuDatas(!fetchMenuDatas);
+        setEditItemId(null);
       }
     } catch (error: any) {
       const errorMessage = extractErrorMessage(error);
@@ -584,6 +585,7 @@ const AddCategoryForm = () => {
             Use Restaurant Timings for this Item
           </label>
         </div>
+
         <AvailabilityComponent
           availability={availability}
           setAvailability={setAvailability}
@@ -595,7 +597,7 @@ const AddCategoryForm = () => {
           className="w-full"
         >
           <div className="flex justify-center items-center ">
-            {isEditCats ? "Save Category" : "Add Category"}
+            {isEditCats ? "Update Category" : "Add Category"}
             {!isEditCats ? (
               <IoIosAddCircleOutline className="text-xl ml-1" />
             ) : (

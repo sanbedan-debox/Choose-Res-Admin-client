@@ -87,7 +87,7 @@ const RestaurantBasicInformation = () => {
     setValue("restaurantType", restaurantType);
     setValue("restaurantCategory", restaurantCategory);
     setValue("dineInCapacity", dineInCapacity);
-    setPreviewUrl(brandingLogo || "");
+    setPreviewUrl(previewUrl || brandingLogo || "");
   }, [
     restaurantName,
     restaurantWebsite,
@@ -357,6 +357,12 @@ const RestaurantBasicInformation = () => {
             rules={{ required: "Restaurant type is required" }}
             render={({ field }) => (
               <Select
+                classNames={{
+                  option: (state) =>
+                    `!text-sm hover:!bg-primary hover:!text-white focus:!bg-transparent  ${
+                      state.isSelected ? "!bg-primary text-white" : ""
+                    }  `,
+                }}
                 {...field}
                 id="state"
                 options={restaurantTypeOptions}
@@ -394,6 +400,12 @@ const RestaurantBasicInformation = () => {
             rules={{ required: "Restaurant category is required" }}
             render={({ field }) => (
               <Select
+                classNames={{
+                  option: (state) =>
+                    `!text-sm hover:!bg-primary hover:!text-white focus:!bg-transparent  ${
+                      state.isSelected ? "!bg-primary text-white" : ""
+                    }  `,
+                }}
                 {...field}
                 isMulti
                 id="restaurantCategory"

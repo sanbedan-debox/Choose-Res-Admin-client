@@ -252,6 +252,12 @@ const UserLocation = () => {
               rules={{ required: "State is required" }}
               render={({ field }) => (
                 <Select
+                  classNames={{
+                    option: (state) =>
+                      `!text-sm hover:!bg-primary hover:!text-white focus:!bg-transparent  ${
+                        state.isSelected ? "!bg-primary text-white" : ""
+                      }  `,
+                  }}
                   {...field}
                   id="state"
                   options={statesOptions.map((el) => ({

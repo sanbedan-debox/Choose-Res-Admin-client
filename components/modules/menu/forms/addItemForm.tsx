@@ -125,15 +125,7 @@ const AddItemForm = () => {
     }[]
   >([]);
 
-  useEffect(() => {
-    console.log("CHANGES IN VISIBILITY");
-    console.log(visibilities);
-  }, [visibilities]);
-
-  useEffect(() => {
-    console.log("CHANGES PRICINGS");
-    console.log(pricingOptions);
-  }, [pricingOptions]);
+  useEffect(() => {}, [visibilities]);
 
   const fetchMenuData = async () => {
     try {
@@ -156,7 +148,6 @@ const AddItemForm = () => {
       }));
 
       setVisibilities(updatedVisibilities);
-      console.log("Fetch Menus", pricingOptions);
 
       setPricingOptions(updatedPricings);
     } catch (error) {
@@ -179,7 +170,7 @@ const AddItemForm = () => {
   }, [watch("price")]);
 
   const fetchItemData = async () => {
-    if (editItemId) {
+    if (editItemId && (isEditItem || isDuplicateItem)) {
       try {
         const response = await sdk.getItem({ id: editItemId });
         const item = response.getItem;
@@ -262,7 +253,6 @@ const AddItemForm = () => {
           const originalAvailability = reverseFormatAvailability(
             restaurantAvailibility
           );
-          console.log("originalAvailability:", originalAvailability);
           setAvailability(originalAvailability);
         }
       } catch (error) {
@@ -427,6 +417,7 @@ const AddItemForm = () => {
         setisAddItemModalOpen(false);
         setisDuplicateItem(false);
         setfetchMenuDatas(!fetchMenuDatas);
+        setEditItemId(null);
       } else {
         // EDIT/UPDATE ITEM API
         await sdk.updateItem({
@@ -444,6 +435,7 @@ const AddItemForm = () => {
         setisEditItem(false);
         setEditItemId(null);
         setisDuplicateItem(false);
+        setEditItemId(null);
 
         setToastData({
           type: "success",
@@ -1078,7 +1070,7 @@ const AddItemForm = () => {
             type="submit"
           >
             <div className="flex justify-center items-center">
-              {isEditItem ? "Save Item" : "Add Item"}
+              {isEditItem ? "Update Item" : "Add Item"}
               {!isEditItem ? (
                 <IoIosAddCircleOutline className="text-xl ml-1" />
               ) : (

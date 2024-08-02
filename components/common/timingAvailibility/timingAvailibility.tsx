@@ -215,6 +215,12 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
               {day.hours.map((hour, hourIndex) => (
                 <div key={hourIndex} className="flex items-center mb-2">
                   <Select
+                    classNames={{
+                      option: (state) =>
+                        `!text-sm hover:!bg-primary hover:!text-white focus:!bg-transparent  ${
+                          state.isSelected ? "!bg-primary text-white" : ""
+                        }  `,
+                    }}
                     options={timeOptions}
                     value={hour.start}
                     onChange={(selectedOption) => {
@@ -233,6 +239,12 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
                     }}
                   />
                   <Select
+                    classNames={{
+                      option: (state) =>
+                        `!text-sm hover:!bg-primary hover:!text-white focus:!bg-transparent  ${
+                          state.isSelected ? "!bg-primary text-white" : ""
+                        }  `,
+                    }}
                     options={timeOptions}
                     value={hour.end}
                     onChange={(selectedOption) => {

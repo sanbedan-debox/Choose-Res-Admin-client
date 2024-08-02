@@ -316,6 +316,12 @@ const AddTeamMemberForm = () => {
               Role
             </label>
             <Select
+              classNames={{
+                option: (state) =>
+                  `!text-sm hover:!bg-primary hover:!text-white focus:!bg-transparent  ${
+                    state.isSelected ? "!bg-primary text-white" : ""
+                  }  `,
+              }}
               id="role"
               options={userRoleOptions}
               className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
@@ -337,6 +343,12 @@ const AddTeamMemberForm = () => {
                 Restaurant
               </label>
               <Select
+                classNames={{
+                  option: (state) =>
+                    `!text-sm hover:!bg-primary hover:!text-white focus:!bg-transparent  ${
+                      state.isSelected ? "!bg-primary text-white" : ""
+                    }  `,
+                }}
                 isMulti
                 id="restaurant"
                 options={restaurantDropdownOptions}

@@ -57,10 +57,6 @@ const OnboardingPage = ({ repo }: HomePageProps) => {
   } = RestaurantOnboardingStore();
 
   useEffect(() => {
-    console.log(
-      "Onboarding availibility hehheheh server side",
-      repo?.availability
-    );
     setbrandingLogo(repo?.brandingLogo);
     setRestaurantName(repo?.name?.value);
     setRestaurantType(repo?.type);
@@ -183,7 +179,6 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
         website,
         availability,
       } = response.getRestaurantOnboardingData;
-      console.log(response.getRestaurantOnboardingData);
 
       return {
         props: {

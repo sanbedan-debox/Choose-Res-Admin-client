@@ -51,11 +51,14 @@ const MenuPage = ({ repo }: { repo?: UserRepo }) => {
     isAddModifierModalOpen,
     setisAddModifierModalOpen,
   } = useMenuOptionsStore();
-  const { setEditModGroupId, setisEditModGroup } = useModGroupStore();
+  const { setEditModGroupId, setisEditModGroup, setisDuplicateModifierGroup } =
+    useModGroupStore();
 
-  const { seteditCatsId, setisEditCats } = useMenuCategoryStore();
-  const { setEditModId, setisEditMod } = useModStore();
-  const { setEditMenuId, setisEditMenu } = useMenuMenuStore();
+  const { seteditCatsId, setisEditCats, setisDuplicateCats } =
+    useMenuCategoryStore();
+  const { setEditModId, setisEditMod, setisDuplicateMods } = useModStore();
+  const { setEditMenuId, setisEditMenu, setisDuplicateMenu } =
+    useMenuMenuStore();
 
   const {
     setEmail,
@@ -84,37 +87,49 @@ const MenuPage = ({ repo }: { repo?: UserRepo }) => {
     setUserId,
   ]);
 
-  const { setEditItemId, setisEditItem } = useMenuItemsStore();
+  const { setEditItemId, setisEditItem, setisDuplicateItem } =
+    useMenuItemsStore();
   const handleAddMenuItemClose = () => {
     setisAddItemModalOpen(false);
     setfetchMenuDatas(!fetchMenuDatas);
     setisEditItem(false);
     setEditItemId(null);
+    setisDuplicateItem(false);
   };
   const handleAddMenuCategoryClose = () => {
     setisAddCategoryModalOpen(false);
     setfetchMenuDatas(!fetchMenuDatas);
     setisEditCats(false);
     seteditCatsId(null);
+    setisDuplicateCats(false);
   };
   const handleAddMenuClose = () => {
     setisAddMenuModalOpen(false);
     setfetchMenuDatas(!fetchMenuDatas);
     setisEditMenu(false);
+    setisDuplicateMenu(false);
     setEditMenuId(null);
   };
   const handleAddModifierGroupClose = () => {
     setisAddModifierGroupModalOpen(false);
     setfetchMenuDatas(!fetchMenuDatas);
     setisEditModGroup(false);
+    setisDuplicateModifierGroup(false);
     setEditModGroupId(null);
   };
   const handleAddModifierClose = () => {
     setisAddModifierModalOpen(false);
     setfetchMenuDatas(!fetchMenuDatas);
     setisEditMod(false);
+    setisDuplicateMods(false);
     setEditModId(null);
   };
+
+  const { setSelectedMenu } = useGlobalStore();
+
+  useEffect(() => {
+    setSelectedMenu("Menu Management");
+  }, [setSelectedMenu]);
 
   let childComponent;
 

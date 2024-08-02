@@ -131,7 +131,7 @@ const AddModifierGroupForm = () => {
   const [maxSelection, setMaxSelection] = useState(1);
   useEffect(() => {
     const fetchItemData = async () => {
-      if (editModGroupId) {
+      if (editModGroupId && (isEditModGroup || isDuplicateModifierGroup)) {
         try {
           const response = await sdk.getModifierGroup({ id: editModGroupId });
           const item = response.getModifierGroup;
@@ -142,10 +142,12 @@ const AddModifierGroupForm = () => {
           if (isDuplicateModifierGroup) {
             setValue("name", nameDup);
           }
+
           setValue("minSelections", item?.minSelections?.value);
+          setValue("maxSelections", item.maxSelections?.value);
+
           setMinSelection(item?.minSelections?.value);
           setMaxSelection(item.maxSelections?.value);
-          setValue("maxSelections", item.maxSelections?.value);
           setValue("desc", item?.desc?.value || "");
           setValue("commonPrice", item?.price?.value || 0);
           setValue("optional", item.optional || false);
@@ -393,6 +395,7 @@ const AddModifierGroupForm = () => {
 
       setisEditModGroup(false);
       setEditModGroupId(null);
+
       setToastData({
         type: "success",
         message: "Modifier Groups Added Successfully",
@@ -545,6 +548,12 @@ const AddModifierGroupForm = () => {
               rules={{ required: "Type is required" }}
               render={({ field }) => (
                 <Select
+                  classNames={{
+                    option: (state) =>
+                      `!text-sm hover:!bg-primary hover:!text-white focus:!bg-transparent  ${
+                        state.isSelected ? "!bg-primary text-white" : ""
+                      }  `,
+                  }}
                   {...field}
                   id="type"
                   options={PricingTypeOptions}

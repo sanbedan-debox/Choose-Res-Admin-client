@@ -15,10 +15,8 @@ const WelcomeRestaurantOnboarding = () => {
       const res = await sdk.meUserInResOnboarding();
 
       if (res && res.meUser) {
-        console.log(res);
         const { status } = res.meUser;
         if (status === "internalVerificationPending") {
-          console.log(status);
           setisVerificationToRestaurantAdd(true);
         }
       }

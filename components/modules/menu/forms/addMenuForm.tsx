@@ -81,6 +81,7 @@ const AddMenuForm = () => {
     control,
     setValue,
     register,
+    clearErrors,
   } = useForm<IFormInput>();
   const { taxRate } = useAuthStore();
   const [availability, setAvailability] = useState<Availability[]>([
@@ -109,7 +110,6 @@ const AddMenuForm = () => {
           const originalAvailability = reverseFormatAvailability(
             restaurantAvailibility
           );
-          console.log("originalAvailability:", originalAvailability);
           setAvailability(originalAvailability);
         }
       } catch (error) {
@@ -214,6 +214,7 @@ const AddMenuForm = () => {
       setfetchMenuDatas(!fetchMenuDatas);
       setisDuplicateMenu(false);
       setisEditCats(false);
+      seteditCatsId(null);
     } catch (error: any) {
       setBtnLoading(false);
       const errorMessage = extractErrorMessage(error);
@@ -369,7 +370,7 @@ const AddMenuForm = () => {
   const [incomingTaxId, setIncomingTaxId] = useState("");
   useEffect(() => {
     const fetchMenuData = async () => {
-      if (editMenuId) {
+      if (editMenuId && (isEditMenu || isDuplicateMenu)) {
         try {
           const response = await sdk.getMenusByType({ id: editMenuId });
           const menu = response.getMenusByType;
@@ -446,6 +447,10 @@ const AddMenuForm = () => {
             id="name"
             className="input input-primary"
             placeholder="Enter menu name"
+            onChange={(e) => {
+              clearErrors("name");
+              setValue("name", e.target.value);
+            }}
           />
           <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
             This is the name your customer will see.
@@ -471,11 +476,21 @@ const AddMenuForm = () => {
               <Select
                 {...field}
                 id="type"
+                classNames={{
+                  option: (state) =>
+                    `!text-sm hover:!bg-primary hover:!text-white focus:!bg-transparent  ${
+                      state.isSelected ? "!bg-primary text-white" : ""
+                    }  `,
+                }}
                 options={menuTypeOptions}
                 isDisabled={isEditMenu}
                 className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
                 classNamePrefix="react-select"
                 placeholder="Select menu type"
+                onChange={(selectedOption) => {
+                  clearErrors("type");
+                  field.onChange(selectedOption);
+                }}
               />
             )}
           />
@@ -537,7 +552,8 @@ const AddMenuForm = () => {
                 <CButton
                   loading={btnLoading}
                   variant={ButtonType.Outlined}
-                  type="submit"
+                  type="button"
+                  onClick={() => setisShowTaxSettings(true)}
                   className="w-full"
                 >
                   <div className="flex justify-center items-center">
@@ -583,7 +599,7 @@ const AddMenuForm = () => {
           className="w-full"
         >
           <div className="flex justify-center items-center">
-            {isEditMenu ? "Save Menu" : "Add Menu"}
+            {isEditMenu ? "Update Menu" : "Add Menu"}
             {!isEditMenu ? (
               <IoIosAddCircleOutline className="text-xl ml-1" />
             ) : (

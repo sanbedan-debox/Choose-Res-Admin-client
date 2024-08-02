@@ -201,6 +201,12 @@ const UserInfo = () => {
             rules={{ required: "Business type is required" }}
             render={({ field }) => (
               <Select
+                classNames={{
+                  option: (state) =>
+                    `!text-sm hover:!bg-primary hover:!text-white focus:!bg-transparent  ${
+                      state.isSelected ? "!bg-primary text-white" : ""
+                    }  `,
+                }}
                 {...field}
                 id="state"
                 options={BusinessType}
@@ -265,6 +271,12 @@ const UserInfo = () => {
             rules={{ required: "employees is required" }}
             render={({ field }) => (
               <Select
+                classNames={{
+                  option: (state) =>
+                    `!text-sm hover:!bg-primary hover:!text-white focus:!bg-transparent  ${
+                      state.isSelected ? "!bg-primary text-white" : ""
+                    }  `,
+                }}
                 {...field}
                 id="state"
                 options={employeSize}
@@ -301,6 +313,12 @@ const UserInfo = () => {
             rules={{ required: "revenue is required" }}
             render={({ field }) => (
               <Select
+                classNames={{
+                  option: (state) =>
+                    `!text-sm hover:!bg-primary hover:!text-white focus:!bg-transparent  ${
+                      state.isSelected ? "!bg-primary text-white" : ""
+                    }  `,
+                }}
                 {...field}
                 id="state"
                 options={revenueOptions}

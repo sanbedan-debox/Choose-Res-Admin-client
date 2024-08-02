@@ -190,6 +190,12 @@ const BusinessInformationForm: React.FC = () => {
               What kind of business are you
             </label>
             <Select
+              classNames={{
+                option: (state) =>
+                  `!text-sm hover:!bg-primary hover:!text-white focus:!bg-transparent  ${
+                    state.isSelected ? "!bg-primary text-white" : ""
+                  }  `,
+              }}
               id="businessType"
               options={BusinessType}
               value={BusinessType.find(
@@ -233,6 +239,12 @@ const BusinessInformationForm: React.FC = () => {
               What is your staff count
             </label>
             <Select
+              classNames={{
+                option: (state) =>
+                  `!text-sm hover:!bg-primary hover:!text-white focus:!bg-transparent  ${
+                    state.isSelected ? "!bg-primary text-white" : ""
+                  }  `,
+              }}
               id="employees"
               options={employeSize}
               value={employeSize.find(
@@ -256,6 +268,12 @@ const BusinessInformationForm: React.FC = () => {
               What is your estimated annual revenue
             </label>
             <Select
+              classNames={{
+                option: (state) =>
+                  `!text-sm hover:!bg-primary hover:!text-white focus:!bg-transparent  ${
+                    state.isSelected ? "!bg-primary text-white" : ""
+                  }  `,
+              }}
               id="revenue"
               options={revenueOptions}
               value={revenueOptions.find(
