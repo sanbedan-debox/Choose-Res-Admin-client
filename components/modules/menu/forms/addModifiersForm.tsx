@@ -47,7 +47,7 @@ const AddModifierForm = () => {
     setValue,
     watch,
     register,
-  } = useForm<IFormInput>();
+  } = useForm<IFormInput>({ defaultValues: { preSelect: false } });
   const [changesModifiers, setChangesModifiers] = useState<any | null>(null);
 
   const { fetchMenuDatas, setfetchMenuDatas, setisAddModifierModalOpen } =
@@ -445,10 +445,10 @@ const AddModifierForm = () => {
 
           <div className="">
             <label
-              htmlFor="optional"
+              htmlFor="preselect"
               className="block mb-2 text-sm font-medium text-left text-gray-700"
             >
-              optional
+              Pre-Select
             </label>
 
             <CustomSwitchCard

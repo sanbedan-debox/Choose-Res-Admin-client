@@ -147,8 +147,8 @@ export type AddStateInput = {
 
 export type AddSubCategoryInput = {
   category: Scalars['String']['input'];
-  desc: MasterCommonInput;
-  name: MasterCommonInput;
+  desc: Scalars['String']['input'];
+  name: Scalars['String']['input'];
 };
 
 export type AddTeamMemberInput = {
@@ -1765,9 +1765,9 @@ export type UpdateRestaurantInput = {
 };
 
 export type UpdateSubCategoryInput = {
-  desc?: InputMaybe<MasterCommonInput>;
+  desc?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['String']['input'];
-  name?: InputMaybe<MasterCommonInput>;
+  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateTaxRateInput = {

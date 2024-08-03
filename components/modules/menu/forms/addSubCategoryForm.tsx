@@ -97,25 +97,17 @@ const AddSubCategoryForm = () => {
       if (!isEditSubCategory) {
         await sdk.AddSubCategory({
           input: {
-            name: {
-              value: data.name,
-            },
+            name: data.name,
             category: data.categories.value,
-            desc: {
-              value: data.desc,
-            },
+            desc: data.desc,
           },
         });
       } else {
         const res = await sdk.UpdateSubCategory({
           input: {
             id: editSubCategoryId || "",
-            name: {
-              value: data.name,
-            },
-            desc: {
-              value: data.desc,
-            },
+            name: data.name,
+            desc: data.desc,
           },
         });
 

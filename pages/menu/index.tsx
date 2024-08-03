@@ -202,8 +202,11 @@ const Menu: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
   };
 
   const handleTemplateDownload = () => {
-    console.log("Template download triggered");
-    // Add additional logic if needed
+    const downloadA = document.createElement("a");
+    downloadA.href =
+      "https://res.cloudinary.com/choose-pos/raw/upload/v1722703274/template_xat7md.csv";
+    downloadA.download = "true";
+    downloadA.click();
   };
 
   const handleSampleTemplateDownload = () => {
@@ -329,8 +332,14 @@ const Menu: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
             </div>
           </div> */}
           <div className="mb-4">
-            <label className="block mb-2 text-lg font-medium text-left text-gray-700">
-              CSV Upload
+            <label className="mb-2 text-lg font-medium text-left text-gray-700 flex justify-between items-center">
+              <span className="w-full">Upload</span>
+              <span
+                onClick={handleTemplateDownload}
+                className="text-primary text-sm text-right w-full cursor-pointer"
+              >
+                Download CSV template
+              </span>
             </label>
             <div className="border-2 border-dashed border-gray-300 p-6 text-center rounded-lg cursor-pointer hover:bg-gray-100 relative">
               {file ? (
@@ -416,21 +425,21 @@ const Menu: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
               )}
             </div>
             <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
-              Upload a CSV file to manage your menu items.
+              Upload a CSV file to add / update your menu.
             </p>
           </div>
 
-          <div className="mb-4">
+          {/* <div className="mb-4">
             <button
               type="button"
               onClick={handleTemplateDownload}
-              className="text-primary"
+              className="text-primary text-sm text-right w-full"
             >
-              Download the template for uploading the menu
+              Download CSV template for uploading the menu
             </button>
-          </div>
+          </div> */}
 
-          <div className="mb-4">
+          {/* <div className="mb-4">
             <button
               type="button"
               onClick={handleSampleTemplateDownload}
@@ -438,7 +447,7 @@ const Menu: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
             >
               Download the template with some sample data in it
             </button>
-          </div>
+          </div> */}
 
           <div className="flex justify-between">
             <div className="mb-4 text-sm">

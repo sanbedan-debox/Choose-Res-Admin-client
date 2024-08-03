@@ -420,7 +420,7 @@ const RestaurantAdditionalInformation = () => {
           type="submit"
           variant={ButtonType.Primary}
         >
-          {isFormChanged ? "Submit" : "Skip and Continue"}
+          {isFormChanged ? "Submit" : "Skip and Submit"}
         </CButton>
       </form>
     </motion.div>

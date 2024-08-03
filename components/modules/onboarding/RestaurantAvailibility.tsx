@@ -515,8 +515,9 @@ const RestaurantAvailability = () => {
             </p>
           )}
         </div>
+        <br />
         <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-          Select Restaturant Timings
+          Set Restaturant Timings
         </label>
         <div>
           <AvailabilityComponent

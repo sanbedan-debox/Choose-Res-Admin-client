@@ -1256,7 +1256,7 @@ const AddItemForm = () => {
                   isDisabled={subCategories.length <= 0}
                   className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
                   classNamePrefix="react-select"
-                  placeholder="Select menu type"
+                  placeholder="Select sub-category"
                 />
               )}
             />

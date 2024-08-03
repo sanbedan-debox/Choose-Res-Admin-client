@@ -37,8 +37,10 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
     }
   }, [availability, copiedDayIndex]);
 
-  const defaultStartTime = timeOptions[0];
-  const defaultEndTime = timeOptions[timeOptions.length - 1];
+  const defaultStartTime =
+    timeOptions[timeOptions.findIndex((e) => e.label === "09:00 AM")];
+  const defaultEndTime =
+    timeOptions[timeOptions.findIndex((e) => e.label === "10:30 PM")];
 
   // FUNCTIONS WITH VALIDATION
   const handleAddHours = (index: number) => {

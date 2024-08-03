@@ -20,9 +20,9 @@ const ArrowCard: FC<ArrowCardProps> = ({ title, caption, href, onClick }) => {
   };
 
   const CardContent = (
-    <div className="block p-4 transition-transform transform bg-white shadow-lg rounded-lg cursor-pointer">
+    <div className="block p-4 transition-all transform bg-white shadow rounded-lg cursor-pointer">
       <div className="flex justify-between items-center">
-        <div className="flex flex-col">
+        <div className="flex flex-col w-full">
           <h3 className="text-lg font-semibold">{title}</h3>
           <p className="text-sm text-gray-600">{caption}</p>
         </div>
