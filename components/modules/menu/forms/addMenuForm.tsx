@@ -93,7 +93,7 @@ const AddMenuForm = () => {
     { day: Day.Friday, hours: [], active: false },
     { day: Day.Saturday, hours: [], active: false },
   ]);
-  const [useRestaurantTimings, setUseRestaurantTimings] = useState(false);
+  const [useRestaurantTimings, setUseRestaurantTimings] = useState(true);
 
   const handleCheckboxChange = async (
     event: React.ChangeEvent<HTMLInputElement>

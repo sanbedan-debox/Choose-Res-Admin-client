@@ -65,7 +65,7 @@ interface IFormSubCatInput {
 interface IOption {
   type: string;
   _id: string;
-  isSelected: boolean;
+  status: boolean;
   displayName: string;
   desc: string;
 }
@@ -113,7 +113,7 @@ const AddItemForm = () => {
       type: option.type,
       displayName: option.displayName,
       desc: option.desc,
-      isSelected: false,
+      status: false,
       _id: option._id,
     }));
   };
@@ -278,7 +278,7 @@ const AddItemForm = () => {
           _id: it._id,
           desc: it.desc,
           displayName: it.displayName,
-          isSelected: it.status,
+          status: it.status,
           type: it.type,
         }));
         setOptions(formattedOptions);
@@ -337,7 +337,9 @@ const AddItemForm = () => {
     }
   }, [isModalOpen, selectedItems, fetchMenuDatas, tempSelectedItems]);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [useRestaurantTimings, setUseRestaurantTimings] = useState(false);
+  const [useRestaurantTimings, setUseRestaurantTimings] = useState(
+    isEditItem ? false : true
+  );
   const [subCategories, setSubCategories] = useState<
     {
       value: string;
@@ -389,41 +391,39 @@ const AddItemForm = () => {
     fetchSubCategories();
   }, []);
 
-  const handleCheckboxChange = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const isChecked = event.target.checked;
-    setUseRestaurantTimings(isChecked);
-
-    if (isChecked) {
-      try {
-        const response = await sdk.getRestaurantDetails();
-        const restaurantAvailibility =
-          response.getRestaurantDetails?.availability;
-        if (restaurantAvailibility) {
-          const originalAvailability = reverseFormatAvailability(
-            restaurantAvailibility
-          );
-          setAvailability(originalAvailability);
+  useEffect(() => {
+    const setTimings = async () => {
+      if (useRestaurantTimings) {
+        try {
+          const response = await sdk.getRestaurantDetails();
+          const restaurantAvailibility =
+            response.getRestaurantDetails?.availability;
+          if (restaurantAvailibility) {
+            const originalAvailability = reverseFormatAvailability(
+              restaurantAvailibility
+            );
+            setAvailability(originalAvailability);
+          }
+        } catch (error) {
+          setToastData({
+            type: "error",
+            message: "Failed to get Restaurant availibility",
+          });
         }
-      } catch (error) {
-        setToastData({
-          type: "error",
-          message: "Failed to get Restaurant availibility",
-        });
+      } else {
+        setAvailability([
+          { day: Day.Sunday, hours: [], active: false },
+          { day: Day.Monday, hours: [], active: false },
+          { day: Day.Tuesday, hours: [], active: false },
+          { day: Day.Wednesday, hours: [], active: false },
+          { day: Day.Thursday, hours: [], active: false },
+          { day: Day.Friday, hours: [], active: false },
+          { day: Day.Saturday, hours: [], active: false },
+        ]);
       }
-    } else {
-      setAvailability([
-        { day: Day.Sunday, hours: [], active: false },
-        { day: Day.Monday, hours: [], active: false },
-        { day: Day.Tuesday, hours: [], active: false },
-        { day: Day.Wednesday, hours: [], active: false },
-        { day: Day.Thursday, hours: [], active: false },
-        { day: Day.Friday, hours: [], active: false },
-        { day: Day.Saturday, hours: [], active: false },
-      ]);
-    }
-  };
+    };
+    setTimings();
+  }, [useRestaurantTimings]);
 
   const onSubmit = async (data: IFormInput) => {
     try {
@@ -568,7 +568,7 @@ const AddItemForm = () => {
               _id: e._id,
               desc: e.desc,
               displayName: e.displayName,
-              status: e.isSelected,
+              status: e.status,
               type: e.type as ItemOptionsEnum,
             })),
             availability: formattedAvailability,
@@ -1153,12 +1153,12 @@ const AddItemForm = () => {
                     label={option.type}
                     title={option.displayName}
                     caption={option.desc}
-                    switchChecked={option.isSelected}
+                    switchChecked={option.status}
                     onSwitchChange={() => {
                       setOptions((prev) =>
                         prev.map((opt) =>
                           opt.type === (option.type as ItemOptionsEnum)
-                            ? { ...opt, isSelected: !opt.isSelected }
+                            ? { ...opt, status: !opt.status }
                             : opt
                         )
                       );
@@ -1188,16 +1188,27 @@ const AddItemForm = () => {
             </label>
 
             <div className="flex items-center mb-4">
-              <input
+              <button
+                type="button"
+                className="text-sm text-primary flex items-center cursor-pointer"
+                onClick={async () => {
+                  setUseRestaurantTimings(true);
+                }}
+              >
+                <span className=" hover:underline">
+                  Use Restaurant Timings for this Item
+                </span>
+              </button>
+              {/* <input
                 type="checkbox"
                 id="useRestaurantTimings"
                 checked={useRestaurantTimings}
                 onChange={handleCheckboxChange}
                 className="mr-2"
-              />
-              <label htmlFor="useRestaurantTimings">
+              /> */}
+              {/* <label htmlFor="useRestaurantTimings">
                 Use Restaurant Timings for this Item
-              </label>
+              </label> */}
             </div>
 
             <AvailabilityComponent

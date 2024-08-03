@@ -106,12 +106,18 @@ const Dashboard: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
   }, []);
 
   const { setisShowSetupPanel, setisShowTaxSettings } = useGlobalStore();
+  const { taxRate } = useAuthStore();
 
   const actions = [
     {
-      name: "Set Tax Rate",
+      name: taxRate?.salesTax ? "Update tax rate" : "Set Tax Rate",
       link: "#",
       onClick: () => setisShowTaxSettings(true),
+    },
+    {
+      name: "Add team members",
+      link: "/teams",
+      onClick: () => {},
     },
   ];
 
