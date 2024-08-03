@@ -1,0 +1,29 @@
+query getSubCategory($id: String!) {
+  getSubCategory(id: $id) {
+    _id
+    name
+    desc
+    category {
+      _id
+    }
+  }
+}
+
+query getSubCategories {
+  getSubCategories {
+    _id
+    name
+    desc
+    category {
+      _id
+    }
+  }
+}
+
+mutation AddSubCategory($input: AddSubCategoryInput!) {
+  addSubCategory(input: $input)
+}
+
+mutation UpdateSubCategory($input: UpdateSubCategoryInput!) {
+  updateSubCategory(input: $input)
+}

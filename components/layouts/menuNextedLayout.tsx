@@ -16,6 +16,7 @@ const MenuLayout = ({ children }: Props) => {
   const items = [
     { label: "Menus", route: "menu" },
     { label: "Categories", route: "categories" },
+    { label: "Sub-Categories", route: "sub-categories" },
     { label: "Items", route: "items" },
     { label: "Modifier Groups", route: "modifier-group" },
     { label: "Modifiers", route: "modifier" },

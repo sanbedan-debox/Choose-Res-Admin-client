@@ -7,10 +7,12 @@ import AddItemForm from "@/components/modules/menu/forms/addItemForm";
 import AddMenuForm from "@/components/modules/menu/forms/addMenuForm";
 import AddModifierGroupForm from "@/components/modules/menu/forms/addModifierGroupForm";
 import AddModifierForm from "@/components/modules/menu/forms/addModifiersForm";
+import AddSubCategoryForm from "@/components/modules/menu/forms/addSubCategoryForm";
 import Items from "@/components/modules/menu/items";
 import Menu from "@/components/modules/menu/menu";
 import ModifiersGroup from "@/components/modules/menu/modifierGroups";
 import Modifiers from "@/components/modules/menu/modifiers";
+import SubCategories from "@/components/modules/menu/subCategories";
 import { UserStatus } from "@/generated/graphql";
 import useAuthStore from "@/store/auth";
 import useGlobalStore from "@/store/global";
@@ -20,6 +22,8 @@ import useMenuMenuStore from "@/store/menumenu";
 import useMenuOptionsStore from "@/store/menuOptions";
 import useModGroupStore from "@/store/modifierGroup";
 import useModStore from "@/store/modifiers";
+import useSubCategoryStore from "@/store/subCategoryStore";
+import useSubCategory from "@/store/subCategoryStore";
 import { sdk } from "@/utils/graphqlClient";
 
 import { GetServerSideProps } from "next";
@@ -50,9 +54,12 @@ const MenuPage = ({ repo }: { repo?: UserRepo }) => {
     setisAddModifierGroupModalOpen,
     isAddModifierModalOpen,
     setisAddModifierModalOpen,
+    isAddSubCategoryModalOpen,
+    setisAddSubCategoryModalOpen,
   } = useMenuOptionsStore();
   const { setEditModGroupId, setisEditModGroup, setisDuplicateModifierGroup } =
     useModGroupStore();
+  const { seteditSubCategoryId, setisEditSubCategory } = useSubCategoryStore();
 
   const { seteditCatsId, setisEditCats, setisDuplicateCats } =
     useMenuCategoryStore();
@@ -95,6 +102,12 @@ const MenuPage = ({ repo }: { repo?: UserRepo }) => {
     setisEditItem(false);
     setEditItemId(null);
     setisDuplicateItem(false);
+  };
+  const handleAddSubCategoryModalclose = () => {
+    setisAddSubCategoryModalOpen(false);
+    setfetchMenuDatas(!fetchMenuDatas);
+    setisEditSubCategory(false);
+    seteditSubCategoryId(null);
   };
   const handleAddMenuCategoryClose = () => {
     setisAddCategoryModalOpen(false);
@@ -140,6 +153,9 @@ const MenuPage = ({ repo }: { repo?: UserRepo }) => {
     case "categories":
       childComponent = <Categories />;
       break;
+    case "sub-categories":
+      childComponent = <SubCategories />;
+      break;
     case "items":
       childComponent = <Items />;
       break;
@@ -169,6 +185,17 @@ const MenuPage = ({ repo }: { repo?: UserRepo }) => {
       >
         <div className="flex justify-center">
           <AddItemForm />
+        </div>
+      </FullPageModal>
+      <FullPageModal
+        isOpen={isAddSubCategoryModalOpen}
+        title="Sub Category"
+        onClose={handleAddSubCategoryModalclose}
+        actionButtonLabel="Save SubCategory"
+        onActionButtonClick={() => console.log("hello")}
+      >
+        <div className="flex justify-center">
+          <AddSubCategoryForm />
         </div>
       </FullPageModal>
       <FullPageModal
