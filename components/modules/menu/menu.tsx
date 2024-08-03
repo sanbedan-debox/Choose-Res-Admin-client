@@ -4,7 +4,7 @@ import CustomSwitch from "@/components/common/customSwitch/customSwitch";
 import ReusableModal from "@/components/common/modal/modal";
 import RoopTable from "@/components/common/table/table";
 import CBTable from "@/components/common/table/table";
-import { StatusEnum } from "@/generated/graphql";
+import { MenuTypeEnum, StatusEnum } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
 import useMenuMenuStore from "@/store/menumenu";
 import useMenuOptionsStore from "@/store/menuOptions";
@@ -127,9 +127,29 @@ const Menu: React.FC = () => {
     </div>
   );
 
+  const formatType = (type: MenuTypeEnum): string => {
+    switch (type) {
+      case MenuTypeEnum.Catering:
+        return "Catering";
+      case MenuTypeEnum.DineIn:
+        return "Dine In";
+      case MenuTypeEnum.OnlineOrdering:
+        return "Online Ordering";
+
+      default:
+        return "";
+    }
+  };
+
   const headings = [
     { title: "Name", dataKey: "name" },
-    { title: "Type", dataKey: "type" },
+    {
+      title: "Type",
+      dataKey: "type",
+      render: (rowData: { type: MenuTypeEnum }) => {
+        return <p>{formatType(rowData.type)}</p>;
+      },
+    },
     { title: "Categories", dataKey: "categories" },
     { title: "Toggle Status", dataKey: "status", render: renderSwitch },
     { title: "Actions", dataKey: "name.value", render: renderActions },

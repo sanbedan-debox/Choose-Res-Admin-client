@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { FC } from "react";
+import { BiChevronRightCircle } from "react-icons/bi";
 import { FaArrowRight } from "react-icons/fa";
 import { TbSquareRoundedArrowRight } from "react-icons/tb";
 
@@ -18,7 +19,7 @@ const ArrowCard: FC<ArrowCardProps> = ({ title, caption, href }) => {
             <h3 className="text-lg font-semibold">{title}</h3>
             <p className="text-sm text-gray-600">{caption}</p>
           </div>
-          <TbSquareRoundedArrowRight className="w-8 h-8 text-primary" />
+          <BiChevronRightCircle className="w-8 h-8 text-primary" />
         </div>
       </div>
     </Link>

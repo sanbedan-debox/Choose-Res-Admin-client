@@ -53,17 +53,18 @@ const formatUserStatus = (status: UserStatus): string => {
   }
 };
 
-const formatUserRole = (role: UserRole): string => {
+const formatUserRole = (role: string): string => {
+  console.log(role);
   switch (role) {
-    case UserRole.Owner:
+    case "owner":
       return "Owner";
-    case UserRole.Staff:
+    case "staff":
       return "Staff";
-    case UserRole.Manager:
+    case "manager":
       return "Manager";
-    case UserRole.Accountant:
+    case "accountant":
       return "Accountant";
-    case UserRole.MarketingPartner:
+    case "marketingPartner":
       return "Marketing Partner";
 
     default:
@@ -181,9 +182,9 @@ const Teams: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
     {
       title: "Role",
       dataKey: "role",
-      // render: (rowData: { role: UserRole }) => {
-      //   return <p>{formatUserRole(rowData.role)}</p>;
-      // },
+      render: (rowData: { role: string }) => {
+        return <p>{formatUserRole(rowData.role)}</p>;
+      },
     },
     {
       title: "Status",
