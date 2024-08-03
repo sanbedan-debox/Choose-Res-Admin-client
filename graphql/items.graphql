@@ -60,14 +60,13 @@ query getItem($id: String!) {
     price {
       value
     }
-    applySalesTax
-    popularItem
-    upSellItem
-    isSpicy
-    isVegan
-    isHalal
-    isGlutenFree
-    hasNuts
+    options {
+      _id
+      type
+      displayName
+      desc
+      status
+    }
     availability {
       day
       hours {
@@ -91,6 +90,12 @@ query getItem($id: String!) {
       price {
         value
       }
+    }
+    subCategory {
+      id
+      name
+      desc
+      category
     }
   }
 }
@@ -131,4 +136,13 @@ mutation addModifierGroupToItem(
   $itemId: String!
 ) {
   addModifierGroupToItem(modifierGroupIds: $modifierGroupId, itemId: $itemId)
+}
+
+query getAllItemOptions {
+  getAllItemOptions {
+    type
+    displayName
+    desc
+    _id
+  }
 }

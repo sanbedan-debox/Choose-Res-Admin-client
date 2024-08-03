@@ -8,89 +8,140 @@ import { sdk } from "@/utils/graphqlClient";
 import useGlobalStore from "@/store/global";
 
 import ReusableModal from "@/components/common/modal/modal";
-import { extractErrorMessage } from "@/utils/utilFUncs";
+import {
+  extractErrorMessage,
+  generateUniqueName,
+  isValidNameAlphabetic,
+} from "@/utils/utilFUncs";
 import useSubCategoryStore from "@/store/subCategoryStore";
+import useMenuOptionsStore from "@/store/menuOptions";
 
 interface IFormInput {
   name: string;
-  categories: { value: string; label: string }[];
+  desc: string;
+  categories: CategoryType;
 }
 
 interface CategoryType {
-  _id: string;
-  name: string;
+  value: string;
+  label: string;
 }
 
 const AddSubCategoryForm = () => {
   const { setToastData } = useGlobalStore();
-  const [categories, setCategories] = useState<CategoryType[]>([]);
-  const [selectedCategories, setSelectedCategories] = useState<CategoryType[]>(
-    []
-  );
-  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [categoriesOption, setCategoryOptions] = useState<CategoryType[]>([]);
 
   const [btnLoading, setBtnLoading] = useState(false);
-  const { isEditSubCategory, seteditSubCategoryId, editSubCategoryId } =
-    useSubCategoryStore();
+  const {
+    isEditSubCategory,
+    seteditSubCategoryId,
+    editSubCategoryId,
+    setisDuplicateSubCategory,
+    setisEditSubCategory,
+    isDuplicateSubCategory,
+  } = useSubCategoryStore();
   const {
     handleSubmit,
     formState: { errors },
     control,
-    register,
     setValue,
+    register,
   } = useForm<IFormInput>();
+  const {
+    isAddSubCategoryModalOpen,
+    setisAddSubCategoryModalOpen,
+    setfetchMenuDatas,
+    fetchMenuDatas,
+  } = useMenuOptionsStore();
+  const [changesSubCat, setChangesSubCat] = useState({});
 
-  //   const onSubmit = async (data: IFormInput) => {
-  //     try {
-  //       if (!isValidNameAlphabetic(data.name)) {
-  //         setToastData({
-  //           message:
-  //             "Please use only alphabets and numbers for the subcategory name.",
-  //           type: "error",
-  //         });
-  //         return;
-  //       }
+  useEffect(() => {
+    const fetchSubCategory = async () => {
+      if (editSubCategoryId) {
+        try {
+          const response = await sdk.getSubCategory({ id: editSubCategoryId });
+          const menu = response.getSubCategory;
+          setChangesSubCat(response.getSubCategory);
+          const nameDup = generateUniqueName(menu?.name);
+          setValue("name", menu.name);
+          if (isDuplicateSubCategory) {
+            setValue("name", nameDup);
+          }
+          setValue("desc", menu?.desc);
+          const selectedSubCatType = categoriesOption.find(
+            (option) => option.value === menu?.category?._id
+          );
+          console.log(selectedSubCatType);
+          if (selectedSubCatType) {
+            setValue("categories", selectedSubCatType);
+          }
+        } catch (error) {
+          const errorMessage = extractErrorMessage(error);
+          setToastData({
+            type: "error",
+            message: errorMessage,
+          });
+        }
+      }
+    };
+    if (categoriesOption.length > 0) {
+      fetchSubCategory();
+    }
+  }, [editSubCategoryId, setValue, setToastData, categoriesOption]);
 
-  //       setBtnLoading(true);
+  const onSubmit = async (data: IFormInput) => {
+    try {
+      setBtnLoading(true);
 
-  //       const categoryIds = data.categories.map((cat) => cat.value);
+      if (!isEditSubCategory) {
+        await sdk.AddSubCategory({
+          input: {
+            name: {
+              value: data.name,
+            },
+            category: data.categories.value,
+            desc: {
+              value: data.desc,
+            },
+          },
+        });
+      } else {
+        const res = await sdk.UpdateSubCategory({
+          input: {
+            id: editSubCategoryId || "",
+            name: {
+              value: data.name,
+            },
+            desc: {
+              value: data.desc,
+            },
+          },
+        });
 
-  //       if (isEdit) {
-  //         await sdk.updateSubCategory({
-  //           input: {
-  //             _id: subCategoryId,
-  //             name: data.name,
-  //             categoryIds,
-  //           },
-  //         });
-  //         setToastData({
-  //           type: "success",
-  //           message: "Subcategory updated successfully",
-  //         });
-  //       } else {
-  //         await sdk.addSubCategory({
-  //           input: {
-  //             name: data.name,
-  //             categoryIds,
-  //           },
-  //         });
-  //         setToastData({
-  //           type: "success",
-  //           message: "Subcategory added successfully",
-  //         });
-  //       }
+        setisAddSubCategoryModalOpen(false);
+        setBtnLoading(false);
+      }
 
-  //       setBtnLoading(false);
-  //       setIsModalOpen(false);
-  //     } catch (error: any) {
-  //       setBtnLoading(false);
-  //       const errorMessage = extractErrorMessage(error);
-  //       setToastData({
-  //         type: "error",
-  //         message: errorMessage,
-  //       });
-  //     }
-  //   };
+      setToastData({
+        type: "success",
+        message: "Menu Added Successfully",
+      });
+      setBtnLoading(false);
+      setfetchMenuDatas(!fetchMenuDatas);
+      setisDuplicateSubCategory(false);
+      setisEditSubCategory(false);
+
+      setisAddSubCategoryModalOpen(false);
+    } catch (error: any) {
+      setBtnLoading(false);
+      const errorMessage = extractErrorMessage(error);
+      setToastData({
+        type: "error",
+        message: errorMessage,
+      });
+    }
+  };
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -98,10 +149,10 @@ const AddSubCategoryForm = () => {
         const response = await sdk.getCategories();
         if (response && response.getCategories) {
           const formattedCategories = response.getCategories.map((cat) => ({
-            _id: cat._id,
-            name: cat.name.value,
+            value: cat._id,
+            label: cat.name.value,
           }));
-          setCategories(formattedCategories);
+          setCategoryOptions(formattedCategories);
         }
       } catch (error: any) {
         const errorMessage = extractErrorMessage(error);
@@ -114,57 +165,6 @@ const AddSubCategoryForm = () => {
 
     fetchCategories();
   }, []);
-
-  //   useEffect(() => {
-  //     const fetchSubCategoryData = async () => {
-  //       if (isEdit && subCategoryId) {
-  //         try {
-  //           const response = await sdk.getSubCategory({ id: subCategoryId });
-  //           if (response.getSubCategory) {
-  //             const subCategory = response.getSubCategory;
-  //             setValue("name", subCategory.name);
-  //             const selectedCats = subCategory.categories.map((cat) => ({
-  //               value: cat._id,
-  //               label: cat.name.value,
-  //             }));
-  //             setValue("categories", selectedCats);
-  //           }
-  //         } catch (error: any) {
-  //           const errorMessage = extractErrorMessage(error);
-  //           setToastData({
-  //             type: "error",
-  //             message: errorMessage,
-  //           });
-  //         }
-  //       }
-  //     };
-
-  //     fetchSubCategoryData();
-  //   }, [isEdit, subCategoryId, setValue, setToastData]);
-
-  const handleRemoveCategory = async () => {
-    setSelectedCategories((prevSelected) =>
-      prevSelected.filter((item) => item._id !== editSubCategoryId)
-    );
-
-    // if (isEdit) {
-    //   try {
-    //     await sdk.removeSubCategory({ id: subCategoryId });
-    //     setToastData({
-    //       type: "success",
-    //       message: "Subcategory removed successfully",
-    //     });
-    //   } catch (error: any) {
-    //     const errorMessage = extractErrorMessage(error);
-    //     setToastData({
-    //       type: "error",
-    //       message: errorMessage,
-    //     });
-    //   }
-    // }
-
-    setIsModalOpen(false);
-  };
 
   return (
     <motion.div
@@ -185,14 +185,14 @@ const AddSubCategoryForm = () => {
 
       <form
         className="space-y-4 md:space-y-3 w-full max-w-2xl"
-        // onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit(onSubmit)}
       >
         <div className="col-span-2">
           <label
             htmlFor="name"
             className="block mb-2 text-sm font-medium text-left text-gray-700"
           >
-            Subcategory Name
+            Name
           </label>
           <input
             type="text"
@@ -208,6 +208,23 @@ const AddSubCategoryForm = () => {
           )}
         </div>
         <div className="col-span-2">
+          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
+            Description
+          </label>
+          <textarea
+            {...register("desc", { required: "Description is required" })}
+            id="desc"
+            className="input input-primary"
+            placeholder="Enter sub-category description"
+          />
+          {errors.desc && (
+            <p className="text-red-500 text-sm text-start">
+              {errors.desc.message}
+            </p>
+          )}
+        </div>
+
+        <div className="col-span-2">
           <label
             htmlFor="categories"
             className="block mb-2 text-sm font-medium text-left text-gray-700"
@@ -221,11 +238,7 @@ const AddSubCategoryForm = () => {
             render={({ field }) => (
               <Select
                 {...field}
-                isMulti
-                options={categories.map((cat) => ({
-                  value: cat._id,
-                  label: cat.name,
-                }))}
+                options={categoriesOption}
                 className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
                 classNamePrefix="react-select"
                 placeholder="Select categories"
@@ -242,29 +255,13 @@ const AddSubCategoryForm = () => {
           loading={btnLoading}
           variant={ButtonType.Primary}
           type="submit"
-          className="w-full"
+          className="w-full mt-8"
         >
           <div className="flex justify-center items-center">
             {isEditSubCategory ? "Save Subcategory" : "Add Subcategory"}
           </div>
         </CButton>
       </form>
-      <ReusableModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Are you sure?"
-        comments="By clicking yes the selected subcategory will be removed. This action cannot be undone."
-      >
-        <div className="flex justify-end space-x-4">
-          <CButton
-            loading={btnLoading}
-            variant={ButtonType.Primary}
-            onClick={handleRemoveCategory}
-          >
-            Yes
-          </CButton>
-        </div>
-      </ReusableModal>
     </motion.div>
   );
 };

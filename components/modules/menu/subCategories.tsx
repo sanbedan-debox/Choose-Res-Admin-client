@@ -1,88 +1,78 @@
 import RoopTable from "@/components/common/table/table";
 import useGlobalStore from "@/store/global";
 import useMenuOptionsStore from "@/store/menuOptions";
+import useSubCategoryStore from "@/store/subCategoryStore";
+import { sdk } from "@/utils/graphqlClient";
+import { extractErrorMessage } from "@/utils/utilFUncs";
 
 import React, { useEffect, useState } from "react";
+import { BsCopy } from "react-icons/bs";
+import { MdOutlineEdit } from "react-icons/md";
 
 const SubCategories: React.FC = () => {
   const [cats, setCats] = useState<
-    { name: string; desc: string; items: number; _id: string; status: string }[]
+    { name: string; desc: string; _id: string }[]
   >([]);
   const { setToastData } = useGlobalStore();
   const { setisAddSubCategoryModalOpen, fetchMenuDatas } =
     useMenuOptionsStore();
   const [showDeleteConfirmationModal, setshowDeleteConfirmationModal] =
     useState(false);
+
   const [tableLoading, setTableLoading] = useState(false);
+  const { setisEditSubCategory, seteditSubCategoryId } = useSubCategoryStore();
+  const fetchCategories = async () => {
+    try {
+      setTableLoading(true);
+      const response = await sdk.getSubCategories();
+      if (response && response.getSubCategories) {
+        setCats(
+          response.getSubCategories.map((el) => ({
+            desc: el.desc,
+            name: el.name,
+            _id: el._id,
+          }))
+        );
+      }
+    } catch (error: any) {
+      const errorMessage = extractErrorMessage(error);
+      setToastData({
+        type: "error",
+        message: errorMessage,
+      });
+    } finally {
+      setTableLoading(false);
+    }
+  };
 
-  // const fetchCategories = async () => {
-  //   try {
-  //     setTableLoading(true);
-  //     const response = await sdk.getCategories();
-  //     if (response && response.getCategories) {
-  //       setCats(
-  //         response.getCategories.map((el) => ({
-  //           desc: el.desc.value,
-  //           items: el.items.length,
-  //           name: el.name.value,
-  //           _id: el._id,
-  //           status: el.status,
-  //         }))
-  //       );
-  //       setCategories(
-  //         response.getCategories.map((el) => ({
-  //           value: el._id,
-  //           label: el.name.value,
-  //         }))
-  //       );
-  //     }
-  //   } catch (error: any) {
-  //     const errorMessage = extractErrorMessage(error);
-  //     setToastData({
-  //       type: "error",
-  //       message: errorMessage,
-  //     });
-  //   } finally {
-  //     setTableLoading(false);
-  //   }
-  // };
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchMenuDatas, setToastData]);
 
-  // useEffect(() => {
-  //   fetchCategories();
-  // }, [fetchMenuDatas, setToastData]);
-
-  // const handleEditSubCategory = async (_id: string) => {
-  //   setIsEdit(true);
-  //   setSubCategoryId(_id);
-  //   try {
-  //     const response = await sdk.getSubCategory({ id: _id });
-  //     if (response && response.getSubCategory) {
-  //       const subCategory = response.getSubCategory;
-  //       setSubCategoryName(subCategory.name);
-  //       setSelectedCategories(
-  //         subCategory.categories.map((cat: any) => ({
-  //           value: cat._id,
-  //           label: cat.name,
-  //         }))
-  //       );
-  //     }
-  //   } catch (error: any) {
-  //     const errorMessage = extractErrorMessage(error);
-  //     setToastData({
-  //       type: "error",
-  //       message: errorMessage,
-  //     });
-  //   }
-  //   setisAddCategoryModalOpen(true);
-  // };
-
-  // const handleAddSubCategory = () => {
-  //   setIsEdit(false);
-  //   setSubCategoryId("");
-  //   setSubCategoryName("");
-  //   setSelectedCategories([]);
-  //   setisAddSubCategoryModalOpen(true);
-  // };
+  const handleEditSubCategory = async (_id: string) => {
+    setisEditSubCategory(true);
+    seteditSubCategoryId(_id);
+    // try {
+    //   const response = await sdk.getSubCategory({ id: _id });
+    //   if (response && response.getSubCategory) {
+    //     const subCategory = response.getSubCategory;
+    //     setSubCategoryName(subCategory.name);
+    //     setSelectedCategories(
+    //       subCategory.categories.map((cat: any) => ({
+    //         value: cat._id,
+    //         label: cat.name,
+    //       }))
+    //     );
+    //   }
+    // } catch (error: any) {
+    //   const errorMessage = extractErrorMessage(error);
+    //   setToastData({
+    //     type: "error",
+    //     message: errorMessage,
+    //   });
+    // }
+    setisAddSubCategoryModalOpen(true);
+  };
 
   // const handleSubmit = async () => {
   //   try {
@@ -122,47 +112,24 @@ const SubCategories: React.FC = () => {
     // );
   };
 
-  // const handleToggleSwitch = (rowData: { status: string; _id: string }) => {
-  //   setShowStatusConfirmationModal(true);
-  //   setSelectedItemId(rowData._id);
-
-  //   setAvailableCaption(
-  //     rowData.status === StatusEnum.Inactive
-  //       ? "Turning of the category would turn on all the items of the category for the selected menu template. Click Yes to proceed."
-  //       : "Turning of the category would turn off all the items of the category for the selected menu template. Click Yes to proceed."
-  //   );
-  // };
-
-  // const renderSwitch = (rowData: { status: StatusEnum; _id: string }) => (
-  //   <div>
-  //     <CustomSwitch
-  //       checked={rowData.status === StatusEnum.Active}
-  //       onChange={() => handleToggleSwitch(rowData)}
-  //       label={`Toggle switch for ${rowData._id}`}
-  //     />
-  //   </div>
-  // );
-
-  // const renderActions = (rowData: { _id: string }) => (
-  //   <div className="flex space-x-2 justify-end">
-  //     <MdOutlineEdit
-  //       className="text-primary text-lg cursor-pointer"
-  //       onClick={() => handleEditSubCategory(rowData._id)}
-  //     />
-
-  //     <BsCopy
-  //       className="text-primary text-lg cursor-pointer"
-  //       onClick={() => handleDuplcateCategory(rowData._id)}
-  //     />
-  //   </div>
-  // );
+  const renderActions = (rowData: { _id: string }) => (
+    <div className="flex space-x-2 justify-end">
+      <MdOutlineEdit
+        className="text-primary text-lg cursor-pointer"
+        onClick={() => handleEditSubCategory(rowData._id)}
+      />
+      {/* 
+      <BsCopy
+        className="text-primary text-lg cursor-pointer"
+        onClick={() => handleDuplcateCategory(rowData._id)}
+      /> */}
+    </div>
+  );
 
   const headings = [
     { title: "Name", dataKey: "name" },
     { title: "Desc", dataKey: "desc" },
-    { title: "Items", dataKey: "items" },
-    // { title: "Toggle Status", dataKey: "status", render: renderSwitch },
-    // { title: "Actions", dataKey: "name.value", render: renderActions },
+    { title: "Actions", dataKey: "name.value", render: renderActions },
   ];
 
   const mainActions = [
