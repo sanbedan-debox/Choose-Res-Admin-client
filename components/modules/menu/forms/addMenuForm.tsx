@@ -94,14 +94,8 @@ const AddMenuForm = () => {
     { day: Day.Saturday, hours: [], active: false },
   ]);
   const [useRestaurantTimings, setUseRestaurantTimings] = useState(true);
-
-  const handleCheckboxChange = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const isChecked = event.target.checked;
-    setUseRestaurantTimings(isChecked);
-
-    if (isChecked) {
+  useEffect(() => {
+    const setTimings = async () => {
       try {
         const response = await sdk.getRestaurantDetails();
         const restaurantAvailibility =
@@ -118,18 +112,10 @@ const AddMenuForm = () => {
           message: "Failed to get Restaurant availibility",
         });
       }
-    } else {
-      setAvailability([
-        { day: Day.Sunday, hours: [], active: false },
-        { day: Day.Monday, hours: [], active: false },
-        { day: Day.Tuesday, hours: [], active: false },
-        { day: Day.Wednesday, hours: [], active: false },
-        { day: Day.Thursday, hours: [], active: false },
-        { day: Day.Friday, hours: [], active: false },
-        { day: Day.Saturday, hours: [], active: false },
-      ]);
-    }
-  };
+    };
+    setTimings();
+  }, [useRestaurantTimings]);
+
   const onSubmit = async (data: IFormInput) => {
     try {
       if (!isDuplicateMenu) {
@@ -186,6 +172,11 @@ const AddMenuForm = () => {
             availability: formattedAvailability,
           },
         });
+
+        setToastData({
+          type: "success",
+          message: "Menu Added Successfully",
+        });
       } else {
         const res = await sdk.updateMenu({
           input: updateInput,
@@ -207,7 +198,7 @@ const AddMenuForm = () => {
 
       setToastData({
         type: "success",
-        message: "Menu Added Successfully",
+        message: "Menu Updated Successfully",
       });
       setBtnLoading(false);
       setisAddMenuModalOpen(false);
@@ -421,15 +412,6 @@ const AddMenuForm = () => {
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="flex flex-col items-center space-y-5 text-center">
-        <h1 className="font-display max-w-2xl font-semibold text-2xl">
-          {isEditMenu ? "Edit Menu" : " Add a new menu"}
-        </h1>
-        <p className="max-w-md text-accent-foreground/80 text-sm">
-          Fill in the details to add a new menu.
-        </p>
-      </div>
-
       <form
         className="space-y-4 md:space-y-3 w-full max-w-2xl"
         onSubmit={handleSubmit(onSubmit)}
@@ -523,16 +505,17 @@ const AddMenuForm = () => {
           Availibility
         </label>
         <div className="flex items-center mb-4">
-          <input
-            type="checkbox"
-            id="useRestaurantTimings"
-            checked={useRestaurantTimings}
-            onChange={handleCheckboxChange}
-            className="mr-2"
-          />
-          <label htmlFor="useRestaurantTimings">
-            Use Restaurant Timings for this Item
-          </label>
+          <button
+            type="button"
+            className="text-sm text-primary flex items-center cursor-pointer"
+            onClick={async () => {
+              setUseRestaurantTimings(!useRestaurantTimings);
+            }}
+          >
+            <span className=" hover:underline">
+              Use Restaurant Timings for this Item
+            </span>
+          </button>
         </div>
         <AvailabilityComponent
           availability={availability}

@@ -9,7 +9,7 @@ import MainLayout from "@/components/layouts/mainBodyLayout";
 import ArrowCard from "@/components/common/arrowCard/arrowCard";
 import QuickActions from "@/components/common/quickLinks/quickLink";
 import ReusableModal from "@/components/common/modal/modal";
-import CsvUploadForm from "@/components/modules/menu/forms/uploadCsvFord";
+import CsvUploadForm from "@/components/modules/menu/forms/csvUploadForm";
 
 type NextPageWithLayout = React.FC & {
   getLayout?: (page: React.ReactNode) => React.ReactNode;

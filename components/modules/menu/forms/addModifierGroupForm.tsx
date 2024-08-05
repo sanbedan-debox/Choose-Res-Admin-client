@@ -389,6 +389,10 @@ const AddModifierGroupForm = () => {
           },
           modifiers: selectedItemsIds,
         });
+        setToastData({
+          type: "success",
+          message: "Modifier Groups Added Successfully",
+        });
       } else {
         await sdk.updateModifierGroup({
           input: updateInput,
@@ -419,7 +423,7 @@ const AddModifierGroupForm = () => {
 
       setToastData({
         type: "success",
-        message: "Modifier Groups Added Successfully",
+        message: "Modifier Groups Updated Successfully",
       });
     } catch (error: any) {
       const errorMessage = extractErrorMessage(error);
@@ -491,11 +495,6 @@ const AddModifierGroupForm = () => {
         onSubmit={handleSubmit(onSubmit)}
         className="max-w-4xl mx-auto p-6 w-full bg-white rounded-md "
       >
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-semibold">
-            {!isEditModGroup ? "ADD Modifier Group" : "EDIT Modifier group"}
-          </h2>
-        </div>
         <div className="col-span-2 grid grid-cols-1 gap-6">
           <div className="mb-1">
             <label
@@ -620,16 +619,9 @@ const AddModifierGroupForm = () => {
           )}
 
           <div className="">
-            <label
-              htmlFor="optional"
-              className="block mb-2 text-sm font-medium text-left text-gray-700"
-            >
-              optional
-            </label>
-
             <CustomSwitchCard
-              label="optional"
-              title="optional"
+              label="Optional"
+              title="Optional"
               caption="If its checked ,you can use this modifer will become optional"
               switchChecked={watch("optional")}
               onSwitchChange={() => setValue("optional", !watch("optional"))}

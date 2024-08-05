@@ -29,6 +29,7 @@ interface CategoryType {
 
 const AddSubCategoryForm = () => {
   const { setToastData } = useGlobalStore();
+  const [isCategoriesEmpty, setIsCategoriesEmpty] = useState(false);
 
   const [categoriesOption, setCategoryOptions] = useState<CategoryType[]>([]);
 
@@ -102,6 +103,10 @@ const AddSubCategoryForm = () => {
             desc: data.desc,
           },
         });
+        setToastData({
+          type: "success",
+          message: "Sub-Category Added Successfully",
+        });
       } else {
         const res = await sdk.UpdateSubCategory({
           input: {
@@ -110,15 +115,14 @@ const AddSubCategoryForm = () => {
             desc: data.desc,
           },
         });
-
+        setToastData({
+          type: "success",
+          message: "Sub-Category Updated Successfully",
+        });
         setisAddSubCategoryModalOpen(false);
         setBtnLoading(false);
       }
 
-      setToastData({
-        type: "success",
-        message: "Menu Added Successfully",
-      });
       setBtnLoading(false);
       setfetchMenuDatas(!fetchMenuDatas);
       setisDuplicateSubCategory(false);
@@ -145,6 +149,7 @@ const AddSubCategoryForm = () => {
             label: cat.name.value,
           }));
           setCategoryOptions(formattedCategories);
+          setIsCategoriesEmpty(formattedCategories.length === 0);
         }
       } catch (error: any) {
         const errorMessage = extractErrorMessage(error);
@@ -166,94 +171,94 @@ const AddSubCategoryForm = () => {
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="flex flex-col items-center space-y-5 text-center">
-        <h1 className="font-display max-w-2xl font-semibold text-2xl">
-          {isEditSubCategory ? "Edit Subcategory" : "Add a new subcategory"}
-        </h1>
-        <p className="max-w-md text-accent-foreground/80 text-sm">
-          Fill in the details to add a new subcategory.
+      {isCategoriesEmpty ? (
+        <p className="text-red-500 text-lg">
+          You need at least one category to create a subcategory.
         </p>
-      </div>
-
-      <form
-        className="space-y-4 md:space-y-3 w-full max-w-2xl"
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <div className="col-span-2">
-          <label
-            htmlFor="name"
-            className="block mb-2 text-sm font-medium text-left text-gray-700"
+      ) : (
+        <>
+          <form
+            className="space-y-4 md:space-y-3 w-full max-w-2xl"
+            onSubmit={handleSubmit(onSubmit)}
           >
-            Name
-          </label>
-          <input
-            type="text"
-            {...register("name", { required: "Name is required" })}
-            id="name"
-            className="input input-primary"
-            placeholder="Enter subcategory name"
-          />
-          {errors.name && (
-            <p className="text-red-500 text-sm text-start">
-              {errors.name.message}
-            </p>
-          )}
-        </div>
-        <div className="col-span-2">
-          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-            Description
-          </label>
-          <textarea
-            {...register("desc", { required: "Description is required" })}
-            id="desc"
-            className="input input-primary"
-            placeholder="Enter sub-category description"
-          />
-          {errors.desc && (
-            <p className="text-red-500 text-sm text-start">
-              {errors.desc.message}
-            </p>
-          )}
-        </div>
-
-        <div className="col-span-2">
-          <label
-            htmlFor="categories"
-            className="block mb-2 text-sm font-medium text-left text-gray-700"
-          >
-            Categories
-          </label>
-          <Controller
-            name="categories"
-            control={control}
-            rules={{ required: "At least one category is required" }}
-            render={({ field }) => (
-              <Select
-                {...field}
-                options={categoriesOption}
-                className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
-                classNamePrefix="react-select"
-                placeholder="Select categories"
+            <div className="col-span-2">
+              <label
+                htmlFor="name"
+                className="block mb-2 text-sm font-medium text-left text-gray-700"
+              >
+                Name
+              </label>
+              <input
+                type="text"
+                {...register("name", { required: "Name is required" })}
+                id="name"
+                className="input input-primary"
+                placeholder="Enter subcategory name"
               />
-            )}
-          />
-          {errors.categories && (
-            <p className="text-red-500 text-sm text-start">
-              {errors.categories.message}
-            </p>
-          )}
-        </div>
-        <CButton
-          loading={btnLoading}
-          variant={ButtonType.Primary}
-          type="submit"
-          className="w-full mt-8"
-        >
-          <div className="flex justify-center items-center">
-            {isEditSubCategory ? "Save Subcategory" : "Add Subcategory"}
-          </div>
-        </CButton>
-      </form>
+              {errors.name && (
+                <p className="text-red-500 text-sm text-start">
+                  {errors.name.message}
+                </p>
+              )}
+            </div>
+            <div className="col-span-2">
+              <label className="block mb-2 text-sm font-medium text-left text-gray-700">
+                Description
+              </label>
+              <textarea
+                {...register("desc", { required: "Description is required" })}
+                id="desc"
+                className="input input-primary"
+                placeholder="Enter sub-category description"
+              />
+              {errors.desc && (
+                <p className="text-red-500 text-sm text-start">
+                  {errors.desc.message}
+                </p>
+              )}
+            </div>
+
+            <div className="col-span-2">
+              <label
+                htmlFor="categories"
+                className="block mb-2 text-sm font-medium text-left text-gray-700"
+              >
+                Category
+              </label>
+              <Controller
+                name="categories"
+                control={control}
+                rules={{ required: "At least one category is required" }}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    options={categoriesOption}
+                    isDisabled={isEditSubCategory}
+                    className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+                    classNamePrefix="react-select"
+                    placeholder="Select categories"
+                  />
+                )}
+              />
+              {errors.categories && (
+                <p className="text-red-500 text-sm text-start">
+                  {errors.categories.message}
+                </p>
+              )}
+            </div>
+            <CButton
+              loading={btnLoading}
+              variant={ButtonType.Primary}
+              type="submit"
+              className="w-full mt-8"
+            >
+              <div className="flex justify-center items-center">
+                {isEditSubCategory ? "Save Subcategory" : "Add Subcategory"}
+              </div>
+            </CButton>
+          </form>
+        </>
+      )}
     </motion.div>
   );
 };

@@ -170,27 +170,37 @@ const AddModifierForm = () => {
       setBtnLoading(true);
       const imgUrl = await handleLogoUpload();
 
-      !isEditMod
-        ? // ADD ITEM API
+      if (!isEditMod) {
+        // ADD ITEM API
 
-          await sdk.addModifier({
-            input: {
-              desc: {
-                value: data.desc,
-              },
-              isItem: isItemFromMenu,
-              name: {
-                value: data.name,
-              },
-              price: {
-                value: parsedPrice,
-              },
-              preSelect: data.preSelect,
+        await sdk.addModifier({
+          input: {
+            desc: {
+              value: data.desc,
             },
-          })
-        : await sdk.updateModifier({
-            input: updateInput,
-          });
+            isItem: isItemFromMenu,
+            name: {
+              value: data.name,
+            },
+            price: {
+              value: parsedPrice,
+            },
+            preSelect: data.preSelect,
+          },
+        });
+        setToastData({
+          type: "success",
+          message: "Modifier Added Successfully",
+        });
+      } else {
+        await sdk.updateModifier({
+          input: updateInput,
+        });
+        setToastData({
+          type: "success",
+          message: "Modifier Updated Successfully",
+        });
+      }
 
       setisAddModifierModalOpen(false);
       setfetchMenuDatas(!fetchMenuDatas);
@@ -198,11 +208,6 @@ const AddModifierForm = () => {
       setEditModId(null);
       setisDuplicateMods(false);
       setEditModId(null);
-
-      setToastData({
-        type: "success",
-        message: "Modifier Added Successfully",
-      });
     } catch (error: any) {
       const errorMessage = extractErrorMessage(error);
       setToastData({
@@ -253,11 +258,6 @@ const AddModifierForm = () => {
         onSubmit={handleSubmit(onSubmit)}
         className="max-w-4xl mx-auto p-6 w-full bg-white rounded-md "
       >
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-semibold">
-            {!isEditMod ? "ADD Modifier" : "EDIT Modifier"}
-          </h2>
-        </div>
         <div className="col-span-2 grid grid-cols-1 gap-6">
           <div className="w-full mb-1 flex items-center justify-between">
             <label className="text-sm font-medium text-left text-gray-700">
@@ -281,7 +281,7 @@ const AddModifierForm = () => {
 
             {isItemFromMenu && (
               <p className="text-gray-600 text-xs mt-1 mb-1 text-start">
-                Tap on display name to select desired Item
+                Tap on the below display name field to select desired Item
               </p>
             )}
 
@@ -442,15 +442,7 @@ const AddModifierForm = () => {
               </p>
             </div>
           </div>
-
           <div className="">
-            <label
-              htmlFor="preselect"
-              className="block mb-2 text-sm font-medium text-left text-gray-700"
-            >
-              Pre-Select
-            </label>
-
             <CustomSwitchCard
               label="Pre Select"
               title="Pre Select"
@@ -507,7 +499,7 @@ const AddModifierForm = () => {
               .map((item) => (
                 <div
                   key={item._id}
-                  className="p-2 border border-gray-300 rounded cursor-pointer hover:bg-primary hover:bg-opacity-5"
+                  className="p-2 mb-4 bg-white border border-gray-200 rounded-lg shadow-sm cursor-pointer transition-transform transform hover:scale-105 hover:bg-gray-50"
                   onClick={() => {
                     const onlineOrderingPrice = item.priceOptions.find(
                       (option) => option.menuType === "OnlineOrdering"
@@ -522,7 +514,14 @@ const AddModifierForm = () => {
                     setShowItemModal(false);
                   }}
                 >
-                  {item.name}
+                  <div className="text-md flex justify-between font-medium text-gray-800">
+                    {item.name}
+                    {item.price && (
+                      <div className=" text-sm text-gray-600">
+                        ${item.price}
+                      </div>
+                    )}
+                  </div>
                 </div>
               ))}
           </div>

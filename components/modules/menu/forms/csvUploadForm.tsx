@@ -87,9 +87,11 @@ const CsvUploadForm = () => {
     items: [],
   });
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
+  const [isLoading, setisLoading] = useState(false);
 
   useEffect(() => {
     if (csvData.length > 0) {
+      setisLoading(true);
       setErrorMessages([]);
 
       const headers = Object.keys(csvData[0]);
@@ -129,7 +131,7 @@ const CsvUploadForm = () => {
       const errors: Array<Record<string, string>> = [];
       const successfulRows: Array<Record<string, string>> = [];
 
-      csvData.forEach((row, index) => {
+      csvData.forEach((row) => {
         const {
           Category,
           "Sub Category": subCategory,
@@ -150,44 +152,59 @@ const CsvUploadForm = () => {
           IsSpicy: isSpicy,
         } = row;
 
-        if (isNaN(Number(price)) || Number(price) <= 0) {
-          setErrorMessages((prev) => [
-            ...prev,
-            `Invalid price in row: ${index} `,
-          ]);
+        let errorMessage = "";
+
+        if (isNaN(Number(price))) {
+          errorMessage = `Invalid price`;
+          if (!errorMessages.includes(errorMessage)) {
+            errors.push({ ...row, errorMessage });
+            setErrorMessages((prev) => [...prev, errorMessage]);
+          }
+          return;
+        }
+        if (Number(price) <= 0) {
+          errorMessage = `Price Cant Be 0`;
+          if (!errorMessages.includes(errorMessage)) {
+            errors.push({ ...row, errorMessage });
+            setErrorMessages((prev) => [...prev, errorMessage]);
+          }
           return;
         }
 
         if (itemNames.has(itemName)) {
-          setErrorMessages((prev) => [
-            ...prev,
-            `Duplicate item name in row: ${index}`,
-          ]);
+          errorMessage = `Duplicate item name`;
+          if (!errorMessages.includes(errorMessage)) {
+            errors.push({ ...row, errorMessage });
+            setErrorMessages((prev) => [...prev, errorMessage]);
+          }
           return;
         }
         itemNames.add(itemName);
 
         if (itemName.length > 80) {
-          setErrorMessages((prev) => [
-            ...prev,
-            `Item name too long in row: ${index}`,
-          ]);
+          errorMessage = `Item name too long`;
+          if (!errorMessages.includes(errorMessage)) {
+            errors.push({ ...row, errorMessage });
+            setErrorMessages((prev) => [...prev, errorMessage]);
+          }
           return;
         }
 
         if (itemDesc.length < 40 || itemDesc.length > 200) {
-          setErrorMessages((prev) => [
-            ...prev,
-            `Item description length invalid in row: ${index}`,
-          ]);
+          errorMessage = `Item description length should be between 40 to 200 characters`;
+          if (!errorMessages.includes(errorMessage)) {
+            errors.push({ ...row, errorMessage });
+            setErrorMessages((prev) => [...prev, errorMessage]);
+          }
           return;
         }
 
         if (items.length >= 500) {
-          setErrorMessages((prev) => [
-            ...prev,
-            `Too many items, limit reached.`,
-          ]);
+          errorMessage = `Too many items, limit reached.`;
+          if (!errorMessages.includes(errorMessage)) {
+            errors.push({ ...row, errorMessage });
+            setErrorMessages((prev) => [...prev, errorMessage]);
+          }
           return;
         }
 
@@ -238,15 +255,21 @@ const CsvUploadForm = () => {
         items,
       });
 
-      console.log("Parsed CSV Data:", {
-        categories,
-        subCategories,
-        items,
-      });
+      // console.log("Parsed CSV Data:", {
+      //   categories,
+      //   subCategories,
+      //   items,
+      // });
+      setisLoading(false);
     }
   }, [csvData]);
 
   const generateErrorCsv = () => {
+    if (errorCsvData.length === 0) {
+      setErrorMessages((prev) => [...prev, "No errors to export"]);
+      return;
+    }
+
     const csv = Papa.unparse(errorCsvData, { header: true });
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
@@ -281,6 +304,19 @@ const CsvUploadForm = () => {
   };
 
   const onSubmit = async (data: any) => {
+    if (
+      !parsedCsvData.categories.length ||
+      !parsedCsvData.subCategories.length ||
+      !parsedCsvData.items.length
+    ) {
+      // Handle error for missing parsed data
+      setErrorMessages((prev) => [
+        ...prev,
+        "Parsed data is not available or incomplete.",
+      ]);
+      return;
+    }
+
     const { menuType, action } = data;
   };
 
@@ -298,9 +334,9 @@ const CsvUploadForm = () => {
   const prevStep = () => setStep((prevStep) => prevStep - 1);
   return (
     <div className="w-full">
-      <div className="w-full flex justify-between items-center mb-4">
+      <div className="w-full flex justify-between items-center px-12 py-4">
         <div
-          className={`rounded-full w-8 h-8 flex items-center justify-center ${
+          className={`rounded-md w-8 h-8 flex items-center justify-center ${
             step >= 1 ? "bg-primary text-white" : "bg-gray-300"
           }`}
         >
@@ -310,7 +346,7 @@ const CsvUploadForm = () => {
           className={`flex-1 h-1 ${step >= 2 ? "bg-primary" : "bg-gray-300"}`}
         ></div>
         <div
-          className={`rounded-full w-8 h-8 flex items-center justify-center ${
+          className={`rounded-md w-8 h-8 flex items-center justify-center ${
             step >= 2 ? "bg-primary text-white" : "bg-gray-300"
           }`}
         >
@@ -320,7 +356,7 @@ const CsvUploadForm = () => {
           className={`flex-1 h-1 ${step >= 3 ? "bg-primary" : "bg-gray-300"}`}
         ></div>
         <div
-          className={`rounded-full w-8 h-8 flex items-center justify-center ${
+          className={`rounded-md w-8 h-8 flex items-center justify-center ${
             step >= 3 ? "bg-primary text-white" : "bg-gray-300"
           }`}
         >
@@ -330,15 +366,14 @@ const CsvUploadForm = () => {
 
       {step === 1 && (
         <div className=" flex flex-col justify-center text-center">
-          <div className="w-1/3">
+          <div className="w-9/12 mx-auto">
             <iframe
-              //   width="450"
-              //   height="250"
               src="https://www.youtube.com/embed/dQw4w9WgXcQ"
               title="YouTube video player"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
+              className="w-full h-64" // Adjust height as needed
             ></iframe>
           </div>
 
@@ -351,7 +386,11 @@ const CsvUploadForm = () => {
             </ul>
           </div>
           <div className="flex justify-end mt-4">
-            <CButton onClick={nextStep} variant={ButtonType.Primary}>
+            <CButton
+              loading={isLoading}
+              onClick={nextStep}
+              variant={ButtonType.Primary}
+            >
               Next
             </CButton>
           </div>
@@ -499,10 +538,26 @@ const CsvUploadForm = () => {
           </div>
 
           <div className="flex justify-between">
-            <CButton onClick={prevStep} variant={ButtonType.Outlined}>
+            <CButton
+              loading={isLoading}
+              onClick={prevStep}
+              variant={ButtonType.Outlined}
+            >
               Back
             </CButton>
-            <CButton onClick={nextStep} variant={ButtonType.Primary}>
+            <CButton
+              type="button"
+              variant={ButtonType.Primary}
+              loading={isLoading}
+              onClick={nextStep}
+              disabled={
+                isLoading ||
+                !file ||
+                !parsedCsvData.categories.length ||
+                !parsedCsvData.subCategories.length ||
+                !parsedCsvData.items.length
+              }
+            >
               Next
             </CButton>
           </div>
@@ -511,39 +566,65 @@ const CsvUploadForm = () => {
 
       {step === 3 && (
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="text-center">
+          <div className="text-start">
             <h2 className="text-xl font-bold">Preview</h2>
             <p>Preview of uploaded CSV data will be shown here.</p>
-            {errorMessages.length > 0 && (
-              <div className="mt-4 text-left">
-                <p className="text-red-600">Errors occurred:</p>
-                <ul className="list-disc list-inside text-left text-red-600">
-                  {errorMessages.map((msg, index) => (
-                    <li key={index}>{msg}</li>
-                  ))}
-                </ul>
-                <CButton
-                  type="button"
-                  onClick={generateErrorCsv}
-                  variant={ButtonType.Primary}
-                  className="w-full mt-5"
-                >
-                  Download Error CSV
-                </CButton>
-              </div>
-            )}
+
+            <div className="mt-4">
+              {previewData.length > 0 ? (
+                <div className="grid grid-cols-1 gap-4">
+                  {/* Preview Summary Card */}
+                  <div className="border rounded-lg p-4 shadow-md">
+                    <h3 className="text-lg font-semibold mb-2">Summary</h3>
+                    <p>Categories: {parsedCsvData.categories.length}</p>
+                    <p>Sub Categories: {parsedCsvData.subCategories.length}</p>
+                    <p>Items: {parsedCsvData.items.length}</p>
+                    <button
+                      type="button"
+                      onClick={handlePreview}
+                      className="text-primary hover:underline mt-2"
+                    >
+                      View Full Data
+                    </button>
+                  </div>
+
+                  {/* Error Card */}
+                  {errorCsvData.length > 0 && (
+                    <div className="border rounded-lg p-4 shadow-md">
+                      <h3 className="text-lg font-semibold mb-2">Errors</h3>
+                      <ul className="list-disc list-inside text-left text-red-600">
+                        {errorMessages.map((msg, index) => (
+                          <li key={index}>{msg}</li>
+                        ))}
+                      </ul>
+                      <button
+                        type="button"
+                        onClick={generateErrorCsv}
+                        className="text-primary hover:underline mt-2"
+                      >
+                        Download Error CSV
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <p className="text-red-600">All rows are invalid.</p>
+              )}
+            </div>
+
             <div className="flex justify-between mt-4">
-              <CButton onClick={prevStep} variant={ButtonType.Outlined}>
+              <CButton
+                loading={isLoading}
+                onClick={prevStep}
+                variant={ButtonType.Outlined}
+              >
                 Back
               </CButton>
               <CButton
-                type="button"
-                onClick={handlePreview}
+                loading={isLoading}
+                type="submit"
                 variant={ButtonType.Primary}
               >
-                Preview Data
-              </CButton>
-              <CButton type="submit" variant={ButtonType.Primary}>
                 Submit
               </CButton>
             </div>

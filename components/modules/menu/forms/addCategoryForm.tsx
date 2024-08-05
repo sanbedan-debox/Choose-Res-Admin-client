@@ -102,14 +102,11 @@ const AddCategoryForm = () => {
     }[]
   >([]);
 
-  const [useRestaurantTimings, setUseRestaurantTimings] = useState(true);
-  const handleCheckboxChange = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const isChecked = event.target.checked;
-    setUseRestaurantTimings(isChecked);
-
-    if (isChecked) {
+  const [useRestaurantTimings, setUseRestaurantTimings] = useState(
+    isEditCats ? false : true
+  );
+  useEffect(() => {
+    const setTimings = async () => {
       try {
         const response = await sdk.getRestaurantDetails();
         const restaurantAvailibility =
@@ -126,18 +123,10 @@ const AddCategoryForm = () => {
           message: "Failed to get Restaurant availibility",
         });
       }
-    } else {
-      setAvailability([
-        { day: Day.Sunday, hours: [], active: false },
-        { day: Day.Monday, hours: [], active: false },
-        { day: Day.Tuesday, hours: [], active: false },
-        { day: Day.Wednesday, hours: [], active: false },
-        { day: Day.Thursday, hours: [], active: false },
-        { day: Day.Friday, hours: [], active: false },
-        { day: Day.Saturday, hours: [], active: false },
-      ]);
-    }
-  };
+    };
+    setTimings();
+  }, [useRestaurantTimings]);
+
   const [availability, setAvailability] = useState<Availability[]>([
     { day: Day.Sunday, hours: [], active: false },
     { day: Day.Monday, hours: [], active: false },
@@ -295,7 +284,7 @@ const AddCategoryForm = () => {
       } else {
         // EDIT CATEGORIES
 
-        await sdk.updateCategory({
+        const resupdate = await sdk.updateCategory({
           input: updateInput,
         });
 
@@ -304,6 +293,12 @@ const AddCategoryForm = () => {
             itemId: addedMenuIds,
             categoryId: editCatsId || "",
           }));
+
+        if (resupdate.updateCategory)
+          setToastData({
+            type: "success",
+            message: "Category Updated Successfully",
+          });
 
         setBtnLoading(false);
         setisDuplicateCats(false);
@@ -419,7 +414,7 @@ const AddCategoryForm = () => {
       dataKey: "name",
       render: (item: { _id: string }) => (
         <div className="flex space-x-2 justify-center">
-          <IoIosCloseCircleOutline
+          <MdArrowOutward
             className="text-primary cursor-pointer"
             onClick={() => handleEditItem(item._id)}
           />
@@ -462,15 +457,6 @@ const AddCategoryForm = () => {
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="flex flex-col items-center space-y-5 text-center">
-        <h1 className="font-display max-w-2xl font-semibold text-2xl">
-          {!isEditCats ? "ADD Category" : "EDIT Category"}
-        </h1>
-        <p className="max-w-md text-accent-foreground/80 text-sm">
-          Fill in the details to add a new category.
-        </p>
-      </div>
-
       <form
         className="space-y-4 md:space-y-3 w-full max-w-2xl"
         onSubmit={handleSubmit(onSubmit)}
@@ -574,18 +560,18 @@ const AddCategoryForm = () => {
           Availibility
         </label>
         <div className="flex items-center mb-4">
-          <input
-            type="checkbox"
-            id="useRestaurantTimings"
-            checked={useRestaurantTimings}
-            onChange={handleCheckboxChange}
-            className="mr-2"
-          />
-          <label htmlFor="useRestaurantTimings">
-            Use Restaurant Timings for this Item
-          </label>
+          <button
+            type="button"
+            className="text-sm text-primary flex items-center cursor-pointer"
+            onClick={async () => {
+              setUseRestaurantTimings(!useRestaurantTimings);
+            }}
+          >
+            <span className=" hover:underline">
+              Use Restaurant Timings for this Item
+            </span>
+          </button>
         </div>
-
         <AvailabilityComponent
           availability={availability}
           setAvailability={setAvailability}

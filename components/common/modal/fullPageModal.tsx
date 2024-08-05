@@ -62,8 +62,8 @@ const FullPageModal: React.FC<FullPageModalProps> = ({
             exit="hidden"
             className="bg-white w-full h-full max-h-full overflow-auto"
           >
-            <div className="flex flex-col h-full">
-              <div className="flex items-center justify-between px-6 py-4 ">
+            <div className="flex flex-col h-full  ">
+              <div className="flex items-center justify-between px-6 py-4 shadow z-20">
                 <h2 className="text-2xl font-bold text-black">{title}</h2>
                 <button
                   type="button"
@@ -93,17 +93,6 @@ const FullPageModal: React.FC<FullPageModalProps> = ({
                 {comments && <p className="text-gray-700 mb-4">{comments}</p>}
                 {children}
               </div>
-
-              {/* <div className="sticky bottom-4 z-20  flex justify-center">
-              <CButton
-                variant={ButtonType.Primary}
-                type="button"
-                className="w-96 "
-                onClick={onActionButtonClick}
-              >
-                {actionButtonLabel}
-              </CButton>
-            </div> */}
             </div>
           </motion.div>
         </motion.div>

@@ -153,16 +153,6 @@ const AddItemForm = () => {
   const [showAddsubCategory, setisShowAddsubCategory] =
     useState<boolean>(false);
 
-  // const [selectedSubCategory, setSelectedSubCategory] = useState<{
-  //   _id: string;
-  //   name: string;
-  //   desc: string;
-  // }>({
-  //   _id: "",
-  //   name: "",
-  //   desc: "",
-  // });
-
   const [availability, setAvailability] = useState<Availability[]>([
     { day: Day.Sunday, hours: [], active: false },
     { day: Day.Monday, hours: [], active: false },
@@ -393,33 +383,21 @@ const AddItemForm = () => {
 
   useEffect(() => {
     const setTimings = async () => {
-      if (useRestaurantTimings) {
-        try {
-          const response = await sdk.getRestaurantDetails();
-          const restaurantAvailibility =
-            response.getRestaurantDetails?.availability;
-          if (restaurantAvailibility) {
-            const originalAvailability = reverseFormatAvailability(
-              restaurantAvailibility
-            );
-            setAvailability(originalAvailability);
-          }
-        } catch (error) {
-          setToastData({
-            type: "error",
-            message: "Failed to get Restaurant availibility",
-          });
+      try {
+        const response = await sdk.getRestaurantDetails();
+        const restaurantAvailibility =
+          response.getRestaurantDetails?.availability;
+        if (restaurantAvailibility) {
+          const originalAvailability = reverseFormatAvailability(
+            restaurantAvailibility
+          );
+          setAvailability(originalAvailability);
         }
-      } else {
-        setAvailability([
-          { day: Day.Sunday, hours: [], active: false },
-          { day: Day.Monday, hours: [], active: false },
-          { day: Day.Tuesday, hours: [], active: false },
-          { day: Day.Wednesday, hours: [], active: false },
-          { day: Day.Thursday, hours: [], active: false },
-          { day: Day.Friday, hours: [], active: false },
-          { day: Day.Saturday, hours: [], active: false },
-        ]);
+      } catch (error) {
+        setToastData({
+          type: "error",
+          message: "Failed to get Restaurant availibility",
+        });
       }
     };
     setTimings();
@@ -483,51 +461,6 @@ const AddItemForm = () => {
         hasChanges = true;
       }
 
-      // if (data.applySalesTax !== changesMenu?.applySalesTax) {
-      //   updateInput.applySalesTax = data.applySalesTax;
-      //   hasChanges = true;
-      // }
-
-      // if (data.popularItem !== changesMenu?.popularItem) {
-      //   updateInput.popularItem = data.popularItem;
-      //   hasChanges = true;
-      // }
-
-      // if (data.upSellItem !== changesMenu?.upSellItem) {
-      //   updateInput.upSellItem = data.upSellItem;
-      //   hasChanges = true;
-      // }
-
-      // if (data.isSpicy !== changesMenu?.isSpicy) {
-      //   updateInput.isSpicy = data.isSpicy;
-      //   hasChanges = true;
-      // }
-
-      // if (data.hasNuts !== changesMenu?.hasNuts) {
-      //   updateInput.hasNuts = data.hasNuts;
-      //   hasChanges = true;
-      // }
-
-      // if (data.isGlutenFree !== changesMenu?.isGlutenFree) {
-      //   updateInput.isGlutenFree = data.isGlutenFree;
-      //   hasChanges = true;
-      // }
-
-      // if (data.isHalal !== changesMenu?.isHalal) {
-      //   updateInput.isHalal = data.isHalal;
-      //   hasChanges = true;
-      // }
-
-      // if (data.isVegan !== changesMenu?.isVegan) {
-      //   updateInput.isVegan = data.isVegan;
-      //   hasChanges = true;
-      // }
-
-      // if (data.image !== changesMenu?.image) {
-      //   updateInput.image = imgUrl || "";
-      //   hasChanges = true;
-      // }
-
       const prevSelectedMenuIds = prevItemsbfrEdit.map((item) => item._id);
       const selectedItemsIds = selectedItems.map((item) => item._id);
       const addedMenuIds = selectedItemsIds.filter(
@@ -552,17 +485,7 @@ const AddItemForm = () => {
               value: parsedPrice,
             },
             status: statusSub,
-            // options: {
-            //   []
-            //   applySalesTax: data.applySalesTax ? true : false,
-            //   popularItem: data.popularItem ? true : false,
-            //   upSellItem: data.upSellItem ? true : false,
-            //   hasNuts: data.hasNuts ? true : false,
-            //   isGlutenFree: data.isGlutenFree ? true : false,
-            //   isHalal: data.isHalal ? true : false,
-            //   isVegan: data.isVegan ? true : false,
-            //   isSpicy: data.isSpicy ? true : false,
-            // },
+
             subCategory: selectedSubCategories,
             options: options.map((e) => ({
               _id: e._id,
@@ -582,6 +505,10 @@ const AddItemForm = () => {
         setisDuplicateItem(false);
         setfetchMenuDatas(!fetchMenuDatas);
         setEditItemId(null);
+        setToastData({
+          type: "success",
+          message: "Item Added Successfully",
+        });
       } else {
         // EDIT/UPDATE ITEM API
         await sdk.updateItem({
@@ -603,7 +530,7 @@ const AddItemForm = () => {
 
         setToastData({
           type: "success",
-          message: "Item Added Successfully",
+          message: "Item Updated Successfully",
         });
       }
     } catch (error: any) {
@@ -873,11 +800,6 @@ const AddItemForm = () => {
         onSubmit={handleSubmit(onSubmit)}
         className="max-w-4xl mx-auto p-6 w-full bg-white rounded-md "
       >
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-semibold">
-            {!isEditItem ? "ADD ITEM" : "EDIT ITEM"}
-          </h2>
-        </div>
         <div className="col-span-2 grid grid-cols-1 gap-6">
           <div className="mb-1">
             <label
@@ -1192,23 +1114,13 @@ const AddItemForm = () => {
                 type="button"
                 className="text-sm text-primary flex items-center cursor-pointer"
                 onClick={async () => {
-                  setUseRestaurantTimings(true);
+                  setUseRestaurantTimings(!useRestaurantTimings);
                 }}
               >
                 <span className=" hover:underline">
                   Use Restaurant Timings for this Item
                 </span>
               </button>
-              {/* <input
-                type="checkbox"
-                id="useRestaurantTimings"
-                checked={useRestaurantTimings}
-                onChange={handleCheckboxChange}
-                className="mr-2"
-              /> */}
-              {/* <label htmlFor="useRestaurantTimings">
-                Use Restaurant Timings for this Item
-              </label> */}
             </div>
 
             <AvailabilityComponent
@@ -1234,8 +1146,9 @@ const AddItemForm = () => {
                   options={subCategories}
                   onChange={(e) => {
                     const index = mainSubCategories.findIndex(
-                      (el) => el.name === e?.value
+                      (el) => el.name === e?.label
                     );
+                    console.log(e);
                     if (index >= 0) {
                       let item = mainSubCategories[index];
                       setSelectedSubCategories({

@@ -114,11 +114,6 @@ const Dashboard: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
       link: "#",
       onClick: () => setisShowTaxSettings(true),
     },
-    {
-      name: "Add team members",
-      link: "/teams",
-      onClick: () => {},
-    },
   ];
 
   const { firstName } = useAuthStore();
