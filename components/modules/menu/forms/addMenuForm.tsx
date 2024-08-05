@@ -22,7 +22,7 @@ import useMenuCategoryStore from "@/store/menuCategory";
 import ReusableModal from "@/components/common/modal/modal";
 import useRestaurantsStore from "@/store/restaurant";
 import useAuthStore from "@/store/auth";
-import { IoIosAddCircleOutline } from "react-icons/io";
+import { IoIosAddCircleOutline, IoIosCloseCircleOutline } from "react-icons/io";
 import { RiEditCircleLine } from "react-icons/ri";
 import AvailabilityComponent from "@/components/common/timingAvailibility/timingAvailibility";
 import {
@@ -304,8 +304,8 @@ const AddMenuForm = () => {
 
   const renderActions = (rowData: ItemsDropDownType) => (
     <div className="flex space-x-2 justify-center">
-      <FaTrash
-        className="text-red-600 cursor-pointer"
+      <IoIosCloseCircleOutline
+        className="text-red-400 text-lg cursor-pointer"
         onClick={() => {
           setConfirmationRemoval(true);
           setRemovingId(rowData?._id);

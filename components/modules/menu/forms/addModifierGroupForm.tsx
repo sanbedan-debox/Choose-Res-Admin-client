@@ -23,7 +23,7 @@ import { MdArrowOutward } from "react-icons/md";
 import useModGroupStore from "@/store/modifierGroup";
 import useModStore from "@/store/modifiers";
 import ReusableModal from "@/components/common/modal/modal";
-import { IoIosAddCircleOutline } from "react-icons/io";
+import { IoIosAddCircleOutline, IoIosCloseCircleOutline } from "react-icons/io";
 import { RiEditCircleLine } from "react-icons/ri";
 
 interface IFormInput {
@@ -204,8 +204,8 @@ const AddModifierGroupForm = () => {
   };
   const renderActions = (rowData: { _id: string }) => (
     <div className="flex space-x-2 justify-center">
-      <FaTrash
-        className="text-red-600 cursor-pointer"
+      <IoIosCloseCircleOutline
+        className="text-red-400 text-lg cursor-pointer"
         onClick={() => {
           setConfirmationRemoval(true);
           setRemovingId(rowData?._id);
@@ -291,10 +291,21 @@ const AddModifierGroupForm = () => {
       );
       const selectedItemsIds = await selectedItems.map((item) => item._id);
 
-      const addedMenuIds = selectedItemsIds.filter(
-        (id) => !prevSelectedMenuIds.includes(id)
-      );
-      const isMenuAdded = addedMenuIds.length > 0;
+      // const addedMenuIds = selectedItemsIds.filter(
+      //   (id) => !prevSelectedMenuIds.includes(id)
+      // );
+      const addedMenuItems = selectedItems
+        .filter((item) => !prevSelectedMenuIds.includes(item._id))
+        .map((item) => ({
+          id: item._id,
+          price:
+            data.pricingType.value === PriceTypeEnum.IndividualPrice
+              ? item.price
+              : 0,
+        }));
+
+      // const isMenuAdded = addedMenuIds.length > 0;
+      const isMenuAdded = addedMenuItems.length > 0;
       setBtnLoading(true);
       if (selectedItemsIds.length === 0) {
         setToastData({
@@ -383,9 +394,19 @@ const AddModifierGroupForm = () => {
           input: updateInput,
         });
 
+        // isMenuAdded &&
+        //   (await sdk.addModifierToModifierGroup({
+        //     modifierIds: addedMenuIds,
+        //     modifierGroupId: editModGroupId || "",
+        //   }));
+        //       isMenuAdded &&
+        // (await sdk.addModifierToModifierGroup({
+        //   modifierIds: addedMenuIds,
+        //   modifierGroupId: editModGroupId || "",
+        // }));
         isMenuAdded &&
           (await sdk.addModifierToModifierGroup({
-            modifierIds: addedMenuIds,
+            modifiers: addedMenuItems,
             modifierGroupId: editModGroupId || "",
           }));
       }
