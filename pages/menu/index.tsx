@@ -10,6 +10,7 @@ import ArrowCard from "@/components/common/arrowCard/arrowCard";
 import QuickActions from "@/components/common/quickLinks/quickLink";
 import ReusableModal from "@/components/common/modal/modal";
 import CsvUploadForm from "@/components/modules/menu/forms/csvUploadForm";
+import useMenuPageStore from "./store/menuStore";
 
 type NextPageWithLayout = React.FC & {
   getLayout?: (page: React.ReactNode) => React.ReactNode;
@@ -36,8 +37,8 @@ const Menu: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
     firstName,
   } = useAuthStore();
 
-  const [isShowCSVuploadModal, setIsShowCSVuploadModal] = useState(false);
-
+  // const [isShowCSVuploadModal, setIsShowCSVuploadModal] = useState(false);
+  const { isShowUploadCSV, setisShowUploadCSV } = useMenuPageStore();
   useEffect(() => {
     setUserId(repo?._id ?? "");
     setEmail(repo?.email ?? "");
@@ -76,7 +77,7 @@ const Menu: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
           <ArrowCard
             title="Upload CSV"
             caption="Bulk upload your categories and items to the selected Menu"
-            onClick={() => setIsShowCSVuploadModal(true)}
+            onClick={() => setisShowUploadCSV(true)}
           />
         </div>
       </div>
@@ -85,8 +86,8 @@ const Menu: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
       </div>
       <ReusableModal
         width="md"
-        isOpen={isShowCSVuploadModal}
-        onClose={() => setIsShowCSVuploadModal(false)}
+        isOpen={isShowUploadCSV}
+        onClose={() => setisShowUploadCSV(false)}
         title="Upload CSV"
       >
         <CsvUploadForm />

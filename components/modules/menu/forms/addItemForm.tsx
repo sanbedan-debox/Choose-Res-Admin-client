@@ -44,6 +44,7 @@ interface IFormInput {
   desc: string;
   image: string;
   price: number;
+  limit: number;
   status: boolean;
   applySalesTax: boolean;
   popularItem: boolean;
@@ -433,6 +434,7 @@ const AddItemForm = () => {
         subCategory: selectedSubCategories,
         options: options,
         priceOptions: pricingOptions,
+
         visibility: visibilities,
         availability: formattedAvailability,
       };
@@ -455,6 +457,9 @@ const AddItemForm = () => {
       if (data.price !== changesMenu?.price?.value) {
         addChange("price", parsedPrice);
       }
+      // if (data.price !== changesMenu?.price?.value) {
+      //   addChange("price", parsedPrice);
+      // }
 
       if (data.status !== (changesMenu?.status === StatusEnum.Active)) {
         updateInput.status = data.status;
@@ -1089,6 +1094,48 @@ const AddItemForm = () => {
                 );
               })}
             </div>
+          </div>
+          <div className="mb-1">
+            <label
+              htmlFor="itemLimit"
+              className="block mb-2 text-sm font-medium text-left text-gray-700"
+            >
+              Item Limit
+            </label>
+            <input
+              type="number"
+              {...register("price", {
+                // pattern: {
+                //   value: /^\d+(\.\d{1,2})?$/,
+                //   message: "Enter a valid price (e.g., 7.99)",
+                // },
+              })}
+              id="itemLimit"
+              className="input input-primary"
+              placeholder="Enter item limit"
+              style={{
+                appearance: "textfield",
+              }}
+              inputMode="decimal"
+              step="0.01"
+              onWheel={(e) => e.preventDefault()}
+              onKeyDown={(e) => {
+                if (e.key === "e" || e.key === "-" || e.key === "+") {
+                  e.preventDefault();
+                }
+              }}
+            />
+            <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
+              Enter the maximum number of time this Item can be purchased by the
+              customers,If the limit has been crossed the Item will become
+              incactive and you can activate it again with the same or different
+              limit
+            </p>
+            {errors.price && (
+              <p className="text-red-500 text-sm text-start">
+                {errors.price.message}
+              </p>
+            )}
           </div>
           <div>
             <FormAddTable

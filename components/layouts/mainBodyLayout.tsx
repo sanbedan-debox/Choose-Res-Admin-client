@@ -88,8 +88,13 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     }
   };
 
-  const { setRestaurants, setSelectedRestaurant } = useRestaurantsStore();
-  const { setSelectedRestaurantTaxRateId } = useRestaurantsStore();
+  const {
+    setRestaurants,
+    setSelectedRestaurant,
+    setSelectedRestaurantTaxRateId,
+    selectedRestaurantId,
+    setSelectedRestaurantId,
+  } = useRestaurantsStore();
   const { setTaxRate } = useAuthStore();
   const router = useRouter();
   const [existingTaxRateId, setExistingTaxRateId] = useState<string | null>(
@@ -110,6 +115,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             const restaurantDetails = res.getRestaurantDetails;
 
             setSelectedRestaurant(restaurantDetails.name?.value || "");
+            setSelectedRestaurantId(restaurantDetails._id || "");
 
             const taxRates = restaurantDetails.taxRates ?? [];
             if (taxRates.length > 0) {
@@ -151,6 +157,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 setSelectedRestaurant(
                   formattedRestaurant[0]?.name?.value || ""
                 );
+                setSelectedRestaurantId(formattedRestaurant[0]?.id || "");
               }
             } catch (error) {
               setToastData({

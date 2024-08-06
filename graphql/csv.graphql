@@ -1,3 +1,11 @@
 query getCSVHeaders {
-  getCSVHeaders
+  getCsvHeaders
+}
+
+query uploadCSVMenuData($input: UploadCsvInput!) {
+  uploadCsvData(input: $input)
+}
+
+query saveCsvError($input: UploadCsvErrorInput!) {
+  saveCsvError(input: $input)
 }

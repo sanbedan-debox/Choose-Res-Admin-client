@@ -85,6 +85,7 @@ export type AddItemInput = {
   image?: InputMaybe<Scalars['String']['input']>;
   name: MasterCommonInput;
   options?: Array<OptionsInput>;
+  orderLimit?: InputMaybe<Scalars['Float']['input']>;
   price: MasterCommonInputNumber;
   priceOptions: Array<PriceOptionsInput>;
   status: StatusEnum;
@@ -321,6 +322,7 @@ export type Config = {
 
 /** Enum to store the types of master config that can be changed by admins anytime */
 export enum ConfigTypeEnum {
+  MaxCsvRows = 'MaxCSVRows',
   MonthlySubscription = 'MonthlySubscription',
   ProcessingFee = 'ProcessingFee',
   TrialDays = 'TrialDays'
@@ -345,6 +347,23 @@ export type CreateMenuInput = {
   taxRateId?: InputMaybe<Scalars['String']['input']>;
   type: MenuTypeEnum;
 };
+
+export type CsvUploadError = {
+  __typename?: 'CsvUploadError';
+  _id: Scalars['ID']['output'];
+  createdAt: Scalars['DateTimeISO']['output'];
+  errorFile: Scalars['String']['output'];
+  issues: Array<Scalars['String']['output']>;
+  restaurantId: Restaurant;
+  updatedAt: Scalars['DateTimeISO']['output'];
+  user: User;
+};
+
+/** Enum to store the types of menu upload process */
+export enum CsvUploadTypeEnum {
+  AddOrUpdate = 'AddOrUpdate',
+  Replace = 'Replace'
+}
 
 export type Cuisine = {
   __typename?: 'Cuisine';
@@ -1289,11 +1308,13 @@ export type Query = {
   getAllTimezones: Array<Timezone>;
   getBusinessDetails: Business;
   getBusinessOnboardingDetails?: Maybe<Business>;
-  getCSVHeaders: Array<Scalars['String']['output']>;
   getCategories: Array<Category>;
   getCategory: Category;
   getCategoryByMenu: Category;
   getConfig: Config;
+  getCsvError: CsvUploadError;
+  getCsvErrors: Array<CsvUploadError>;
+  getCsvHeaders: Array<Scalars['String']['output']>;
   getItem: Item;
   getItems: Array<Item>;
   getMenu: Menu;
@@ -1321,7 +1342,9 @@ export type Query = {
   meUser: User;
   mobileNumberOtpVerification: Scalars['Boolean']['output'];
   resetPasswordAdmin: Scalars['Boolean']['output'];
+  saveCsvError: Scalars['Boolean']['output'];
   setRestaurantIdAsCookie: Scalars['Boolean']['output'];
+  uploadCsvData: Scalars['Boolean']['output'];
   verifyOtpForLogin: Scalars['Boolean']['output'];
 };
 
@@ -1482,8 +1505,18 @@ export type QueryResetPasswordAdminArgs = {
 };
 
 
+export type QuerySaveCsvErrorArgs = {
+  input: UploadCsvErrorInput;
+};
+
+
 export type QuerySetRestaurantIdAsCookieArgs = {
   id: Scalars['String']['input'];
+};
+
+
+export type QueryUploadCsvDataArgs = {
+  input: UploadCsvInput;
 };
 
 
@@ -1704,6 +1737,7 @@ export type UpdateItemInput = {
   image?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<MasterCommonInput>;
   options?: Array<OptionsInput>;
+  orderLimit?: InputMaybe<Scalars['Float']['input']>;
   price?: InputMaybe<MasterCommonInputNumber>;
   priceOptions?: InputMaybe<Array<PriceOptionsInput>>;
   status?: InputMaybe<StatusEnum>;
@@ -1729,8 +1763,8 @@ export type UpdateMenuInput = {
 export type UpdateModifierGroupInput = {
   _id: Scalars['String']['input'];
   desc?: InputMaybe<MasterCommonInput>;
-  maxSelections?: InputMaybe<MasterCommonInputNumber>;
-  minSelections?: InputMaybe<MasterCommonInputNumber>;
+  maxSelections: MasterCommonInputNumber;
+  minSelections: MasterCommonInputNumber;
   name?: InputMaybe<MasterCommonInput>;
   optional?: InputMaybe<Scalars['Boolean']['input']>;
   price?: InputMaybe<MasterCommonInputNumber>;
@@ -1794,6 +1828,17 @@ export type UpdateUserProfileInput = {
   employeeSize?: InputMaybe<StaffCountEnum>;
   establishedAt?: InputMaybe<Scalars['String']['input']>;
   estimatedRevenue?: InputMaybe<EstimatedRevenueEnum>;
+};
+
+export type UploadCsvErrorInput = {
+  errorFile: Scalars['String']['input'];
+  issues: Array<Scalars['String']['input']>;
+};
+
+export type UploadCsvInput = {
+  csvFile: Scalars['String']['input'];
+  menuType: MenuTypeEnum;
+  uploadType?: CsvUploadTypeEnum;
 };
 
 export type User = {
@@ -2016,7 +2061,21 @@ export type RemoveItemFromCategoryMutation = { __typename?: 'Mutation', removeIt
 export type GetCsvHeadersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCsvHeadersQuery = { __typename?: 'Query', getCSVHeaders: Array<string> };
+export type GetCsvHeadersQuery = { __typename?: 'Query', getCsvHeaders: Array<string> };
+
+export type UploadCsvMenuDataQueryVariables = Exact<{
+  input: UploadCsvInput;
+}>;
+
+
+export type UploadCsvMenuDataQuery = { __typename?: 'Query', uploadCsvData: boolean };
+
+export type SaveCsvErrorQueryVariables = Exact<{
+  input: UploadCsvErrorInput;
+}>;
+
+
+export type SaveCsvErrorQuery = { __typename?: 'Query', saveCsvError: boolean };
 
 export type ChangeItemStatusMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -2645,7 +2704,17 @@ export const RemoveItemFromCategoryDocument = gql`
     `;
 export const GetCsvHeadersDocument = gql`
     query getCSVHeaders {
-  getCSVHeaders
+  getCsvHeaders
+}
+    `;
+export const UploadCsvMenuDataDocument = gql`
+    query uploadCSVMenuData($input: UploadCsvInput!) {
+  uploadCsvData(input: $input)
+}
+    `;
+export const SaveCsvErrorDocument = gql`
+    query saveCsvError($input: UploadCsvErrorInput!) {
+  saveCsvError(input: $input)
 }
     `;
 export const ChangeItemStatusDocument = gql`
@@ -3455,6 +3524,12 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     getCSVHeaders(variables?: GetCsvHeadersQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetCsvHeadersQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetCsvHeadersQuery>(GetCsvHeadersDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getCSVHeaders', 'query', variables);
+    },
+    uploadCSVMenuData(variables: UploadCsvMenuDataQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UploadCsvMenuDataQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<UploadCsvMenuDataQuery>(UploadCsvMenuDataDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'uploadCSVMenuData', 'query', variables);
+    },
+    saveCsvError(variables: SaveCsvErrorQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<SaveCsvErrorQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<SaveCsvErrorQuery>(SaveCsvErrorDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'saveCsvError', 'query', variables);
     },
     changeItemStatus(variables: ChangeItemStatusMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<ChangeItemStatusMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<ChangeItemStatusMutation>(ChangeItemStatusDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'changeItemStatus', 'mutation', variables);

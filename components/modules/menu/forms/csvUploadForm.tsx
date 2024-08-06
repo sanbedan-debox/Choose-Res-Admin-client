@@ -4,13 +4,14 @@ import Select from "react-select";
 import Papa from "papaparse";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
-import { MenuTypeEnum } from "@/generated/graphql";
+import { CsvUploadTypeEnum, MenuTypeEnum } from "@/generated/graphql";
 import FullPageModal from "@/components/common/modal/fullPageModal";
-
-enum ActionEnum {
-  Replace = "Replace",
-  Append = "Append",
-}
+import { sdk } from "@/utils/graphqlClient";
+import { extractErrorMessage } from "@/utils/utilFUncs";
+import useGlobalStore from "@/store/global";
+import useAuthStore from "@/store/auth";
+import useRestaurantsStore from "@/store/restaurant";
+import useMenuPageStore from "@/pages/menu/store/menuStore";
 
 const menuTypeOptions = [
   { value: MenuTypeEnum.OnlineOrdering, label: "Online Ordering" },
@@ -19,47 +20,53 @@ const menuTypeOptions = [
 ];
 
 const actionOptions = [
-  { value: ActionEnum.Replace, label: "Replace the existing menu" },
-  { value: ActionEnum.Append, label: "Append" },
-];
-
-const expectedHeaders = [
-  "Category",
-  "Sub Category",
-  "Item Name",
-  "Item Desc",
-  "Item Price",
-  "Item Status",
-  "OnlineOrdering",
-  "DineIn",
-  "Catering",
-  "Item Limit",
-  "PopularItem",
-  "UpSellItem",
-  "IsVegan",
-  "HasNuts",
-  "IsGlutenFree",
-  "IsHalal",
-  "IsSpicy",
+  { value: CsvUploadTypeEnum.Replace, label: "Replace the existing menu" },
+  {
+    value: CsvUploadTypeEnum.AddOrUpdate,
+    label: "Update to the existing menus",
+  },
 ];
 
 const CsvUploadForm = () => {
   const [file, setFile] = useState<File | null>(null);
-  const [csvData, setCsvData] = useState<Array<Record<string, string>>>([]);
   const [errorCsvData, setErrorCsvData] = useState<
     Array<Record<string, string>>
   >([]);
+  const [expectedHeaders, setExpectedHeaders] = useState<string[]>([]);
   const [previewData, setPreviewData] = useState<Array<Record<string, string>>>(
     []
   );
+  const { setToastData } = useGlobalStore();
+
+  useEffect(() => {
+    const fetchHeaders = async () => {
+      try {
+        const headersResp = await sdk.getCSVHeaders();
+        if (headersResp.getCsvHeaders.length > 0) {
+          // setOptions(optsResp.getAllItemOptions);
+          setExpectedHeaders(headersResp.getCsvHeaders);
+        }
+      } catch (error: any) {
+        const errorMessage = extractErrorMessage(error);
+        setToastData({
+          type: "error",
+          message: errorMessage,
+        });
+      }
+    };
+
+    fetchHeaders();
+  }, []);
 
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
 
   const handlePreview = () => {
-    console.log("Preview Data:", previewData);
     setIsPreviewModalOpen(true);
   };
 
+  const [fixedFile, setFixedFile] = useState<File | null>(null);
+  const itemNames = new Set<string>();
+  const successfulRows: Array<Record<string, string>> = [];
   const [parsedCsvData, setParsedCsvData] = useState<{
     categories: { name: string }[];
     subCategories: { category: string; name: string }[];
@@ -89,150 +96,127 @@ const CsvUploadForm = () => {
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const [isLoading, setisLoading] = useState(false);
 
-  useEffect(() => {
-    if (csvData.length > 0) {
-      setisLoading(true);
-      setErrorMessages([]);
+  const processCsvData = (
+    data: Array<Record<string, string>>,
+    isFixedFile: boolean = false
+  ) => {
+    setisLoading(true);
+    setErrorMessages([]);
 
-      const headers = Object.keys(csvData[0]);
+    const headers = Object.keys(data[0]);
 
-      const headersMatch = expectedHeaders.every((header) =>
-        headers.includes(header)
-      );
+    const headersMatch = expectedHeaders.every((header) =>
+      headers.includes(header)
+    );
 
-      if (!headersMatch) {
-        setErrorMessages((prev) => [
-          ...prev,
-          "CSV headers do not match the expected format.",
-        ]);
+    if (!headersMatch) {
+      setErrorMessages((prev) => [
+        ...prev,
+        "CSV headers do not match the expected format.",
+      ]);
+      setisLoading(false);
+      return;
+    }
+
+    const items: {
+      category: string;
+      subCategory: string | null;
+      itemName: string;
+      price: string;
+      itemStatus: boolean;
+      onlineOrdering: boolean;
+      dineIn: boolean;
+      catering: boolean;
+      itemLimit: string;
+      popularItem: boolean;
+      upSellItem: boolean;
+      isVegan: boolean;
+      hasNuts: boolean;
+      isGlutenFree: boolean;
+      isHalal: boolean;
+      isSpicy: boolean;
+    }[] = [];
+
+    const errors: Array<Record<string, string>> = [];
+
+    data.forEach((row) => {
+      const {
+        Category,
+        "Sub Category": subCategory,
+        "Item Name": itemName,
+        "Item Desc": itemDesc,
+        "Item Price": price,
+        "Item Status": itemStatus,
+        OnlineOrdering: onlineOrdering,
+        DineIn: dineIn,
+        Catering: catering,
+        "Item Limit": itemLimit,
+        PopularItem: popularItem,
+        UpSellItem: upSellItem,
+        IsVegan: isVegan,
+        HasNuts: hasNuts,
+        IsGlutenFree: isGlutenFree,
+        IsHalal: isHalal,
+        IsSpicy: isSpicy,
+      } = row;
+
+      let errorMessage = "";
+
+      if (isNaN(Number(price))) {
+        errorMessage = `Invalid price`;
+      } else if (Number(price) <= 0) {
+        errorMessage = `Price Can't Be 0`;
+      } else if (itemNames.has(itemName)) {
+        errorMessage = `Duplicate item name`;
+      } else if (itemName.length > 80) {
+        errorMessage = `Item name too long`;
+      } else if (itemDesc.length < 40 || itemDesc.length > 200) {
+        errorMessage = `Item description length should be between 40 to 200 characters`;
+      } else if (items.length >= 500) {
+        errorMessage = `Too many items, limit reached.`;
+      }
+
+      if (errorMessage) {
+        if (!errors.find((err) => err["Item Name"] === itemName)) {
+          errors.push({ ...row });
+          setErrorMessages((prev) => [...prev, errorMessage]);
+        }
         return;
       }
 
-      const items: {
-        category: string;
-        subCategory: string | null;
-        itemName: string;
-        price: string;
-        itemStatus: boolean;
-        onlineOrdering: boolean;
-        dineIn: boolean;
-        catering: boolean;
-        itemLimit: string;
-        popularItem: boolean;
-        upSellItem: boolean;
-        isVegan: boolean;
-        hasNuts: boolean;
-        isGlutenFree: boolean;
-        isHalal: boolean;
-        isSpicy: boolean;
-      }[] = [];
-
-      const itemNames = new Set<string>();
-      const errors: Array<Record<string, string>> = [];
-      const successfulRows: Array<Record<string, string>> = [];
-
-      csvData.forEach((row) => {
-        const {
-          Category,
-          "Sub Category": subCategory,
-          "Item Name": itemName,
-          "Item Desc": itemDesc,
-          "Item Price": price,
-          "Item Status": itemStatus,
-          OnlineOrdering: onlineOrdering,
-          DineIn: dineIn,
-          Catering: catering,
-          "Item Limit": itemLimit,
-          PopularItem: popularItem,
-          UpSellItem: upSellItem,
-          IsVegan: isVegan,
-          HasNuts: hasNuts,
-          IsGlutenFree: isGlutenFree,
-          IsHalal: isHalal,
-          IsSpicy: isSpicy,
-        } = row;
-
-        let errorMessage = "";
-
-        if (isNaN(Number(price))) {
-          errorMessage = `Invalid price`;
-          if (!errorMessages.includes(errorMessage)) {
-            errors.push({ ...row, errorMessage });
-            setErrorMessages((prev) => [...prev, errorMessage]);
-          }
-          return;
-        }
-        if (Number(price) <= 0) {
-          errorMessage = `Price Cant Be 0`;
-          if (!errorMessages.includes(errorMessage)) {
-            errors.push({ ...row, errorMessage });
-            setErrorMessages((prev) => [...prev, errorMessage]);
-          }
-          return;
-        }
-
-        if (itemNames.has(itemName)) {
-          errorMessage = `Duplicate item name`;
-          if (!errorMessages.includes(errorMessage)) {
-            errors.push({ ...row, errorMessage });
-            setErrorMessages((prev) => [...prev, errorMessage]);
-          }
-          return;
-        }
-        itemNames.add(itemName);
-
-        if (itemName.length > 80) {
-          errorMessage = `Item name too long`;
-          if (!errorMessages.includes(errorMessage)) {
-            errors.push({ ...row, errorMessage });
-            setErrorMessages((prev) => [...prev, errorMessage]);
-          }
-          return;
-        }
-
-        if (itemDesc.length < 40 || itemDesc.length > 200) {
-          errorMessage = `Item description length should be between 40 to 200 characters`;
-          if (!errorMessages.includes(errorMessage)) {
-            errors.push({ ...row, errorMessage });
-            setErrorMessages((prev) => [...prev, errorMessage]);
-          }
-          return;
-        }
-
-        if (items.length >= 500) {
-          errorMessage = `Too many items, limit reached.`;
-          if (!errorMessages.includes(errorMessage)) {
-            errors.push({ ...row, errorMessage });
-            setErrorMessages((prev) => [...prev, errorMessage]);
-          }
-          return;
-        }
-
-        items.push({
-          category: Category,
-          subCategory: subCategory || null,
-          itemName,
-          price,
-          itemStatus: itemStatus === "TRUE",
-          onlineOrdering: onlineOrdering === "TRUE",
-          dineIn: dineIn === "TRUE",
-          catering: catering === "TRUE",
-          itemLimit,
-          popularItem: popularItem === "TRUE",
-          upSellItem: upSellItem === "TRUE",
-          isVegan: isVegan === "TRUE",
-          hasNuts: hasNuts === "TRUE",
-          isGlutenFree: isGlutenFree === "TRUE",
-          isHalal: isHalal === "TRUE",
-          isSpicy: isSpicy === "TRUE",
-        });
-
-        successfulRows.push(row);
+      itemNames.add(itemName);
+      items.push({
+        category: Category,
+        subCategory: subCategory.trim() === "" ? null : subCategory,
+        itemName,
+        price,
+        itemStatus: itemStatus === "TRUE",
+        onlineOrdering: onlineOrdering === "TRUE",
+        dineIn: dineIn === "TRUE",
+        catering: catering === "TRUE",
+        itemLimit,
+        popularItem: popularItem === "TRUE",
+        upSellItem: upSellItem === "TRUE",
+        isVegan: isVegan === "TRUE",
+        hasNuts: hasNuts === "TRUE",
+        isGlutenFree: isGlutenFree === "TRUE",
+        isHalal: isHalal === "TRUE",
+        isSpicy: isSpicy === "TRUE",
       });
 
-      setErrorCsvData(errors);
-      setPreviewData(successfulRows);
+      successfulRows.push(row);
+    });
 
+    setErrorCsvData(errors);
+
+    if (isFixedFile) {
+      setPreviewData((prev) => [...prev, ...successfulRows]);
+      setParsedCsvData((prev) => ({
+        ...prev,
+        items: [...prev.items, ...items],
+      }));
+    } else {
+      setPreviewData(successfulRows);
       const categoriesSet = new Set<string>();
       const subCategoriesSet = new Set<string>();
 
@@ -254,17 +238,11 @@ const CsvUploadForm = () => {
         subCategories,
         items,
       });
-
-      // console.log("Parsed CSV Data:", {
-      //   categories,
-      //   subCategories,
-      //   items,
-      // });
-      setisLoading(false);
     }
-  }, [csvData]);
+    setisLoading(false);
+  };
 
-  const generateErrorCsv = () => {
+  const generateErrorCsv = async () => {
     if (errorCsvData.length === 0) {
       setErrorMessages((prev) => [...prev, "No errors to export"]);
       return;
@@ -277,6 +255,20 @@ const CsvUploadForm = () => {
     a.href = url;
     a.download = "error_data.csv";
     a.click();
+    if (errorCsvDownloaded) return;
+    setErrorCsvDownloaded(true);
+    try {
+      const cloudinaryUrl = await uploadInValidCsvToCloudinary(csv);
+
+      await sdk.saveCsvError({
+        input: {
+          errorFile: cloudinaryUrl,
+          issues: errorMessages,
+        },
+      });
+    } catch (error) {
+      console.error("Error uploading CSV:", error);
+    }
   };
 
   const {
@@ -285,16 +277,28 @@ const CsvUploadForm = () => {
     formState: { errors },
   } = useForm();
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    isFixedFile: boolean = false
+  ) => {
     const file = e.target.files?.[0] || null;
-    setFile(file);
+
+    if (isFixedFile) {
+      setFixedFile(file);
+    } else {
+      setFile(file);
+    }
 
     if (file) {
       Papa.parse(file, {
         header: true,
         skipEmptyLines: true,
         complete: (results) => {
-          setCsvData(results.data as Array<Record<string, string>>);
+          if (isFixedFile) {
+            processCsvData(results.data as Array<Record<string, string>>, true);
+          } else {
+            processCsvData(results.data as Array<Record<string, string>>);
+          }
         },
         error: (error) => {
           console.error("Error parsing CSV:", error);
@@ -303,13 +307,49 @@ const CsvUploadForm = () => {
     }
   };
 
+  const { userId } = useAuthStore();
+  const { selectedRestaurantId } = useRestaurantsStore();
+  const [errorCsvDownloaded, setErrorCsvDownloaded] = useState(false);
+
+  const uploadValidCsvToCloudinary = async (csvData: string) => {
+    const timestamp = Date.now();
+    const fileName = `${selectedRestaurantId}_${userId}_${timestamp}.csv`;
+
+    const formData = new FormData();
+    const blob = new Blob([csvData], { type: "text/csv" });
+    formData.append("file", blob, fileName);
+    formData.append("upload_preset", "valid-csv");
+
+    const response = await fetch(
+      "https://api.cloudinary.com/v1_1/choose-pos/raw/upload",
+      { method: "POST", body: formData }
+    ).then((r) => r.json());
+
+    return response?.secure_url;
+  };
+  const uploadInValidCsvToCloudinary = async (csvData: string) => {
+    const timestamp = Date.now();
+    const fileName = `${selectedRestaurantId}_${userId}_${timestamp}_invalid.csv`;
+
+    const formData = new FormData();
+    const blob = new Blob([csvData], { type: "text/csv" });
+    formData.append("file", blob, fileName);
+    formData.append("upload_preset", "invalid-csv");
+
+    const response = await fetch(
+      "https://api.cloudinary.com/v1_1/choose-pos/raw/upload",
+      { method: "POST", body: formData }
+    ).then((r) => r.json());
+
+    return response?.secure_url;
+  };
+  const { setisShowUploadCSV } = useMenuPageStore();
   const onSubmit = async (data: any) => {
     if (
       !parsedCsvData.categories.length ||
       !parsedCsvData.subCategories.length ||
       !parsedCsvData.items.length
     ) {
-      // Handle error for missing parsed data
       setErrorMessages((prev) => [
         ...prev,
         "Parsed data is not available or incomplete.",
@@ -317,7 +357,33 @@ const CsvUploadForm = () => {
       return;
     }
 
-    const { menuType, action } = data;
+    const csv = Papa.unparse(previewData, { header: true });
+    try {
+      const cloudinaryUrl = await uploadValidCsvToCloudinary(csv);
+
+      if (cloudinaryUrl) {
+        const res = await sdk.uploadCSVMenuData({
+          input: {
+            csvFile: cloudinaryUrl,
+            uploadType: data.action.value,
+            menuType: data.menuType.value,
+          },
+        });
+        if (res.uploadCsvData) {
+          setToastData({
+            message:
+              "CSV Uploaded Successfully,It will be reflecting in your menu builder within 24 hours",
+            type: "success",
+          });
+          setisShowUploadCSV(false);
+        }
+      }
+    } catch (error) {
+      setToastData({
+        message: extractErrorMessage(error),
+        type: "error",
+      });
+    }
   };
 
   const handleTemplateDownload = () => {
@@ -334,7 +400,7 @@ const CsvUploadForm = () => {
   const prevStep = () => setStep((prevStep) => prevStep - 1);
   return (
     <div className="w-full">
-      <div className="w-full flex justify-between items-center px-12 py-4">
+      <div className="w-full flex justify-between items-center px-12 py-4 mb-5">
         <div
           className={`rounded-md w-8 h-8 flex items-center justify-center ${
             step >= 1 ? "bg-primary text-white" : "bg-gray-300"
@@ -365,8 +431,8 @@ const CsvUploadForm = () => {
       </div>
 
       {step === 1 && (
-        <div className=" flex flex-col justify-center text-center">
-          <div className="w-9/12 mx-auto">
+        <div className=" flex flex-col space-y-10 text-center">
+          <div className="w-full mx-auto ">
             <iframe
               src="https://www.youtube.com/embed/dQw4w9WgXcQ"
               title="YouTube video player"
@@ -377,15 +443,16 @@ const CsvUploadForm = () => {
             ></iframe>
           </div>
 
-          <div className="text-left mt-4">
-            <h2 className="text-xl font-bold">CSV Upload Rules</h2>
-            <ul className="list-disc list-inside">
+          <div className="text-left ">
+            <h2 className="text-lg font-semibold">CSV Upload Rules</h2>
+            <ul className="list-disc list-inside text-md">
               <li>The file must be in CSV format.</li>
               <li>Ensure all required fields are filled.</li>
-              <li>Follow the template provided.</li>
+              <li>Follow the template provided in the second step.</li>
+              <li>Dont keep </li>
             </ul>
           </div>
-          <div className="flex justify-end mt-4">
+          <div className="flex justify-end">
             <CButton
               loading={isLoading}
               onClick={nextStep}
@@ -398,7 +465,7 @@ const CsvUploadForm = () => {
       )}
 
       {step === 2 && (
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form>
           <div className="mb-4">
             <label className="block mb-2 text-sm font-medium text-left text-gray-700">
               Choose / Select Menu Type
@@ -473,7 +540,6 @@ const CsvUploadForm = () => {
                     type="button"
                     onClick={() => {
                       setFile(null);
-                      setCsvData([]);
                       setParsedCsvData({
                         categories: [],
                         subCategories: [],
@@ -597,13 +663,33 @@ const CsvUploadForm = () => {
                           <li key={index}>{msg}</li>
                         ))}
                       </ul>
-                      <button
-                        type="button"
-                        onClick={generateErrorCsv}
-                        className="text-primary hover:underline mt-2"
-                      >
-                        Download Error CSV
-                      </button>
+
+                      <div className="flex justify-between">
+                        <button
+                          type="button"
+                          onClick={generateErrorCsv}
+                          className="text-primary hover:underline mt-2"
+                        >
+                          Download Error CSV
+                        </button>
+                        <label
+                          htmlFor="fixedCsvUpload"
+                          className="text-primary hover:underline mt-2 cursor-pointer"
+                        >
+                          Upload fixed error CSV
+                          <input
+                            id="fixedCsvUpload"
+                            type="file"
+                            accept=".csv"
+                            onChange={(e) => handleFileChange(e, true)}
+                            className="hidden"
+                          />
+                        </label>
+                      </div>
+                      <label className="block mb-2 text-sm mt-2 font-medium text-left text-gray-500">
+                        If you encounter any errors then download the error CSV
+                        and and upload it by fixing it
+                      </label>
                     </div>
                   )}
                 </div>
