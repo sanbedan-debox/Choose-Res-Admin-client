@@ -36,24 +36,15 @@ const ReusableModal: React.FC<ModalProps> = ({
   }, [isOpen, onClose]);
 
   const widthClasses = {
-    xs: "w-1/5",
-    sm: "w-1/4",
-    md: "w-1/3",
-    ml: "w-1/2",
-    lg: "w-3/4",
-    xl: "w-[95vw]",
-    dxl: "w-full",
+    xs: "w-11/12 lg:w-1/5",
+    sm: "w-11/12 lg:w-1/4 ",
+    md: "w-11/12 lg:w-1/3 ",
+    ml: "w-11/12 lg:w-1/2 ",
+    lg: "w-11/12 lg:w-3/4 ",
+    xl: "w-11/12 lg:w-[95vw] ",
+    dxl: "w-11/12 lg:w-11/12",
   };
 
-  const hightClasses = {
-    xs: "h-1/5",
-    sm: "h-1/4",
-    md: "h-1/3",
-    ml: "h-1/2",
-    lg: "h-3/4",
-    xl: "h-[95vh]",
-    dxl: "h-full",
-  };
   if (!isOpen) return;
 
   return ReactDOM.createPortal(
