@@ -38,8 +38,9 @@ const CsvUploadForm = () => {
   );
   const { setToastData } = useGlobalStore();
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
-  const itemNames = new Set<string>();
   const successfulRows: Array<Record<string, string>> = [];
+  // const itemNames = new Set<string>();
+  const [itemNames, setItemNames] = useState<string[]>([]);
   const [parsedCsvData, setParsedCsvData] = useState<{
     categories: { name: string }[];
     subCategories: { category: string; name: string }[];
@@ -100,144 +101,153 @@ const CsvUploadForm = () => {
   ) => {
     setisLoading(true);
     setErrorMessages([]);
+    try {
+      const headers = Object.keys(data[0]);
 
-    const headers = Object.keys(data[0]);
+      const headersMatch = expectedHeaders.every((header) =>
+        headers.includes(header)
+      );
 
-    const headersMatch = expectedHeaders.every((header) =>
-      headers.includes(header)
-    );
-
-    if (!headersMatch) {
-      setErrorMessages((prev) => [
-        ...prev,
-        "CSV headers do not match the expected format.",
-      ]);
-      setisLoading(false);
-      return;
-    }
-
-    const items: {
-      category: string;
-      subCategory: string | null;
-      itemName: string;
-      price: string;
-      itemStatus: boolean;
-      onlineOrdering: boolean;
-      dineIn: boolean;
-      catering: boolean;
-      itemLimit: string;
-      popularItem: boolean;
-      upSellItem: boolean;
-      isVegan: boolean;
-      hasNuts: boolean;
-      isGlutenFree: boolean;
-      isHalal: boolean;
-      isSpicy: boolean;
-    }[] = [];
-
-    const errors: Array<Record<string, string>> = [];
-
-    data.forEach((row) => {
-      const {
-        Category,
-        "Sub Category": subCategory,
-        "Item Name": itemName,
-        "Item Desc": itemDesc,
-        "Item Price": price,
-        "Item Status": itemStatus,
-        OnlineOrdering: onlineOrdering,
-        DineIn: dineIn,
-        Catering: catering,
-        "Item Limit": itemLimit,
-        PopularItem: popularItem,
-        UpSellItem: upSellItem,
-        IsVegan: isVegan,
-        HasNuts: hasNuts,
-        IsGlutenFree: isGlutenFree,
-        IsHalal: isHalal,
-        IsSpicy: isSpicy,
-      } = row;
-
-      let errorMessage = "";
-
-      if (isNaN(Number(price))) {
-        errorMessage = `Invalid price`;
-      } else if (Number(price) <= 0) {
-        errorMessage = `Price Can't Be 0`;
-      } else if (itemNames.has(itemName)) {
-        errorMessage = `Duplicate item name`;
-      } else if (itemName.length > 80) {
-        errorMessage = `Item name too long`;
-      } else if (itemDesc.length < 40 || itemDesc.length > 200) {
-        errorMessage = `Item description length should be between 40 to 200 characters`;
-      } else if (items.length >= 500) {
-        errorMessage = `Too many items, limit reached.`;
-      }
-
-      if (errorMessage) {
-        if (!errors.find((err) => err["Item Name"] === itemName)) {
-          errors.push({ ...row });
-          setErrorMessages((prev) => [...prev, errorMessage]);
-        }
+      if (!headersMatch) {
+        setErrorMessages((prev) => [
+          ...prev,
+          "CSV headers do not match the expected format.",
+        ]);
+        setisLoading(false);
         return;
       }
 
-      itemNames.add(itemName);
-      items.push({
-        category: Category,
-        subCategory: subCategory.trim() === "" ? null : subCategory,
-        itemName,
-        price,
-        itemStatus: itemStatus === "TRUE",
-        onlineOrdering: onlineOrdering === "TRUE",
-        dineIn: dineIn === "TRUE",
-        catering: catering === "TRUE",
-        itemLimit,
-        popularItem: popularItem === "TRUE",
-        upSellItem: upSellItem === "TRUE",
-        isVegan: isVegan === "TRUE",
-        hasNuts: hasNuts === "TRUE",
-        isGlutenFree: isGlutenFree === "TRUE",
-        isHalal: isHalal === "TRUE",
-        isSpicy: isSpicy === "TRUE",
-      });
+      const items: {
+        category: string;
+        subCategory: string | null;
+        itemName: string;
+        price: string;
+        itemStatus: boolean;
+        onlineOrdering: boolean;
+        dineIn: boolean;
+        catering: boolean;
+        itemLimit: string;
+        popularItem: boolean;
+        upSellItem: boolean;
+        isVegan: boolean;
+        hasNuts: boolean;
+        isGlutenFree: boolean;
+        isHalal: boolean;
+        isSpicy: boolean;
+      }[] = [];
 
-      successfulRows.push(row);
-    });
+      const errors: Array<Record<string, string>> = [];
+      let inames: string[] = isFixedFile ? [...itemNames] : [];
+      data.forEach((row) => {
+        const {
+          Category,
+          "Sub Category": subCategory,
+          "Item Name": itemName,
+          "Item Desc": itemDesc,
+          "Item Price": price,
+          "Item Status": itemStatus,
+          OnlineOrdering: onlineOrdering,
+          DineIn: dineIn,
+          Catering: catering,
+          "Item Limit": itemLimit,
+          PopularItem: popularItem,
+          UpSellItem: upSellItem,
+          IsVegan: isVegan,
+          HasNuts: hasNuts,
+          IsGlutenFree: isGlutenFree,
+          IsHalal: isHalal,
+          IsSpicy: isSpicy,
+        } = row;
 
-    setErrorCsvData(errors);
-
-    if (isFixedFile) {
-      setPreviewData((prev) => [...prev, ...successfulRows]);
-      setParsedCsvData((prev) => ({
-        ...prev,
-        items: [...prev.items, ...items],
-      }));
-    } else {
-      setPreviewData(successfulRows);
-      const categoriesSet = new Set<string>();
-      const subCategoriesSet = new Set<string>();
-
-      items.forEach((item) => {
-        categoriesSet.add(item.category);
-        if (item.subCategory) {
-          subCategoriesSet.add(`${item.category}|${item.subCategory}`);
+        let errorMessage = "";
+        if (isNaN(Number(price))) {
+          errorMessage = `Invalid price`;
+        } else if (Number(price) <= 0) {
+          errorMessage = `Price Can't Be 0`;
+        } else if (inames.includes(itemName.trim())) {
+          errorMessage = `Duplicate item name`;
+        } else if (itemName.trim().length > 80) {
+          errorMessage = `Item name too long`;
+        } else if (itemDesc.length < 40 || itemDesc.length > 200) {
+          errorMessage = `Item description length should be between 40 to 200 characters`;
+        } else if (items.length > 500) {
+          errorMessage = `Too many items, limit reached.`;
         }
+
+        inames.push(itemName.trim());
+
+        if (errorMessage) {
+          if (!errors.find((err) => err["Item Name"] === itemName.trim())) {
+            errors.push({ ...row });
+            setErrorMessages((prev) => [...prev, errorMessage]);
+          }
+          return;
+        }
+        // setItemNames(...itemNames, itemName);
+
+        // setItemNames((prev) => [...prev, itemName.trim()]);
+        // setItemsNames([...itemNames,itemName.trim()])
+
+        // itemNames.add(itemName);
+        items.push({
+          category: Category,
+          subCategory: subCategory.trim() === "" ? null : subCategory,
+          itemName,
+          price,
+          itemStatus: itemStatus === "TRUE",
+          onlineOrdering: onlineOrdering === "TRUE",
+          dineIn: dineIn === "TRUE",
+          catering: catering === "TRUE",
+          itemLimit,
+          popularItem: popularItem === "TRUE",
+          upSellItem: upSellItem === "TRUE",
+          isVegan: isVegan === "TRUE",
+          hasNuts: hasNuts === "TRUE",
+          isGlutenFree: isGlutenFree === "TRUE",
+          isHalal: isHalal === "TRUE",
+          isSpicy: isSpicy === "TRUE",
+        });
+
+        successfulRows.push(row);
       });
 
-      const categories = Array.from(categoriesSet).map((name) => ({ name }));
-      const subCategories = Array.from(subCategoriesSet).map((item) => {
-        const [category, name] = item.split("|");
-        return { category, name };
-      });
+      setErrorCsvData(errors);
 
-      setParsedCsvData({
-        categories,
-        subCategories,
-        items,
-      });
+      if (isFixedFile) {
+        setPreviewData((prev) => [...prev, ...successfulRows]);
+        setParsedCsvData((prev) => ({
+          ...prev,
+          items: [...prev.items, ...items],
+        }));
+      } else {
+        setItemNames(inames);
+        setPreviewData(successfulRows);
+        const categoriesSet = new Set<string>();
+        const subCategoriesSet = new Set<string>();
+
+        items.forEach((item) => {
+          categoriesSet.add(item.category);
+          if (item.subCategory) {
+            subCategoriesSet.add(`${item.category}|${item.subCategory}`);
+          }
+        });
+
+        const categories = Array.from(categoriesSet).map((name) => ({ name }));
+        const subCategories = Array.from(subCategoriesSet).map((item) => {
+          const [category, name] = item.split("|");
+          return { category, name };
+        });
+
+        setParsedCsvData({
+          categories,
+          subCategories,
+          items,
+        });
+      }
+      setisLoading(false);
+    } catch (error) {
+      setisLoading(false);
     }
-    setisLoading(false);
   };
 
   const generateErrorCsv = async () => {
@@ -273,6 +283,7 @@ const CsvUploadForm = () => {
     control,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm();
 
   const handleFileChange = (
@@ -618,7 +629,9 @@ const CsvUploadForm = () => {
                 !file ||
                 !parsedCsvData.categories.length ||
                 !parsedCsvData.subCategories.length ||
-                !parsedCsvData.items.length
+                !parsedCsvData.items.length ||
+                !watch("action") ||
+                !watch("menuType")
               }
             >
               Next
