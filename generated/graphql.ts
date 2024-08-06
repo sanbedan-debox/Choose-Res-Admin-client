@@ -147,7 +147,6 @@ export type AddStateInput = {
 };
 
 export type AddSubCategoryInput = {
-  category: Scalars['String']['input'];
   desc: Scalars['String']['input'];
   name: Scalars['String']['input'];
 };
@@ -1655,7 +1654,6 @@ export enum StatusEnum {
 export type SubCategory = {
   __typename?: 'SubCategory';
   _id: Scalars['ID']['output'];
-  category: Category;
   createdAt: Scalars['DateTimeISO']['output'];
   desc: Scalars['String']['output'];
   name: Scalars['String']['output'];
@@ -2420,12 +2418,12 @@ export type GetSubCategoryQueryVariables = Exact<{
 }>;
 
 
-export type GetSubCategoryQuery = { __typename?: 'Query', getSubCategory: { __typename?: 'SubCategory', _id: string, name: string, desc: string, category: { __typename?: 'Category', _id: string } } };
+export type GetSubCategoryQuery = { __typename?: 'Query', getSubCategory: { __typename?: 'SubCategory', _id: string, name: string, desc: string } };
 
 export type GetSubCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetSubCategoriesQuery = { __typename?: 'Query', getSubCategories: Array<{ __typename?: 'SubCategory', _id: string, name: string, desc: string, category: { __typename?: 'Category', _id: string } }> };
+export type GetSubCategoriesQuery = { __typename?: 'Query', getSubCategories: Array<{ __typename?: 'SubCategory', _id: string, name: string, desc: string }> };
 
 export type AddSubCategoryMutationVariables = Exact<{
   input: AddSubCategoryInput;
@@ -3395,9 +3393,6 @@ export const GetSubCategoryDocument = gql`
     _id
     name
     desc
-    category {
-      _id
-    }
   }
 }
     `;
@@ -3407,9 +3402,6 @@ export const GetSubCategoriesDocument = gql`
     _id
     name
     desc
-    category {
-      _id
-    }
   }
 }
     `;

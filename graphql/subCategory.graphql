@@ -3,9 +3,6 @@ query getSubCategory($id: String!) {
     _id
     name
     desc
-    category {
-      _id
-    }
   }
 }
 
@@ -14,9 +11,6 @@ query getSubCategories {
     _id
     name
     desc
-    category {
-      _id
-    }
   }
 }
 

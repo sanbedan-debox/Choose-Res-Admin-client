@@ -157,7 +157,6 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 setSelectedRestaurant(
                   formattedRestaurant[0]?.name?.value || ""
                 );
-                setSelectedRestaurantId(formattedRestaurant[0]?.id || "");
               }
             } catch (error) {
               setToastData({

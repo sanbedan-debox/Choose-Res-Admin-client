@@ -37,34 +37,7 @@ const CsvUploadForm = () => {
     []
   );
   const { setToastData } = useGlobalStore();
-
-  useEffect(() => {
-    const fetchHeaders = async () => {
-      try {
-        const headersResp = await sdk.getCSVHeaders();
-        if (headersResp.getCsvHeaders.length > 0) {
-          // setOptions(optsResp.getAllItemOptions);
-          setExpectedHeaders(headersResp.getCsvHeaders);
-        }
-      } catch (error: any) {
-        const errorMessage = extractErrorMessage(error);
-        setToastData({
-          type: "error",
-          message: errorMessage,
-        });
-      }
-    };
-
-    fetchHeaders();
-  }, []);
-
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
-
-  const handlePreview = () => {
-    setIsPreviewModalOpen(true);
-  };
-
-  const [fixedFile, setFixedFile] = useState<File | null>(null);
   const itemNames = new Set<string>();
   const successfulRows: Array<Record<string, string>> = [];
   const [parsedCsvData, setParsedCsvData] = useState<{
@@ -95,6 +68,31 @@ const CsvUploadForm = () => {
   });
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const [isLoading, setisLoading] = useState(false);
+
+  //FETCH EXPECTED HEADERS
+  useEffect(() => {
+    const fetchHeaders = async () => {
+      try {
+        const headersResp = await sdk.getCSVHeaders();
+        if (headersResp.getCsvHeaders.length > 0) {
+          setExpectedHeaders(headersResp.getCsvHeaders);
+        }
+      } catch (error: any) {
+        const errorMessage = extractErrorMessage(error);
+        setToastData({
+          type: "error",
+          message: errorMessage,
+        });
+      }
+    };
+
+    fetchHeaders();
+  }, []);
+
+  //OPEN FULL PAGE MODAL FOR PREVIEW OF DATA
+  const handlePreview = () => {
+    setIsPreviewModalOpen(true);
+  };
 
   const processCsvData = (
     data: Array<Record<string, string>>,
@@ -284,7 +282,6 @@ const CsvUploadForm = () => {
     const file = e.target.files?.[0] || null;
 
     if (isFixedFile) {
-      setFixedFile(file);
     } else {
       setFile(file);
     }
