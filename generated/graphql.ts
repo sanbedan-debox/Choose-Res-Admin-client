@@ -264,6 +264,7 @@ export type Business = {
   establishedAt?: Maybe<Scalars['String']['output']>;
   estimatedRevenue?: Maybe<EstimatedRevenueEnum>;
   updatedAt: Scalars['DateTimeISO']['output'];
+  updatedBy?: Maybe<User>;
   user: UserInfo;
 };
 
@@ -289,6 +290,7 @@ export type Category = {
   status: StatusEnum;
   upSellCategories?: Maybe<Array<Category>>;
   updatedAt: Scalars['DateTimeISO']['output'];
+  updatedBy?: Maybe<User>;
   user: User;
   visibility: Array<Visibility>;
 };
@@ -539,6 +541,7 @@ export type Item = {
   status: StatusEnum;
   subCategory?: Maybe<ItemSubCategory>;
   updatedAt: Scalars['DateTimeISO']['output'];
+  updatedBy?: Maybe<User>;
   user: User;
   visibility: Array<Visibility>;
 };
@@ -641,6 +644,7 @@ export type Menu = {
   taxes: TaxRateInfo;
   type: MenuTypeEnum;
   updatedAt: Scalars['DateTimeISO']['output'];
+  updatedBy?: Maybe<User>;
   user: User;
 };
 
@@ -670,6 +674,7 @@ export type Modifier = {
   price: MasterCommonNumber;
   restaurantId: Restaurant;
   updatedAt: Scalars['DateTimeISO']['output'];
+  updatedBy?: Maybe<User>;
   user: User;
 };
 
@@ -688,6 +693,7 @@ export type ModifierGroup = {
   restaurantId: Restaurant;
   status: StatusEnum;
   updatedAt: Scalars['DateTimeISO']['output'];
+  updatedBy?: Maybe<User>;
   user: User;
 };
 
@@ -1283,7 +1289,7 @@ export type Query = {
   getAllTimezones: Array<Timezone>;
   getBusinessDetails: Business;
   getBusinessOnboardingDetails?: Maybe<Business>;
-  getCSVTemplate: Scalars['String']['output'];
+  getCSVHeaders: Array<Scalars['String']['output']>;
   getCategories: Array<Category>;
   getCategory: Category;
   getCategoryByMenu: Category;
@@ -1526,6 +1532,7 @@ export type Restaurant = {
   timezone?: Maybe<MasterCommon>;
   type?: Maybe<RestaurantType>;
   updatedAt: Scalars['DateTimeISO']['output'];
+  updatedBy?: Maybe<User>;
   user: User;
   website?: Maybe<Scalars['String']['output']>;
 };
@@ -1621,6 +1628,7 @@ export type SubCategory = {
   name: Scalars['String']['output'];
   restaurantId: Restaurant;
   updatedAt: Scalars['DateTimeISO']['output'];
+  updatedBy?: Maybe<User>;
   user: User;
 };
 
@@ -1726,7 +1734,7 @@ export type UpdateModifierGroupInput = {
   name?: InputMaybe<MasterCommonInput>;
   optional?: InputMaybe<Scalars['Boolean']['input']>;
   price?: InputMaybe<MasterCommonInputNumber>;
-  pricingType?: InputMaybe<PriceTypeEnum>;
+  pricingType: PriceTypeEnum;
 };
 
 export type UpdateModifierInput = {
@@ -1808,6 +1816,7 @@ export type User = {
   status: UserStatus;
   statusUpdatedBy?: Maybe<Admin>;
   updatedAt: Scalars['DateTimeISO']['output'];
+  updatedBy?: Maybe<User>;
   verificationRejections?: Maybe<Array<RejectRecord>>;
 };
 
@@ -2003,6 +2012,11 @@ export type RemoveItemFromCategoryMutationVariables = Exact<{
 
 
 export type RemoveItemFromCategoryMutation = { __typename?: 'Mutation', removeItemFromCategory: boolean };
+
+export type GetCsvHeadersQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetCsvHeadersQuery = { __typename?: 'Query', getCSVHeaders: Array<string> };
 
 export type ChangeItemStatusMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -2627,6 +2641,11 @@ export const UpdateCategoryDocument = gql`
 export const RemoveItemFromCategoryDocument = gql`
     mutation removeItemFromCategory($itemId: String!, $categoryId: String!) {
   removeItemFromCategory(categoryId: $categoryId, itemId: $itemId)
+}
+    `;
+export const GetCsvHeadersDocument = gql`
+    query getCSVHeaders {
+  getCSVHeaders
 }
     `;
 export const ChangeItemStatusDocument = gql`
@@ -3433,6 +3452,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     removeItemFromCategory(variables: RemoveItemFromCategoryMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<RemoveItemFromCategoryMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<RemoveItemFromCategoryMutation>(RemoveItemFromCategoryDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'removeItemFromCategory', 'mutation', variables);
+    },
+    getCSVHeaders(variables?: GetCsvHeadersQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetCsvHeadersQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetCsvHeadersQuery>(GetCsvHeadersDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getCSVHeaders', 'query', variables);
     },
     changeItemStatus(variables: ChangeItemStatusMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<ChangeItemStatusMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<ChangeItemStatusMutation>(ChangeItemStatusDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'changeItemStatus', 'mutation', variables);

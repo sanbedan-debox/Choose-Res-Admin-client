@@ -138,7 +138,7 @@ const MenuPage = ({ repo }: { repo?: UserRepo }) => {
     setEditModId(null);
   };
 
-  const { setSelectedMenu } = useGlobalStore();
+  const { setSelectedMenu, setToastData } = useGlobalStore();
 
   useEffect(() => {
     setSelectedMenu("Menu Management");
@@ -170,6 +170,13 @@ const MenuPage = ({ repo }: { repo?: UserRepo }) => {
       childComponent = <NotFound />;
       break;
   }
+
+  const {
+    maxSelectionsCount,
+    minSelectionsCount,
+    modifiersLength,
+    isEditModGroup,
+  } = useModGroupStore();
 
   return (
     <>
@@ -229,7 +236,35 @@ const MenuPage = ({ repo }: { repo?: UserRepo }) => {
       <FullPageModal
         isOpen={isAddModifierGroupModalOpen}
         title="Modifiers Group"
-        onClose={handleAddModifierGroupClose}
+        // onClose={handleAddModifierGroupClose}
+        onClose={() => {
+          if (isEditModGroup) {
+            if (modifiersLength <= 0) {
+              setToastData({
+                type: "error",
+                message: "You need to add atleast modifiers",
+              });
+            } else if (modifiersLength < minSelectionsCount) {
+              setToastData({
+                type: "error",
+                message:
+                  "Make sure number of modifiers is equal or greater than the selected Minimum selections",
+              });
+            } else {
+              setisAddModifierGroupModalOpen(false);
+              setfetchMenuDatas(!fetchMenuDatas);
+              setisEditModGroup(false);
+              setisDuplicateModifierGroup(false);
+              setEditModGroupId(null);
+            }
+          } else {
+            setisAddModifierGroupModalOpen(false);
+            setfetchMenuDatas(!fetchMenuDatas);
+            setisEditModGroup(false);
+            setisDuplicateModifierGroup(false);
+            setEditModGroupId(null);
+          }
+        }}
         actionButtonLabel="Save Modifier Group"
         // onActionButtonClick={handleAddMenuItemClick}
         onActionButtonClick={() => console.log("hello")}

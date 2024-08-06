@@ -63,6 +63,9 @@ const AddModifierGroupForm = () => {
     setEditModGroupId,
     setisEditModGroup,
     isDuplicateModifierGroup,
+    setMaxSelectionsCount,
+    setMinSelectionsCount,
+    setModifiersLength,
   } = useModGroupStore();
   const [modifierssOption, setModifiersOption] = useState<any[]>([]);
   const [confirmationRemoval, setConfirmationRemoval] = useState(false);
@@ -129,6 +132,8 @@ const AddModifierGroupForm = () => {
   }, [fetchMenuDatas, setToastData, selectedItems]);
   const [minSelection, setMinSelection] = useState(0);
   const [maxSelection, setMaxSelection] = useState(1);
+
+  // const {} = useModGroupStore()
   useEffect(() => {
     const fetchItemData = async () => {
       if (editModGroupId && (isEditModGroup || isDuplicateModifierGroup)) {
@@ -163,6 +168,9 @@ const AddModifierGroupForm = () => {
             name: el?.name?.value ?? "",
             price: el?.price?.value ?? "",
           }));
+          setMaxSelectionsCount(item.maxSelections?.value);
+          setMinSelectionsCount(item.minSelections?.value);
+          setModifiersLength(formateditemlist.length || 0);
           setSelectedItems(formateditemlist || []);
           setTempSelectedItems(formateditemlist);
           setprevItemsbfrEdit(formateditemlist);
@@ -273,7 +281,10 @@ const AddModifierGroupForm = () => {
         }
       }
 
-      if (!data.commonPrice || data.commonPrice <= 0) {
+      if (
+        data.pricingType.value === PriceTypeEnum.SamePrice &&
+        (!data.commonPrice || data.commonPrice <= 0)
+      ) {
         setToastData({
           message:
             "An Modifier Group cannot be added without price, please add a numerical value that is greater than zero to save and continue",
@@ -291,9 +302,26 @@ const AddModifierGroupForm = () => {
       );
       const selectedItemsIds = await selectedItems.map((item) => item._id);
 
-      // const addedMenuIds = selectedItemsIds.filter(
-      //   (id) => !prevSelectedMenuIds.includes(id)
-      // );
+      const addedMenuIds = selectedItemsIds.filter(
+        (id) => !prevSelectedMenuIds.includes(id)
+      );
+
+      if (parsedMaxSelection < parsedMinSelection) {
+        setToastData({
+          type: "error",
+          message: `Maximum Selections can never be less than Minimum Selection`,
+        });
+        return;
+      }
+
+      if (selectedItems?.length < parsedMinSelection) {
+        setToastData({
+          type: "error",
+          message: `You need to add Minimum ${parsedMinSelection} Modifiers`,
+        });
+        return;
+      }
+
       const addedMenuItems = selectedItems
         .filter((item) => !prevSelectedMenuIds.includes(item._id))
         .map((item) => ({
@@ -304,7 +332,6 @@ const AddModifierGroupForm = () => {
               : 0,
         }));
 
-      // const isMenuAdded = addedMenuIds.length > 0;
       const isMenuAdded = addedMenuItems.length > 0;
       setBtnLoading(true);
       if (selectedItemsIds.length === 0) {
@@ -329,6 +356,12 @@ const AddModifierGroupForm = () => {
         price: {
           value: parsedPriceCommon || 0,
         },
+        minSelections: {
+          value: parsedMinSelection || 0,
+        },
+        maxSelections: {
+          value: parsedMaxSelection || 0,
+        },
       };
       let hasChanges = false;
 
@@ -339,15 +372,6 @@ const AddModifierGroupForm = () => {
 
       if (data.name !== changesMenu?.name?.value) {
         addChange("name", data.name);
-        hasChanges = true;
-      }
-
-      if (data.maxSelections !== changesMenu?.maxSelections?.value) {
-        addChange("maxSelections", data.maxSelections);
-        hasChanges = true;
-      }
-      if (data.minSelections !== changesMenu?.minSelections?.value) {
-        addChange("minSelections", data.minSelections);
         hasChanges = true;
       }
 
@@ -394,25 +418,20 @@ const AddModifierGroupForm = () => {
           message: "Modifier Groups Added Successfully",
         });
       } else {
+        isMenuAdded &&
+          (await sdk.addModifierToModifierGroup({
+            modifierIds: addedMenuIds,
+            modifierGroupId: editModGroupId || "",
+          }));
         await sdk.updateModifierGroup({
           input: updateInput,
         });
 
         // isMenuAdded &&
         //   (await sdk.addModifierToModifierGroup({
-        //     modifierIds: addedMenuIds,
+        //     modifiers: addedMenuItems,
         //     modifierGroupId: editModGroupId || "",
         //   }));
-        //       isMenuAdded &&
-        // (await sdk.addModifierToModifierGroup({
-        //   modifierIds: addedMenuIds,
-        //   modifierGroupId: editModGroupId || "",
-        // }));
-        isMenuAdded &&
-          (await sdk.addModifierToModifierGroup({
-            modifiers: addedMenuItems,
-            modifierGroupId: editModGroupId || "",
-          }));
       }
       setBtnLoading(false);
       setisAddModifierGroupModalOpen(false);
@@ -438,10 +457,12 @@ const AddModifierGroupForm = () => {
 
   const handleMinCountChange = (count: number) => {
     setValue("minSelections", count);
+    setMinSelectionsCount(count);
   };
 
   const handleMaxCountChange = (count: number) => {
     setValue("maxSelections", count);
+    setMaxSelectionsCount(count);
   };
 
   const handleRemoveModifiers = async () => {
@@ -468,6 +489,10 @@ const AddModifierGroupForm = () => {
     }
     setConfirmationRemoval(false);
   };
+
+  useEffect(() => {
+    setModifiersLength(selectedItems.length || 0);
+  }, [selectedItems, watch("minSelections"), watch("maxSelections")]);
 
   const handleAddClick = () => {
     setIsModalOpen(true);
