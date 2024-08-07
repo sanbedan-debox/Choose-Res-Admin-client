@@ -10,7 +10,7 @@ import ArrowCard from "@/components/common/arrowCard/arrowCard";
 import QuickActions from "@/components/common/quickLinks/quickLink";
 import ReusableModal from "@/components/common/modal/modal";
 import CsvUploadForm from "@/components/modules/menu/forms/csvUploadForm";
-import useMenuPageStore from "./store/menuStore";
+import useMenuPageStore from "../../store/menuStore";
 
 type NextPageWithLayout = React.FC & {
   getLayout?: (page: React.ReactNode) => React.ReactNode;

@@ -13,7 +13,7 @@ import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import React, { useEffect, useState } from "react";
 import { FaTrash } from "react-icons/fa";
-import useAddTeamMemberFormStore from "./store/addTeamMemberStore";
+import useAddTeamMemberFormStore from "../../store/addTeamMemberStore";
 import { parseCookies } from "nookies";
 import { GetServerSideProps } from "next";
 import useAuthStore from "@/store/auth";

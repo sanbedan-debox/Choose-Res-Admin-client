@@ -11,7 +11,7 @@ import { extractErrorMessage } from "@/utils/utilFUncs";
 import useGlobalStore from "@/store/global";
 import useAuthStore from "@/store/auth";
 import useRestaurantsStore from "@/store/restaurant";
-import useMenuPageStore from "@/pages/menu/store/menuStore";
+import useMenuPageStore from "@/store/menuStore";
 
 const menuTypeOptions = [
   { value: MenuTypeEnum.OnlineOrdering, label: "Online Ordering" },

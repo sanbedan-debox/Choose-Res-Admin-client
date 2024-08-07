@@ -11,7 +11,7 @@ import { PermissionTypeEnum, UserRole } from "@/generated/graphql";
 import CustomSwitchCard from "@/components/common/customSwitchCard/customSwitchCard";
 import ArrowCard from "@/components/common/arrowCard/arrowCard";
 import useUserManagementStore from "@/store/userManagement";
-import useAddTeamMemberFormStore from "@/pages/teams/store/addTeamMemberStore";
+import useAddTeamMemberFormStore from "@/store/addTeamMemberStore";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
 
 const userRoleOptions = [
