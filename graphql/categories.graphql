@@ -74,11 +74,11 @@ query getCategory($id: String!) {
       }
       status
     }
+    status
     visibility {
       menuType
       status
     }
-
     availability {
       day
       hours {

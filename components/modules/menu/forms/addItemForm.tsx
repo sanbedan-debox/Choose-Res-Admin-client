@@ -219,14 +219,10 @@ const AddItemForm = () => {
         setValue("desc", item.desc.value);
         setValue("status", item.status === StatusEnum.Active ? true : false);
         setValue("price", item.price.value);
-        // setValue("applySalesTax", item.applySalesTax);
-        // setValue("popularItem", item.popularItem);
-        // setValue("upSellItem", item.upSellItem);
-        // setValue("isSpicy", item.isSpicy);
-        // setValue("hasNuts", item.hasNuts);
-        // setValue("isGlutenFree", item.isGlutenFree);
-        // setValue("isHalal", item.isHalal);
-        // setValue("isVegan", item.isVegan);
+
+        if (item?.orderLimit) {
+          setValue("limit", item?.orderLimit);
+        }
 
         setVisibilities(item.visibility);
         setPricingOptions(item?.priceOptions);
@@ -346,6 +342,7 @@ const AddItemForm = () => {
       const statusSub = data.status ? StatusEnum.Active : StatusEnum.Inactive;
       const formattedAvailability = formatAvailability(availability);
       const parsedPrice = roundOffPrice(parseFloat(data.price.toString()));
+      const parsedLimit = parseFloat(data.limit.toString());
 
       let updateInput: any = {
         _id: editItemId || "",
@@ -374,9 +371,15 @@ const AddItemForm = () => {
       if (data.price !== changesMenu?.price?.value) {
         addChange("price", parsedPrice);
       }
+      if (data.limit !== changesMenu?.orderLimit) {
+        // addChange("orderLimit", parsedLimit);
+        updateInput.orderLimit = parsedLimit;
+      }
 
       if (data.status !== (changesMenu?.status === StatusEnum.Active)) {
-        updateInput.status = data.status;
+        updateInput.status = data.status
+          ? StatusEnum.Active
+          : StatusEnum.Inactive;
         hasChanges = true;
       }
 
@@ -404,6 +407,7 @@ const AddItemForm = () => {
               value: parsedPrice,
             },
             status: statusSub,
+            orderLimit: parsedLimit,
 
             options: options.map((e) => ({
               _id: e._id,

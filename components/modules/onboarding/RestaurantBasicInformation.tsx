@@ -451,12 +451,23 @@ const RestaurantBasicInformation = () => {
                 Dine-In Capacity
               </label>
               <input
-                type="text"
+                type="number"
                 {...register("dineInCapacity")}
                 id="dineInCapacity"
                 className="input input-primary"
                 placeholder="Enter dine-in capacity"
                 value={dineInCapacity}
+                style={{
+                  appearance: "textfield",
+                }}
+                inputMode="decimal"
+                step="0.01"
+                onWheel={(e) => e.preventDefault()}
+                onKeyDown={(e) => {
+                  if (e.key === "e" || e.key === "-" || e.key === "+") {
+                    e.preventDefault();
+                  }
+                }}
                 onChange={(e) => setDineInCapacity(e.target.value)}
               />
             </div>

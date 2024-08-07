@@ -26,7 +26,6 @@ query getRestaurantDetails {
       }
       active
     }
-
     brandingLogo
     website
     address {
@@ -55,24 +54,14 @@ query getRestaurantDetails {
     }
     taxRates {
       _id
-      name {
-        value
-      }
-
-      salesTax {
-        value
-      }
-      default
+      name
+      salesTax
     }
   }
 }
 
 mutation addTaxRate($input: TaxRateInput!) {
   addTaxRate(input: $input)
-}
-
-mutation addTaxRateInRestaurant($taxRateId: String!) {
-  addTaxRateInRestaurant(taxRateId: $taxRateId)
 }
 
 query getUserRestaurantsPending {

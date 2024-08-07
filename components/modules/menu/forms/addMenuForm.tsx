@@ -390,7 +390,7 @@ const AddMenuForm = () => {
           setSelectedItems(formateditemlist);
           setTempSelectedItems(formateditemlist);
           setprevItemsbfrEdit(formateditemlist);
-          setIncomingTaxId(menu[0]?.taxes?._id);
+          setIncomingTaxId(menu[0]?.taxes?._id || "");
         } catch (error) {
           const errorMessage = extractErrorMessage(error);
           setToastData({

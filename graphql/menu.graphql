@@ -75,11 +75,8 @@ query getMenusByType($id: String!) {
     }
     taxes {
       _id
-      salesTax {
-        value
-        _id
-      }
-      default
+      salesTax
+      name
     }
     categories {
       name {

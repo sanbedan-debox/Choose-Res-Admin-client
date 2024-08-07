@@ -276,7 +276,10 @@ const Signup: FC = () => {
                     Phone Number
                   </label>
                   <input
-                    type="text"
+                    type="number"
+                    style={{
+                      appearance: "textfield",
+                    }}
                     {...register("phone", {
                       required: "Phone number is required",
                       pattern: {

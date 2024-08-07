@@ -253,6 +253,11 @@ const AddCategoryForm = () => {
         (id) => !prevSelectedMenuIds.includes(id)
       );
       const isMenuAdded = addedMenuIds.length > 0;
+      const statusSub = data.status ? StatusEnum.Active : StatusEnum.Inactive;
+      if (data.status !== (changesMenu?.status === StatusEnum.Active)) {
+        updateInput.status =
+          data.status === true ? StatusEnum.Active : StatusEnum.Inactive;
+      }
 
       if (!isEditCats) {
         // ADD CATEGORIES/NEW CATEGORIES
@@ -264,6 +269,7 @@ const AddCategoryForm = () => {
             desc: {
               value: data.description,
             },
+            status: statusSub,
             items: selectedItemsIds,
             visibility: visibilities,
             availability: formattedAvailability,

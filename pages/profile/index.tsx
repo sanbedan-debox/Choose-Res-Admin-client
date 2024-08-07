@@ -43,43 +43,42 @@ const Profile: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
 
   const [loading, setLoading] = useState(true);
 
-  const fetchBusinessDetails = async () => {
-    try {
-      const response = await sdk.getBusinessDetails();
-      const {
-        businessType,
-        businessName,
-        employeeSize,
-        estimatedRevenue,
-        address,
-        ein,
-      } = response.getBusinessDetails;
-      setAddressLine1(address?.addressLine1?.value || "");
-      setAddressLine2(address?.addressLine2?.value || "");
-      setCity(address?.city?.value || "");
-      setCords(address?.coordinate?.coordinates || [0, 0]);
-      setPlace({
-        displayName: address?.place?.displayName || "",
-        placeId: address?.place?.placeId || "",
-      });
-      setPostcode(address?.postcode?.value || "");
-      setState({
-        id: address?.state?._id || "",
-        value: address?.state?.value || "",
-      });
-      setbusinessName(businessName || "");
-      setbusinessType(businessType || "");
-      setein(ein || "");
-      setemployeeSize(employeeSize || "");
-      setestimatedRevenue(estimatedRevenue || "");
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching business details:", error);
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchBusinessDetails = async () => {
+      try {
+        const response = await sdk.getBusinessDetails();
+        const {
+          businessType,
+          businessName,
+          employeeSize,
+          estimatedRevenue,
+          address,
+          ein,
+        } = response.getBusinessDetails;
+        setAddressLine1(address?.addressLine1?.value || "");
+        setAddressLine2(address?.addressLine2?.value || "");
+        setCity(address?.city?.value || "");
+        setCords(address?.coordinate?.coordinates || [0, 0]);
+        setPlace({
+          displayName: address?.place?.displayName || "",
+          placeId: address?.place?.placeId || "",
+        });
+        setPostcode(address?.postcode?.value || "");
+        setState({
+          id: address?.state?._id || "",
+          value: address?.state?.value || "",
+        });
+        setbusinessName(businessName || "");
+        setbusinessType(businessType || "");
+        setein(ein || "");
+        setemployeeSize(employeeSize || "");
+        setestimatedRevenue(estimatedRevenue || "");
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching business details:", error);
+        setLoading(false);
+      }
+    };
     fetchBusinessDetails();
   }, []);
 

@@ -59,7 +59,9 @@ query getItem($id: String!) {
     image
     price {
       value
+      _id
     }
+    orderLimit
     options {
       _id
       type
@@ -77,10 +79,6 @@ query getItem($id: String!) {
     }
     createdAt
     updatedAt
-    price {
-      _id
-      value
-    }
     visibility {
       menuType
       status
@@ -90,12 +88,6 @@ query getItem($id: String!) {
       price {
         value
       }
-    }
-    subCategory {
-      id
-      name
-      desc
-      category
     }
   }
 }

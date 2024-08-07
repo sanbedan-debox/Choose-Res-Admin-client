@@ -38,18 +38,12 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       const currentFormValues = getValues();
       const changedData: any = { _id: existingTaxRateId };
 
-      if (currentFormValues.name !== initialFormValues.name) {
-        changedData.name = { value: currentFormValues.name };
-      }
-      if (currentFormValues.salesTax !== initialFormValues.salesTax) {
-        changedData.salesTax = {
-          value: parseFloat(currentFormValues.salesTax),
-        };
-      }
-      if (isSwitchChecked !== initialFormValues.default) {
-        changedData.default = isSwitchChecked;
-      }
+      if (currentFormValues.name !== initialFormValues.name)
+        changedData.name = currentFormValues.name;
 
+      if (currentFormValues.salesTax !== initialFormValues.salesTax) {
+        changedData.salesTax = parseFloat(currentFormValues.salesTax);
+      }
       const hasChanges = Object.keys(changedData).length > 1;
 
       if (existingTaxRateId && hasChanges) {
@@ -61,19 +55,15 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           type: "success",
         });
       } else if (!existingTaxRateId) {
+        setButtonTitle("add");
         const taxRateInput = {
-          name: { value: data.name },
-          salesTax: { value: parseFloat(data.salesTax) },
-          default: isSwitchChecked,
+          name: data.name,
+          salesTax: parseFloat(data.salesTax),
         };
 
         const taxRateResponse = await sdk.addTaxRate({ input: taxRateInput });
-        if (taxRateResponse?.addTaxRate) {
-          await sdk.addTaxRateInRestaurant({
-            taxRateId: taxRateResponse.addTaxRate,
-          });
-          setSelectedRestaurantTaxRateId(taxRateResponse?.addTaxRate);
-        }
+        setSelectedRestaurantTaxRateId(taxRateResponse?.addTaxRate);
+
         setToastData({
           message: "Tax rate added successfully",
           type: "success",
@@ -95,7 +85,9 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     selectedRestaurantId,
     setSelectedRestaurantId,
   } = useRestaurantsStore();
-  const { setTaxRate } = useAuthStore();
+
+  const { setTaxRate, taxRate } = useAuthStore();
+
   const router = useRouter();
   const [existingTaxRateId, setExistingTaxRateId] = useState<string | null>(
     null
@@ -117,19 +109,13 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             setSelectedRestaurant(restaurantDetails.name?.value || "");
             setSelectedRestaurantId(restaurantDetails._id || "");
 
-            const taxRates = restaurantDetails.taxRates ?? [];
-            if (taxRates.length > 0) {
+            const taxRates = restaurantDetails.taxRates ?? null;
+            if (taxRates && taxRates.length > 0) {
               const existingTaxRate = taxRates[0];
 
-              setValue("name", existingTaxRate.name?.value || "");
-              setValue(
-                "salesTax",
-                existingTaxRate.salesTax?.value.toString() || ""
-              );
-              setValue(
-                "default",
-                (existingTaxRate?.default as boolean) || false
-              );
+              setValue("name", existingTaxRate.name || "");
+              setValue("salesTax", existingTaxRate.salesTax.toString() || "");
+
               setSelectedRestaurantTaxRateId(existingTaxRate._id);
               setIsSaveButtonEnabled(false);
               setExistingTaxRateId(existingTaxRate._id);
@@ -140,14 +126,14 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               setButtonTitle("Add");
               setIsButtonVisible(true);
             }
-
-            const formattedTaxRate = taxRates.map((rate) => ({
-              id: rate._id,
-              name: rate.name?.value,
-              salesTax: rate.salesTax?.value,
-              default: true,
-            }));
-            setTaxRate(formattedTaxRate[0] || {});
+            if (taxRates) {
+              const formattedTaxRate = taxRates.map((rate) => ({
+                id: rate._id,
+                name: rate.name,
+                salesTax: rate.salesTax,
+              }));
+              setTaxRate(formattedTaxRate[0]);
+            }
           } else {
             try {
               const res = await sdk.setRestaurantIdAsCookie({
@@ -186,15 +172,22 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       currentFormValues.name !== initialFormValues.name ||
       currentFormValues.salesTax !== initialFormValues.salesTax ||
       currentFormValues.default !== initialFormValues.default;
-    setIsSaveButtonEnabled(hasChanges);
-    setButtonTitle("Update");
-    setIsButtonVisible(true);
+    if (taxRate) {
+      setIsSaveButtonEnabled(hasChanges);
+
+      console.log(currentFormValues);
+      setButtonTitle("Update");
+
+      setIsButtonVisible(true);
+    }
   };
 
   useEffect(() => {
     fetchRestaurantUsers();
   }, []);
+
   const { isShowTaxSettings, setisShowTaxSettings } = useGlobalStore();
+
   const handleCloseTaxSettings = () => {
     setisShowTaxSettings(false);
   };
@@ -263,24 +256,6 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                   )}
                 />
               </div>
-              {/* 
-              <div className="mb-4 flex justify-between items-center ">
-                <label
-                  className="block mb-2 text-sm font-medium text-left text-gray-700"
-                  htmlFor="default"
-                >
-                  Default
-                </label>
-                <CustomSwitch
-                  checked={isSwitchChecked}
-                  onChange={() => {
-                    setIsSwitchChecked(!isSwitchChecked);
-                    handleInputChange();
-                  }}
-                  label="Default"
-                  className="ml-2"
-                />
-              </div> */}
 
               <div className="flex items-center justify-end">
                 {isButtonVisible && (
