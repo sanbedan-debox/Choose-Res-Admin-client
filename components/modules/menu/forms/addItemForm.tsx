@@ -44,14 +44,6 @@ interface IFormInput {
   price: number;
   limit: number;
   status: boolean;
-  applySalesTax: boolean;
-  popularItem: boolean;
-  upSellItem: boolean;
-  isSpicy: boolean;
-  hasNuts: boolean;
-  isGlutenFree: boolean;
-  isHalal: boolean;
-  isVegan: boolean;
 }
 
 interface IOption {
@@ -331,6 +323,21 @@ const AddItemForm = () => {
           return;
         }
       }
+      const isHalal = options.some(
+        (option) => option.type === ItemOptionsEnum.IsHalal && option.status
+      );
+      const isVegan = options.some(
+        (option) => option.type === ItemOptionsEnum.IsVegan && option.status
+      );
+
+      if (isHalal && isVegan) {
+        setToastData({
+          message: "An item cannot be Halal and Vegan at the same time",
+          type: "error",
+        });
+        return;
+      }
+
       if (!data.price || data.price <= 0) {
         setToastData({
           message:
