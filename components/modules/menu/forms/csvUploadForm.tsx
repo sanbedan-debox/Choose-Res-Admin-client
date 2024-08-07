@@ -138,6 +138,7 @@ const CsvUploadForm = () => {
 
       const errors: Array<Record<string, string>> = [];
       let inames: string[] = isFixedFile ? [...itemNames] : [];
+
       data.forEach((row) => {
         const {
           Category,
@@ -174,8 +175,6 @@ const CsvUploadForm = () => {
           errorMessage = `Too many items, limit reached.`;
         }
 
-        inames.push(itemName.trim());
-
         if (errorMessage) {
           if (!errors.find((err) => err["Item Name"] === itemName.trim())) {
             errors.push({ ...row });
@@ -183,12 +182,9 @@ const CsvUploadForm = () => {
           }
           return;
         }
-        // setItemNames(...itemNames, itemName);
 
-        // setItemNames((prev) => [...prev, itemName.trim()]);
-        // setItemsNames([...itemNames,itemName.trim()])
+        inames.push(itemName.trim());
 
-        // itemNames.add(itemName);
         items.push({
           category: Category,
           subCategory: subCategory.trim() === "" ? null : subCategory,
@@ -249,6 +245,14 @@ const CsvUploadForm = () => {
       setisLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (errorMessages.length === 0) {
+      setErrorCsvDownloaded(true);
+    } else {
+      setErrorCsvDownloaded(false);
+    }
+  }, [errorMessages]);
 
   const generateErrorCsv = async () => {
     if (errorCsvData.length === 0) {
@@ -625,13 +629,7 @@ const CsvUploadForm = () => {
               loading={isLoading}
               onClick={nextStep}
               disabled={
-                isLoading ||
-                !file ||
-                !parsedCsvData.categories.length ||
-                !parsedCsvData.subCategories.length ||
-                !parsedCsvData.items.length ||
-                !watch("action") ||
-                !watch("menuType")
+                isLoading || !file || !watch("action") || !watch("menuType")
               }
             >
               Next
