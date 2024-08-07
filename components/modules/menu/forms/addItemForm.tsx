@@ -880,13 +880,6 @@ const AddItemForm = () => {
             </p>
           </div>
           <div className="mb-1">
-            <label
-              htmlFor="status"
-              className="block mb-2 text-sm font-medium text-left text-gray-700"
-            >
-              Status
-            </label>
-
             <CustomSwitchCard
               label="Status"
               title="Status"

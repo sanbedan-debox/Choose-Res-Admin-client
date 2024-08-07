@@ -11,7 +11,6 @@ import {
 } from "@/utils/utilFUncs";
 import useGlobalStore from "@/store/global";
 import {
-  AvailabilityInput,
   Day,
   FilterOperatorsEnum,
   MenuTypeEnum,
@@ -39,6 +38,7 @@ interface IFormInput {
   name: string;
   description: string;
   items: string[];
+  status: boolean;
 }
 
 interface ItemsDropDownType {
@@ -85,6 +85,7 @@ const AddCategoryForm = () => {
     formState: { errors },
     register,
     setValue,
+    watch,
     control,
   } = useForm<IFormInput>();
 
@@ -173,7 +174,7 @@ const AddCategoryForm = () => {
           price: el?.price?.value ?? "",
           image: el?.image ?? "",
         }));
-
+        setValue("status", item.status === StatusEnum.Active ? true : false);
         setVisibilities(item.visibility);
         if (item?.availability) {
           const originalAvailability = reverseFormatAvailability(
@@ -367,6 +368,58 @@ const AddCategoryForm = () => {
     setIsModalOpen(false);
   };
 
+  // SSSSSSSSSSSSSSSSSSSSSSSSSSSSTTTTTTTTTTTTTTTTTTTTAAAAAAAAAAAA
+
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+
+  const handleToggleSwitch = () => {
+    if (visibilities.length > 1) {
+      if (watch("status")) {
+        // setValue("status", !watch("status"));
+        setShowConfirmationModal(true);
+      } else {
+        setShowConfirmationModal(true);
+      }
+    } else {
+      setValue("status", !watch("status"));
+      const updatedVisibilities = visibilities.map((vib) => ({
+        menuType: vib.menuType,
+        status: StatusEnum.Inactive,
+      }));
+      setVisibilities(updatedVisibilities);
+    }
+  };
+
+  const handleCloseConfirmationModal = () => {
+    setShowConfirmationModal(false);
+  };
+
+  useEffect(() => {
+    if (visibilities.length === 1) {
+      const updatedVisibilities = visibilities.map((vib) => ({
+        menuType: vib.menuType,
+        status: watch("status") ? StatusEnum.Active : StatusEnum.Inactive,
+      }));
+      setVisibilities(updatedVisibilities);
+    }
+  }, [watch("status")]);
+
+  const handleConfirmation = async () => {
+    setValue("status", !watch("status"));
+    const updatedVisibilities = visibilities.map((vib) => ({
+      menuType: vib.menuType,
+      status: watch("status") ? StatusEnum.Active : StatusEnum.Inactive,
+    }));
+    setVisibilities(updatedVisibilities);
+    setShowConfirmationModal(false);
+  };
+  const handleRejection = async () => {
+    setValue("status", !watch("status"));
+    setShowConfirmationModal(false);
+  };
+
+  // SSSSSSSSSSSSSSSSSSSSSSSSSSSSTTTTTTTTTTTTTTTTTTTTAAAAAAAAAAAA
+
   const renderActions = (rowData: ItemsDropDownType) => (
     <div className="flex space-x-2 justify-center items-center">
       {/* <FaTrash */}
@@ -521,7 +574,23 @@ const AddCategoryForm = () => {
             The Items on your category (eg. Pizza,Burger,Chocolate Cake).
           </p>
         </div>
-        {visibilities.length > 0 && (
+        <div className="mb-1">
+          <CustomSwitchCard
+            label="Status"
+            title="Status"
+            caption="If its checked ,you can use this item in Categories and Menus"
+            switchChecked={watch("status")}
+            // onSwitchChange={() => setValue("status", !watch("status"))}
+            onSwitchChange={() => handleToggleSwitch()}
+          />
+
+          {errors.status && (
+            <p className="text-red-500 text-sm text-start">
+              {errors.status.message}
+            </p>
+          )}
+        </div>
+        {visibilities.length > 1 && (
           <div className="mb-1">
             <label
               htmlFor="visibilityOptions"
@@ -592,7 +661,6 @@ const AddCategoryForm = () => {
           </div>
         </CButton>
       </form>
-
       <AddFormDropdown
         title="Add Items"
         isOpen={isModalOpen}
@@ -605,7 +673,6 @@ const AddCategoryForm = () => {
         renderActions={renderActions}
         onClickCreatebtn={handleAddItem}
       />
-
       <ReusableModal
         isOpen={confirmationRemoval}
         onClose={() => {
@@ -620,6 +687,31 @@ const AddCategoryForm = () => {
             loading={btnLoading}
             variant={ButtonType.Primary}
             onClick={() => handleRemoveCategory()}
+          >
+            Yes
+          </CButton>
+        </div>
+      </ReusableModal>
+      {/* STATUS CONFIRMATION */}
+      <ReusableModal
+        title="Confirm Status Change"
+        comments="Do you want to change the visibility for All the menus"
+        isOpen={showConfirmationModal}
+        onClose={handleCloseConfirmationModal}
+        width="md"
+      >
+        <div className="flex justify-end mt-4 space-x-4">
+          <CButton
+            loading={btnLoading}
+            variant={ButtonType.Outlined}
+            onClick={handleRejection}
+          >
+            No
+          </CButton>
+          <CButton
+            loading={btnLoading}
+            variant={ButtonType.Primary}
+            onClick={handleConfirmation}
           >
             Yes
           </CButton>
