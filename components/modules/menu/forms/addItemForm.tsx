@@ -445,7 +445,7 @@ const AddItemForm = () => {
         });
         isMenuAdded &&
           (await sdk.addModifierGroupToItem({
-            modifierGroupId: addedMenuIds[0],
+            modifierGroupId: addedMenuIds,
             itemId: editItemId || "",
           }));
 

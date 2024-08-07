@@ -156,6 +156,9 @@ const AddModifierForm = () => {
     if (data.name !== changesModifiers?.name?.value) {
       addChange("name", data.name);
     }
+    if (data.desc !== changesModifiers?.desc?.value) {
+      addChange("desc", data.desc);
+    }
 
     if (data.price !== changesModifiers?.price?.value) {
       addChange("price", parsedPrice);
