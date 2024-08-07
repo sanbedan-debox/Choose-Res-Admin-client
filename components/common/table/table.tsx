@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { CSVLink } from "react-csv";
-import { Menu } from "@headlessui/react";
 import {
   HiDotsVertical,
   HiChevronLeft,

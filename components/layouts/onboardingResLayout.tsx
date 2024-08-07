@@ -1,13 +1,13 @@
 import { ReactNode, useEffect } from "react";
 import { useRouter } from "next/router";
 import { AnimatePresence } from "framer-motion";
-import { ArrowLeft as ArrowLeftIcon } from "lucide-react";
 import Image from "next/image";
 import logo1 from "../../assets/logo/logoDark.png";
 import useGlobalStore from "@/store/global";
 import useMasterStore from "@/store/masters";
 import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
+import { LuArrowLeft } from "react-icons/lu";
 
 type Props = {
   children: ReactNode;
@@ -88,7 +88,7 @@ const OnboardingRestaurantLayout = ({ children }: Props) => {
             className="group flex items-center space-x-2"
             onClick={handleBackClick}
           >
-            <ArrowLeftIcon className="h-8 w-8 text-gray-500 group-hover:text-black" />
+            <LuArrowLeft className="h-8 w-8 text-gray-500 group-hover:text-black" />
           </button>
         )}
         <div className="flex-1 flex justify-center">

@@ -44,7 +44,6 @@ const Signup: FC = () => {
   const [phone, setPhone] = useState<string>("");
   const [commPref, setCommPref] = useState<CommunicationType[]>([]);
   const [emailOtpVerifyKey, setEmailOtpVerifyKey] = useState<string>("");
-  const [numberOtpVerifyKey, setNumberOtpVerifyKey] = useState<string>("");
   const [showModal, setShowModal] = useState<boolean>(false);
   const [otpEmail, setOtpEmail] = useState<string>("");
   const [otpWhatsApp, setOtpWhatsApp] = useState<string>("");
@@ -56,7 +55,7 @@ const Signup: FC = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<IFormInput>();
+  } = useForm<IFormInput>({});
 
   const {
     register: registerOtp,
@@ -66,21 +65,24 @@ const Signup: FC = () => {
   } = useForm<IOTPFormInput>();
 
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
-    const { firstName, lastName, email, phone, commPref } = data;
+    const { firstName, lastName, email, phone, commPref = [] } = data;
+
+    const accountPreferences = {
+      email:
+        Array.isArray(commPref) && commPref.includes(CommunicationType.Email),
+      whatsApp:
+        Array.isArray(commPref) &&
+        commPref.includes(CommunicationType.WhatsApp),
+    };
+    const input: AddUserInput = {
+      firstName,
+      lastName,
+      email,
+      phone,
+      accountPreferences,
+    };
+
     try {
-      const accountPreferences = {
-        email: commPref.includes(CommunicationType.Email),
-        whatsApp: commPref.includes(CommunicationType.WhatsApp),
-      };
-
-      const input: AddUserInput = {
-        firstName,
-        lastName,
-        email,
-        phone,
-        accountPreferences,
-      };
-
       const response = await sdk.addUser({ input });
 
       if (response.addUser) {
@@ -110,6 +112,7 @@ const Signup: FC = () => {
       });
     }
   };
+
   const resendOtp = async () => {
     await onSubmit({ firstName, lastName, email, phone, commPref });
     reset();
@@ -141,7 +144,6 @@ const Signup: FC = () => {
         setShowModal(false);
         setToastData({ message: "Verification Successful", type: "success" });
         router.replace("/onboarding/user/intro");
-        // reset();
       }
     } catch (error: any) {
       const errorMessage = extractErrorMessage(error);
@@ -305,47 +307,39 @@ const Signup: FC = () => {
                     <label className="flex items-center">
                       <input
                         type="checkbox"
-                        {...register("commPref")}
                         value={CommunicationType.Email}
                         className="form-checkbox"
                         onChange={(e) => {
-                          if (e.target.checked) {
-                            setCommPref((prev) => [
-                              ...prev,
-                              CommunicationType.Email,
-                            ]);
-                          } else {
-                            setCommPref((prev) =>
-                              prev.filter(
-                                (pref) => pref !== CommunicationType.Email
-                              )
-                            );
-                          }
+                          setCommPref((prev) => {
+                            const updatedPrefs = e.target.checked
+                              ? [...prev, CommunicationType.Email]
+                              : prev.filter(
+                                  (pref) => pref !== CommunicationType.Email
+                                );
+                            return updatedPrefs;
+                          });
                         }}
                       />
+
                       <span className="ml-2 text-black">Email</span>
                     </label>
                     <label className="flex items-center">
                       <input
                         type="checkbox"
-                        {...register("commPref")}
                         value={CommunicationType.WhatsApp}
                         className="form-checkbox"
                         onChange={(e) => {
-                          if (e.target.checked) {
-                            setCommPref((prev) => [
-                              ...prev,
-                              CommunicationType.WhatsApp,
-                            ]);
-                          } else {
-                            setCommPref((prev) =>
-                              prev.filter(
-                                (pref) => pref !== CommunicationType.WhatsApp
-                              )
-                            );
-                          }
+                          setCommPref((prev) => {
+                            const updatedPrefs = e.target.checked
+                              ? [...prev, CommunicationType.WhatsApp]
+                              : prev.filter(
+                                  (pref) => pref !== CommunicationType.WhatsApp
+                                );
+                            return updatedPrefs;
+                          });
                         }}
                       />
+
                       <span className="ml-2 text-black">WhatsApp</span>
                     </label>
                   </div>
@@ -381,7 +375,7 @@ const Signup: FC = () => {
                 Already have an account?{" "}
                 <Link
                   href="/login"
-                  className="text-blue-500 focus:outline-none focus:underline hover:underline"
+                  className="text-primary focus:outline-none focus:underline hover:underline"
                 >
                   Login
                 </Link>

@@ -25,26 +25,17 @@ const FullPageModal: React.FC<FullPageModalProps> = ({
   onActionButtonClick,
 }) => {
   useEffect(() => {
-    const handleEscapeKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onClose();
-      }
-    };
-
     if (isOpen) {
       document.body.style.overflow = "hidden";
-      document.addEventListener("keydown", handleEscapeKey);
     } else {
       document.body.style.overflow = "";
-      document.removeEventListener("keydown", handleEscapeKey);
     }
-
     return () => {
       document.body.style.overflow = "";
-      document.removeEventListener("keydown", handleEscapeKey);
     };
-  }, [isOpen, onClose]);
-  if (!isOpen) return;
+  }, [isOpen]);
+
+  if (!isOpen) return null;
 
   return ReactDOM.createPortal(
     <AnimatePresence>

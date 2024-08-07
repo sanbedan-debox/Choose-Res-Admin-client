@@ -79,7 +79,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           type: "success",
         });
       }
-      router.reload();
+      // router.reload();
       fetchRestaurantUsers();
       setisShowTaxSettings(false);
     } catch (error) {

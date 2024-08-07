@@ -1,7 +1,6 @@
 import { ReactNode } from "react";
 import { useRouter } from "next/router";
 import { AnimatePresence } from "framer-motion";
-import { ArrowLeft as ArrowLeftIcon } from "lucide-react";
 import Image from "next/image";
 import logo1 from "../../assets/logo/logoDark.png";
 import Link from "next/link";

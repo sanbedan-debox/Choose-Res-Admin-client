@@ -12,8 +12,6 @@ import {
   EstimatedRevenueEnum,
   StaffCountEnum,
 } from "@/generated/graphql";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import { extractErrorMessage } from "@/utils/utilFUncs";

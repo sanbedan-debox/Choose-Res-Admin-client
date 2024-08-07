@@ -47,7 +47,7 @@ export const Toast: FC<ToastProps> = ({ message, type }) => {
       case "warning":
         return {
           container: "text-white bg-blue-500",
-          icon: "bg-white text-blue-500",
+          icon: "bg-white text-primary",
           iconPath: (
             <svg
               className="w-5 h-5"
