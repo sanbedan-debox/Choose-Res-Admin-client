@@ -15,6 +15,8 @@ type MenuOptionsState = {
   setisAddMenuModalOpen: (open: boolean) => void;
   fetchMenuDatas: boolean;
   setfetchMenuDatas: (open: boolean) => void;
+  isFromUploadCSV: boolean;
+  setIsFromUploadCSV: (open: boolean) => void;
 };
 
 const useMenuOptionsStore = create<MenuOptionsState>((set) => ({
@@ -36,6 +38,8 @@ const useMenuOptionsStore = create<MenuOptionsState>((set) => ({
   setisAddMenuModalOpen: (open: boolean) => set({ isAddMenuModalOpen: open }),
   fetchMenuDatas: false,
   setfetchMenuDatas: (fetch: boolean) => set({ fetchMenuDatas: fetch }),
+  isFromUploadCSV: false,
+  setIsFromUploadCSV: (fetch: boolean) => set({ isFromUploadCSV: fetch }),
 }));
 
 export default useMenuOptionsStore;

@@ -4,7 +4,7 @@ import Select from "react-select";
 import Papa from "papaparse";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
-import { CsvUploadTypeEnum, MenuTypeEnum } from "@/generated/graphql";
+import { CsvUploadTypeEnum } from "@/generated/graphql";
 import FullPageModal from "@/components/common/modal/fullPageModal";
 import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
@@ -12,20 +12,7 @@ import useGlobalStore from "@/store/global";
 import useAuthStore from "@/store/auth";
 import useRestaurantsStore from "@/store/restaurant";
 import useMenuPageStore from "@/store/menuStore";
-
-const menuTypeOptions = [
-  { value: MenuTypeEnum.OnlineOrdering, label: "Online Ordering" },
-  { value: MenuTypeEnum.DineIn, label: "Dine In" },
-  { value: MenuTypeEnum.Catering, label: "Catering" },
-];
-
-const actionOptions = [
-  { value: CsvUploadTypeEnum.Replace, label: "Replace the existing menu" },
-  {
-    value: CsvUploadTypeEnum.AddOrUpdate,
-    label: "Update to the existing menus",
-  },
-];
+import useMenuOptionsStore from "@/store/menuOptions";
 
 const CsvUploadForm = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -89,6 +76,33 @@ const CsvUploadForm = () => {
 
     fetchHeaders();
   }, []);
+
+  const [menuOptions, setMenuOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
+
+  const { setisAddMenuModalOpen, fetchMenuDatas, setIsFromUploadCSV } =
+    useMenuOptionsStore();
+
+  useEffect(() => {
+    const fetchMenus = async () => {
+      try {
+        const response = await sdk.getMenuByRestaurant();
+        if (response && response.getMenuByRestaurant) {
+          const menus = response.getMenuByRestaurant;
+          const formattedMenus = menus.map((menu) => ({
+            label: menu.name.value,
+            value: menu._id,
+          }));
+          setMenuOptions(formattedMenus || []);
+        }
+      } catch (error) {
+        console.error("Error fetching menus:", error);
+      }
+    };
+
+    fetchMenus();
+  }, [fetchMenuDatas]);
 
   //OPEN FULL PAGE MODAL FOR PREVIEW OF DATA
   const handlePreview = () => {
@@ -377,8 +391,7 @@ const CsvUploadForm = () => {
         const res = await sdk.uploadCSVMenuData({
           input: {
             csvFile: cloudinaryUrl,
-            uploadType: data.action.value,
-            menuType: data.menuType.value,
+            menuType: data.menu.value,
           },
         });
         if (res.uploadCsvData) {
@@ -480,42 +493,38 @@ const CsvUploadForm = () => {
         <form>
           <div className="mb-4">
             <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-              Choose / Select Menu Type
+              Select menu
             </label>
             <Controller
-              name="menuType"
+              name="menu"
               control={control}
-              rules={{ required: "Menu type is required" }}
+              rules={{ required: "Menu is required" }}
               render={({ field }) => (
                 <Select
                   {...field}
-                  options={menuTypeOptions}
+                  options={menuOptions}
                   className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
                   classNamePrefix="react-select"
-                  placeholder="Select menu type"
+                  isDisabled={menuOptions.length === 0}
+                  placeholder="Select menu"
                 />
               )}
             />
-          </div>
-
-          <div className="mb-4">
-            <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-              Choose / Select Action
-            </label>
-            <Controller
-              name="action"
-              control={control}
-              rules={{ required: "Action is required" }}
-              render={({ field }) => (
-                <Select
-                  {...field}
-                  options={actionOptions}
-                  className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
-                  classNamePrefix="react-select"
-                  placeholder="Select action"
-                />
-              )}
-            />
+            <p className="text-gray-500 text-xs mt-1 text-start">
+              {menuOptions.length === 0
+                ? "You don't have any menus. To continue, you need at least one menu. To add one, click"
+                : "Do you want to create a new menu? Click"}{" "}
+              <span
+                onClick={() => {
+                  setisAddMenuModalOpen(true);
+                  setIsFromUploadCSV(true);
+                }}
+                className="text-primary cursor-pointer"
+              >
+                here
+              </span>
+              .
+            </p>
           </div>
 
           <div className="mb-4">
@@ -628,9 +637,7 @@ const CsvUploadForm = () => {
               variant={ButtonType.Primary}
               loading={isLoading}
               onClick={nextStep}
-              disabled={
-                isLoading || !file || !watch("action") || !watch("menuType")
-              }
+              disabled={isLoading || !file || !watch("menu")}
             >
               Next
             </CButton>

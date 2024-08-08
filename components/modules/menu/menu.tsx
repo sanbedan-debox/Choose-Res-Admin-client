@@ -26,7 +26,8 @@ const Menu: React.FC = () => {
       _id: string;
     }[]
   >([]);
-  const { setisAddMenuModalOpen, fetchMenuDatas } = useMenuOptionsStore();
+  const { setisAddMenuModalOpen, fetchMenuDatas, setIsFromUploadCSV } =
+    useMenuOptionsStore();
   const [showStatusConfirmationModal, setShowStatusConfirmationModal] =
     useState(false);
   const [selectedItemId, setSelectedItemId] = useState<string>("");
@@ -77,6 +78,7 @@ const Menu: React.FC = () => {
 
   const handleEditMenu = (_id: string) => {
     setisAddMenuModalOpen(true);
+    setIsFromUploadCSV(false);
     setEditMenuId(_id);
     setisEditMenu(true);
     setisDuplicateMenu(false);
@@ -84,6 +86,7 @@ const Menu: React.FC = () => {
 
   const handleDuplcateMenu = (_id: string) => {
     setisAddMenuModalOpen(true);
+    setIsFromUploadCSV(false);
     setEditMenuId(_id);
     setisDuplicateMenu(true);
     setisEditMenu(false);
@@ -158,7 +161,10 @@ const Menu: React.FC = () => {
   const mainActions = [
     {
       label: "Add Menu",
-      onClick: () => setisAddMenuModalOpen(true),
+      onClick: () => {
+        setisAddMenuModalOpen(true);
+        setIsFromUploadCSV(false);
+      },
     },
   ];
 
