@@ -60,6 +60,7 @@ const Menu: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
     setSelectedMenu("dashboard");
   }, [setSelectedMenu]);
 
+  const redirectURI = "menu/";
   return (
     <div className="w-full flex space-x-5">
       <div className="w-3/4 overflow-y-scroll scrollbar-hide">
@@ -72,7 +73,11 @@ const Menu: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
           <ArrowCard
             title="Have Clover?"
             caption="Pull your menu from Clover!"
-            href={`https://sandbox.dev.clover.com/oauth/v2/authorize?client_id=${process.env.NEXT_PUBLIC_CLOVER_APP_ID}`}
+            href={`https://sandbox.dev.clover.com/oauth/v2/authorize?client_id=${
+              process.env.NEXT_PUBLIC_CLOVER_APP_ID
+            }&redirect_uri=${encodeURIComponent(
+              "http://localhost:3000/clover-connection"
+            )}`}
           />
           <ArrowCard
             title="Upload CSV"

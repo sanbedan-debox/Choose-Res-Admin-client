@@ -82,46 +82,48 @@ const OnboardingRestaurantLayout = ({ children }: Props) => {
 
   return (
     <div className="bg-white min-h-screen text-black flex flex-col">
-      <div className="flex items-center justify-between px-4 py-2 border-b">
-        {showBackButton && (
-          <button
-            className="group flex items-center space-x-2"
-            onClick={handleBackClick}
-          >
-            <LuArrowLeft className="h-8 w-8 text-gray-500 group-hover:text-black" />
-          </button>
-        )}
-        <div className="flex-1 flex justify-center">
-          <Image src={logo1} alt="Logo" width={140} height={140} />
-        </div>
-      </div>
-
-      <div className="flex flex-col items-center">
-        <div className="flex items-center  w-full justify-between ">
-          {journeySteps.map((step, index) => (
-            <div
-              key={step}
-              className={`flex-1 text-sm text-center py-2 font-bold border-b-[1px] border-l-[1px] border-r-[1px] border-gray-300  ${
-                index <= currentStepIndex
-                  ? "text-white bg-primary font-bold"
-                  : "text-black"
-              }`}
+      <div className="fixed top-0 left-0 right-0 z-20 bg-white border-b">
+        <div className="flex items-center justify-between px-4 py-2 border-b">
+          {showBackButton && (
+            <button
+              className="group flex items-center space-x-2"
+              onClick={handleBackClick}
             >
-              <p>
-                {index === 0
-                  ? "Basic Information"
-                  : index === 1
-                  ? "Location"
-                  : index === 2
-                  ? "Additional Information"
-                  : ""}
-              </p>
-            </div>
-          ))}
+              <LuArrowLeft className="h-8 w-8 text-gray-500 group-hover:text-black" />
+            </button>
+          )}
+          <div className="flex-1 flex justify-center">
+            <Image src={logo1} alt="Logo" width={140} height={140} />
+          </div>
+        </div>
+
+        <div className="flex flex-col items-center">
+          <div className="flex items-center w-full justify-between">
+            {journeySteps.map((step, index) => (
+              <div
+                key={step}
+                className={`flex-1 text-sm text-center py-2 font-bold border-b-[1px] border-l-[1px] border-r-[1px] border-gray-300 ${
+                  index <= currentStepIndex
+                    ? "text-white bg-primary font-bold"
+                    : "text-black"
+                }`}
+              >
+                <p>
+                  {index === 0
+                    ? "Basic Information"
+                    : index === 1
+                    ? "Location"
+                    : index === 2
+                    ? "Additional Information"
+                    : ""}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-      <div className="flex-grow flex items-center justify-center p-4">
+      <div className="flex-grow flex pt-28 items-center justify-center p-4">
         <AnimatePresence mode="wait">{children}</AnimatePresence>
       </div>
     </div>
