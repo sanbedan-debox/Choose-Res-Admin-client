@@ -1,3 +1,5 @@
+// GET CLICKABLE WEBSITE FROM WEBSITE LINK
+
 export const formatWebsiteUrlClickable = (url: string) => {
     if (!url.match(/^https?:\/\//i)) {
         return `https://${url}`;
@@ -38,12 +40,14 @@ export const roundOffPrice = (price: number) => {
 };
 
 
-
+// CHECK FOR VALID NAME
 
 export const isValidNameAlphabetic = (name: string) => {
     const regex = /^[a-zA-Z0-9\s-]+$/;
     return regex.test(name);
 }
+
+// GENERATE DUPLICATE NAMES FOR MENU BUILDER
 
 export const generateUniqueName = (baseName: string): string => {
     const nameWithoutSuffix = baseName.replace(/\s*-copy(\d*)\s*$/, '').trim();
@@ -60,3 +64,21 @@ export const generateUniqueName = (baseName: string): string => {
     return `${nameWithoutSuffix}-copy${nextSuffix}`;
 };
 
+
+
+
+// HIDE/HASH PERSONAL INFORMATION
+
+export const hideEmail = (email: string) => {
+    const [local, domain] = email.split('@');
+    return local.replace(/.(?=.{3})/g, '*') + '@' + domain;
+};
+
+export const hidePhoneNumber = (phone: string) => {
+    return phone.replace(/\d(?=\d{4})/g, '*');
+};
+
+
+export const hideEIN = (ein: string) => {
+    return ein.replace(/\d{4}$/, '****');
+};

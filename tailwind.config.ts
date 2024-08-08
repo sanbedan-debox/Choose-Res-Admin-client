@@ -19,7 +19,7 @@ const config: Config = {
         primary: "#162CF1",
         secondary: "#FF6347",
         success: "#10b981",
-        warning: "#f59e0b",
+        warning: "#ef4444",
         error: "#ef4444",
         inputColor: " #EFEFEF",
         confirmation: "#34D399",

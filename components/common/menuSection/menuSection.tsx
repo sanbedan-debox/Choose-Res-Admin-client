@@ -71,16 +71,16 @@ const MenuSection: React.FC<MenuSectionProps> = ({ contentList }) => {
             <section
               id={content.id}
               key={content.id}
-              className="mb-4 p-4 rounded shadow "
+              className="mb-4  rounded shadow "
               ref={(el) => {
                 if (el) sectionRefs.current.push(el);
               }}
             >
               <content.Component />
             </section>
-            {index < contentList.length - 1 && (
+            {/* {index < contentList.length - 1 && (
               <div className="w-full mb-4 bg-primary rounded-md bg-opacity-45 h-1"></div>
-            )}
+            )} */}
           </>
         ))}
       </main>

@@ -20,7 +20,8 @@ const buttonStyles = {
   [ButtonType.Primary]: "btn btn-primary !py-2.5",
   [ButtonType.Text]:
     "text-primary text-sm transition-colors duration-300 transform hover:text-blue-600 focus:outline-none",
-  [ButtonType.Warning]: "btn btn-warning",
+  [ButtonType.Warning]: "btn btn-warning ",
+  [ButtonType.WarningOutlined]: "btn btn-outlined-warning ",
 };
 
 const CButton: React.FC<ReusableButtonProps> = ({

@@ -5,4 +5,5 @@ export enum ButtonType {
   Primary,
   Text,
   Warning,
+  WarningOutlined
 }

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import useProfileStore from "@/store/profile";
+import { hideEIN } from "@/utils/utilFUncs";
 
 const IdentityVerificationForm: React.FC = () => {
   const { ein } = useProfileStore();
@@ -16,7 +17,7 @@ const IdentityVerificationForm: React.FC = () => {
       </div>
       <div className="text-left text-sm text-gray-600">
         <p>
-          <strong>EIN:</strong> {ein}
+          <strong>EIN:</strong> {hideEIN(ein)}
         </p>
       </div>
     </div>

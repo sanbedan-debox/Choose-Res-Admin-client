@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Select from "react-select";
-import { FaEdit } from "react-icons/fa";
-import { sdk } from "@/utils/graphqlClient";
+import { MdOutlineEdit } from "react-icons/md";
 import useProfileStore from "@/store/profile";
 import {
   BusinessTypeEnum,
@@ -13,7 +12,7 @@ import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import useGlobalStore from "@/store/global";
 import { extractErrorMessage } from "@/utils/utilFUncs";
-import { MdOutlineEdit } from "react-icons/md";
+import { sdk } from "@/utils/graphqlClient";
 
 const formatBusinessTypeEnum = (value: BusinessTypeEnum) => {
   switch (value) {
@@ -75,24 +74,15 @@ const BusinessInformationForm: React.FC = () => {
   } = useProfileStore();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalField, setModalField] = useState<
+    "businessType" | "businessName" | "employeeSize" | "estimatedRevenue"
+  >();
   const [isFormChanged, setIsFormChanged] = useState(false);
 
-  const BusinessType = Object.values(BusinessTypeEnum).map((val) => ({
-    value: val.toString(),
-    label: formatBusinessTypeEnum(val),
-  }));
-
-  const employeSize = Object.values(StaffCountEnum).map((val) => ({
-    value: val.toString(),
-    label: formatStaffCountEnum(val),
-  }));
-
-  const revenueOptions = Object.values(EstimatedRevenueEnum).map((val) => ({
-    value: val.toString(),
-    label: formatEstimatedRevenueEnum(val),
-  }));
-
-  const handleOpenModal = () => {
+  const handleOpenModal = (
+    field: "businessType" | "businessName" | "employeeSize" | "estimatedRevenue"
+  ) => {
+    setModalField(field);
     setIsModalOpen(true);
   };
 
@@ -121,10 +111,8 @@ const BusinessInformationForm: React.FC = () => {
       const response = await sdk.updateUserProfile({
         input: {
           businessName: businessName,
-
           businessType: businessTypeValue,
           estimatedRevenue: estimatedRevenueValue,
-
           employeeSize: employeeSizeValue,
         },
       });
@@ -145,165 +133,238 @@ const BusinessInformationForm: React.FC = () => {
   };
 
   return (
-    <div className="w-full flex flex-col items-start space-y-5">
-      <div className="bg-white p-4 rounded-xl space-y-4 md:space-y-3 w-full ">
-        <div className="flex justify-between items-center">
-          <h2 className="text-xl font-semibold">Business Information</h2>
-          <MdOutlineEdit
-            className="text-primary text-xl cursor-pointer"
-            onClick={handleOpenModal}
-          />
-        </div>
-        <div className="text-left text-sm text-gray-600">
-          <p>
-            <strong>Business Type:</strong>{" "}
-            {formatBusinessTypeEnum(businessType as BusinessTypeEnum)}
-          </p>
-          <p>
-            <strong>Business Name:</strong> {businessName}
-          </p>
-          <p>
-            <strong>Staff Count:</strong>{" "}
-            {formatStaffCountEnum(employeeSize as StaffCountEnum)}
-          </p>
-          <p>
-            <strong>Estimated Revenue:</strong>{" "}
-            {formatEstimatedRevenueEnum(
-              estimatedRevenue as EstimatedRevenueEnum
-            )}
-          </p>
+    <div className="w-full flex flex-col items-start  bg-white">
+      <div className="bg-white p-4 rounded-xl space-y-4 w-full ">
+        <div className="border rounded-lg p-4">
+          <div className="flex justify-between items-center border-b pb-3">
+            <p>
+              <strong>Business Name:</strong> {businessName}
+            </p>
+            <MdOutlineEdit
+              className="text-primary text-xl cursor-pointer"
+              onClick={() => handleOpenModal("businessName")}
+            />
+          </div>
+          <div className="flex justify-between items-center border-b py-3">
+            <p>
+              <strong>Business Type:</strong>{" "}
+              {formatBusinessTypeEnum(businessType as BusinessTypeEnum)}
+            </p>
+            <MdOutlineEdit
+              className="text-primary text-xl cursor-pointer"
+              onClick={() => handleOpenModal("businessType")}
+            />
+          </div>
+          <div className="flex justify-between items-center border-b py-3">
+            <p>
+              <strong>Staff Count:</strong>{" "}
+              {formatStaffCountEnum(employeeSize as StaffCountEnum)}
+            </p>
+            <MdOutlineEdit
+              className="text-primary text-xl cursor-pointer"
+              onClick={() => handleOpenModal("employeeSize")}
+            />
+          </div>
+          <div className="flex justify-between items-center py-3">
+            <p>
+              <strong>Estimated Revenue:</strong>{" "}
+              {formatEstimatedRevenueEnum(
+                estimatedRevenue as EstimatedRevenueEnum
+              )}
+            </p>
+            <MdOutlineEdit
+              className="text-primary text-xl cursor-pointer"
+              onClick={() => handleOpenModal("estimatedRevenue")}
+            />
+          </div>
         </div>
       </div>
 
-      <ReusableModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        title="Edit Business Information"
-        width="md"
-      >
-        <div className="space-y-4 md:space-y-3 w-full max-w-2xl">
-          <div className="col-span-2">
-            <label
-              htmlFor="businessType"
-              className="block mb-2 text-sm font-medium text-left text-gray-700"
-            >
-              What kind of business are you
-            </label>
-            <Select
-              classNames={{
-                option: (state) =>
-                  `!text-sm hover:!bg-primary hover:!text-white focus:!bg-transparent  ${
-                    state.isSelected ? "!bg-primary text-white" : ""
-                  }  `,
-              }}
-              id="businessType"
-              options={BusinessType}
-              value={BusinessType.find(
-                (option) => option.value === businessType
-              )}
-              onChange={(option) => {
-                setbusinessType(option?.value || "");
-                handleFormChange();
-              }}
-              className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
-              classNamePrefix="react-select"
-              placeholder="Select business type"
-            />
-          </div>
-
-          <div className="col-span-2">
-            <label
-              htmlFor="businessName"
-              className="block mb-2 text-sm font-medium text-left text-gray-700"
-            >
-              What is your business legal name
-            </label>
-            <input
-              type="text"
-              value={businessName}
-              onChange={(e) => {
-                setbusinessName(e.target.value);
-                handleFormChange();
-              }}
-              id="businessName"
-              className="input input-primary"
-              placeholder="Enter your business name"
-            />
-          </div>
-
-          <div className="col-span-2">
-            <label
-              htmlFor="employees"
-              className="block mb-2 text-sm font-medium text-left text-gray-700"
-            >
-              What is your staff count
-            </label>
-            <Select
-              classNames={{
-                option: (state) =>
-                  `!text-sm hover:!bg-primary hover:!text-white focus:!bg-transparent  ${
-                    state.isSelected ? "!bg-primary text-white" : ""
-                  }  `,
-              }}
-              id="employees"
-              options={employeSize}
-              value={employeSize.find(
-                (option) => option.value === employeeSize
-              )}
-              onChange={(option) => {
-                setemployeeSize(option?.value || "");
-                handleFormChange();
-              }}
-              className="mt-1  text-sm rounded-lg w-full focus:outline-none text-left"
-              classNamePrefix="react-select"
-              placeholder="Select number of staffs"
-            />
-          </div>
-
-          <div className="col-span-2">
-            <label
-              htmlFor="revenue"
-              className="block mb-2 text-sm font-medium text-left text-gray-700"
-            >
-              What is your estimated annual revenue
-            </label>
-            <Select
-              classNames={{
-                option: (state) =>
-                  `!text-sm hover:!bg-primary hover:!text-white focus:!bg-transparent  ${
-                    state.isSelected ? "!bg-primary text-white" : ""
-                  }  `,
-              }}
-              id="revenue"
-              options={revenueOptions}
-              value={revenueOptions.find(
-                (option) => option.value === estimatedRevenue
-              )}
-              onChange={(option) => {
-                setestimatedRevenue(option?.value || "");
-                handleFormChange();
-              }}
-              className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
-              classNamePrefix="react-select"
-              placeholder="Select estimated Revenue"
-            />
-          </div>
-        </div>
-        <div className="flex justify-end mt-4">
-          <CButton
-            type="submit"
-            loading={btnLoading}
-            // disabled={!isFormChanged}
-            className="w-full"
-            variant={ButtonType.Primary}
-            onClick={() => {
-              updateBusinessInfo();
-            }}
-          >
-            Update
+      {/* Transfer Business Section */}
+      <div className=" bg-white p-4 rounded-xl  w-full ">
+        <div className="border rounded-lg p-4 space-y-2">
+          <h2 className="text-xl font-semibold">Transfer business</h2>
+          <p className="text-sm text-gray-600">
+            This transfers the business to a new person within your
+            organization. To process payments, Square needs to verify their
+            identity. Don’t worry, you’ll still be able to process payments
+            during the transfer process.
+          </p>
+          <p className="text-sm text-red-400 font-semibold">
+            NOTE: This feature is not supported when selling a business.
+          </p>
+          <CButton variant={ButtonType.Outlined} className="w-full">
+            Transfer business
           </CButton>
         </div>
-      </ReusableModal>
+      </div>
+
+      {/* Deactivate Business Section */}
+      <div className="w-full bg-white p-4 rounded-xl ">
+        <div className="border rounded-lg p-4 space-y-4">
+          <h2 className="text-xl font-semibold">Deactivate your business</h2>
+          <p className="text-sm text-gray-600">
+            Deactivating your business means that you will be unable to receive
+            or recover any of your payment history or account information.
+          </p>
+          <CButton variant={ButtonType.WarningOutlined} className="w-full">
+            Deactivate your business
+          </CButton>
+        </div>
+      </div>
+
+      {/* Reusable Modal for Editing */}
+      {isModalOpen && (
+        <ReusableModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          title="Edit Business Information"
+          width="md"
+        >
+          <div className="space-y-4 w-full max-w-2xl max-h-[80vh] overflow-y-auto">
+            {modalField === "businessName" && (
+              <div className="col-span-2">
+                <label
+                  htmlFor="businessName"
+                  className="block mb-2 text-sm font-medium text-left text-gray-700"
+                >
+                  What is your business legal name
+                </label>
+                <input
+                  type="text"
+                  value={businessName}
+                  onChange={(e) => {
+                    setbusinessName(e.target.value);
+                    handleFormChange();
+                  }}
+                  id="businessName"
+                  className="input input-primary"
+                  placeholder="Enter your business name"
+                />
+              </div>
+            )}
+            {modalField === "businessType" && (
+              <div className="col-span-2">
+                <label
+                  htmlFor="businessType"
+                  className="block mb-2 text-sm font-medium text-left text-gray-700"
+                >
+                  What kind of business are you
+                </label>
+                <Select
+                  classNames={{
+                    option: (state) =>
+                      `!text-sm hover:!bg-primary hover:!text-white focus:!bg-transparent ${
+                        state.isSelected ? "!bg-primary text-white" : ""
+                      }`,
+                  }}
+                  id="businessType"
+                  options={Object.values(BusinessTypeEnum).map((val) => ({
+                    value: val.toString(),
+                    label: formatBusinessTypeEnum(val),
+                  }))}
+                  value={Object.values(BusinessTypeEnum)
+                    .map((val) => ({
+                      value: val.toString(),
+                      label: formatBusinessTypeEnum(val),
+                    }))
+                    .find((option) => option.value === businessType)}
+                  onChange={(option) => {
+                    setbusinessType(option?.value || "");
+                    handleFormChange();
+                  }}
+                  className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+                  classNamePrefix="react-select"
+                  placeholder="Select business type"
+                />
+              </div>
+            )}
+            {modalField === "employeeSize" && (
+              <div className="col-span-2">
+                <label
+                  htmlFor="employees"
+                  className="block mb-2 text-sm font-medium text-left text-gray-700"
+                >
+                  What is your staff count
+                </label>
+                <Select
+                  classNames={{
+                    option: (state) =>
+                      `!text-sm hover:!bg-primary hover:!text-white focus:!bg-transparent ${
+                        state.isSelected ? "!bg-primary text-white" : ""
+                      }`,
+                  }}
+                  id="employees"
+                  options={Object.values(StaffCountEnum).map((val) => ({
+                    value: val.toString(),
+                    label: formatStaffCountEnum(val),
+                  }))}
+                  value={Object.values(StaffCountEnum)
+                    .map((val) => ({
+                      value: val.toString(),
+                      label: formatStaffCountEnum(val),
+                    }))
+                    .find((option) => option.value === employeeSize)}
+                  onChange={(option) => {
+                    setemployeeSize(option?.value || "");
+                    handleFormChange();
+                  }}
+                  className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+                  classNamePrefix="react-select"
+                  placeholder="Select number of staffs"
+                />
+              </div>
+            )}
+            {modalField === "estimatedRevenue" && (
+              <div className="col-span-2">
+                <label
+                  htmlFor="revenue"
+                  className="block mb-2 text-sm font-medium text-left text-gray-700"
+                >
+                  What is your estimated annual revenue
+                </label>
+                <Select
+                  classNames={{
+                    option: (state) =>
+                      `!text-sm hover:!bg-primary hover:!text-white focus:!bg-transparent ${
+                        state.isSelected ? "!bg-primary text-white" : ""
+                      }`,
+                  }}
+                  id="revenue"
+                  options={Object.values(EstimatedRevenueEnum).map((val) => ({
+                    value: val.toString(),
+                    label: formatEstimatedRevenueEnum(val),
+                  }))}
+                  value={Object.values(EstimatedRevenueEnum)
+                    .map((val) => ({
+                      value: val.toString(),
+                      label: formatEstimatedRevenueEnum(val),
+                    }))
+                    .find((option) => option.value === estimatedRevenue)}
+                  onChange={(option) => {
+                    setestimatedRevenue(option?.value || "");
+                    handleFormChange();
+                  }}
+                  className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+                  classNamePrefix="react-select"
+                  placeholder="Select estimated Revenue"
+                />
+              </div>
+            )}
+          </div>
+          <div className="flex justify-end mt-4">
+            <CButton
+              type="submit"
+              loading={btnLoading}
+              className="w-full"
+              variant={ButtonType.Primary}
+              onClick={updateBusinessInfo}
+            >
+              Update
+            </CButton>
+          </div>
+        </ReusableModal>
+      )}
     </div>
   );
 };

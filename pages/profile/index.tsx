@@ -10,6 +10,9 @@ import BusinessInformationForm from "@/components/modules/profile/forms/business
 import LocationDetailsForm from "@/components/modules/profile/forms/locationDetailsForm";
 import IdentityVerificationForm from "@/components/modules/profile/forms/identityVerificationForm";
 import useProfileStore from "@/store/profile";
+import { hideEmail, hidePhoneNumber } from "@/utils/utilFUncs";
+import UserBasicInformationForm from "@/components/modules/profile/forms/userBasicInformationForm";
+import { useBasicProfileStore } from "@/components/modules/profile/store/basicProfileInformation";
 
 type NextPageWithLayout = React.FC & {
   getLayout?: (page: React.ReactNode) => React.ReactNode;
@@ -25,6 +28,20 @@ type UserRepo = {
 
 const Profile: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
   const { setSelectedMenu } = useGlobalStore();
+  const { _id, email, firstName, lastName, phone } = repo || {};
+
+  useEffect(() => {
+    if (repo) {
+      useBasicProfileStore.getState().setProfileData({
+        _id: _id || "",
+        email: email || "",
+        firstName: firstName || "",
+        lastName: lastName || "",
+        phone: phone || "",
+      });
+    }
+  }, [repo]);
+
   const {
     setAddressLine1,
     setAddressLine2,
@@ -86,33 +103,32 @@ const Profile: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
     return <Loader />;
   }
 
+  const contentList = [
+    {
+      id: "userBasicInformation",
+      title: "User Basic Information",
+      Component: UserBasicInformationForm,
+    },
+    {
+      id: "businessInformation",
+      title: "Business Information",
+      Component: BusinessInformationForm,
+    },
+    {
+      id: "locationDetails",
+      title: "Location Details",
+      Component: LocationDetailsForm,
+    },
+    {
+      id: "identityVerification",
+      title: "Identity Verification",
+      Component: IdentityVerificationForm,
+    },
+  ];
+
   return (
-    <div className="flex flex-col">
-      <div className="bg-white p-4 rounded-lg space-y-4 md:space-y-3 w-full ">
-        <div className="flex justify-between items-center">
-          <h2 className="text-xl font-semibold">User Details</h2>
-        </div>
-        <div className="text-left text-sm text-gray-600">
-          <p>
-            <strong>First name</strong> {repo?.firstName}
-          </p>
-          <p>
-            <strong>Last name</strong> {repo?.lastName}
-          </p>
-          <p>
-            <strong>Email address</strong> {repo?.email}
-          </p>
-          <p>
-            <strong>Phone number</strong> {repo?.phone}
-          </p>
-        </div>
-      </div>
-      <br />
-      <BusinessInformationForm />
-      <br />
-      <LocationDetailsForm />
-      <br />
-      <IdentityVerificationForm />
+    <div className="text-black">
+      <MenuSection contentList={contentList} />
     </div>
   );
 };
