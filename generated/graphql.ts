@@ -285,7 +285,7 @@ export type Category = {
   createdAt: Scalars['DateTimeISO']['output'];
   desc: MasterCommon;
   items: Array<ItemInfo>;
-  menu?: Maybe<Menu>;
+  menu?: Maybe<Array<Menu>>;
   name: MasterCommon;
   restaurantId: Restaurant;
   status: StatusEnum;
@@ -1239,6 +1239,7 @@ export type Query = {
   changeRestaurantStatusFromUser: Scalars['Boolean']['output'];
   completeRestaurantOnboarding: Scalars['Boolean']['output'];
   deleteData: Scalars['Boolean']['output'];
+  deleteMenuData: Scalars['Boolean']['output'];
   emailOtpVerification: Scalars['Boolean']['output'];
   generateOtpForEmailVerification: Scalars['String']['output'];
   generateOtpForLogin: Scalars['String']['output'];

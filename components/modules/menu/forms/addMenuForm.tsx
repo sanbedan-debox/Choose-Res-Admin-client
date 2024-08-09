@@ -14,7 +14,6 @@ import { Day, FilterOperatorsEnum, MenuTypeEnum } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
 import useMenuOptionsStore from "@/store/menuOptions";
 import FormAddTable from "@/components/common/table/formTable";
-import { FaArrowRight, FaTrash } from "react-icons/fa";
 import AddFormDropdown from "@/components/common/addFormDropDown/addFormDropdown";
 import { MdArrowOutward } from "react-icons/md";
 import useMenuMenuStore from "@/store/menumenu";

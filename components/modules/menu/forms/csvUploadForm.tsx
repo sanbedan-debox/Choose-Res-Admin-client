@@ -13,6 +13,14 @@ import useRestaurantsStore from "@/store/restaurant";
 import useMenuPageStore from "@/store/menuStore";
 import useMenuOptionsStore from "@/store/menuOptions";
 import AddMenuForm from "./addMenuForm";
+import {
+  invalidBooleanCellValue,
+  invalidItemDescLimit,
+  invalidItemNameLimit,
+  invalidNumberCellValue,
+  invalidStringCellValue,
+  sanitizeCellValue,
+} from "@/utils/csvHelper";
 
 const CsvUploadForm = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -40,7 +48,7 @@ const CsvUploadForm = () => {
       onlineOrdering: boolean;
       dineIn: boolean;
       catering: boolean;
-      itemLimit: string | null;
+      itemLimit: number | null;
       popularItem: boolean;
       upSellItem: boolean;
       isVegan: boolean;
@@ -145,12 +153,13 @@ const CsvUploadForm = () => {
         category: string;
         subCategory: string | null;
         itemName: string;
+        itemDesc: string;
         price: string;
         itemStatus: boolean;
         onlineOrdering: boolean;
         dineIn: boolean;
         catering: boolean;
-        itemLimit: string | null;
+        itemLimit: number | null;
         popularItem: boolean;
         upSellItem: boolean;
         isVegan: boolean;
@@ -162,7 +171,7 @@ const CsvUploadForm = () => {
 
       const errors: Array<Record<string, string>> = [];
       let inames: string[] = isFixedFile ? [...itemNames] : [];
-
+      let issues = new Set<string>();
       data.forEach((row) => {
         const {
           Category,
@@ -184,54 +193,190 @@ const CsvUploadForm = () => {
           IsSpicy: isSpicy,
         } = row;
 
-        let errorMessage = "";
-        if (isNaN(Number(price))) {
-          errorMessage = `Invalid price`;
-        } else if (Number(price) <= 0) {
-          errorMessage = `Price Can't Be 0`;
-        } else if (inames.includes(itemName.trim())) {
-          errorMessage = `Duplicate item name`;
-        } else if (itemName.trim().length > 80) {
-          errorMessage = `Item name too long`;
-        } else if (itemDesc.length < 40 || itemDesc.length > 200) {
-          errorMessage = `Item description length should be between 40 to 200 characters`;
-        } else if (items.length > 500) {
-          errorMessage = `Too many items, limit reached.`;
+        let rowError = false;
+
+        if (
+          invalidStringCellValue(Category.toString()) ||
+          ((subCategory?.toString() ?? "") !== "" &&
+            invalidStringCellValue(subCategory.toString())) ||
+          invalidStringCellValue(itemName.toString()) ||
+          invalidStringCellValue(itemDesc.toString())
+        ) {
+          issues.add("Invalid string values found, please try again!");
+          rowError = true;
         }
 
-        if (errorMessage) {
-          if (!errors.find((err) => err["Item Name"] === itemName.trim())) {
-            errors.push({ ...row });
-            setErrorMessages((prev) => [...prev, errorMessage]);
-          }
-          return;
+        // Check cell number values
+        if (
+          invalidNumberCellValue(price) ||
+          ((itemLimit?.toString() ?? "") !== "" &&
+            invalidNumberCellValue(itemLimit))
+        ) {
+          issues.add("Invalid number values found, please try again!");
+          rowError = true;
         }
 
-        inames.push(itemName.trim());
+        // Check cell boolean values
 
-        items.push({
-          category: Category,
-          subCategory: subCategory.trim() === "" ? null : subCategory,
-          itemName,
-          price,
-          itemStatus: itemStatus === "TRUE",
-          onlineOrdering: onlineOrdering === "TRUE",
-          dineIn: dineIn === "TRUE",
-          catering: catering === "TRUE",
-          itemLimit: itemLimit.trim() === "" ? null : itemLimit,
-          popularItem: popularItem === "TRUE",
-          upSellItem: upSellItem === "TRUE",
-          isVegan: isVegan === "TRUE",
-          hasNuts: hasNuts === "TRUE",
-          isGlutenFree: isGlutenFree === "TRUE",
-          isHalal: isHalal === "TRUE",
-          isSpicy: isSpicy === "TRUE",
-        });
+        if (
+          invalidBooleanCellValue(itemStatus.toString()) ||
+          invalidBooleanCellValue(onlineOrdering.toString()) ||
+          invalidBooleanCellValue(dineIn.toString()) ||
+          invalidBooleanCellValue(catering.toString()) ||
+          invalidBooleanCellValue(popularItem.toString()) ||
+          invalidBooleanCellValue(upSellItem.toString()) ||
+          invalidBooleanCellValue(isVegan.toString()) ||
+          invalidBooleanCellValue(hasNuts.toString()) ||
+          invalidBooleanCellValue(isGlutenFree.toString()) ||
+          invalidBooleanCellValue(isHalal.toString()) ||
+          invalidBooleanCellValue(isSpicy.toString())
+        ) {
+          issues.add("Invalid boolean values found, please try again!");
+          rowError = true;
+        }
 
-        successfulRows.push(row);
+        // Check item name and item desc limit
+        if (
+          invalidItemNameLimit(itemName.toString()) ||
+          invalidItemDescLimit(itemDesc.toString())
+        ) {
+          issues.add(
+            "Invalid limit for item name or item desc, please try again!"
+          );
+          rowError = true;
+        }
+
+        // if (isNaN(Number(price))) {
+        //   issuses.set(`Invalid price`;
+        // } else if (Nu)mber(price) <= 0) {
+        //   errorMessage = `Price Can't Be 0`;
+        // } else if (inames.includes(itemName.trim())) {
+        //   errorMessage = `Duplicate item name`;
+        // } else if (itemName.trim().length > 80) {
+        //   errorMessage = `Item name too long`;
+        // } else if (itemDesc.length < 40 || itemDesc.length > 200) {
+        //   errorMessage = `Item description length should be between 40 to 200 characters`;
+
+        // Sanitized data
+        const categorySanitized = sanitizeCellValue(
+          Category.toString(),
+          "string"
+        );
+        const subCategorySanitized: string | null = subCategory.toString()
+          ? (sanitizeCellValue(subCategory.toString(), "string") as string)
+          : null;
+        const itemNameSanitized = sanitizeCellValue(
+          itemName.toString(),
+          "string"
+        );
+        const itemDescSanitized = sanitizeCellValue(
+          itemDesc.toString(),
+          "string"
+        );
+        const itemPriceSanitized = sanitizeCellValue(
+          price.toString(),
+          "number"
+        );
+        const itemStatusSanitized = sanitizeCellValue(
+          itemStatus.toString(),
+          "boolean"
+        );
+        const onlineOrderingSanitized = sanitizeCellValue(
+          onlineOrdering.toString(),
+          "boolean"
+        );
+        const dineInSanitized = sanitizeCellValue(dineIn.toString(), "boolean");
+        const cateringSanitized = sanitizeCellValue(
+          categorySanitized.toString(),
+          "boolean"
+        );
+
+        const itemLimitSanitized: number | null = itemLimit.toString()
+          ? (sanitizeCellValue(itemLimit?.toString(), "number") as number)
+          : null;
+
+        const popularItemSanitized = sanitizeCellValue(
+          popularItem.toString(),
+          "boolean"
+        );
+        const upSellItemSanitized = sanitizeCellValue(
+          upSellItem.toString(),
+          "boolean"
+        );
+        const isVeganSanitized = sanitizeCellValue(
+          isVegan.toString(),
+          "boolean"
+        );
+        const hasNutsSanitized = sanitizeCellValue(
+          hasNuts.toString(),
+          "boolean"
+        );
+        const isGlutenFreeSanitized = sanitizeCellValue(
+          isGlutenFree.toString(),
+          "boolean"
+        );
+        const isHalalSanitized = sanitizeCellValue(
+          isHalal.toString(),
+          "boolean"
+        );
+        const isSpicySanitized = sanitizeCellValue(
+          isSpicy.toString(),
+          "boolean"
+        );
+
+        // Check if any row have same item name
+        if (inames.includes(itemNameSanitized as string)) {
+          issues.add("Item name cannot be same, please try again");
+          rowError = true;
+        } else {
+          inames.push(itemNameSanitized as string);
+        }
+
+        // Check if halal and vegan is not true in same row
+        if ((isHalalSanitized as boolean) === (isVeganSanitized as boolean)) {
+          issues.add(
+            "Item cannot be halal and vegan at the same time, please check and try again!"
+          );
+          rowError = true;
+        }
+
+        // if (errorMessage) {
+        //   console.log(errorMessage);
+        //   if (!errors.find((err) => err["Item Name"] === itemNameSanitized)) {
+        //     errors.push({ ...row });
+        //     setErrorMessages((prev) => [...prev, errorMessage]);
+        //   }
+        //   return;
+        // }
+
+        if (!rowError) {
+          items.push({
+            category: categorySanitized as string,
+            subCategory: subCategorySanitized,
+            itemName: itemNameSanitized as string,
+            price: itemPriceSanitized as string,
+            itemStatus: itemStatusSanitized as boolean,
+            itemDesc: itemDescSanitized as string,
+            onlineOrdering: onlineOrderingSanitized as boolean,
+            dineIn: dineInSanitized as boolean,
+            catering: cateringSanitized as boolean,
+            itemLimit: itemLimitSanitized as number,
+            popularItem: popularItemSanitized as boolean,
+            upSellItem: upSellItemSanitized as boolean,
+            isVegan: isVeganSanitized as boolean,
+            hasNuts: hasNutsSanitized as boolean,
+            isGlutenFree: isGlutenFreeSanitized as boolean,
+            isHalal: isHalalSanitized as boolean,
+            isSpicy: isSpicySanitized as boolean,
+          });
+          successfulRows.push(row);
+        } else {
+          errors.push(row);
+        }
       });
 
       setErrorCsvData(errors);
+      setErrorMessages((prev) => [...prev, ...Array.from(issues)]);
 
       if (isFixedFile) {
         setPreviewData((prev) => [...prev, ...successfulRows]);
