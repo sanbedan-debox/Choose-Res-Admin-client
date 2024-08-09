@@ -2033,7 +2033,7 @@ export type GetItemQueryVariables = Exact<{
 }>;
 
 
-export type GetItemQuery = { __typename?: 'Query', getItem: { __typename?: 'Item', _id: string, status: StatusEnum, image?: string | null, orderLimit?: number | null, createdAt: any, updatedAt: any, name: { __typename?: 'MasterCommon', value: string }, desc: { __typename?: 'MasterCommon', value: string }, modifierGroup: Array<{ __typename?: 'ModifierGroupInfo', pricingType: PriceTypeEnum, id: string, name: { __typename?: 'MasterCommon', value: string } }>, price: { __typename?: 'MasterCommonNumber', value: number, _id: string }, options: Array<{ __typename?: 'Options', _id: string, type: ItemOptionsEnum, displayName: string, desc: string, status: boolean }>, availability?: Array<{ __typename?: 'Availability', day: string, active: boolean, hours: Array<{ __typename?: 'Hours', start: any, end: any }> }> | null, visibility: Array<{ __typename?: 'Visibility', menuType: MenuTypeEnum, status: StatusEnum }>, priceOptions: Array<{ __typename?: 'PriceOptions', menuType: MenuTypeEnum, price: { __typename?: 'MasterCommonNumber', value: number } }> } };
+export type GetItemQuery = { __typename?: 'Query', getItem: { __typename?: 'Item', _id: string, status: StatusEnum, image?: string | null, orderLimit?: number | null, createdAt: any, updatedAt: any, name: { __typename?: 'MasterCommon', value: string }, desc: { __typename?: 'MasterCommon', value: string }, modifierGroup: Array<{ __typename?: 'ModifierGroupInfo', pricingType: PriceTypeEnum, id: string, name: { __typename?: 'MasterCommon', value: string } }>, price: { __typename?: 'MasterCommonNumber', value: number, _id: string }, options: Array<{ __typename?: 'Options', _id: string, type: ItemOptionsEnum, displayName: string, desc: string, status: boolean }>, availability?: Array<{ __typename?: 'Availability', day: string, active: boolean, hours: Array<{ __typename?: 'Hours', start: any, end: any }> }> | null, visibility: Array<{ __typename?: 'Visibility', menuType: MenuTypeEnum, status: StatusEnum }>, priceOptions: Array<{ __typename?: 'PriceOptions', menuType: MenuTypeEnum, price: { __typename?: 'MasterCommonNumber', value: number } }>, subCategory?: { __typename?: 'ItemSubCategory', id?: string | null, name: string, desc: string } | null } };
 
 export type AddItemMutationVariables = Exact<{
   input: AddItemInput;
@@ -2738,6 +2738,11 @@ export const GetItemDocument = gql`
       price {
         value
       }
+    }
+    subCategory {
+      id
+      name
+      desc
     }
   }
 }
