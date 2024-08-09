@@ -34,12 +34,10 @@ const UserBasicInformationForm: React.FC = () => {
             <p className="text-sm text-gray-600">{hideEmail(email)}</p>
           </div>
           <div className="flex space-x-4">
-            <span className="flex items-center space-x-1 text-red-400">
-              <FaExclamationTriangle />
-              <span>Verification needed</span>
-            </span>
-            <button className="text-primary hover:underline">Verify</button>
-            <button className="text-primary hover:underline">Update</button>
+            {/* <button className="text-primary hover:underline">Verify</button> */}
+            <button className="text-primary hover:underline">
+              Add Secondary Email
+            </button>
           </div>
         </div>
         <div className="flex justify-between items-center border-b pb-4">
@@ -49,7 +47,13 @@ const UserBasicInformationForm: React.FC = () => {
               {phone ? hidePhoneNumber(phone) : "No phone number"}
             </p>
           </div>
-          <button className="text-primary hover:underline">Add</button>
+          <div className="flex space-x-4">
+            <span className="flex items-center space-x-1 text-red-400">
+              <FaExclamationTriangle />
+              <span>Verification needed</span>
+            </span>
+            <button className="text-primary hover:underline">Verify</button>
+          </div>
         </div>
         {/* <div className="flex justify-between items-center border-b pb-4">
           <div>
