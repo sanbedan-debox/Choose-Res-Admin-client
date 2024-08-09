@@ -48,7 +48,7 @@ const Profile: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
     setCity,
     setCords,
     setPlace,
-    setPostcode,
+    setZipcode,
     setState,
     setbusinessName,
     setbusinessType,
@@ -72,18 +72,18 @@ const Profile: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
           address,
           ein,
         } = response.getBusinessDetails;
-        setAddressLine1(address?.addressLine1?.value || "");
-        setAddressLine2(address?.addressLine2?.value || "");
-        setCity(address?.city?.value || "");
+        setAddressLine1(address?.addressLine1 || "");
+        setAddressLine2(address?.addressLine2 || "");
+        setCity(address?.city || "");
         setCords(address?.coordinate?.coordinates || [0, 0]);
         setPlace({
           displayName: address?.place?.displayName || "",
           placeId: address?.place?.placeId || "",
         });
-        setPostcode(address?.postcode?.value || "");
+        setZipcode(address?.zipcode || 0);
         setState({
-          id: address?.state?._id || "",
-          value: address?.state?.value || "",
+          id: address?.state.stateId || "",
+          value: address?.state.stateName || "",
         });
         setbusinessName(businessName || "");
         setbusinessType(businessType || "");

@@ -1,12 +1,8 @@
 query getModifiers {
   getModifiers {
     _id
-    name {
-      value
-    }
-    price {
-      value
-    }
+    name
+    price
   }
 }
 
@@ -21,17 +17,11 @@ mutation deleteModifier($id: String!) {
 query getModifier($id: String!) {
   getModifier(id: $id) {
     _id
-    desc {
-      value
-    }
+    desc
     isItem
     preSelect
-    name {
-      value
-    }
-    price {
-      value
-    }
+    name
+    price
   }
 }
 

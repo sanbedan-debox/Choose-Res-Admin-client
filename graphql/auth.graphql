@@ -1,3 +1,5 @@
+# import "./fragments.graphql"
+
 # Query to log out the currently logged-in user
 query Logout {
   logout
@@ -27,36 +29,12 @@ query MeUser {
       employeeSize
       establishedAt
       address {
-        addressLine1 {
-          value
-        }
-        addressLine2 {
-          value
-        }
-        state {
-          _id
-          value
-        }
-        city {
-          value
-        }
-        postcode {
-          value
-        }
-        coordinate {
-          coordinates
-        }
-        place {
-          placeId
-          displayName
-        }
+        ...addressInfo
       }
     }
     restaurants {
       id
-      name {
-        value
-      }
+      name
       status
     }
   }
@@ -89,29 +67,7 @@ query getBusinessDetails {
     ein
     businessType
     address {
-      addressLine1 {
-        value
-      }
-      addressLine2 {
-        value
-      }
-      state {
-        _id
-        value
-      }
-      city {
-        value
-      }
-      postcode {
-        value
-      }
-      coordinate {
-        coordinates
-      }
-      place {
-        displayName
-        placeId
-      }
+      ...addressInfo
     }
   }
 }

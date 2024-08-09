@@ -30,7 +30,7 @@ interface IFormData {
   city: string;
   location: PlacesType;
   state: { id: string; value: string } | null;
-  postcode: string;
+  zipcode: number;
   locationType: { value: string; label: string };
   timezone: { id: string; value: string } | null;
 }
@@ -72,7 +72,7 @@ const RestaurantAvailability = () => {
     addressLine2,
     city,
     state,
-    postcode,
+    zipcode,
     cords,
     place,
     timeZone,
@@ -83,7 +83,7 @@ const RestaurantAvailability = () => {
     setCords,
     setState,
     setTimeZone,
-    setPostcode,
+    setZipcode,
     setPlace,
   } = RestaurantOnboardingStore();
   const [isChecked, setIsChecked] = useState(false);
@@ -93,26 +93,26 @@ const RestaurantAvailability = () => {
       const response = await sdk.getBusinessDetails();
       const businessDetails = response.getBusinessDetails.address;
 
-      setValue("addressLine1", businessDetails?.addressLine1?.value || "");
-      setAddressLine1(businessDetails?.addressLine1?.value || "");
+      setValue("addressLine1", businessDetails?.addressLine1 || "");
+      setAddressLine1(businessDetails?.addressLine1 || "");
 
-      setValue("addressLine2", businessDetails?.addressLine2?.value || "");
-      setAddressLine2(businessDetails?.addressLine2?.value || "");
+      setValue("addressLine2", businessDetails?.addressLine2 || "");
+      setAddressLine2(businessDetails?.addressLine2 || "");
 
-      setValue("city", businessDetails?.city?.value || "");
-      setCity(businessDetails?.city?.value || "");
+      setValue("city", businessDetails?.city || "");
+      setCity(businessDetails?.city || "");
 
       setValue("state", {
-        id: businessDetails?.state?._id || "",
-        value: businessDetails?.state?.value || "",
+        id: businessDetails?.state?.stateId || "",
+        value: businessDetails?.state?.stateName || "",
       });
       setState({
-        id: businessDetails?.state?._id || "",
-        value: businessDetails?.state?.value || "",
+        id: businessDetails?.state?.stateId || "",
+        value: businessDetails?.state?.stateName || "",
       });
 
-      setValue("postcode", businessDetails?.postcode?.value || "");
-      setPostcode(businessDetails?.postcode?.value || "");
+      setValue("zipcode", businessDetails?.zipcode || 0);
+      setZipcode(businessDetails?.zipcode ?? 0);
 
       setSelectedPlace({
         label: businessDetails?.place?.displayName || "",
@@ -145,7 +145,7 @@ const RestaurantAvailability = () => {
     setValue("addressLine2", addressLine2);
     setValue("city", city);
     setValue("state", state);
-    setValue("postcode", postcode);
+    setValue("zipcode", zipcode);
     setValue("timezone", timeZone);
     if (place?.displayName && place?.placeId) {
       setSelectedPlace({ label: place.displayName, value: place.placeId });
@@ -166,7 +166,7 @@ const RestaurantAvailability = () => {
     addressLine2,
     city,
     state,
-    postcode,
+    zipcode,
     place,
     cords,
     timeZone,
@@ -185,19 +185,15 @@ const RestaurantAvailability = () => {
       const response = await sdk.restaurantOnboarding({
         input: {
           address: {
-            addressLine1: {
-              value: data?.addressLine1,
-            },
-            addressLine2: {
-              value: data?.addressLine2 ? data?.addressLine2 : "",
-            },
-            city: {
-              value: data.city,
-            },
-            state: { _id: data.state.id, value: data.state.value },
-            postcode: {
-              value: data.postcode,
-            },
+            addressLine1: data?.addressLine1,
+
+            addressLine2: data?.addressLine2 ? data?.addressLine2 : "",
+
+            city: data.city,
+
+            state: { stateId: data.state.id, stateName: data.state.value },
+            zipcode: data.zipcode,
+
             place: {
               displayName: selectedPlace?.label ?? "",
               placeId: selectedPlace?.value ?? "",
@@ -207,8 +203,8 @@ const RestaurantAvailability = () => {
             },
           },
           timezone: {
-            _id: data.timezone.id,
-            value: data.timezone.value,
+            timezoneId: data.timezone.id,
+            timezoneName: data.timezone.value,
           },
           availability: formattedAvailability,
         },
@@ -403,17 +399,17 @@ const RestaurantAvailability = () => {
             ZipCode
           </label>
           <input
-            type="text"
-            {...register("postcode", {
+            type="number"
+            {...register("zipcode", {
               required: "Postcode is required",
             })}
             className="input input-primary"
             placeholder="Zipcode"
-            onChange={(e) => setPostcode(e.target.value)}
+            onChange={(e) => setZipcode(parseInt(e.target.value))}
           />
-          {errors.postcode && (
+          {errors.zipcode && (
             <p className="text-red-500 text-sm text-start">
-              {errors.postcode.message?.toString() ?? ""}
+              {errors.zipcode.message?.toString() ?? ""}
             </p>
           )}
         </div>

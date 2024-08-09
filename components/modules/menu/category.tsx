@@ -31,9 +31,9 @@ const Categories: React.FC = () => {
       if (response && response.getCategories) {
         setCats(
           response.getCategories.map((el) => ({
-            desc: el.desc.value,
+            desc: el.desc,
             items: el.items.length,
-            name: el.name.value,
+            name: el.name,
             _id: el._id,
             status: el.status,
           }))
@@ -127,7 +127,7 @@ const Categories: React.FC = () => {
     { title: "Desc", dataKey: "desc" },
     { title: "Items", dataKey: "items" },
     { title: "Toggle Status", dataKey: "status", render: renderSwitch },
-    { title: "Actions", dataKey: "name.value", render: renderActions },
+    { title: "Actions", dataKey: "name", render: renderActions },
   ];
 
   const mainActions = [

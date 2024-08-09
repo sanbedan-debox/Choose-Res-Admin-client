@@ -109,7 +109,7 @@ const CsvUploadForm = () => {
         if (response && response.getMenuByRestaurant) {
           const menus = response.getMenuByRestaurant;
           const formattedMenus = menus.map((menu) => ({
-            label: menu.name.value,
+            label: menu.name,
             value: menu._id,
           }));
           setMenuOptions(formattedMenus || []);

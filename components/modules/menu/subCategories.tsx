@@ -129,7 +129,7 @@ const SubCategories: React.FC = () => {
   const headings = [
     { title: "Name", dataKey: "name" },
     { title: "Desc", dataKey: "desc" },
-    { title: "Actions", dataKey: "name.value", render: renderActions },
+    { title: "Actions", dataKey: "name", render: renderActions },
   ];
 
   const mainActions = [

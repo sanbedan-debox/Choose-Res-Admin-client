@@ -45,9 +45,9 @@ export type AddAdminInput = {
 
 export type AddCategoryInput = {
   availability?: InputMaybe<Array<AvailabilityInput>>;
-  desc: MasterCommonInput;
+  desc: Scalars['String']['input'];
   items?: InputMaybe<Array<Scalars['String']['input']>>;
-  name: MasterCommonInput;
+  name: Scalars['String']['input'];
   status: StatusEnum;
   visibility?: InputMaybe<Array<VisibilityInput>>;
 };
@@ -82,12 +82,12 @@ export type AddEmailTemplateInput = {
 
 export type AddItemInput = {
   availability?: InputMaybe<Array<AvailabilityInput>>;
-  desc?: InputMaybe<MasterCommonInput>;
+  desc?: InputMaybe<Scalars['String']['input']>;
   image?: InputMaybe<Scalars['String']['input']>;
-  name: MasterCommonInput;
+  name: Scalars['String']['input'];
   options?: Array<OptionsInput>;
   orderLimit?: InputMaybe<Scalars['Float']['input']>;
-  price: MasterCommonInputNumber;
+  price: Scalars['Float']['input'];
   priceOptions: Array<PriceOptionsInput>;
   status: StatusEnum;
   subCategory?: InputMaybe<ItemSubCategoryInput>;
@@ -103,43 +103,33 @@ export type AddItemOptionInput = {
 export type AddMenuInput = {
   availability?: InputMaybe<Array<AvailabilityInput>>;
   categories?: InputMaybe<Array<Scalars['String']['input']>>;
-  name: MasterCommonInput;
+  name: Scalars['String']['input'];
   taxRateId?: InputMaybe<Scalars['String']['input']>;
   type: MenuTypeEnum;
 };
 
 export type AddModifierGroupInput = {
-  desc: MasterCommonInput;
-  maxSelections: MasterCommonInputNumber;
-  minSelections: MasterCommonInputNumber;
-  name: MasterCommonInput;
+  desc: Scalars['String']['input'];
+  maxSelections: Scalars['Float']['input'];
+  minSelections: Scalars['Float']['input'];
+  name: Scalars['String']['input'];
   optional: Scalars['Boolean']['input'];
-  price: MasterCommonInputNumber;
+  price: Scalars['Float']['input'];
   pricingType: PriceTypeEnum;
 };
 
 export type AddModifierInput = {
-  desc: MasterCommonInput;
+  desc: Scalars['String']['input'];
   isItem: Scalars['Boolean']['input'];
-  name: MasterCommonInput;
+  name: Scalars['String']['input'];
   preSelect: Scalars['Boolean']['input'];
-  price: MasterCommonInputNumber;
+  price: Scalars['Float']['input'];
 };
 
 export type AddPermissionInput = {
   isFunction?: Scalars['Boolean']['input'];
   preselect: Array<UserRole>;
   type: PermissionTypeEnum;
-};
-
-export type AddRestaurantInput = {
-  address: AddressInfoInput;
-  availability: Array<AvailabilityInput>;
-  brandingLogo?: InputMaybe<Scalars['String']['input']>;
-  locationName: MasterCommonInput;
-  name: MasterCommonInput;
-  socialInfo?: InputMaybe<SocialInfoInput>;
-  timezone: Scalars['String']['input'];
 };
 
 export type AddStateInput = {
@@ -188,23 +178,23 @@ export type AddWaitListUserInput = {
 export type AddressInfo = {
   __typename?: 'AddressInfo';
   _id: Scalars['ID']['output'];
-  addressLine1: MasterCommon;
-  addressLine2?: Maybe<MasterCommon>;
-  city: MasterCommon;
+  addressLine1: Scalars['String']['output'];
+  addressLine2?: Maybe<Scalars['String']['output']>;
+  city: Scalars['String']['output'];
   coordinate?: Maybe<LocationCommon>;
   place?: Maybe<Places>;
-  postcode: MasterCommon;
-  state: MasterCommon;
+  state: StateData;
+  zipcode: Scalars['Float']['output'];
 };
 
 export type AddressInfoInput = {
-  addressLine1: MasterCommonInput;
-  addressLine2?: InputMaybe<MasterCommonInput>;
-  city: MasterCommonInput;
+  addressLine1: Scalars['String']['input'];
+  addressLine2?: InputMaybe<Scalars['String']['input']>;
+  city: Scalars['String']['input'];
   coordinate: LocationCommonInput;
   place: PlaceInput;
-  postcode: MasterCommonInput;
-  state: MasterCommonInput;
+  state: StateDataInput;
+  zipcode: Scalars['Float']['input'];
 };
 
 export type Admin = {
@@ -283,10 +273,10 @@ export type Category = {
   _id: Scalars['ID']['output'];
   availability?: Maybe<Array<Availability>>;
   createdAt: Scalars['DateTimeISO']['output'];
-  desc: MasterCommon;
+  desc: Scalars['String']['output'];
   items: Array<ItemInfo>;
   menu?: Maybe<Array<Menu>>;
-  name: MasterCommon;
+  name: Scalars['String']['output'];
   restaurantId: Restaurant;
   status: StatusEnum;
   upSellCategories?: Maybe<Array<Category>>;
@@ -300,7 +290,7 @@ export type CategoryInfo = {
   __typename?: 'CategoryInfo';
   _id: Category;
   id: Scalars['String']['output'];
-  name?: Maybe<MasterCommon>;
+  name?: Maybe<Scalars['String']['output']>;
   status: StatusEnum;
 };
 
@@ -525,13 +515,13 @@ export type Item = {
   availability?: Maybe<Array<Availability>>;
   category?: Maybe<Category>;
   createdAt: Scalars['DateTimeISO']['output'];
-  desc: MasterCommon;
+  desc: Scalars['String']['output'];
   image?: Maybe<Scalars['String']['output']>;
   modifierGroup: Array<ModifierGroupInfo>;
-  name: MasterCommon;
+  name: Scalars['String']['output'];
   options: Array<Options>;
   orderLimit?: Maybe<Scalars['Float']['output']>;
-  price: MasterCommonNumber;
+  price: Scalars['Float']['output'];
   priceOptions: Array<PriceOptions>;
   restaurantId: Restaurant;
   status: StatusEnum;
@@ -547,8 +537,8 @@ export type ItemInfo = {
   _id: Item;
   id: Scalars['String']['output'];
   image?: Maybe<Scalars['String']['output']>;
-  name?: Maybe<MasterCommon>;
-  price: MasterCommonNumber;
+  name?: Maybe<Scalars['String']['output']>;
+  price: Scalars['Float']['output'];
   status: StatusEnum;
 };
 
@@ -598,28 +588,6 @@ export type LocationCommonInput = {
   coordinates: Array<Scalars['Float']['input']>;
 };
 
-export type MasterCommon = {
-  __typename?: 'MasterCommon';
-  _id: Scalars['ID']['output'];
-  value: Scalars['String']['output'];
-};
-
-export type MasterCommonInput = {
-  _id?: InputMaybe<Scalars['ID']['input']>;
-  value: Scalars['String']['input'];
-};
-
-export type MasterCommonInputNumber = {
-  _id?: InputMaybe<Scalars['ID']['input']>;
-  value: Scalars['Float']['input'];
-};
-
-export type MasterCommonNumber = {
-  __typename?: 'MasterCommonNumber';
-  _id: Scalars['ID']['output'];
-  value: Scalars['Float']['output'];
-};
-
 /** Restaurant Meat type enum. */
 export enum MeatType {
   Halal = 'Halal',
@@ -632,7 +600,7 @@ export type Menu = {
   availability?: Maybe<Array<Availability>>;
   categories: Array<CategoryInfo>;
   createdAt: Scalars['DateTimeISO']['output'];
-  name: MasterCommon;
+  name: Scalars['String']['output'];
   restaurantId: Restaurant;
   status: StatusEnum;
   taxes?: Maybe<TaxRateInfo>;
@@ -646,7 +614,7 @@ export type MenuInfo = {
   __typename?: 'MenuInfo';
   _id: Menu;
   id: Scalars['String']['output'];
-  name?: Maybe<MasterCommon>;
+  name?: Maybe<Scalars['String']['output']>;
   type: MenuTypeEnum;
 };
 
@@ -661,11 +629,11 @@ export type Modifier = {
   __typename?: 'Modifier';
   _id: Scalars['ID']['output'];
   createdAt: Scalars['DateTimeISO']['output'];
-  desc: MasterCommon;
+  desc: Scalars['String']['output'];
   isItem: Scalars['Boolean']['output'];
-  name: MasterCommon;
+  name: Scalars['String']['output'];
   preSelect: Scalars['Boolean']['output'];
-  price: MasterCommonNumber;
+  price: Scalars['Float']['output'];
   restaurantId: Restaurant;
   updatedAt: Scalars['DateTimeISO']['output'];
   updatedBy?: Maybe<User>;
@@ -676,13 +644,13 @@ export type ModifierGroup = {
   __typename?: 'ModifierGroup';
   _id: Scalars['ID']['output'];
   createdAt: Scalars['DateTimeISO']['output'];
-  desc: MasterCommon;
-  maxSelections: MasterCommonNumber;
-  minSelections: MasterCommonNumber;
+  desc: Scalars['String']['output'];
+  maxSelections: Scalars['Float']['output'];
+  minSelections: Scalars['Float']['output'];
   modifiers: Array<ModifierInfo>;
-  name: MasterCommon;
+  name: Scalars['String']['output'];
   optional: Scalars['Boolean']['output'];
-  price: MasterCommonNumber;
+  price: Scalars['Float']['output'];
   pricingType: PriceTypeEnum;
   restaurantId: Restaurant;
   status: StatusEnum;
@@ -695,19 +663,19 @@ export type ModifierGroupInfo = {
   __typename?: 'ModifierGroupInfo';
   _id: ModifierGroup;
   id: Scalars['String']['output'];
-  name: MasterCommon;
+  name: Scalars['String']['output'];
   pricingType: PriceTypeEnum;
 };
 
 export type ModifierInfo = {
   __typename?: 'ModifierInfo';
   _id: Modifier;
-  desc: MasterCommon;
+  desc: Scalars['String']['output'];
   id: Scalars['String']['output'];
   isItem: Scalars['Boolean']['output'];
-  name: MasterCommon;
+  name: Scalars['String']['output'];
   preSelect: Scalars['Boolean']['output'];
-  price: MasterCommonNumber;
+  price: Scalars['Float']['output'];
 };
 
 export type Mutation = {
@@ -726,7 +694,6 @@ export type Mutation = {
   addModifierGroupToItem: Scalars['Boolean']['output'];
   addModifierToModifierGroup: Scalars['Boolean']['output'];
   addPermission: Scalars['Boolean']['output'];
-  addRestaurant: Scalars['Boolean']['output'];
   addState: Scalars['Boolean']['output'];
   addSubCategory: Scalars['Boolean']['output'];
   addTaxRate: Scalars['String']['output'];
@@ -760,7 +727,6 @@ export type Mutation = {
   removeModifierFromModifierGroup: Scalars['Boolean']['output'];
   removeModifierGroup: Scalars['Boolean']['output'];
   removeModifierGroupFromItem: Scalars['Boolean']['output'];
-  removeRestaurant: Scalars['Boolean']['output'];
   removeTeamMember: Scalars['Boolean']['output'];
   restaurantOnboarding: Scalars['Boolean']['output'];
   sendTestEmails: Scalars['Boolean']['output'];
@@ -773,7 +739,6 @@ export type Mutation = {
   updateModifier: Scalars['Boolean']['output'];
   updateModifierGroup: Scalars['Boolean']['output'];
   updatePermissionPreselect: Scalars['Boolean']['output'];
-  updateRestaurant: Scalars['Boolean']['output'];
   updateStateStatus: Scalars['Boolean']['output'];
   updateSubCategory: Scalars['Boolean']['output'];
   updateTaxRate: Scalars['Boolean']['output'];
@@ -857,11 +822,6 @@ export type MutationAddModifierToModifierGroupArgs = {
 
 export type MutationAddPermissionArgs = {
   input: AddPermissionInput;
-};
-
-
-export type MutationAddRestaurantArgs = {
-  input: AddRestaurantInput;
 };
 
 
@@ -1094,11 +1054,6 @@ export type MutationUpdatePermissionPreselectArgs = {
 };
 
 
-export type MutationUpdateRestaurantArgs = {
-  input: UpdateRestaurantInput;
-};
-
-
 export type MutationUpdateStateStatusArgs = {
   id: Scalars['String']['input'];
 };
@@ -1217,12 +1172,12 @@ export enum PlatformStatus {
 export type PriceOptions = {
   __typename?: 'PriceOptions';
   menuType: MenuTypeEnum;
-  price: MasterCommonNumber;
+  price: Scalars['Float']['output'];
 };
 
 export type PriceOptionsInput = {
   menuType: MenuTypeEnum;
-  price: MasterCommonInputNumber;
+  price: Scalars['Float']['input'];
 };
 
 /** Price type enum  */
@@ -1491,16 +1446,16 @@ export type Restaurant = {
   brandingLogo?: Maybe<Scalars['String']['output']>;
   category?: Maybe<Array<RestaurantCategory>>;
   createdAt: Scalars['DateTimeISO']['output'];
-  dineInCapacity?: Maybe<MasterCommonNumber>;
+  dineInCapacity?: Maybe<Scalars['Float']['output']>;
   foodType?: Maybe<Array<FoodType>>;
   integrations?: Maybe<Array<Integration>>;
   meatType?: Maybe<MeatType>;
   menus?: Maybe<Array<MenuInfo>>;
-  name: MasterCommon;
+  name: Scalars['String']['output'];
   socialInfo?: Maybe<SocialInfo>;
   status: RestaurantStatus;
   taxRates?: Maybe<Array<TaxRateInfo>>;
-  timezone?: Maybe<MasterCommon>;
+  timezone?: Maybe<TimezoneData>;
   type?: Maybe<RestaurantType>;
   updatedAt: Scalars['DateTimeISO']['output'];
   updatedBy?: Maybe<User>;
@@ -1520,9 +1475,9 @@ export enum RestaurantCategory {
 export type RestaurantInfo = {
   __typename?: 'RestaurantInfo';
   _id: Restaurant;
-  city?: Maybe<MasterCommon>;
+  city?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
-  name: MasterCommon;
+  name: Scalars['String']['output'];
   status: RestaurantStatus;
 };
 
@@ -1582,6 +1537,17 @@ export type State = {
   updatedAt: Scalars['DateTimeISO']['output'];
   updatedBy: Admin;
   value: Scalars['String']['output'];
+};
+
+export type StateData = {
+  __typename?: 'StateData';
+  stateId: Scalars['String']['output'];
+  stateName: Scalars['String']['output'];
+};
+
+export type StateDataInput = {
+  stateId?: InputMaybe<Scalars['String']['input']>;
+  stateName: Scalars['String']['input'];
 };
 
 /** Status enum  */
@@ -1657,11 +1623,22 @@ export type Timezone = {
   value: Scalars['String']['output'];
 };
 
+export type TimezoneData = {
+  __typename?: 'TimezoneData';
+  timezoneId: Scalars['String']['output'];
+  timezoneName: Scalars['String']['output'];
+};
+
+export type TimezoneDataInput = {
+  timezoneId?: InputMaybe<Scalars['String']['input']>;
+  timezoneName: Scalars['String']['input'];
+};
+
 export type UpdateCategoryInput = {
   _id: Scalars['String']['input'];
   availability?: InputMaybe<Array<AvailabilityInput>>;
-  desc?: InputMaybe<MasterCommonInput>;
-  name?: InputMaybe<MasterCommonInput>;
+  desc?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
   status?: InputMaybe<StatusEnum>;
   visibility?: InputMaybe<Array<VisibilityInput>>;
 };
@@ -1669,12 +1646,12 @@ export type UpdateCategoryInput = {
 export type UpdateItemInput = {
   _id: Scalars['String']['input'];
   availability?: InputMaybe<Array<AvailabilityInput>>;
-  desc?: InputMaybe<MasterCommonInput>;
+  desc?: InputMaybe<Scalars['String']['input']>;
   image?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<MasterCommonInput>;
+  name?: InputMaybe<Scalars['String']['input']>;
   options?: Array<OptionsInput>;
   orderLimit?: InputMaybe<Scalars['Float']['input']>;
-  price?: InputMaybe<MasterCommonInputNumber>;
+  price?: InputMaybe<Scalars['Float']['input']>;
   priceOptions?: InputMaybe<Array<PriceOptionsInput>>;
   status?: InputMaybe<StatusEnum>;
   subCategory?: InputMaybe<ItemSubCategoryInput>;
@@ -1691,28 +1668,28 @@ export type UpdateItemOptionInput = {
 export type UpdateMenuInput = {
   _id: Scalars['String']['input'];
   availability?: InputMaybe<Array<AvailabilityInput>>;
-  name?: InputMaybe<MasterCommonInput>;
+  name?: InputMaybe<Scalars['String']['input']>;
   type?: InputMaybe<MenuTypeEnum>;
 };
 
 export type UpdateModifierGroupInput = {
   _id: Scalars['String']['input'];
-  desc?: InputMaybe<MasterCommonInput>;
-  maxSelections: MasterCommonInputNumber;
-  minSelections: MasterCommonInputNumber;
-  name?: InputMaybe<MasterCommonInput>;
+  desc?: InputMaybe<Scalars['String']['input']>;
+  maxSelections: Scalars['Float']['input'];
+  minSelections: Scalars['Float']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
   optional?: InputMaybe<Scalars['Boolean']['input']>;
-  price?: InputMaybe<MasterCommonInputNumber>;
+  price?: InputMaybe<Scalars['Float']['input']>;
   pricingType: PriceTypeEnum;
 };
 
 export type UpdateModifierInput = {
   _id: Scalars['String']['input'];
-  desc?: InputMaybe<MasterCommonInput>;
+  desc?: InputMaybe<Scalars['String']['input']>;
   isItem?: InputMaybe<Scalars['Boolean']['input']>;
-  name?: InputMaybe<MasterCommonInput>;
+  name?: InputMaybe<Scalars['String']['input']>;
   preSelect?: InputMaybe<Scalars['Boolean']['input']>;
-  price?: InputMaybe<MasterCommonInputNumber>;
+  price?: InputMaybe<Scalars['Float']['input']>;
 };
 
 export type UpdateRestaurantDetailsInput = {
@@ -1721,24 +1698,14 @@ export type UpdateRestaurantDetailsInput = {
   beverageCategory?: InputMaybe<Array<BeverageCategory>>;
   brandingLogo?: InputMaybe<Scalars['String']['input']>;
   category?: InputMaybe<Array<RestaurantCategory>>;
-  dineInCapacity?: InputMaybe<MasterCommonInputNumber>;
+  dineInCapacity?: InputMaybe<Scalars['Float']['input']>;
   foodType?: InputMaybe<Array<FoodType>>;
   meatType?: InputMaybe<MeatType>;
-  name?: InputMaybe<MasterCommonInput>;
+  name?: InputMaybe<Scalars['String']['input']>;
   socialInfo?: InputMaybe<SocialInfoInput>;
-  timezone?: InputMaybe<MasterCommonInput>;
+  timezone?: InputMaybe<TimezoneDataInput>;
   type?: InputMaybe<RestaurantType>;
   website?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type UpdateRestaurantInput = {
-  address?: InputMaybe<AddressInfoInput>;
-  availability?: InputMaybe<Array<AvailabilityInput>>;
-  brandingLogo?: InputMaybe<Scalars['String']['input']>;
-  locationName?: InputMaybe<MasterCommonInput>;
-  socialInfo?: InputMaybe<SocialInfoInput>;
-  status: RestaurantStatus;
-  timezone?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateSubCategoryInput = {
@@ -1889,7 +1856,7 @@ export type GenerateOtpForLoginQuery = { __typename?: 'Query', generateOtpForLog
 export type MeUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MeUserQuery = { __typename?: 'Query', meUser: { __typename?: 'User', _id: string, firstName: string, lastName: string, status: UserStatus, email: string, phone: string, ownerUserId?: string | null, role: UserRole, businessInfo?: { __typename?: 'Business', businessName?: string | null, ein?: string | null, businessType?: BusinessTypeEnum | null, estimatedRevenue?: EstimatedRevenueEnum | null, employeeSize?: StaffCountEnum | null, establishedAt?: string | null, address?: { __typename?: 'AddressInfo', addressLine1: { __typename?: 'MasterCommon', value: string }, addressLine2?: { __typename?: 'MasterCommon', value: string } | null, state: { __typename?: 'MasterCommon', _id: string, value: string }, city: { __typename?: 'MasterCommon', value: string }, postcode: { __typename?: 'MasterCommon', value: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', placeId: string, displayName: string } | null } | null } | null, restaurants?: Array<{ __typename?: 'RestaurantInfo', id: string, status: RestaurantStatus, name: { __typename?: 'MasterCommon', value: string } }> | null } };
+export type MeUserQuery = { __typename?: 'Query', meUser: { __typename?: 'User', _id: string, firstName: string, lastName: string, status: UserStatus, email: string, phone: string, ownerUserId?: string | null, role: UserRole, businessInfo?: { __typename?: 'Business', businessName?: string | null, ein?: string | null, businessType?: BusinessTypeEnum | null, estimatedRevenue?: EstimatedRevenueEnum | null, employeeSize?: StaffCountEnum | null, establishedAt?: string | null, address?: { __typename?: 'AddressInfo', addressLine1: string, addressLine2?: string | null, city: string, zipcode: number, state: { __typename?: 'StateData', stateId: string, stateName: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string, placeId: string } | null } | null } | null, restaurants?: Array<{ __typename?: 'RestaurantInfo', id: string, name: string, status: RestaurantStatus }> | null } };
 
 export type VerifyOtpForLoginQueryVariables = Exact<{
   key: Scalars['String']['input'];
@@ -1917,7 +1884,7 @@ export type VerifyUserDetailsMutation = { __typename?: 'Mutation', verifyUserDet
 export type GetBusinessDetailsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetBusinessDetailsQuery = { __typename?: 'Query', getBusinessDetails: { __typename?: 'Business', businessName?: string | null, estimatedRevenue?: EstimatedRevenueEnum | null, employeeSize?: StaffCountEnum | null, businessType?: BusinessTypeEnum | null, ein?: string | null, address?: { __typename?: 'AddressInfo', addressLine1: { __typename?: 'MasterCommon', value: string }, addressLine2?: { __typename?: 'MasterCommon', value: string } | null, state: { __typename?: 'MasterCommon', _id: string, value: string }, city: { __typename?: 'MasterCommon', value: string }, postcode: { __typename?: 'MasterCommon', value: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string, placeId: string } | null } | null } };
+export type GetBusinessDetailsQuery = { __typename?: 'Query', getBusinessDetails: { __typename?: 'Business', businessName?: string | null, estimatedRevenue?: EstimatedRevenueEnum | null, employeeSize?: StaffCountEnum | null, businessType?: BusinessTypeEnum | null, ein?: string | null, address?: { __typename?: 'AddressInfo', addressLine1: string, addressLine2?: string | null, city: string, zipcode: number, state: { __typename?: 'StateData', stateId: string, stateName: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string, placeId: string } | null } | null } };
 
 export type UpdateTaxRateMutationVariables = Exact<{
   input: UpdateTaxRateInput;
@@ -1951,7 +1918,7 @@ export type DeleteCategoryMutation = { __typename?: 'Mutation', deleteCategory: 
 export type GetCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCategoriesQuery = { __typename?: 'Query', getCategories: Array<{ __typename?: 'Category', _id: string, status: StatusEnum, name: { __typename?: 'MasterCommon', value: string }, desc: { __typename?: 'MasterCommon', value: string }, items: Array<{ __typename?: 'ItemInfo', _id: { __typename?: 'Item', _id: string }, name?: { __typename?: 'MasterCommon', value: string } | null }> }> };
+export type GetCategoriesQuery = { __typename?: 'Query', getCategories: Array<{ __typename?: 'Category', _id: string, name: string, desc: string, status: StatusEnum, items: Array<{ __typename?: 'ItemInfo', name?: string | null, _id: { __typename?: 'Item', _id: string } }> }> };
 
 export type GetItemsForCategoryDropdownQueryVariables = Exact<{
   field: Scalars['String']['input'];
@@ -1960,7 +1927,7 @@ export type GetItemsForCategoryDropdownQueryVariables = Exact<{
 }>;
 
 
-export type GetItemsForCategoryDropdownQuery = { __typename?: 'Query', getItems: Array<{ __typename?: 'Item', _id: string, image?: string | null, name: { __typename?: 'MasterCommon', value: string }, price: { __typename?: 'MasterCommonNumber', value: number } }> };
+export type GetItemsForCategoryDropdownQuery = { __typename?: 'Query', getItems: Array<{ __typename?: 'Item', _id: string, name: string, price: number, image?: string | null }> };
 
 export type AddCategoryMutationVariables = Exact<{
   input: AddCategoryInput;
@@ -1974,7 +1941,7 @@ export type GetCategoryQueryVariables = Exact<{
 }>;
 
 
-export type GetCategoryQuery = { __typename?: 'Query', getCategory: { __typename?: 'Category', _id: string, status: StatusEnum, createdAt: any, updatedAt: any, name: { __typename?: 'MasterCommon', value: string }, desc: { __typename?: 'MasterCommon', value: string }, items: Array<{ __typename?: 'ItemInfo', id: string, image?: string | null, status: StatusEnum, name?: { __typename?: 'MasterCommon', value: string } | null, _id: { __typename?: 'Item', _id: string }, price: { __typename?: 'MasterCommonNumber', value: number } }>, visibility: Array<{ __typename?: 'Visibility', menuType: MenuTypeEnum, status: StatusEnum }>, availability?: Array<{ __typename?: 'Availability', day: string, active: boolean, hours: Array<{ __typename?: 'Hours', start: any, end: any }> }> | null } };
+export type GetCategoryQuery = { __typename?: 'Query', getCategory: { __typename?: 'Category', _id: string, name: string, desc: string, status: StatusEnum, createdAt: any, updatedAt: any, items: Array<{ __typename?: 'ItemInfo', id: string, name?: string | null, image?: string | null, price: number, status: StatusEnum, _id: { __typename?: 'Item', _id: string } }>, visibility: Array<{ __typename?: 'Visibility', menuType: MenuTypeEnum, status: StatusEnum }>, availability?: Array<{ __typename?: 'Availability', day: string, active: boolean, hours: Array<{ __typename?: 'Hours', start: any, end: any }> }> | null } };
 
 export type UpdateCategoryMutationVariables = Exact<{
   input: UpdateCategoryInput;
@@ -2010,6 +1977,8 @@ export type SaveCsvErrorQueryVariables = Exact<{
 
 export type SaveCsvErrorQuery = { __typename?: 'Query', saveCsvError: boolean };
 
+export type AddressInfoFragment = { __typename?: 'AddressInfo', addressLine1: string, addressLine2?: string | null, city: string, zipcode: number, state: { __typename?: 'StateData', stateId: string, stateName: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string, placeId: string } | null };
+
 export type ChangeItemStatusMutationVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
@@ -2027,14 +1996,14 @@ export type DeleteItemMutation = { __typename?: 'Mutation', deleteItem: boolean 
 export type GetItemsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetItemsQuery = { __typename?: 'Query', getItems: Array<{ __typename?: 'Item', _id: string, status: StatusEnum, name: { __typename?: 'MasterCommon', value: string }, desc: { __typename?: 'MasterCommon', value: string }, modifierGroup: Array<{ __typename?: 'ModifierGroupInfo', id: string, name: { __typename?: 'MasterCommon', _id: string, value: string } }>, price: { __typename?: 'MasterCommonNumber', _id: string, value: number }, visibility: Array<{ __typename?: 'Visibility', menuType: MenuTypeEnum, status: StatusEnum }>, priceOptions: Array<{ __typename?: 'PriceOptions', menuType: MenuTypeEnum, price: { __typename?: 'MasterCommonNumber', value: number } }> }> };
+export type GetItemsQuery = { __typename?: 'Query', getItems: Array<{ __typename?: 'Item', _id: string, name: string, desc: string, status: StatusEnum, price: number, modifierGroup: Array<{ __typename?: 'ModifierGroupInfo', id: string, name: string }>, visibility: Array<{ __typename?: 'Visibility', menuType: MenuTypeEnum, status: StatusEnum }>, priceOptions: Array<{ __typename?: 'PriceOptions', price: number, menuType: MenuTypeEnum }> }> };
 
 export type GetItemQueryVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
 
 
-export type GetItemQuery = { __typename?: 'Query', getItem: { __typename?: 'Item', _id: string, status: StatusEnum, image?: string | null, orderLimit?: number | null, createdAt: any, updatedAt: any, name: { __typename?: 'MasterCommon', value: string }, desc: { __typename?: 'MasterCommon', value: string }, modifierGroup: Array<{ __typename?: 'ModifierGroupInfo', pricingType: PriceTypeEnum, id: string, name: { __typename?: 'MasterCommon', value: string } }>, price: { __typename?: 'MasterCommonNumber', value: number, _id: string }, options: Array<{ __typename?: 'Options', _id: string, type: ItemOptionsEnum, displayName: string, desc: string, status: boolean }>, availability?: Array<{ __typename?: 'Availability', day: string, active: boolean, hours: Array<{ __typename?: 'Hours', start: any, end: any }> }> | null, visibility: Array<{ __typename?: 'Visibility', menuType: MenuTypeEnum, status: StatusEnum }>, priceOptions: Array<{ __typename?: 'PriceOptions', menuType: MenuTypeEnum, price: { __typename?: 'MasterCommonNumber', value: number } }>, subCategory?: { __typename?: 'ItemSubCategory', id?: string | null, name: string, desc: string } | null } };
+export type GetItemQuery = { __typename?: 'Query', getItem: { __typename?: 'Item', _id: string, name: string, desc: string, status: StatusEnum, image?: string | null, price: number, orderLimit?: number | null, createdAt: any, updatedAt: any, modifierGroup: Array<{ __typename?: 'ModifierGroupInfo', name: string, pricingType: PriceTypeEnum, id: string }>, options: Array<{ __typename?: 'Options', _id: string, type: ItemOptionsEnum, displayName: string, desc: string, status: boolean }>, availability?: Array<{ __typename?: 'Availability', day: string, active: boolean, hours: Array<{ __typename?: 'Hours', start: any, end: any }> }> | null, visibility: Array<{ __typename?: 'Visibility', menuType: MenuTypeEnum, status: StatusEnum }>, priceOptions: Array<{ __typename?: 'PriceOptions', menuType: MenuTypeEnum, price: number }>, subCategory?: { __typename?: 'ItemSubCategory', id?: string | null, name: string, desc: string } | null } };
 
 export type AddItemMutationVariables = Exact<{
   input: AddItemInput;
@@ -2054,7 +2023,7 @@ export type UpdateItemMutation = { __typename?: 'Mutation', updateItem: boolean 
 export type GetModifierGroupsforItemsDropDownQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetModifierGroupsforItemsDropDownQuery = { __typename?: 'Query', getModifierGroups: Array<{ __typename?: 'ModifierGroup', _id: string, name: { __typename?: 'MasterCommon', value: string }, modifiers: Array<{ __typename?: 'ModifierInfo', name: { __typename?: 'MasterCommon', value: string } }> }> };
+export type GetModifierGroupsforItemsDropDownQuery = { __typename?: 'Query', getModifierGroups: Array<{ __typename?: 'ModifierGroup', _id: string, name: string, modifiers: Array<{ __typename?: 'ModifierInfo', name: string }> }> };
 
 export type RemoveModifierGroupFromItemMutationVariables = Exact<{
   itemId: Scalars['String']['input'];
@@ -2090,7 +2059,7 @@ export type GetActiveTimezonesQuery = { __typename?: 'Query', getActiveTimezones
 export type GetMenuByRestaurantQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetMenuByRestaurantQuery = { __typename?: 'Query', getMenuByRestaurant: Array<{ __typename?: 'Menu', _id: string, status: StatusEnum, createdAt: any, updatedAt: any, type: MenuTypeEnum, name: { __typename?: 'MasterCommon', value: string }, categories: Array<{ __typename?: 'CategoryInfo', name?: { __typename?: 'MasterCommon', value: string } | null }> }> };
+export type GetMenuByRestaurantQuery = { __typename?: 'Query', getMenuByRestaurant: Array<{ __typename?: 'Menu', _id: string, name: string, status: StatusEnum, createdAt: any, updatedAt: any, type: MenuTypeEnum, categories: Array<{ __typename?: 'CategoryInfo', name?: string | null }> }> };
 
 export type AddMenuMutationVariables = Exact<{
   input: AddMenuInput;
@@ -2106,7 +2075,7 @@ export type GetCategoriesForMenuDropdownQueryVariables = Exact<{
 }>;
 
 
-export type GetCategoriesForMenuDropdownQuery = { __typename?: 'Query', getCategories: Array<{ __typename?: 'Category', _id: string, status: StatusEnum, name: { __typename?: 'MasterCommon', value: string }, desc: { __typename?: 'MasterCommon', value: string }, items: Array<{ __typename?: 'ItemInfo', name?: { __typename?: 'MasterCommon', value: string } | null }> }> };
+export type GetCategoriesForMenuDropdownQuery = { __typename?: 'Query', getCategories: Array<{ __typename?: 'Category', _id: string, name: string, desc: string, status: StatusEnum, items: Array<{ __typename?: 'ItemInfo', name?: string | null }> }> };
 
 export type ChangeMenuStatusMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -2135,7 +2104,7 @@ export type GetMenusByTypeQueryVariables = Exact<{
 }>;
 
 
-export type GetMenusByTypeQuery = { __typename?: 'Query', getMenusByType: Array<{ __typename?: 'Menu', _id: string, status: StatusEnum, createdAt: any, updatedAt: any, type: MenuTypeEnum, name: { __typename?: 'MasterCommon', value: string }, availability?: Array<{ __typename?: 'Availability', day: string, active: boolean, hours: Array<{ __typename?: 'Hours', start: any, end: any }> }> | null, taxes?: { __typename?: 'TaxRateInfo', _id: string, salesTax: number, name: string } | null, categories: Array<{ __typename?: 'CategoryInfo', status: StatusEnum, name?: { __typename?: 'MasterCommon', value: string, _id: string } | null, _id: { __typename?: 'Category', _id: string } }> }> };
+export type GetMenusByTypeQuery = { __typename?: 'Query', getMenusByType: Array<{ __typename?: 'Menu', _id: string, name: string, status: StatusEnum, createdAt: any, updatedAt: any, type: MenuTypeEnum, availability?: Array<{ __typename?: 'Availability', day: string, active: boolean, hours: Array<{ __typename?: 'Hours', start: any, end: any }> }> | null, taxes?: { __typename?: 'TaxRateInfo', _id: string, salesTax: number, name: string } | null, categories: Array<{ __typename?: 'CategoryInfo', name?: string | null, status: StatusEnum, _id: { __typename?: 'Category', _id: string } }> }> };
 
 export type UpdateMenuMutationVariables = Exact<{
   input: UpdateMenuInput;
@@ -2155,12 +2124,12 @@ export type RemoveCategoryFromMenuMutation = { __typename?: 'Mutation', removeCa
 export type GetAllMenusQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllMenusQuery = { __typename?: 'Query', getAllMenus: Array<{ __typename?: 'Menu', _id: string, type: MenuTypeEnum, createdAt: any, updatedAt: any, status: StatusEnum, name: { __typename?: 'MasterCommon', value: string }, categories: Array<{ __typename?: 'CategoryInfo', name?: { __typename?: 'MasterCommon', value: string } | null }> }> };
+export type GetAllMenusQuery = { __typename?: 'Query', getAllMenus: Array<{ __typename?: 'Menu', _id: string, type: MenuTypeEnum, name: string, createdAt: any, updatedAt: any, status: StatusEnum, categories: Array<{ __typename?: 'CategoryInfo', name?: string | null }> }> };
 
 export type GetModifierGroupsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetModifierGroupsQuery = { __typename?: 'Query', getModifierGroups: Array<{ __typename?: 'ModifierGroup', _id: string, status: StatusEnum, name: { __typename?: 'MasterCommon', value: string } }> };
+export type GetModifierGroupsQuery = { __typename?: 'Query', getModifierGroups: Array<{ __typename?: 'ModifierGroup', _id: string, status: StatusEnum, name: string }> };
 
 export type UpdateModifierGroupMutationVariables = Exact<{
   input: UpdateModifierGroupInput;
@@ -2180,7 +2149,7 @@ export type AddModifierGroupMutation = { __typename?: 'Mutation', addModifierGro
 export type GetModifiersforGroupDropDownQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetModifiersforGroupDropDownQuery = { __typename?: 'Query', getModifiers: Array<{ __typename?: 'Modifier', _id: string, name: { __typename?: 'MasterCommon', value: string }, price: { __typename?: 'MasterCommonNumber', value: number } }> };
+export type GetModifiersforGroupDropDownQuery = { __typename?: 'Query', getModifiers: Array<{ __typename?: 'Modifier', _id: string, name: string, price: number }> };
 
 export type RemoveModifierGroupMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -2194,7 +2163,7 @@ export type GetModifierGroupQueryVariables = Exact<{
 }>;
 
 
-export type GetModifierGroupQuery = { __typename?: 'Query', getModifierGroup: { __typename?: 'ModifierGroup', _id: string, pricingType: PriceTypeEnum, optional: boolean, name: { __typename?: 'MasterCommon', value: string }, price: { __typename?: 'MasterCommonNumber', value: number }, desc: { __typename?: 'MasterCommon', value: string }, modifiers: Array<{ __typename?: 'ModifierInfo', id: string, name: { __typename?: 'MasterCommon', value: string }, price: { __typename?: 'MasterCommonNumber', value: number } }>, maxSelections: { __typename?: 'MasterCommonNumber', value: number }, minSelections: { __typename?: 'MasterCommonNumber', value: number } } };
+export type GetModifierGroupQuery = { __typename?: 'Query', getModifierGroup: { __typename?: 'ModifierGroup', _id: string, name: string, price: number, desc: string, pricingType: PriceTypeEnum, optional: boolean, maxSelections: number, minSelections: number, modifiers: Array<{ __typename?: 'ModifierInfo', name: string, price: number, id: string }> } };
 
 export type RemoveModifierFromModifierGroupMutationVariables = Exact<{
   modifierGroupId: Scalars['String']['input'];
@@ -2222,7 +2191,7 @@ export type ChangeModifierGroupStatusMutation = { __typename?: 'Mutation', chang
 export type GetModifiersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetModifiersQuery = { __typename?: 'Query', getModifiers: Array<{ __typename?: 'Modifier', _id: string, name: { __typename?: 'MasterCommon', value: string }, price: { __typename?: 'MasterCommonNumber', value: number } }> };
+export type GetModifiersQuery = { __typename?: 'Query', getModifiers: Array<{ __typename?: 'Modifier', _id: string, name: string, price: number }> };
 
 export type AddModifierMutationVariables = Exact<{
   input: AddModifierInput;
@@ -2243,7 +2212,7 @@ export type GetModifierQueryVariables = Exact<{
 }>;
 
 
-export type GetModifierQuery = { __typename?: 'Query', getModifier: { __typename?: 'Modifier', _id: string, isItem: boolean, preSelect: boolean, desc: { __typename?: 'MasterCommon', value: string }, name: { __typename?: 'MasterCommon', value: string }, price: { __typename?: 'MasterCommonNumber', value: number } } };
+export type GetModifierQuery = { __typename?: 'Query', getModifier: { __typename?: 'Modifier', _id: string, desc: string, isItem: boolean, preSelect: boolean, name: string, price: number } };
 
 export type UpdateModifierMutationVariables = Exact<{
   input: UpdateModifierInput;
@@ -2288,7 +2257,7 @@ export type CompleteBusinessOnboardingMutation = { __typename?: 'Mutation', comp
 export type GetBusinessOnboardingDetailsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetBusinessOnboardingDetailsQuery = { __typename?: 'Query', getBusinessOnboardingDetails?: { __typename?: 'Business', ein?: string | null, businessName?: string | null, employeeSize?: StaffCountEnum | null, establishedAt?: string | null, businessType?: BusinessTypeEnum | null, estimatedRevenue?: EstimatedRevenueEnum | null, address?: { __typename?: 'AddressInfo', addressLine1: { __typename?: 'MasterCommon', value: string }, addressLine2?: { __typename?: 'MasterCommon', value: string } | null, state: { __typename?: 'MasterCommon', _id: string, value: string }, city: { __typename?: 'MasterCommon', value: string }, postcode: { __typename?: 'MasterCommon', value: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string, placeId: string } | null } | null } | null };
+export type GetBusinessOnboardingDetailsQuery = { __typename?: 'Query', getBusinessOnboardingDetails?: { __typename?: 'Business', ein?: string | null, businessName?: string | null, employeeSize?: StaffCountEnum | null, establishedAt?: string | null, businessType?: BusinessTypeEnum | null, estimatedRevenue?: EstimatedRevenueEnum | null, address?: { __typename?: 'AddressInfo', addressLine1: string, addressLine2?: string | null, city: string, zipcode: number, state: { __typename?: 'StateData', stateId: string, stateName: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string, placeId: string } | null } | null } | null };
 
 export type RestaurantOnboardingMutationVariables = Exact<{
   input: UpdateRestaurantDetailsInput;
@@ -2305,7 +2274,7 @@ export type CompleteRestaurantOnboardingQuery = { __typename?: 'Query', complete
 export type GetRestaurantOnboardingDataQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetRestaurantOnboardingDataQuery = { __typename?: 'Query', getRestaurantOnboardingData: { __typename?: 'Restaurant', brandingLogo?: string | null, website?: string | null, category?: Array<RestaurantCategory> | null, beverageCategory?: Array<BeverageCategory> | null, foodType?: Array<FoodType> | null, meatType?: MeatType | null, type?: RestaurantType | null, name: { __typename?: 'MasterCommon', value: string }, address?: { __typename?: 'AddressInfo', addressLine1: { __typename?: 'MasterCommon', value: string }, addressLine2?: { __typename?: 'MasterCommon', value: string } | null, state: { __typename?: 'MasterCommon', _id: string, value: string }, city: { __typename?: 'MasterCommon', value: string }, postcode: { __typename?: 'MasterCommon', value: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string, placeId: string } | null } | null, socialInfo?: { __typename?: 'SocialInfo', facebook?: string | null, instagram?: string | null, twitter?: string | null } | null, availability?: Array<{ __typename?: 'Availability', day: string, active: boolean, hours: Array<{ __typename?: 'Hours', start: any, end: any }> }> | null, timezone?: { __typename?: 'MasterCommon', _id: string, value: string } | null, dineInCapacity?: { __typename?: 'MasterCommonNumber', value: number } | null } };
+export type GetRestaurantOnboardingDataQuery = { __typename?: 'Query', getRestaurantOnboardingData: { __typename?: 'Restaurant', name: string, brandingLogo?: string | null, website?: string | null, category?: Array<RestaurantCategory> | null, beverageCategory?: Array<BeverageCategory> | null, foodType?: Array<FoodType> | null, meatType?: MeatType | null, type?: RestaurantType | null, dineInCapacity?: number | null, address?: { __typename?: 'AddressInfo', addressLine1: string, addressLine2?: string | null, city: string, zipcode: number, state: { __typename?: 'StateData', stateId: string, stateName: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string, placeId: string } | null } | null, socialInfo?: { __typename?: 'SocialInfo', facebook?: string | null, instagram?: string | null, twitter?: string | null } | null, availability?: Array<{ __typename?: 'Availability', day: string, active: boolean, hours: Array<{ __typename?: 'Hours', start: any, end: any }> }> | null, timezone?: { __typename?: 'TimezoneData', timezoneId: string, timezoneName: string } | null } };
 
 export type MeUserInResOnboardingQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2315,7 +2284,7 @@ export type MeUserInResOnboardingQuery = { __typename?: 'Query', meUser: { __typ
 export type GetUserRestaurantsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetUserRestaurantsQuery = { __typename?: 'Query', getUserRestaurants: Array<{ __typename?: 'RestaurantInfo', id: string, status: RestaurantStatus, name: { __typename?: 'MasterCommon', value: string } }> };
+export type GetUserRestaurantsQuery = { __typename?: 'Query', getUserRestaurants: Array<{ __typename?: 'RestaurantInfo', name: string, id: string, status: RestaurantStatus }> };
 
 export type SetRestaurantIdAsCookieQueryVariables = Exact<{
   id: Scalars['String']['input'];
@@ -2327,7 +2296,7 @@ export type SetRestaurantIdAsCookieQuery = { __typename?: 'Query', setRestaurant
 export type GetRestaurantDetailsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetRestaurantDetailsQuery = { __typename?: 'Query', getRestaurantDetails: { __typename?: 'Restaurant', _id: string, brandingLogo?: string | null, website?: string | null, name: { __typename?: 'MasterCommon', value: string }, availability?: Array<{ __typename?: 'Availability', day: string, active: boolean, hours: Array<{ __typename?: 'Hours', start: any, end: any }> }> | null, address?: { __typename?: 'AddressInfo', addressLine1: { __typename?: 'MasterCommon', value: string }, addressLine2?: { __typename?: 'MasterCommon', value: string } | null, state: { __typename?: 'MasterCommon', value: string }, city: { __typename?: 'MasterCommon', value: string }, postcode: { __typename?: 'MasterCommon', value: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string, placeId: string } | null } | null, taxRates?: Array<{ __typename?: 'TaxRateInfo', _id: string, name: string, salesTax: number }> | null } };
+export type GetRestaurantDetailsQuery = { __typename?: 'Query', getRestaurantDetails: { __typename?: 'Restaurant', _id: string, name: string, brandingLogo?: string | null, website?: string | null, availability?: Array<{ __typename?: 'Availability', day: string, active: boolean, hours: Array<{ __typename?: 'Hours', start: any, end: any }> }> | null, address?: { __typename?: 'AddressInfo', addressLine1: string, addressLine2?: string | null, city: string, zipcode: number, state: { __typename?: 'StateData', stateId: string, stateName: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string, placeId: string } | null } | null, taxRates?: Array<{ __typename?: 'TaxRateInfo', _id: string, name: string, salesTax: number }> | null } };
 
 export type AddTaxRateMutationVariables = Exact<{
   input: TaxRateInput;
@@ -2339,7 +2308,7 @@ export type AddTaxRateMutation = { __typename?: 'Mutation', addTaxRate: string }
 export type GetUserRestaurantsPendingQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetUserRestaurantsPendingQuery = { __typename?: 'Query', getUserRestaurantsPending: Array<{ __typename?: 'RestaurantInfo', id: string, name: { __typename?: 'MasterCommon', value: string } }> };
+export type GetUserRestaurantsPendingQuery = { __typename?: 'Query', getUserRestaurantsPending: Array<{ __typename?: 'RestaurantInfo', name: string, id: string }> };
 
 export type GetSubCategoryQueryVariables = Exact<{
   id: Scalars['String']['input'];
@@ -2398,7 +2367,25 @@ export type GetAllPermissionsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetAllPermissionsQuery = { __typename?: 'Query', getAllPermissions: Array<{ __typename?: 'Permission', _id: string, type: PermissionTypeEnum, preselect: Array<UserRole>, isFunction: boolean }> };
 
-
+export const AddressInfoFragmentDoc = gql`
+    fragment addressInfo on AddressInfo {
+  addressLine1
+  addressLine2
+  state {
+    stateId
+    stateName
+  }
+  city
+  zipcode
+  coordinate {
+    coordinates
+  }
+  place {
+    displayName
+    placeId
+  }
+}
+    `;
 export const LogoutDocument = gql`
     query Logout {
   logout
@@ -2428,41 +2415,17 @@ export const MeUserDocument = gql`
       employeeSize
       establishedAt
       address {
-        addressLine1 {
-          value
-        }
-        addressLine2 {
-          value
-        }
-        state {
-          _id
-          value
-        }
-        city {
-          value
-        }
-        postcode {
-          value
-        }
-        coordinate {
-          coordinates
-        }
-        place {
-          placeId
-          displayName
-        }
+        ...addressInfo
       }
     }
     restaurants {
       id
-      name {
-        value
-      }
+      name
       status
     }
   }
 }
-    `;
+    ${AddressInfoFragmentDoc}`;
 export const VerifyOtpForLoginDocument = gql`
     query VerifyOtpForLogin($key: String!, $input: String!, $otp: String!) {
   verifyOtpForLogin(key: $key, input: $input, otp: $otp)
@@ -2488,33 +2451,11 @@ export const GetBusinessDetailsDocument = gql`
     ein
     businessType
     address {
-      addressLine1 {
-        value
-      }
-      addressLine2 {
-        value
-      }
-      state {
-        _id
-        value
-      }
-      city {
-        value
-      }
-      postcode {
-        value
-      }
-      coordinate {
-        coordinates
-      }
-      place {
-        displayName
-        placeId
-      }
+      ...addressInfo
     }
   }
 }
-    `;
+    ${AddressInfoFragmentDoc}`;
 export const UpdateTaxRateDocument = gql`
     mutation updateTaxRate($input: UpdateTaxRateInput!) {
   updateTaxRate(input: $input)
@@ -2539,20 +2480,14 @@ export const GetCategoriesDocument = gql`
     query getCategories {
   getCategories {
     _id
-    name {
-      value
-    }
-    desc {
-      value
-    }
+    name
+    desc
     status
     items {
       _id {
         _id
       }
-      name {
-        value
-      }
+      name
     }
   }
 }
@@ -2561,12 +2496,8 @@ export const GetItemsForCategoryDropdownDocument = gql`
     query getItemsForCategoryDropdown($field: String!, $operator: FilterOperatorsEnum!, $value: String) {
   getItems(filter: {field: $field, operator: $operator, value: $value}) {
     _id
-    name {
-      value
-    }
-    price {
-      value
-    }
+    name
+    price
     image
   }
 }
@@ -2580,25 +2511,17 @@ export const GetCategoryDocument = gql`
     query getCategory($id: String!) {
   getCategory(id: $id) {
     _id
-    name {
-      value
-    }
-    desc {
-      value
-    }
+    name
+    desc
     status
     items {
       id
-      name {
-        value
-      }
+      name
       _id {
         _id
       }
       image
-      price {
-        value
-      }
+      price
       status
     }
     status
@@ -2658,32 +2581,20 @@ export const GetItemsDocument = gql`
     query getItems {
   getItems {
     _id
-    name {
-      value
-    }
-    desc {
-      value
-    }
+    name
+    desc
     status
     modifierGroup {
       id
-      name {
-        _id
-        value
-      }
+      name
     }
-    price {
-      _id
-      value
-    }
+    price
     visibility {
       menuType
       status
     }
     priceOptions {
-      price {
-        value
-      }
+      price
       menuType
     }
   }
@@ -2693,25 +2604,16 @@ export const GetItemDocument = gql`
     query getItem($id: String!) {
   getItem(id: $id) {
     _id
-    name {
-      value
-    }
-    desc {
-      value
-    }
+    name
+    desc
     status
     modifierGroup {
-      name {
-        value
-      }
+      name
       pricingType
       id
     }
     image
-    price {
-      value
-      _id
-    }
+    price
     orderLimit
     options {
       _id
@@ -2736,9 +2638,7 @@ export const GetItemDocument = gql`
     }
     priceOptions {
       menuType
-      price {
-        value
-      }
+      price
     }
     subCategory {
       id
@@ -2762,13 +2662,9 @@ export const GetModifierGroupsforItemsDropDownDocument = gql`
     query getModifierGroupsforItemsDropDown {
   getModifierGroups {
     _id
-    name {
-      value
-    }
+    name
     modifiers {
-      name {
-        value
-      }
+      name
     }
   }
 }
@@ -2815,17 +2711,13 @@ export const GetMenuByRestaurantDocument = gql`
     query getMenuByRestaurant {
   getMenuByRestaurant {
     _id
-    name {
-      value
-    }
+    name
     status
     createdAt
     updatedAt
     type
     categories {
-      name {
-        value
-      }
+      name
     }
   }
 }
@@ -2839,17 +2731,11 @@ export const GetCategoriesForMenuDropdownDocument = gql`
     query getCategoriesForMenuDropdown($field: String!, $operator: FilterOperatorsEnum!, $value: String) {
   getCategories(filter: {field: $field, operator: $operator, value: $value}) {
     _id
-    name {
-      value
-    }
-    desc {
-      value
-    }
+    name
+    desc
     status
     items {
-      name {
-        value
-      }
+      name
     }
   }
 }
@@ -2873,9 +2759,7 @@ export const GetMenusByTypeDocument = gql`
     query getMenusByType($id: String!) {
   getMenusByType(id: $id) {
     _id
-    name {
-      value
-    }
+    name
     status
     createdAt
     updatedAt
@@ -2894,10 +2778,7 @@ export const GetMenusByTypeDocument = gql`
       name
     }
     categories {
-      name {
-        value
-        _id
-      }
+      name
       status
       _id {
         _id
@@ -2921,13 +2802,9 @@ export const GetAllMenusDocument = gql`
   getAllMenus {
     _id
     type
-    name {
-      value
-    }
+    name
     categories {
-      name {
-        value
-      }
+      name
     }
     createdAt
     updatedAt
@@ -2940,9 +2817,7 @@ export const GetModifierGroupsDocument = gql`
   getModifierGroups {
     _id
     status
-    name {
-      value
-    }
+    name
   }
 }
     `;
@@ -2960,12 +2835,8 @@ export const GetModifiersforGroupDropDownDocument = gql`
     query getModifiersforGroupDropDown {
   getModifiers {
     _id
-    name {
-      value
-    }
-    price {
-      value
-    }
+    name
+    price
   }
 }
     `;
@@ -2978,32 +2849,18 @@ export const GetModifierGroupDocument = gql`
     query getModifierGroup($id: String!) {
   getModifierGroup(id: $id) {
     _id
-    name {
-      value
-    }
-    price {
-      value
-    }
-    desc {
-      value
-    }
+    name
+    price
+    desc
     pricingType
     optional
     modifiers {
-      name {
-        value
-      }
-      price {
-        value
-      }
+      name
+      price
       id
     }
-    maxSelections {
-      value
-    }
-    minSelections {
-      value
-    }
+    maxSelections
+    minSelections
   }
 }
     `;
@@ -3032,12 +2889,8 @@ export const GetModifiersDocument = gql`
     query getModifiers {
   getModifiers {
     _id
-    name {
-      value
-    }
-    price {
-      value
-    }
+    name
+    price
   }
 }
     `;
@@ -3055,17 +2908,11 @@ export const GetModifierDocument = gql`
     query getModifier($id: String!) {
   getModifier(id: $id) {
     _id
-    desc {
-      value
-    }
+    desc
     isItem
     preSelect
-    name {
-      value
-    }
-    price {
-      value
-    }
+    name
+    price
   }
 }
     `;
@@ -3111,29 +2958,7 @@ export const GetBusinessOnboardingDetailsDocument = gql`
     ein
     businessName
     address {
-      addressLine1 {
-        value
-      }
-      addressLine2 {
-        value
-      }
-      state {
-        _id
-        value
-      }
-      city {
-        value
-      }
-      postcode {
-        value
-      }
-      coordinate {
-        coordinates
-      }
-      place {
-        displayName
-        placeId
-      }
+      ...addressInfo
     }
     employeeSize
     establishedAt
@@ -3141,7 +2966,7 @@ export const GetBusinessOnboardingDetailsDocument = gql`
     estimatedRevenue
   }
 }
-    `;
+    ${AddressInfoFragmentDoc}`;
 export const RestaurantOnboardingDocument = gql`
     mutation restaurantOnboarding($input: UpdateRestaurantDetailsInput!) {
   restaurantOnboarding(input: $input)
@@ -3155,33 +2980,9 @@ export const CompleteRestaurantOnboardingDocument = gql`
 export const GetRestaurantOnboardingDataDocument = gql`
     query getRestaurantOnboardingData {
   getRestaurantOnboardingData {
-    name {
-      value
-    }
+    name
     address {
-      addressLine1 {
-        value
-      }
-      addressLine2 {
-        value
-      }
-      state {
-        _id
-        value
-      }
-      city {
-        value
-      }
-      postcode {
-        value
-      }
-      coordinate {
-        coordinates
-      }
-      place {
-        displayName
-        placeId
-      }
+      ...addressInfo
     }
     brandingLogo
     socialInfo {
@@ -3199,20 +3000,18 @@ export const GetRestaurantOnboardingDataDocument = gql`
       active
     }
     timezone {
-      _id
-      value
+      timezoneId
+      timezoneName
     }
     category
     beverageCategory
     foodType
     meatType
     type
-    dineInCapacity {
-      value
-    }
+    dineInCapacity
   }
 }
-    `;
+    ${AddressInfoFragmentDoc}`;
 export const MeUserInResOnboardingDocument = gql`
     query meUserInResOnboarding {
   meUser {
@@ -3223,9 +3022,7 @@ export const MeUserInResOnboardingDocument = gql`
 export const GetUserRestaurantsDocument = gql`
     query getUserRestaurants {
   getUserRestaurants {
-    name {
-      value
-    }
+    name
     id
     status
   }
@@ -3240,9 +3037,7 @@ export const GetRestaurantDetailsDocument = gql`
     query getRestaurantDetails {
   getRestaurantDetails {
     _id
-    name {
-      value
-    }
+    name
     availability {
       day
       hours {
@@ -3254,28 +3049,7 @@ export const GetRestaurantDetailsDocument = gql`
     brandingLogo
     website
     address {
-      addressLine1 {
-        value
-      }
-      addressLine2 {
-        value
-      }
-      state {
-        value
-      }
-      city {
-        value
-      }
-      postcode {
-        value
-      }
-      coordinate {
-        coordinates
-      }
-      place {
-        displayName
-        placeId
-      }
+      ...addressInfo
     }
     taxRates {
       _id
@@ -3284,7 +3058,7 @@ export const GetRestaurantDetailsDocument = gql`
     }
   }
 }
-    `;
+    ${AddressInfoFragmentDoc}`;
 export const AddTaxRateDocument = gql`
     mutation addTaxRate($input: TaxRateInput!) {
   addTaxRate(input: $input)
@@ -3293,9 +3067,7 @@ export const AddTaxRateDocument = gql`
 export const GetUserRestaurantsPendingDocument = gql`
     query getUserRestaurantsPending {
   getUserRestaurantsPending {
-    name {
-      value
-    }
+    name
     id
   }
 }

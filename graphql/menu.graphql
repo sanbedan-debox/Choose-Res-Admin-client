@@ -1,18 +1,14 @@
 query getMenuByRestaurant {
   getMenuByRestaurant {
     _id
-    name {
-      value
-    }
+    name
     status
     createdAt
     updatedAt
     type
 
     categories {
-      name {
-        value
-      }
+      name
     }
   }
 }
@@ -28,17 +24,11 @@ query getCategoriesForMenuDropdown(
 ) {
   getCategories(filter: { field: $field, operator: $operator, value: $value }) {
     _id
-    name {
-      value
-    }
-    desc {
-      value
-    }
+    name
+    desc
     status
     items {
-      name {
-        value
-      }
+      name
     }
   }
 }
@@ -58,9 +48,7 @@ mutation addCategoryToMenu($categoryId: [String!]!, $menuId: String!) {
 query getMenusByType($id: String!) {
   getMenusByType(id: $id) {
     _id
-    name {
-      value
-    }
+    name
     status
     createdAt
     updatedAt
@@ -79,11 +67,9 @@ query getMenusByType($id: String!) {
       name
     }
     categories {
-      name {
-        value
-        _id
-      }
+      name
       status
+
       _id {
         _id
       }
@@ -104,13 +90,9 @@ query getAllMenus {
     _id
     type
 
-    name {
-      value
-    }
+    name
     categories {
-      name {
-        value
-      }
+      name
     }
     createdAt
     updatedAt

@@ -31,7 +31,7 @@ const Modifiers: React.FC = () => {
         setModifierGroups(
           response.getModifierGroups.map((el) => ({
             _id: el?._id,
-            name: el?.name.value,
+            name: el?.name,
             status: el?.status,
           }))
         );

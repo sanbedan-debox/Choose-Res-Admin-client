@@ -24,8 +24,8 @@ type ProfileStates = {
     setCity: (city: string) => void;
     state: { id: string; value: string } | null;
     setState: (state: { id: string; value: string } | null) => void;
-    postcode: string;
-    setPostcode: (postcode: string) => void;
+    zipcode: number;
+    setZipcode: (zipcode: number) => void;
     place: { displayName: string; placeId: string };
     setPlace: (place: { displayName: string; placeId: string }) => void;
     cords: number[];
@@ -60,8 +60,8 @@ const useProfileStore = create<ProfileStates>((set) => ({
     setCity: (city) => set({ city }),
     state: null,
     setState: (state) => set({ state }),
-    postcode: "",
-    setPostcode: (postcode) => set({ postcode }),
+    zipcode: 0,
+    setZipcode: (zipcode) => set({ zipcode }),
     place: { displayName: "", placeId: "" },
     setPlace: (place) => set({ place }),
     cords: [0, 0],

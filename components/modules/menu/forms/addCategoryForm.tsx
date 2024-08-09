@@ -141,7 +141,7 @@ const AddCategoryForm = () => {
     try {
       const response = await sdk.getMenuByRestaurant();
       const menuItems = response.getMenuByRestaurant.map((menu) => ({
-        name: menu.name.value,
+        name: menu.name,
         type: menu.type,
       }));
 
@@ -162,16 +162,16 @@ const AddCategoryForm = () => {
         const response = await sdk.getCategory({ id: editCatsId });
         const item = response.getCategory;
         setChangesMenu(response.getCategory);
-        setValue("name", item.name.value);
-        const nameDup = generateUniqueName(item?.name?.value);
+        setValue("name", item.name);
+        const nameDup = generateUniqueName(item?.name);
         if (isDuplicateCats) {
           setValue("name", nameDup);
         }
-        setValue("description", item.desc.value);
+        setValue("description", item.desc);
         const formateditemlist = item?.items.map((el) => ({
           _id: el.id,
-          name: el?.name?.value ?? "",
-          price: el?.price?.value ?? "",
+          name: el?.name ?? "",
+          price: el?.price ?? "",
           image: el?.image ?? "",
         }));
         setValue("status", item.status === StatusEnum.Active ? true : false);
@@ -263,12 +263,8 @@ const AddCategoryForm = () => {
         // ADD CATEGORIES/NEW CATEGORIES
         const res = await sdk.addCategory({
           input: {
-            name: {
-              value: data.name,
-            },
-            desc: {
-              value: data.description,
-            },
+            name: data.name,
+            desc: data.description,
             status: statusSub,
             items: selectedItemsIds,
             visibility: visibilities,
@@ -336,8 +332,8 @@ const AddCategoryForm = () => {
         if (items && items.getItems) {
           const formattedItemsList = items.getItems.map((item) => ({
             _id: item._id || "",
-            name: item?.name?.value || "",
-            price: item?.price?.value || 0,
+            name: item?.name || "",
+            price: item?.price || 0,
             image: item?.image || "",
           }));
           const filteredItemsList = formattedItemsList.filter(

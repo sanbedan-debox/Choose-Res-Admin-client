@@ -36,7 +36,7 @@ const UserVerification = () => {
     city,
     employeeSize,
     place,
-    postcode,
+    zipcode,
     estimatedRevenue,
     state,
   } = useOnboardingStore();
@@ -63,7 +63,7 @@ const UserVerification = () => {
       }
     }
 
-    if (!addressLine1 || !city || !state || !postcode || !place) {
+    if (!addressLine1 || !city || !state || !zipcode || !place) {
       try {
         setToastData({
           message: "Please fill location details first.",

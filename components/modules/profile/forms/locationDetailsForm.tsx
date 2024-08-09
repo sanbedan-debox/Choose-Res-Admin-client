@@ -17,7 +17,7 @@ interface IFormInput {
   addressLine2: string;
   city: string;
   state: { id: string; value: string } | null;
-  postcode: string;
+  zipcode: number;
   location: PlacesType;
 }
 
@@ -47,16 +47,16 @@ const UserLocationForm: React.FC = () => {
     addressLine2,
     city,
     state,
-    postcode,
+    zipcode,
     cords,
     place,
-    setAddressLine1,
-    setAddressLine2,
-    setCity,
-    setState,
-    setPostcode,
-    setCords,
-    setPlace,
+    // setAddressLine1,
+    // setAddressLine2,
+    // setCity,
+    // setState,
+    // setZipcode,
+    // setCords,
+    // setPlace,
   } = useProfileStore();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -66,7 +66,7 @@ const UserLocationForm: React.FC = () => {
     addressLine2,
     city,
     state,
-    postcode,
+    zipcode,
     location: { label: place?.displayName ?? "", value: place?.placeId ?? "" },
   });
 
@@ -101,7 +101,7 @@ const UserLocationForm: React.FC = () => {
       addressLine2 !== formState.addressLine2 ||
       city !== formState.city ||
       state?.id !== formState.state?.id ||
-      postcode !== formState.postcode ||
+      zipcode !== formState.zipcode ||
       place?.placeId !== selectedPlace?.value ||
       cords !== coords;
 
@@ -116,22 +116,18 @@ const UserLocationForm: React.FC = () => {
       const response = await sdk.updateUserProfile({
         input: {
           address: {
-            addressLine1: {
-              value: formState.addressLine1,
-            },
-            addressLine2: {
-              value: formState.addressLine2 ? formState.addressLine2 : "",
-            },
-            city: {
-              value: formState.city,
-            },
+            addressLine1: formState.addressLine1,
+
+            addressLine2: formState.addressLine2 ? formState.addressLine2 : "",
+
+            city: formState.city,
+
             state: {
-              _id: formState.state?.id || "",
-              value: formState.state?.value || "",
+              stateId: formState.state?.id || "",
+              stateName: formState.state?.value || "",
             },
-            postcode: {
-              value: formState.postcode,
-            },
+            zipcode: zipcode,
+
             place: {
               displayName: selectedPlace?.label ?? "",
               placeId: selectedPlace?.value ?? "",
@@ -202,11 +198,11 @@ const UserLocationForm: React.FC = () => {
           </div>
           <div className="flex justify-between items-center py-3 border-b ">
             <p>
-              <strong>Zipcode:</strong> {postcode}
+              <strong>Zipcode:</strong> {zipcode}
             </p>
             <MdOutlineEdit
               className="text-primary text-xl cursor-pointer"
-              onClick={() => handleEditClick("postcode")}
+              onClick={() => handleEditClick("zipcode")}
             />
           </div>
           <div className="flex justify-between items-center py-3 border-b ">
@@ -336,17 +332,15 @@ const UserLocationForm: React.FC = () => {
                 />
               </div>
             )}
-            {modalField === "postcode" && (
+            {modalField === "zipcode" && (
               <div className="col-span-2">
                 <label className="block mb-2 text-sm font-medium text-left text-gray-700">
                   Zipcode
                 </label>
                 <input
                   type="text"
-                  value={formState.postcode}
-                  onChange={(e) =>
-                    handleInputChange("postcode", e.target.value)
-                  }
+                  value={formState.zipcode}
+                  onChange={(e) => handleInputChange("zipcode", e.target.value)}
                   className="input input-primary"
                   placeholder="Zipcode"
                 />

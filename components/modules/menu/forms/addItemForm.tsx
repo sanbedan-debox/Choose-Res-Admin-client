@@ -165,9 +165,7 @@ const AddItemForm = () => {
   const [pricingOptions, setPricingOptions] = useState<
     {
       menuType: MenuTypeEnum;
-      price: {
-        value: number;
-      };
+      price: number;
     }[]
   >([]);
 
@@ -194,7 +192,7 @@ const AddItemForm = () => {
     try {
       const response = await sdk.getMenuByRestaurant();
       const menuItems = response.getMenuByRestaurant.map((menu) => ({
-        name: menu.name.value,
+        name: menu.name,
         type: menu.type,
       }));
 
@@ -205,9 +203,7 @@ const AddItemForm = () => {
 
       const updatedPricings = menuItems.map((menu) => ({
         menuType: menu.type,
-        price: {
-          value: parseFloat(watch("price").toString()),
-        },
+        price: parseFloat(watch("price").toString()),
       }));
 
       setVisibilities(updatedVisibilities);
@@ -224,9 +220,7 @@ const AddItemForm = () => {
         setPricingOptions((prevPricingOptions) =>
           prevPricingOptions.map((option) => ({
             ...option,
-            price: {
-              value: parseFloat(watch("price").toString()),
-            },
+            price: parseFloat(watch("price").toString()),
           }))
         );
       }
@@ -239,14 +233,14 @@ const AddItemForm = () => {
         const response = await sdk.getItem({ id: editItemId });
         const item = response.getItem;
         setChangesMenu(response.getItem);
-        const nameDup = generateUniqueName(item?.name?.value);
-        setValue("name", item.name.value);
+        const nameDup = generateUniqueName(item?.name);
+        setValue("name", item.name);
         if (isDuplicateItem) {
           setValue("name", nameDup);
         }
-        setValue("desc", item.desc.value);
+        setValue("desc", item.desc);
         setValue("status", item.status === StatusEnum.Active ? true : false);
-        setValue("price", item.price.value);
+        setValue("price", item.price);
 
         if (item?.orderLimit) {
           setValue("limit", item?.orderLimit);
@@ -257,7 +251,7 @@ const AddItemForm = () => {
 
         const formateditemlist = item?.modifierGroup.map((el) => ({
           _id: el?.id,
-          name: el?.name?.value ?? "",
+          name: el?.name ?? "",
         }));
         setSelectedItems(formateditemlist);
         setTempSelectedItems(formateditemlist);
@@ -481,16 +475,10 @@ const AddItemForm = () => {
 
         await sdk.addItem({
           input: {
-            name: {
-              value: data.name,
-            },
-            desc: {
-              value: data.desc,
-            },
+            name: data.name,
+            desc: data.desc,
             image: imgUrl,
-            price: {
-              value: parsedPrice,
-            },
+            price: parsedPrice,
             status: statusSub,
             orderLimit: parsedLimit,
 
@@ -609,7 +597,7 @@ const AddItemForm = () => {
         if (items && items.getModifierGroups) {
           const formattedItemsList = items.getModifierGroups.map((item) => ({
             _id: item._id || "",
-            name: item?.name?.value || "",
+            name: item?.name || "",
             length: item?.modifiers?.length || 0,
           }));
           const filteredItemsList = formattedItemsList.filter(
@@ -803,7 +791,7 @@ const AddItemForm = () => {
 
   const handlePriceChange = (newPrice: string, index: number) => {
     const updatedPricingOptions = [...pricingOptions];
-    updatedPricingOptions[index].price.value = roundOffPrice(
+    updatedPricingOptions[index].price = roundOffPrice(
       parseFloat(newPrice.toString())
     );
     setPricingOptions(updatedPricingOptions);
@@ -922,7 +910,7 @@ const AddItemForm = () => {
                     </div>
                     <input
                       type="number"
-                      value={option?.price?.value || ""}
+                      value={option?.price || ""}
                       onChange={(e) => handlePriceChange(e.target.value, index)}
                       className="input input-primary w-20"
                       placeholder="Enter item price"
@@ -1137,44 +1125,6 @@ const AddItemForm = () => {
               </p>
             )}
           </div>
-          <div>
-            <FormAddTable
-              data={data}
-              headings={headings}
-              title="Modifier Groups"
-              emptyCaption="You can add Modifier Group for items here"
-              emptyMessage="No Modifier Groups available"
-              buttonText="Add Modifier Groups"
-              onAddClick={handleAddClick}
-            />
-            <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
-              Modifier Groups allow your customer to customize an item
-            </p>
-          </div>
-          <div>
-            <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-              Availibility
-            </label>
-
-            <div className="flex items-center mb-4">
-              <button
-                type="button"
-                className="text-sm text-primary flex items-center cursor-pointer"
-                onClick={async () => {
-                  setUseRestaurantTimings(!useRestaurantTimings);
-                }}
-              >
-                <span className=" hover:underline">
-                  Use Restaurant Timings for this Item
-                </span>
-              </button>
-            </div>
-
-            <AvailabilityComponent
-              availability={availability}
-              setAvailability={setAvailability}
-            />
-          </div>
           <div className="">
             <label
               htmlFor="type"
@@ -1228,6 +1178,46 @@ const AddItemForm = () => {
               </span>
             </p>
           </div>
+          <div>
+            <FormAddTable
+              data={data}
+              headings={headings}
+              title="Modifier Groups"
+              emptyCaption="You can add Modifier Group for items here"
+              emptyMessage="No Modifier Groups available"
+              buttonText="Add Modifier Groups"
+              onAddClick={handleAddClick}
+            />
+            <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
+              Modifier Groups allow your customer to customize an item
+            </p>
+          </div>
+
+          <div>
+            <label className="block mb-2 text-sm font-medium text-left text-gray-700">
+              Availibility
+            </label>
+
+            <div className="flex items-center mb-4">
+              <button
+                type="button"
+                className="text-sm text-primary flex items-center cursor-pointer"
+                onClick={async () => {
+                  setUseRestaurantTimings(!useRestaurantTimings);
+                }}
+              >
+                <span className=" hover:underline">
+                  Use Restaurant Timings for this Item
+                </span>
+              </button>
+            </div>
+
+            <AvailabilityComponent
+              availability={availability}
+              setAvailability={setAvailability}
+            />
+          </div>
+
           <CButton
             loading={btnLoading}
             variant={ButtonType.Primary}

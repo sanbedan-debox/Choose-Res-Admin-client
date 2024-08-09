@@ -92,7 +92,7 @@ const Dashboard: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
         const response = await sdk.getUserRestaurantsPending();
         const restaurantsIncomplete = response.getUserRestaurantsPending.map(
           (res) => ({
-            name: res.name.value,
+            name: res.name,
             id: res.id,
           })
         );

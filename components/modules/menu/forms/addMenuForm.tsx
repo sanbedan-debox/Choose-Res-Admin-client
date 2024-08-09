@@ -167,9 +167,7 @@ const AddMenuForm = () => {
         await sdk.addMenu({
           input: {
             type: data.type.value as MenuTypeEnum,
-            name: {
-              value: data.name,
-            },
+            name: data.name,
             categories: selectedItemsIds,
             taxRateId: taxRate?.id || "",
             availability: formattedAvailability,
@@ -241,7 +239,7 @@ const AddMenuForm = () => {
         if (categories && categories.getCategories) {
           const formattedItemsList = categories.getCategories.map((cats) => ({
             _id: cats._id,
-            name: cats?.name?.value,
+            name: cats?.name,
           }));
           const filteredItemsList = formattedItemsList.filter(
             (item) =>
@@ -369,8 +367,8 @@ const AddMenuForm = () => {
           const response = await sdk.getMenusByType({ id: editMenuId });
           const menu = response.getMenusByType;
           setChangesMenu(response.getMenusByType);
-          const nameDup = generateUniqueName(menu[0]?.name?.value);
-          setValue("name", menu[0].name.value);
+          const nameDup = generateUniqueName(menu[0]?.name);
+          setValue("name", menu[0].name);
           if (isDuplicateMenu) {
             setValue("name", nameDup);
           }
@@ -381,7 +379,7 @@ const AddMenuForm = () => {
 
           const formateditemlist = menu[0]?.categories.map((el) => ({
             _id: el._id._id,
-            name: el?.name?.value ?? "",
+            name: el?.name ?? "",
             length: 0,
           }));
           if (menu[0]?.availability) {

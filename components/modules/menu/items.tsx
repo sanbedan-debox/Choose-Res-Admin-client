@@ -41,10 +41,10 @@ const Items: React.FC = () => {
         setItems(
           response.getItems.map((el) => ({
             _id: el._id,
-            name: el.name.value,
-            desc: el.desc.value,
+            name: el.name,
+            desc: el.desc,
             status: el.status,
-            price: el.price.value,
+            price: el.price,
           }))
         );
       }
@@ -130,12 +130,12 @@ const Items: React.FC = () => {
     { title: "Price", dataKey: "price" },
     {
       title: "Toggle Status",
-      dataKey: "name.value",
+      dataKey: "name",
       render: renderSwitch,
     },
     {
       title: "Actions",
-      dataKey: "name.value",
+      dataKey: "name",
       render: renderActions,
     },
   ];

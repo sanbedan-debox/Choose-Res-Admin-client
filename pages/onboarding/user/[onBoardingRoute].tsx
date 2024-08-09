@@ -33,7 +33,7 @@ const OnboardingPage = ({ repo }: HomePageProps) => {
     setCity,
     setCords,
     setPlace,
-    setPostcode,
+    setZipcode,
     setState,
     setbusinessType,
     setein,
@@ -48,13 +48,16 @@ const OnboardingPage = ({ repo }: HomePageProps) => {
     setein(repo.ein);
     setemployeeSize(repo.employeeSize);
     setestimatedRevenue(repo.estimatedRevenue);
-    setAddressLine1(repo.address?.addressLine1?.value);
-    setAddressLine2(repo.address?.addressLine2?.value);
-    setCity(repo.address?.city?.value);
+    setAddressLine1(repo.address?.addressLine1);
+    setAddressLine2(repo.address?.addressLine2);
+    setCity(repo.address?.city);
     setCords(repo?.address?.coordinate?.coordinates ?? []);
     setPlace(repo?.address?.place);
-    setPostcode(repo.address?.postcode?.value);
-    setState(repo.address?.state);
+    setZipcode(repo.address?.zipcode);
+    setState({
+      id: repo?.address?.state?.stateId ?? "",
+      value: repo?.address?.state?.stateName ?? "",
+    });
   }, [
     repo,
     setbusinessType,
@@ -66,7 +69,7 @@ const OnboardingPage = ({ repo }: HomePageProps) => {
     setCity,
     setCords,
     setPlace,
-    setPostcode,
+    setZipcode,
     setState,
   ]);
 

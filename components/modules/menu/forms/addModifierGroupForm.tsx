@@ -29,7 +29,7 @@ import { RiEditCircleLine } from "react-icons/ri";
 interface IFormInput {
   name: string;
   optional: boolean;
-  pricingType: { value: string; label: string };
+  pricingType: { label: string; value: string };
   maxSelections: number;
   minSelections: number;
   commonPrice: number;
@@ -44,7 +44,12 @@ const AddModifierGroupForm = () => {
     setValue,
     watch,
     register,
-  } = useForm<IFormInput>();
+  } = useForm<IFormInput>({
+    defaultValues: {
+      maxSelections: 1,
+      minSelections: 0,
+    },
+  });
   interface ItemsDropDownType {
     _id: string;
     name: string;
@@ -108,8 +113,8 @@ const AddModifierGroupForm = () => {
         if (items && items.getModifiers) {
           const formattedItemsList = items.getModifiers.map((item) => ({
             _id: item?._id,
-            name: item?.name?.value,
-            price: item?.price?.value,
+            name: item?.name,
+            price: item?.price,
           }));
           const filteredItemsList = formattedItemsList.filter(
             (item) =>
@@ -142,19 +147,19 @@ const AddModifierGroupForm = () => {
           const item = response.getModifierGroup;
           setChangesMenu(response.getModifierGroup);
 
-          setValue("name", item.name.value);
-          const nameDup = generateUniqueName(item?.name?.value);
+          setValue("name", item.name);
+          const nameDup = generateUniqueName(item?.name);
           if (isDuplicateModifierGroup) {
             setValue("name", nameDup);
           }
 
-          setValue("minSelections", item?.minSelections?.value);
-          setValue("maxSelections", item.maxSelections?.value);
+          setValue("minSelections", item?.minSelections);
+          setValue("maxSelections", item.maxSelections);
 
-          setMinSelection(item?.minSelections?.value);
-          setMaxSelection(item.maxSelections?.value);
-          setValue("desc", item?.desc?.value || "");
-          setValue("commonPrice", item?.price?.value || 0);
+          setMinSelection(item?.minSelections);
+          setMaxSelection(item.maxSelections);
+          setValue("desc", item?.desc || "");
+          setValue("commonPrice", item?.price || 0);
           setValue("optional", item.optional || false);
           const selectedPriceType = PricingTypeOptions.find(
             (option) => option.value === item?.pricingType
@@ -165,11 +170,11 @@ const AddModifierGroupForm = () => {
           );
           const formateditemlist = item?.modifiers.map((el) => ({
             _id: el?.id,
-            name: el?.name?.value ?? "",
-            price: el?.price?.value ?? "",
+            name: el?.name ?? "",
+            price: el?.price ?? "",
           }));
-          setMaxSelectionsCount(item.maxSelections?.value);
-          setMinSelectionsCount(item.minSelections?.value);
+          setMaxSelectionsCount(item.maxSelections);
+          setMinSelectionsCount(item.minSelections);
           setModifiersLength(formateditemlist.length || 0);
           setSelectedItems(formateditemlist || []);
           setTempSelectedItems(formateditemlist);
@@ -282,7 +287,7 @@ const AddModifierGroupForm = () => {
       }
 
       if (
-        data.pricingType.value === PriceTypeEnum.SamePrice &&
+        data.pricingType?.value === PriceTypeEnum.SamePrice &&
         (!data.commonPrice || data.commonPrice <= 0)
       ) {
         setToastData({
@@ -305,7 +310,7 @@ const AddModifierGroupForm = () => {
       const addedMenuIds = selectedItemsIds.filter(
         (id) => !prevSelectedMenuIds.includes(id)
       );
-
+      console.log(parsedMaxSelection, parsedMinSelection);
       if (parsedMaxSelection < parsedMinSelection) {
         setToastData({
           type: "error",
@@ -327,7 +332,7 @@ const AddModifierGroupForm = () => {
         .map((item) => ({
           id: item._id,
           price:
-            data.pricingType.value === PriceTypeEnum.IndividualPrice
+            data.pricingType?.value === PriceTypeEnum.IndividualPrice
               ? item.price
               : 0,
         }));
@@ -348,20 +353,15 @@ const AddModifierGroupForm = () => {
 
       const updateInput: any = {
         _id: editModGroupId || "",
-        desc: {
-          value: data.desc || "",
-        },
-        pricingType: data.pricingType.value as PriceTypeEnum,
+        desc: data.desc || "",
 
-        price: {
-          value: parsedPriceCommon || 0,
-        },
-        minSelections: {
-          value: parsedMinSelection || 0,
-        },
-        maxSelections: {
-          value: parsedMaxSelection || 0,
-        },
+        pricingType: data.pricingType?.value as PriceTypeEnum,
+
+        price: parsedPriceCommon || 0,
+
+        minSelections: parsedMinSelection || 0,
+
+        maxSelections: parsedMaxSelection || 0,
       };
       let hasChanges = false;
 
@@ -370,7 +370,7 @@ const AddModifierGroupForm = () => {
         hasChanges = true;
       };
 
-      if (data.name !== changesMenu?.name?.value) {
+      if (data.name !== changesMenu?.name) {
         addChange("name", data.name);
         hasChanges = true;
       }
@@ -384,7 +384,7 @@ const AddModifierGroupForm = () => {
         hasChanges = true;
       }
 
-      // if (data?.commonPrice !== changesMenu?.price?.value) {
+      // if (data?.commonPrice !== changesMenu?.price) {
       //   updateInput.price.value = parsedPriceCommon || 0;
       //   hasChanges = true;
       // }
@@ -392,24 +392,18 @@ const AddModifierGroupForm = () => {
       if (!isEditModGroup) {
         await sdk.addModifierGroup({
           input: {
-            price: {
-              value: parsedPriceCommon || 0,
-            },
-            desc: {
-              value: data.desc,
-            },
+            price: parsedPriceCommon || 0,
 
-            name: {
-              value: data.name,
-            },
-            minSelections: {
-              value: parsedMinSelection,
-            },
-            maxSelections: {
-              value: parsedMaxSelection,
-            },
+            desc: data.desc,
+
+            name: data.name,
+
+            minSelections: parsedMinSelection,
+
+            maxSelections: parsedMaxSelection,
+
             optional: parsedOptionalBoolean,
-            pricingType: data.pricingType.value as PriceTypeEnum,
+            pricingType: data.pricingType?.value as PriceTypeEnum,
           },
           modifiers: selectedItemsIds,
         });

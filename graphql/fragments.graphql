@@ -1,0 +1,17 @@
+fragment addressInfo on AddressInfo {
+  addressLine1
+  addressLine2
+  state {
+    stateId
+    stateName
+  }
+  city
+  zipcode
+  coordinate {
+    coordinates
+  }
+  place {
+    displayName
+    placeId
+  }
+}

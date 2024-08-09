@@ -2,9 +2,7 @@ query getModifierGroups {
   getModifierGroups {
     _id
     status
-    name {
-      value
-    }
+    name
   }
 }
 mutation updateModifierGroup($input: UpdateModifierGroupInput!) {
@@ -21,12 +19,8 @@ mutation addModifierGroup(
 query getModifiersforGroupDropDown {
   getModifiers {
     _id
-    name {
-      value
-    }
-    price {
-      value
-    }
+    name
+    price
   }
 }
 
@@ -37,33 +31,19 @@ mutation removeModifierGroup($id: String!) {
 query getModifierGroup($id: String!) {
   getModifierGroup(id: $id) {
     _id
-    name {
-      value
-    }
-    price {
-      value
-    }
-    desc {
-      value
-    }
+    name
+    price
+    desc
 
     pricingType
     optional
     modifiers {
-      name {
-        value
-      }
-      price {
-        value
-      }
+      name
+      price
       id
     }
-    maxSelections {
-      value
-    }
-    minSelections {
-      value
-    }
+    maxSelections
+    minSelections
   }
 }
 mutation removeModifierFromModifierGroup(

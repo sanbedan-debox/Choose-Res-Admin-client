@@ -1,8 +1,8 @@
+# import "./fragments.graphql"
+
 query getUserRestaurants {
   getUserRestaurants {
-    name {
-      value
-    }
+    name
     id
     status
   }
@@ -15,9 +15,7 @@ query setRestaurantIdAsCookie($id: String!) {
 query getRestaurantDetails {
   getRestaurantDetails {
     _id
-    name {
-      value
-    }
+    name
     availability {
       day
       hours {
@@ -29,28 +27,7 @@ query getRestaurantDetails {
     brandingLogo
     website
     address {
-      addressLine1 {
-        value
-      }
-      addressLine2 {
-        value
-      }
-      state {
-        value
-      }
-      city {
-        value
-      }
-      postcode {
-        value
-      }
-      coordinate {
-        coordinates
-      }
-      place {
-        displayName
-        placeId
-      }
+      ...addressInfo
     }
     taxRates {
       _id
@@ -66,9 +43,7 @@ mutation addTaxRate($input: TaxRateInput!) {
 
 query getUserRestaurantsPending {
   getUserRestaurantsPending {
-    name {
-      value
-    }
+    name
     id
   }
 }

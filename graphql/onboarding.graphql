@@ -1,3 +1,5 @@
+# import "./fragments.graphql"
+
 query AllPlaces($input: String!) {
   getPlacesList(input: $input) {
     placeId
@@ -40,29 +42,7 @@ query getBusinessOnboardingDetails {
     # ssn
     businessName
     address {
-      addressLine1 {
-        value
-      }
-      addressLine2 {
-        value
-      }
-      state {
-        _id
-        value
-      }
-      city {
-        value
-      }
-      postcode {
-        value
-      }
-      coordinate {
-        coordinates
-      }
-      place {
-        displayName
-        placeId
-      }
+      ...addressInfo
     }
     employeeSize
     establishedAt
@@ -119,33 +99,9 @@ type Mutation {
 
 query getRestaurantOnboardingData {
   getRestaurantOnboardingData {
-    name {
-      value
-    }
+    name
     address {
-      addressLine1 {
-        value
-      }
-      addressLine2 {
-        value
-      }
-      state {
-        _id
-        value
-      }
-      city {
-        value
-      }
-      postcode {
-        value
-      }
-      coordinate {
-        coordinates
-      }
-      place {
-        displayName
-        placeId
-      }
+      ...addressInfo
     }
     brandingLogo
     socialInfo {
@@ -163,17 +119,15 @@ query getRestaurantOnboardingData {
       active
     }
     timezone {
-      _id
-      value
+      timezoneId
+      timezoneName
     }
     category
     beverageCategory
     foodType
     meatType
     type
-    dineInCapacity {
-      value
-    }
+    dineInCapacity
   }
 }
 

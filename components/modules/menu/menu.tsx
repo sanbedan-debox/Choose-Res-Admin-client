@@ -46,7 +46,7 @@ const Menu: React.FC = () => {
       if (response && response.getMenuByRestaurant) {
         setMenu(
           response.getMenuByRestaurant.map((el) => ({
-            name: el.name.value,
+            name: el.name,
             categories: el.categories.length,
             status: el.status,
             type: el.type.toString(),
@@ -155,7 +155,7 @@ const Menu: React.FC = () => {
     },
     { title: "Categories", dataKey: "categories" },
     { title: "Toggle Status", dataKey: "status", render: renderSwitch },
-    { title: "Actions", dataKey: "name.value", render: renderActions },
+    { title: "Actions", dataKey: "name", render: renderActions },
   ];
 
   const mainActions = [

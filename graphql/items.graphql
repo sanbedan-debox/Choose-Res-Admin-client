@@ -8,32 +8,20 @@ mutation deleteItem($id: String!) {
 query getItems {
   getItems {
     _id
-    name {
-      value
-    }
-    desc {
-      value
-    }
+    name
+    desc
     status
     modifierGroup {
       id
-      name {
-        _id
-        value
-      }
+      name
     }
-    price {
-      _id
-      value
-    }
+    price
     visibility {
       menuType
       status
     }
     priceOptions {
-      price {
-        value
-      }
+      price
       menuType
     }
   }
@@ -42,25 +30,16 @@ query getItems {
 query getItem($id: String!) {
   getItem(id: $id) {
     _id
-    name {
-      value
-    }
-    desc {
-      value
-    }
+    name
+    desc
     status
     modifierGroup {
-      name {
-        value
-      }
+      name
       pricingType
       id
     }
     image
-    price {
-      value
-      _id
-    }
+    price
     orderLimit
     options {
       _id
@@ -85,9 +64,7 @@ query getItem($id: String!) {
     }
     priceOptions {
       menuType
-      price {
-        value
-      }
+      price
     }
     subCategory {
       id
@@ -108,13 +85,9 @@ mutation updateItem($input: UpdateItemInput!) {
 query getModifierGroupsforItemsDropDown {
   getModifierGroups {
     _id
-    name {
-      value
-    }
+    name
     modifiers {
-      name {
-        value
-      }
+      name
     }
   }
 }

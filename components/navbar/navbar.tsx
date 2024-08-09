@@ -183,7 +183,7 @@ const Navbar: React.FC = () => {
                           key={restaurant?.id}
                           className="block px-4 py-2 text-sm hover:bg-primary hover:text-white"
                         >
-                          {restaurant?.name?.value}
+                          {restaurant?.name}
                         </div>
                       ))
                     ) : (

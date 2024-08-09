@@ -28,8 +28,8 @@ const Modifiers: React.FC = () => {
         setModifier(
           response.getModifiers.map((el) => ({
             _id: el._id,
-            name: el.name.value,
-            price: el.price.value,
+            name: el.name,
+            price: el.price,
           }))
         );
       }

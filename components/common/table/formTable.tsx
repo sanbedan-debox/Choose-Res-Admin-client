@@ -68,7 +68,7 @@ const FormAddTable: React.FC<FormAddTableProps> = ({
                   (item?.image?.trim() && !imageError ? (
                     <img
                       src={item.image}
-                      alt={item.name.value}
+                      alt={item.name}
                       className="w-10 h-10 rounded-md"
                       onError={() => setImageError(true)}
                     />
@@ -77,16 +77,14 @@ const FormAddTable: React.FC<FormAddTableProps> = ({
                       <CiImageOn />
                     </div>
                   ))}
-                <span className="text-md">
-                  {item?.name?.value || item?.name}
-                </span>
+                <span className="text-md">{item?.name || item?.name}</span>
               </div>
               <div className="flex items-center space-x-4">
                 {headings.map((heading) => (
                   <span key={heading.dataKey}>
                     {heading.render
                       ? heading.render(item)
-                      : item[heading.dataKey]?.value || item[heading.dataKey]}
+                      : item[heading.dataKey] || item[heading.dataKey]}
                   </span>
                 ))}
               </div>

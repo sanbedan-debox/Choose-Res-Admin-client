@@ -4,7 +4,6 @@ import { useRouter } from "next/router";
 import useGlobalStore from "@/store/global";
 import { Controller, useForm } from "react-hook-form";
 import Select from "react-select";
-import { stateOptions } from "./interface/interface";
 import useOnboardingStore from "@/store/onboarding";
 import { useEffect, useState } from "react";
 import { sdk } from "@/utils/graphqlClient";
@@ -21,7 +20,7 @@ interface IFormInput {
   addressLine2: string;
   city: string;
   state: { id: string; value: string } | null;
-  postcode: string;
+  zipcode: number;
   location: PlacesType;
 }
 
@@ -61,14 +60,14 @@ const UserLocation = () => {
     addressLine2,
     city,
     state,
-    postcode,
+    zipcode,
     cords,
     place,
     setAddressLine1,
     setAddressLine2,
     setCity,
     setState,
-    setPostcode,
+    setZipcode,
     setCords,
     setPlace,
   } = useOnboardingStore();
@@ -80,7 +79,7 @@ const UserLocation = () => {
     setValue("addressLine2", addressLine2);
     setValue("city", city);
     setValue("state", state);
-    setValue("postcode", postcode);
+    setValue("zipcode", zipcode);
     if (place?.displayName && place?.placeId) {
       setSelectedPlace({ label: place.displayName, value: place.placeId });
       setValue("location", { label: place.displayName, value: place.placeId });
@@ -94,7 +93,7 @@ const UserLocation = () => {
     addressLine2,
     city,
     state,
-    postcode,
+    zipcode,
     place,
     cords,
   ]);
@@ -112,19 +111,14 @@ const UserLocation = () => {
       const response = await sdk.businessOnboarding({
         input: {
           address: {
-            addressLine1: {
-              value: data.addressLine1,
-            },
-            addressLine2: {
-              value: data?.addressLine2 ? data?.addressLine2 : "",
-            },
-            city: {
-              value: data.city,
-            },
-            state: { _id: data.state.id, value: data.state.value },
-            postcode: {
-              value: data.postcode,
-            },
+            addressLine1: data.addressLine1,
+
+            addressLine2: data?.addressLine2 ? data?.addressLine2 : "",
+
+            city: data.city,
+
+            state: { stateId: data.state.id, stateName: data.state.value },
+            zipcode: data.zipcode,
             place: {
               displayName: selectedPlace?.label ?? "",
               placeId: selectedPlace?.value ?? "",
@@ -293,8 +287,8 @@ const UserLocation = () => {
             Zipcode
           </label>
           <input
-            type="text"
-            {...register("postcode", {
+            type="number"
+            {...register("zipcode", {
               pattern: {
                 value: /^\d{5}(-\d{4})?$/,
                 message: "Invalid zipcode format",
@@ -303,11 +297,11 @@ const UserLocation = () => {
             })}
             className="input input-primary"
             placeholder="Zipcode"
-            onChange={(e) => setPostcode(e.target.value)}
+            onChange={(e) => setZipcode(parseInt(e.target.value))}
           />
-          {errors.postcode && (
+          {errors.zipcode && (
             <p className="text-red-500 text-sm text-start">
-              {errors.postcode.message}
+              {errors.zipcode.message}
             </p>
           )}
         </div>

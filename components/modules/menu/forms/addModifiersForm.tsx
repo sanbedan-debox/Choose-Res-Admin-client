@@ -79,9 +79,9 @@ const AddModifierForm = () => {
       const response = await sdk.getItems();
       const formattedItems = response.getItems.map((item: any) => ({
         _id: item._id,
-        name: item.name.value,
-        desc: item.desc.value,
-        price: item.price.value,
+        name: item.name,
+        desc: item.desc,
+        price: item.price,
         priceOptions: item.priceOptions,
       }));
       setItemOptions(formattedItems);
@@ -101,16 +101,16 @@ const AddModifierForm = () => {
         const item = response.getModifier;
         setChangesModifiers(item);
 
-        setValue("name", item.name.value);
-        const nameDup = generateUniqueName(item?.name?.value);
+        setValue("name", item.name);
+        const nameDup = generateUniqueName(item?.name);
         if (isDuplicateMods) {
           setValue("name", nameDup);
         }
-        setValue("desc", item.desc.value);
+        setValue("desc", item.desc);
         setValue("preSelect", item.preSelect);
         setValue("isItemFromMenu", item.isItem);
         setIsItemFromMenu(item.isItem);
-        setValue("price", item.price.value);
+        setValue("price", item.price);
       } catch (error) {
         const errorMessage = extractErrorMessage(error);
         setToastData({
@@ -178,16 +178,13 @@ const AddModifierForm = () => {
 
         await sdk.addModifier({
           input: {
-            desc: {
-              value: data.desc,
-            },
+            desc: data.desc,
+
             isItem: isItemFromMenu,
-            name: {
-              value: data.name,
-            },
-            price: {
-              value: parsedPrice,
-            },
+            name: data.name,
+
+            price: parsedPrice,
+
             preSelect: data.preSelect,
           },
         });
@@ -497,7 +494,7 @@ const AddModifierForm = () => {
           <div className="space-y-2">
             {itemOptions
               .filter((item) =>
-                item.name.toLowerCase().includes(searchTerm.toLowerCase())
+                item?.name?.toLowerCase()?.includes(searchTerm?.toLowerCase())
               )
               .map((item) => (
                 <div

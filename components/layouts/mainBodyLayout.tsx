@@ -106,7 +106,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           if (res?.getRestaurantDetails) {
             const restaurantDetails = res.getRestaurantDetails;
 
-            setSelectedRestaurant(restaurantDetails.name?.value || "");
+            setSelectedRestaurant(restaurantDetails.name || "");
             setSelectedRestaurantId(restaurantDetails._id || "");
 
             const taxRates = restaurantDetails.taxRates ?? null;
@@ -140,9 +140,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 id: formattedRestaurant[0]?.id,
               });
               if (res) {
-                setSelectedRestaurant(
-                  formattedRestaurant[0]?.name?.value || ""
-                );
+                setSelectedRestaurant(formattedRestaurant[0]?.name || "");
               }
             } catch (error) {
               setToastData({
@@ -155,7 +153,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           await sdk.setRestaurantIdAsCookie({
             id: formattedRestaurant[0]?.id,
           });
-          setSelectedRestaurant(formattedRestaurant[0]?.name?.value || "");
+          setSelectedRestaurant(formattedRestaurant[0]?.name || "");
         }
       }
     } catch (error) {

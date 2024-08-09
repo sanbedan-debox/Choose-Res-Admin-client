@@ -155,8 +155,8 @@ const AddTeamMemberForm = () => {
     try {
       const response = await sdk.getUserRestaurants();
       const options = response.getUserRestaurants.map(
-        (restaurant: { name: { value: string }; id: string }) => ({
-          label: restaurant.name.value,
+        (restaurant: { name: string; id: string }) => ({
+          label: restaurant.name,
           value: restaurant.id,
         })
       );

@@ -44,7 +44,7 @@ const OnboardingPage = ({ repo }: HomePageProps) => {
     setInstagramLink,
     setMeatType,
     setPlace,
-    setPostcode,
+    setZipcode,
     setRestaurantCategory,
     setRestaurantName,
     setRestaurantType,
@@ -58,24 +58,30 @@ const OnboardingPage = ({ repo }: HomePageProps) => {
 
   useEffect(() => {
     setbrandingLogo(repo?.brandingLogo);
-    setRestaurantName(repo?.name?.value);
+    setRestaurantName(repo?.name);
     setRestaurantType(repo?.type);
     setRestaurantCategory(repo?.category);
     setRestaurantWebsite(repo?.website);
-    setDineInCapacity(repo?.dineInCapacity?.value);
+    setDineInCapacity(repo?.dineInCapacity);
     setBeverageCategory(repo?.beverageCategory);
     setFoodType(repo?.foodType);
     setMeatType(repo?.meatType as MeatType);
-    setAddressLine1(repo?.address?.addressLine1?.value);
-    setAddressLine2(repo?.address?.addressLine1?.value);
-    setCity(repo.address?.city?.value);
-    setPostcode(repo.address?.postcode?.value);
-    setState(repo.address?.state);
+    setAddressLine1(repo?.address?.addressLine1);
+    setAddressLine2(repo?.address?.addressLine1);
+    setCity(repo.address?.city);
+    setZipcode(repo.address?.zipcode);
+    setState({
+      id: repo?.address?.state?.stateId ?? "",
+      value: repo?.address?.state?.stateName ?? "",
+    });
     setCords(repo?.address?.coordinate?.coordinates ?? []);
     setPlace(repo.address?.place);
     setFacebookLink(repo?.socialInfo?.facebook);
     setInstagramLink(repo?.socialInfo?.instagram);
-    setTimeZone(repo?.timezone);
+    setTimeZone({
+      id: repo?.timezone?.timezoneId ?? "",
+      value: repo?.timezone?.timezoneName ?? "",
+    });
     setTwitterLink(repo?.socialInfo?.twitter);
     setAvailabilityHours(repo?.availability);
     setbrandingLogo(repo?.brandingLogo);
@@ -92,7 +98,7 @@ const OnboardingPage = ({ repo }: HomePageProps) => {
     setAddressLine1,
     setAddressLine2,
     setCity,
-    setPostcode,
+    setZipcode,
     setState,
     setCords,
     setPlace,

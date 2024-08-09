@@ -147,9 +147,8 @@ const RestaurantBasicInformation = () => {
       const imgUrl = await handleLogoUpload();
 
       const input: any = {
-        name: {
-          value: data.restaurantName,
-        },
+        name: data.restaurantName,
+
         website: formattedWebsite,
         type: data.restaurantType as RestaurantType,
         category: data.restaurantCategory || [],
@@ -159,9 +158,9 @@ const RestaurantBasicInformation = () => {
         data.restaurantCategory?.includes(RestaurantCategory.DineIn) ||
         data.restaurantCategory?.includes(RestaurantCategory.PremiumDineIn)
       ) {
-        input.dineInCapacity = {
-          value: data.dineInCapacity ? parseInt(data.dineInCapacity) : 0,
-        };
+        input.dineInCapacity = data.dineInCapacity
+          ? parseInt(data.dineInCapacity)
+          : 0;
       }
       const response = await sdk.restaurantOnboarding({
         input: input,
