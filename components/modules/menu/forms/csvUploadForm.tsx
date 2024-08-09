@@ -4,7 +4,6 @@ import Select from "react-select";
 import Papa from "papaparse";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
-import { CsvUploadTypeEnum } from "@/generated/graphql";
 import FullPageModal from "@/components/common/modal/fullPageModal";
 import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
@@ -13,6 +12,7 @@ import useAuthStore from "@/store/auth";
 import useRestaurantsStore from "@/store/restaurant";
 import useMenuPageStore from "@/store/menuStore";
 import useMenuOptionsStore from "@/store/menuOptions";
+import AddMenuForm from "./addMenuForm";
 
 const CsvUploadForm = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -40,7 +40,7 @@ const CsvUploadForm = () => {
       onlineOrdering: boolean;
       dineIn: boolean;
       catering: boolean;
-      itemLimit: string;
+      itemLimit: string | null;
       popularItem: boolean;
       upSellItem: boolean;
       isVegan: boolean;
@@ -75,14 +75,24 @@ const CsvUploadForm = () => {
     };
 
     fetchHeaders();
-  }, []);
+  }, [setToastData]);
 
   const [menuOptions, setMenuOptions] = useState<
     { value: string; label: string }[]
   >([]);
 
-  const { setisAddMenuModalOpen, fetchMenuDatas, setIsFromUploadCSV } =
-    useMenuOptionsStore();
+  const {
+    setisAddMenuModalOpen,
+    isAddMenuModalOpen,
+    setfetchMenuDatas,
+    fetchMenuDatas,
+    setIsFromUploadCSV,
+  } = useMenuOptionsStore();
+
+  const handleAddMenuClose = () => {
+    setisAddMenuModalOpen(false);
+    setfetchMenuDatas(!fetchMenuDatas);
+  };
 
   useEffect(() => {
     const fetchMenus = async () => {
@@ -140,7 +150,7 @@ const CsvUploadForm = () => {
         onlineOrdering: boolean;
         dineIn: boolean;
         catering: boolean;
-        itemLimit: string;
+        itemLimit: string | null;
         popularItem: boolean;
         upSellItem: boolean;
         isVegan: boolean;
@@ -208,7 +218,7 @@ const CsvUploadForm = () => {
           onlineOrdering: onlineOrdering === "TRUE",
           dineIn: dineIn === "TRUE",
           catering: catering === "TRUE",
-          itemLimit,
+          itemLimit: itemLimit.trim() === "" ? null : itemLimit,
           popularItem: popularItem === "TRUE",
           upSellItem: upSellItem === "TRUE",
           isVegan: isVegan === "TRUE",
@@ -383,6 +393,8 @@ const CsvUploadForm = () => {
       return;
     }
 
+    setisLoading(true);
+
     const csv = Papa.unparse(previewData, { header: true });
     try {
       const cloudinaryUrl = await uploadValidCsvToCloudinary(csv);
@@ -391,19 +403,21 @@ const CsvUploadForm = () => {
         const res = await sdk.uploadCSVMenuData({
           input: {
             csvFile: cloudinaryUrl,
-            menuType: data.menu.value,
+            menu: data.menu.value,
           },
         });
         if (res.uploadCsvData) {
+          setisLoading(false);
           setToastData({
             message:
-              "CSV Uploaded Successfully,It will be reflecting in your menu builder within 24 hours",
+              "CSV Uploaded Successfully,It will be reflecting in your menu builder within 2 hours",
             type: "success",
           });
           setisShowUploadCSV(false);
         }
       }
     } catch (error) {
+      setisLoading(false);
       setToastData({
         message: extractErrorMessage(error),
         type: "error",
@@ -733,6 +747,20 @@ const CsvUploadForm = () => {
         </form>
       )}
 
+      {/* Add Menu Form */}
+      <FullPageModal
+        isOpen={isAddMenuModalOpen}
+        title="Menu"
+        onClose={handleAddMenuClose}
+        actionButtonLabel="Save Menu"
+        // onActionButtonClick={handleAddMenuItemClick}
+        onActionButtonClick={() => console.log("hello")}
+      >
+        <div className="flex justify-center">
+          <AddMenuForm />
+        </div>
+      </FullPageModal>
+
       <PreviewModal
         isOpen={isPreviewModalOpen}
         onClose={() => setIsPreviewModalOpen(false)}
@@ -769,7 +797,7 @@ const PreviewModal: React.FC<PreviewModalProps> = ({
                 {Object.keys(data[0]).map((header) => (
                   <th
                     key={header}
-                    className="py-2 px-4 border-b border-gray-200 bg-gray-50 text-gray-600 text-sm font-semibold text-left"
+                    className="py-2 px-4 border-b border-gray-200 bg-gray-50 text-gray-600 text-sm font-semibold text-left whitespace-nowrap"
                   >
                     {header}
                   </th>
@@ -782,9 +810,9 @@ const PreviewModal: React.FC<PreviewModalProps> = ({
                   {Object.values(row).map((value, i) => (
                     <td
                       key={i}
-                      className="py-2 px-4 border-b border-gray-200 text-sm text-gray-700"
+                      className="py-2 px-4 border-b border-gray-200 text-sm text-gray-700 whitespace-nowrap"
                     >
-                      {value}
+                      {value ? value : "N/A"}
                     </td>
                   ))}
                 </tr>

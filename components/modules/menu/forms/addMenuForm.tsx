@@ -48,8 +48,12 @@ const menuTypeOptions: any[] = [
 ];
 
 const AddMenuForm = () => {
-  const { fetchMenuDatas, setfetchMenuDatas, setisAddMenuModalOpen } =
-    useMenuOptionsStore();
+  const {
+    fetchMenuDatas,
+    setfetchMenuDatas,
+    setisAddMenuModalOpen,
+    isFromUploadCSV,
+  } = useMenuOptionsStore();
   const [confirmationRemoval, setConfirmationRemoval] = useState(false);
   const [removingId, setRemovingId] = useState<string>("");
   const [btnLoading, setBtnLoading] = useState(false);
@@ -486,21 +490,26 @@ const AddMenuForm = () => {
           )}
         </div>
 
-        <br />
-        <div>
-          <FormAddTable
-            data={data}
-            headings={headings}
-            title="Categories"
-            emptyCaption="Add Categories to your menu"
-            emptyMessage="No Categories selected"
-            buttonText="Add Categories"
-            onAddClick={handleAddClick}
-          />
-          <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
-            Select the categories and items you want to be in this menu.
-          </p>
-        </div>
+        {!isFromUploadCSV ? (
+          <>
+            <br />
+            <div>
+              <FormAddTable
+                data={data}
+                headings={headings}
+                title="Categories"
+                emptyCaption="Add Categories to your menu"
+                emptyMessage="No Categories selected"
+                buttonText="Add Categories"
+                onAddClick={handleAddClick}
+              />
+              <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
+                Select the categories and items you want to be in this menu.
+              </p>
+            </div>
+          </>
+        ) : null}
+
         <label className="block mb-2 text-sm font-medium text-left text-gray-700">
           Availibility
         </label>
@@ -521,59 +530,65 @@ const AddMenuForm = () => {
           availability={availability}
           setAvailability={setAvailability}
         />
-        {!taxRate?.salesTax ? (
+        {!isFromUploadCSV ? (
           <>
-            <br />
-            <div className="flex justify-between items-center p-4 border rounded-md shadow-sm bg-white cursor-pointer">
-              <div>
-                <h3 className="font-semibold text-start text-md">Tax Rate</h3>
-                <p className="text-gray-600 text-sm">
-                  {`It's mandatory to add a tax rate to make this menu available`}
-                </p>
-              </div>
-              <div>
-                <CButton
-                  loading={btnLoading}
-                  variant={ButtonType.Outlined}
-                  type="button"
-                  onClick={() => setisShowTaxSettings(true)}
-                  className="w-full"
-                >
-                  <div className="flex justify-center items-center">
-                    Add Tax Rate
-                    <IoIosAddCircleOutline className="text-xl ml-1" />
+            {!taxRate?.salesTax ? (
+              <>
+                <br />
+                <div className="flex justify-between items-center p-4 border rounded-md shadow-sm bg-white cursor-pointer">
+                  <div>
+                    <h3 className="font-semibold text-start text-md">
+                      Tax Rate
+                    </h3>
+                    <p className="text-gray-600 text-sm">
+                      {`It's mandatory to add a tax rate to make this menu available`}
+                    </p>
                   </div>
-                </CButton>
-              </div>
-            </div>
-            <br />
-                      
-          </>
-        ) : (
-          <>
-            <br />
-            <div className="flex justify-between items-center p-4 border rounded-md shadow-sm bg-white opacity-50 cursor-not-allowed">
-              <div>
-                <h3 className="font-semibold text-start text-md">Tax Rate</h3>
-                <p className="text-gray-600 text-sm">
-                  {`It's applied to this menu and all the items in it`}
+                  <div>
+                    <CButton
+                      loading={btnLoading}
+                      variant={ButtonType.Outlined}
+                      type="button"
+                      onClick={() => setisShowTaxSettings(true)}
+                      className="w-full"
+                    >
+                      <div className="flex justify-center items-center">
+                        Add Tax Rate
+                        <IoIosAddCircleOutline className="text-xl ml-1" />
+                      </div>
+                    </CButton>
+                  </div>
+                </div>
+                <br />
+              </>
+            ) : (
+              <>
+                <br />
+                <div className="flex justify-between items-center p-4 border rounded-md shadow-sm bg-white opacity-50 cursor-not-allowed">
+                  <div>
+                    <h3 className="font-semibold text-start text-md">
+                      Tax Rate
+                    </h3>
+                    <p className="text-gray-600 text-sm">
+                      {`It's applied to this menu and all the items in it`}
+                    </p>
+                  </div>
+                  <div>{taxRate?.salesTax} %</div>
+                </div>
+                <p className="text-gray-500 text-xs text-start">
+                  To edit / update tax rate click{" "}
+                  <span
+                    onClick={() => setisShowTaxSettings(true)}
+                    className="text-primary cursor-pointer"
+                  >
+                    here
+                  </span>
                 </p>
-              </div>
-              <div>{taxRate?.salesTax} %</div>
-            </div>
-            <p className="text-gray-500 text-xs text-start">
-              To edit / update tax rate click{" "}
-              <span
-                onClick={() => setisShowTaxSettings(true)}
-                className="text-primary cursor-pointer"
-              >
-                here
-              </span>
-            </p>
-            <br />
-                      
+                <br />
+              </>
+            )}
           </>
-        )}
+        ) : null}
 
         <CButton
           loading={btnLoading}

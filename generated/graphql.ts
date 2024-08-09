@@ -285,7 +285,7 @@ export type Category = {
   createdAt: Scalars['DateTimeISO']['output'];
   desc: MasterCommon;
   items: Array<ItemInfo>;
-  menu: Menu;
+  menu?: Maybe<Menu>;
   name: MasterCommon;
   restaurantId: Restaurant;
   status: StatusEnum;
@@ -341,12 +341,6 @@ export type CsvUploadError = {
   updatedAt: Scalars['DateTimeISO']['output'];
   user: User;
 };
-
-/** Enum to store the types of menu upload process */
-export enum CsvUploadTypeEnum {
-  AddOrUpdate = 'AddOrUpdate',
-  Replace = 'Replace'
-}
 
 export type Cuisine = {
   __typename?: 'Cuisine';
@@ -529,7 +523,7 @@ export type Item = {
   __typename?: 'Item';
   _id: Scalars['ID']['output'];
   availability?: Maybe<Array<Availability>>;
-  category: Category;
+  category?: Maybe<Category>;
   createdAt: Scalars['DateTimeISO']['output'];
   desc: MasterCommon;
   image?: Maybe<Scalars['String']['output']>;
@@ -583,14 +577,12 @@ export enum ItemOptionsEnum {
 
 export type ItemSubCategory = {
   __typename?: 'ItemSubCategory';
-  category?: Maybe<Scalars['String']['output']>;
   desc: Scalars['String']['output'];
   id?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
 };
 
 export type ItemSubCategoryInput = {
-  category?: InputMaybe<Scalars['String']['input']>;
   desc: Scalars['String']['input'];
   id?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
@@ -1368,6 +1360,11 @@ export type QueryGetConfigArgs = {
 };
 
 
+export type QueryGetCsvErrorArgs = {
+  id: Scalars['String']['input'];
+};
+
+
 export type QueryGetItemArgs = {
   id: Scalars['String']['input'];
 };
@@ -1773,8 +1770,7 @@ export type UploadCsvErrorInput = {
 
 export type UploadCsvInput = {
   csvFile: Scalars['String']['input'];
-  menuType: MenuTypeEnum;
-  uploadType?: CsvUploadTypeEnum;
+  menu: Scalars['String']['input'];
 };
 
 export type User = {
