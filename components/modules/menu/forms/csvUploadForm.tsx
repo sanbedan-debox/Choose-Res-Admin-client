@@ -637,7 +637,8 @@ const CsvUploadForm = () => {
               variant={ButtonType.Primary}
               loading={isLoading}
               onClick={nextStep}
-              disabled={isLoading || !file || !watch("menu")}
+              // disabled={isLoading || !file || !watch("menu")}
+              disabled={isLoading || !file}
             >
               Next
             </CButton>

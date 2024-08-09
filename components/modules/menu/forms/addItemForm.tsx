@@ -44,6 +44,10 @@ interface IFormInput {
   price: number;
   limit: number;
   status: boolean;
+  subCategory: {
+    value: string;
+    label: string;
+  } | null;
 }
 
 interface IOption {
@@ -51,6 +55,11 @@ interface IOption {
   _id: string;
   status: boolean;
   displayName: string;
+  desc: string;
+}
+
+interface IFormSubCatInput {
+  name: string;
   desc: string;
 }
 
@@ -72,9 +81,19 @@ const AddItemForm = () => {
     getValues,
   } = useForm<IFormInput>({});
 
+  const {
+    handleSubmit: handleAddSubSubmit,
+    formState: { errors: subCateErrors },
+    control: subCateControl,
+    setValue: setSubCateValue,
+    register: subCateRegister,
+    // getValues,
+  } = useForm<IFormSubCatInput>({});
+
   const [changesMenu, setChangesMenu] = useState<any>([]);
   const { taxRate } = useAuthStore();
-
+  const [showAddsubCategory, setisShowAddsubCategory] =
+    useState<boolean>(false);
   const [options, setOptions] = useState<IOption[]>([]);
 
   const formatOptions = (
@@ -152,7 +171,24 @@ const AddItemForm = () => {
     }[]
   >([]);
 
-  useEffect(() => {}, [visibilities]);
+  const [subCategories, setSubCategories] = useState<
+    {
+      value: string;
+      label: string;
+    }[]
+  >([]);
+  const [mainSubCategories, setMainSubCategories] = useState<
+    {
+      _id: string | null;
+      name: string;
+      desc: string;
+    }[]
+  >([]);
+  const [selectedSubCategories, setSelectedSubCategories] = useState<{
+    id: string | null;
+    name: string;
+    desc: string;
+  } | null>(null);
 
   const fetchMenuData = async () => {
     try {
@@ -242,6 +278,18 @@ const AddItemForm = () => {
           type: it.type,
         }));
         setOptions(formattedOptions);
+
+        if (item?.subCategory !== null) {
+          setSelectedSubCategories({
+            desc: item?.subCategory?.desc ?? "",
+            name: item?.subCategory?.name ?? "",
+            id: item?.subCategory?.id ?? null,
+          });
+          setValue("subCategory", {
+            label: item?.subCategory?.name ?? "",
+            value: item?.subCategory?.name ?? "",
+          });
+        }
       } catch (error) {
         const errorMessage = extractErrorMessage(error);
         setToastData({
@@ -287,6 +335,35 @@ const AddItemForm = () => {
   const [useRestaurantTimings, setUseRestaurantTimings] = useState(
     isEditItem ? false : true
   );
+
+  useEffect(() => {
+    const fetchSubCategories = async () => {
+      try {
+        const data = await sdk.getSubCategories();
+        if (data.getSubCategories.length === 0) {
+          setSubCategories([]);
+          setMainSubCategories([]);
+        } else {
+          setMainSubCategories(
+            data.getSubCategories.map((cat) => ({
+              _id: cat._id.toString(),
+              desc: cat.desc,
+              name: cat.name,
+            }))
+          );
+          const formattedSubCategories = data.getSubCategories.map((cat) => ({
+            value: cat._id,
+            label: cat.name,
+          }));
+          setSubCategories(formattedSubCategories);
+        }
+      } catch (error) {
+        console.error("Failed to fetch subcategories:", error);
+      }
+    };
+
+    fetchSubCategories();
+  }, []);
 
   useEffect(() => {
     const setTimings = async () => {
@@ -355,6 +432,7 @@ const AddItemForm = () => {
         _id: editItemId || "",
         options: options,
         priceOptions: pricingOptions,
+        subCategory: selectedSubCategories,
 
         visibility: visibilities,
         availability: formattedAvailability,
@@ -425,6 +503,7 @@ const AddItemForm = () => {
             })),
             availability: formattedAvailability,
             visibility: visibilities,
+            subCategory: selectedSubCategories,
             priceOptions: pricingOptions,
           },
           modifierGroups: selectedItemsIds,
@@ -470,6 +549,56 @@ const AddItemForm = () => {
       });
     } finally {
       setBtnLoading(false);
+    }
+  };
+  const onSubSubmit = async (data: IFormSubCatInput) => {
+    const index = subCategories.findIndex((e) => e.label === data.name);
+
+    if (index >= 0) {
+      setToastData({
+        type: "error",
+        message: `Sub category with ${data.name} is already added, please try again!`,
+      });
+      return;
+    }
+
+    try {
+      await sdk.AddSubCategory({
+        input: {
+          name: data.name,
+          desc: data.desc,
+        },
+      });
+
+      setToastData({
+        type: "success",
+        message: "Sub-Category Added Successfully",
+      });
+
+      const newSubCategory = { label: data.name, value: data.name };
+
+      setSubCategories((prev) => [...prev, newSubCategory]);
+
+      setSelectedSubCategories({
+        id: null,
+        desc: data.desc,
+        name: data.name,
+      });
+
+      setValue("subCategory", newSubCategory);
+
+      setMainSubCategories((prev) => [
+        ...prev,
+        { _id: null, category: null, name: data.name, desc: data.desc },
+      ]);
+
+      setisShowAddsubCategory(false);
+    } catch (error) {
+      setToastData({
+        type: "error",
+        message:
+          "An error occurred while adding the sub-category. Please try again.",
+      });
     }
   };
 
@@ -1046,7 +1175,59 @@ const AddItemForm = () => {
               setAvailability={setAvailability}
             />
           </div>
-
+          <div className="">
+            <label
+              htmlFor="type"
+              className="block mb-2 text-sm font-medium text-left text-gray-700"
+            >
+              Sub Category
+            </label>
+            <Controller
+              name="subCategory"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  id="subCategory"
+                  isClearable
+                  options={subCategories}
+                  onChange={(e) => {
+                    const index = mainSubCategories.findIndex(
+                      (el) => el.name === e?.label
+                    );
+                    if (index >= 0) {
+                      let item = mainSubCategories[index];
+                      setSelectedSubCategories({
+                        desc: item?.desc ?? "",
+                        name: item?.name ?? "",
+                        id: item?._id ?? null,
+                      });
+                      setValue("subCategory", {
+                        label: item?.name ?? "",
+                        value: item?.name ?? "",
+                      });
+                    } else {
+                      setSelectedSubCategories(null);
+                      setValue("subCategory", null);
+                    }
+                  }}
+                  isDisabled={subCategories.length <= 0}
+                  className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+                  classNamePrefix="react-select"
+                  placeholder="Select sub-category"
+                />
+              )}
+            />
+            <p className="text-gray-500 mt-1 text-xs text-start">
+              To add a new sub-category click{" "}
+              <span
+                onClick={() => setisShowAddsubCategory(true)}
+                className="text-primary cursor-pointer"
+              >
+                here
+              </span>
+            </p>
+          </div>
           <CButton
             loading={btnLoading}
             variant={ButtonType.Primary}
@@ -1119,6 +1300,66 @@ const AddItemForm = () => {
             Yes
           </CButton>
         </div>
+      </ReusableModal>
+      <ReusableModal
+        title="Add Sub Category"
+        isOpen={showAddsubCategory}
+        onClose={() => setisShowAddsubCategory(false)}
+      >
+        <form onSubmit={handleAddSubSubmit(onSubSubmit)}>
+          <div className="mb-1">
+            <label
+              htmlFor="name"
+              className="block mb-2 text-sm font-medium text-left text-gray-700"
+            >
+              Display Name
+            </label>
+            <input
+              type="text"
+              {...subCateRegister("name", { required: "Name is required" })}
+              id="name"
+              className="input input-primary"
+              placeholder="Enter item name"
+            />
+            <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
+              This is the name the customer will see
+            </p>
+            {subCateErrors.name && (
+              <p className="text-red-500 text-sm text-start">
+                {subCateErrors.name.message}
+              </p>
+            )}
+          </div>
+
+          <div className="mb-1">
+            <label className="block mb-2 text-sm font-medium text-left text-gray-700">
+              Description
+            </label>
+            <textarea
+              {...subCateRegister("desc", {
+                required: "Description is required",
+              })}
+              id="desc"
+              className="input input-primary"
+              placeholder="Enter item description"
+            />
+            {subCateErrors.desc && (
+              <p className="text-red-500 text-sm text-start">
+                {subCateErrors.desc.message}
+              </p>
+            )}
+          </div>
+
+          <div className="flex items-center justify-end">
+            <CButton
+              variant={ButtonType.Primary}
+              type="submit"
+              // disabled={!isSaveButtonEnabled}
+            >
+              Save
+            </CButton>
+          </div>
+        </form>
       </ReusableModal>
     </motion.div>
   );
