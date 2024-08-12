@@ -325,7 +325,6 @@ const AddModifierGroupForm = () => {
       const addedMenuIds = selectedItemsIds.filter(
         (id) => !prevSelectedMenuIds.includes(id)
       );
-      console.log(parsedMaxSelection, parsedMinSelection);
       if (parsedMaxSelection < parsedMinSelection) {
         setToastData({
           type: "error",

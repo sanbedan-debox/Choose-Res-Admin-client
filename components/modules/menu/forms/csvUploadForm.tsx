@@ -341,7 +341,6 @@ const CsvUploadForm = () => {
         }
 
         // if (errorMessage) {
-        //   console.log(errorMessage);
         //   if (!errors.find((err) => err["Item Name"] === itemNameSanitized)) {
         //     errors.push({ ...row });
         //     setErrorMessages((prev) => [...prev, errorMessage]);
@@ -900,7 +899,7 @@ const CsvUploadForm = () => {
         onClose={handleAddMenuClose}
         actionButtonLabel="Save Menu"
         // onActionButtonClick={handleAddMenuItemClick}
-        onActionButtonClick={() => console.log("hello")}
+        onActionButtonClick={() => {}}
       >
         <div className="flex justify-center">
           <AddMenuForm />

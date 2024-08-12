@@ -178,7 +178,7 @@ const User: NextPageWithLayout = () => {
         onClose={handleAddMemberModalClose}
         actionButtonLabel="Add Member"
         // onActionButtonClick={handleAddMenuItemClick}
-        onActionButtonClick={() => console.log("hello")}
+        onActionButtonClick={() => {}}
       >
         <div className="flex justify-center">
           <AddTeamMemberForm />

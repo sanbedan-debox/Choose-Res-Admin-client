@@ -54,7 +54,6 @@ const formatUserStatus = (status: UserStatus): string => {
 };
 
 const formatUserRole = (role: string): string => {
-  console.log(role);
   switch (role) {
     case "owner":
       return "Owner";
@@ -282,7 +281,7 @@ const Teams: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
         onClose={handleAddMemberModalClose}
         actionButtonLabel="Add Member"
         // onActionButtonClick={handleAddMenuItemClick}
-        onActionButtonClick={() => console.log("hello")}
+        onActionButtonClick={() =>{}}
       >
         <div className="flex justify-center">
           <AddTeamMemberForm />

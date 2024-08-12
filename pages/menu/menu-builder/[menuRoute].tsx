@@ -188,7 +188,7 @@ const MenuPage = ({ repo }: { repo?: UserRepo }) => {
         onClose={handleAddMenuItemClose}
         actionButtonLabel="Save Item"
         // onActionButtonClick={handleAddMenuItemClick}
-        onActionButtonClick={() => console.log("hello")}
+        onActionButtonClick={() =>{}}
       >
         <div className="flex justify-center">
           <AddItemForm />
@@ -199,7 +199,7 @@ const MenuPage = ({ repo }: { repo?: UserRepo }) => {
         title="Sub Category"
         onClose={handleAddSubCategoryModalclose}
         actionButtonLabel="Save SubCategory"
-        onActionButtonClick={() => console.log("hello")}
+        onActionButtonClick={() =>{}}
       >
         <div className="flex justify-center">
           <AddSubCategoryForm />
@@ -211,7 +211,7 @@ const MenuPage = ({ repo }: { repo?: UserRepo }) => {
         onClose={handleAddMenuCategoryClose}
         actionButtonLabel="Save Category"
         // onActionButtonClick={handleAddMenuItemClick}
-        onActionButtonClick={() => console.log("hello")}
+        onActionButtonClick={() =>{}}
       >
         <div className="flex justify-center">
           <AddCategoryForm />
@@ -225,7 +225,7 @@ const MenuPage = ({ repo }: { repo?: UserRepo }) => {
         onClose={handleAddMenuClose}
         actionButtonLabel="Save Menu"
         // onActionButtonClick={handleAddMenuItemClick}
-        onActionButtonClick={() => console.log("hello")}
+        onActionButtonClick={() =>{}}
       >
         <div className="flex justify-center">
           <AddMenuForm />
@@ -267,7 +267,7 @@ const MenuPage = ({ repo }: { repo?: UserRepo }) => {
         }}
         actionButtonLabel="Save Modifier Group"
         // onActionButtonClick={handleAddMenuItemClick}
-        onActionButtonClick={() => console.log("hello")}
+        onActionButtonClick={() =>{}}
       >
         <div className="flex justify-center">
           <AddModifierGroupForm />
@@ -281,7 +281,7 @@ const MenuPage = ({ repo }: { repo?: UserRepo }) => {
         onClose={handleAddModifierClose}
         actionButtonLabel="Save Modifier"
         // onActionButtonClick={handleAddMenuItemClick}
-        onActionButtonClick={() => console.log("hello")}
+        onActionButtonClick={() =>{}}
       >
         <div className="flex justify-center">
           <AddModifierForm />

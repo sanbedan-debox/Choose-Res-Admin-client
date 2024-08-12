@@ -183,7 +183,6 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     if (taxRate) {
       setIsSaveButtonEnabled(hasChanges);
 
-      console.log(currentFormValues);
       setButtonTitle("Update");
 
       setIsButtonVisible(true);
