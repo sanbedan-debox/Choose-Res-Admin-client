@@ -35,7 +35,7 @@ const loadOptions = (
 ) => {
   sdk.AllPlaces({ input: inputValue }).then((d) => {
     callback(
-      d.getPlacesList.map((el) => ({
+      d.getPlacesList.map((el: { displayName: string; placeId: string }) => ({
         label: el.displayName,
         value: el.placeId,
       }))

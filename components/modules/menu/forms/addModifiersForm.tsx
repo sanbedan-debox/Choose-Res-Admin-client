@@ -18,6 +18,7 @@ import { IoIosAddCircleOutline } from "react-icons/io";
 import { RiEditCircleLine } from "react-icons/ri";
 import CustomSwitch from "@/components/common/customSwitch/customSwitch";
 import ReusableModal from "@/components/common/modal/modal";
+import { MenuTypeEnum } from "@/generated/graphql";
 
 interface IFormInput {
   isItemFromMenu: boolean;
@@ -77,13 +78,24 @@ const AddModifierForm = () => {
   const fetchItems = async () => {
     try {
       const response = await sdk.getItems();
-      const formattedItems = response.getItems.map((item: any) => ({
-        _id: item._id,
-        name: item.name,
-        desc: item.desc,
-        price: item.price,
-        priceOptions: item.priceOptions,
-      }));
+      const formattedItems = response.getItems.map(
+        (item: {
+          _id: string;
+          name: string;
+          desc: string;
+          price: number;
+          priceOptions: {
+            price: number;
+            menuType: MenuTypeEnum;
+          }[];
+        }) => ({
+          _id: item._id,
+          name: item.name,
+          desc: item.desc,
+          price: item.price,
+          priceOptions: item.priceOptions,
+        })
+      );
       setItemOptions(formattedItems);
     } catch (error) {
       const errorMessage = extractErrorMessage(error);
@@ -98,19 +110,20 @@ const AddModifierForm = () => {
     if (editModId && (isEditMod || isDuplicateMods)) {
       try {
         const response = await sdk.getModifier({ id: editModId });
-        const item = response.getModifier;
-        setChangesModifiers(item);
-
-        setValue("name", item.name);
-        const nameDup = generateUniqueName(item?.name);
-        if (isDuplicateMods) {
-          setValue("name", nameDup);
+        if (response && response.getModifier) {
+          const { name, desc, preSelect, isItem, price } = response.getModifier;
+          setChangesModifiers(response.getModifier);
+          setValue("name", name);
+          const nameDup = generateUniqueName(name);
+          if (isDuplicateMods) {
+            setValue("name", nameDup);
+          }
+          setValue("desc", desc);
+          setValue("preSelect", preSelect);
+          setValue("isItemFromMenu", isItem);
+          setIsItemFromMenu(isItem);
+          setValue("price", price);
         }
-        setValue("desc", item.desc);
-        setValue("preSelect", item.preSelect);
-        setValue("isItemFromMenu", item.isItem);
-        setIsItemFromMenu(item.isItem);
-        setValue("price", item.price);
       } catch (error) {
         const errorMessage = extractErrorMessage(error);
         setToastData({

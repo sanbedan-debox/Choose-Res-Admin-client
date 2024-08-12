@@ -70,7 +70,7 @@ const CsvUploadForm = () => {
     const fetchHeaders = async () => {
       try {
         const headersResp = await sdk.getCSVHeaders();
-        if (headersResp.getCsvHeaders.length > 0) {
+        if (headersResp && headersResp.getCsvHeaders.length > 0) {
           setExpectedHeaders(headersResp.getCsvHeaders);
         }
       } catch (error: any) {

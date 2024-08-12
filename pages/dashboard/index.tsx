@@ -90,13 +90,15 @@ const Dashboard: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
     async function fetchPendingRestaurants() {
       try {
         const response = await sdk.getUserRestaurantsPending();
-        const restaurantsIncomplete = response.getUserRestaurantsPending.map(
-          (res) => ({
-            name: res.name,
-            id: res.id,
-          })
-        );
-        setRestaurants(restaurantsIncomplete);
+        if (response && response.getUserRestaurantsPending) {
+          const restaurantsIncomplete = response.getUserRestaurantsPending.map(
+            (res: { name: string; id: string }) => ({
+              name: res.name,
+              id: res.id,
+            })
+          );
+          setRestaurants(restaurantsIncomplete);
+        }
       } catch (error) {
         console.error("Failed to fetch pending restaurants:", error);
       }

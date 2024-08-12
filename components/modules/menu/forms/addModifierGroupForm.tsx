@@ -111,13 +111,15 @@ const AddModifierGroupForm = () => {
       try {
         const items = await sdk.getModifiersforGroupDropDown();
         if (items && items.getModifiers) {
-          const formattedItemsList = items.getModifiers.map((item) => ({
-            _id: item?._id,
-            name: item?.name,
-            price: item?.price,
-          }));
+          const formattedItemsList = items.getModifiers.map(
+            (item: { _id: string; name: string; price: number }) => ({
+              _id: item?._id,
+              name: item?.name,
+              price: item?.price,
+            })
+          );
           const filteredItemsList = formattedItemsList.filter(
-            (item) =>
+            (item: { _id: string }) =>
               !selectedItems.some(
                 (selectedItem) => selectedItem._id === item._id
               )
@@ -144,41 +146,54 @@ const AddModifierGroupForm = () => {
       if (editModGroupId && (isEditModGroup || isDuplicateModifierGroup)) {
         try {
           const response = await sdk.getModifierGroup({ id: editModGroupId });
-          const item = response.getModifierGroup;
-          setChangesMenu(response.getModifierGroup);
+          if (response && response.getModifierGroup) {
+            const {
+              name,
+              maxSelections,
+              modifiers,
+              minSelections,
+              desc,
+              price,
+              pricingType,
+              optional,
+            } = response.getModifierGroup;
+            setChangesMenu(response.getModifierGroup);
 
-          setValue("name", item.name);
-          const nameDup = generateUniqueName(item?.name);
-          if (isDuplicateModifierGroup) {
-            setValue("name", nameDup);
+            setValue("name", name);
+            const nameDup = generateUniqueName(name);
+            if (isDuplicateModifierGroup) {
+              setValue("name", nameDup);
+            }
+
+            setValue("minSelections", minSelections);
+            setValue("maxSelections", maxSelections);
+
+            setMinSelection(minSelections);
+            setMaxSelection(maxSelections);
+            setValue("desc", desc || "");
+            setValue("commonPrice", price ?? 0);
+            setValue("optional", optional ?? false);
+            const selectedPriceType = PricingTypeOptions.find(
+              (option) => option.value === pricingType
+            );
+            setValue(
+              "pricingType",
+              selectedPriceType || PriceTypeEnum.FreeOfCharge
+            );
+            const formateditemlist = modifiers.map(
+              (el: { id: string; name: string; price: number }) => ({
+                _id: el?.id,
+                name: el?.name ?? "",
+                price: el?.price ?? "",
+              })
+            );
+            setMaxSelectionsCount(maxSelections);
+            setMinSelectionsCount(minSelections);
+            setModifiersLength(formateditemlist.length || 0);
+            setSelectedItems(formateditemlist || []);
+            setTempSelectedItems(formateditemlist);
+            setprevItemsbfrEdit(formateditemlist);
           }
-
-          setValue("minSelections", item?.minSelections);
-          setValue("maxSelections", item.maxSelections);
-
-          setMinSelection(item?.minSelections);
-          setMaxSelection(item.maxSelections);
-          setValue("desc", item?.desc || "");
-          setValue("commonPrice", item?.price || 0);
-          setValue("optional", item.optional || false);
-          const selectedPriceType = PricingTypeOptions.find(
-            (option) => option.value === item?.pricingType
-          );
-          setValue(
-            "pricingType",
-            selectedPriceType || PriceTypeEnum.FreeOfCharge
-          );
-          const formateditemlist = item?.modifiers.map((el) => ({
-            _id: el?.id,
-            name: el?.name ?? "",
-            price: el?.price ?? "",
-          }));
-          setMaxSelectionsCount(item.maxSelections);
-          setMinSelectionsCount(item.minSelections);
-          setModifiersLength(formateditemlist.length || 0);
-          setSelectedItems(formateditemlist || []);
-          setTempSelectedItems(formateditemlist);
-          setprevItemsbfrEdit(formateditemlist);
         } catch (error) {
           const errorMessage = extractErrorMessage(error);
           setToastData({

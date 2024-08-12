@@ -85,7 +85,7 @@ const Signup: FC = () => {
     try {
       const response = await sdk.addUser({ input });
 
-      if (response.addUser) {
+      if (response && response.addUser) {
         setEmailOtpVerifyKey(response.addUser);
         setToastData({ message: "Signup Successful", type: "success" });
 
@@ -140,7 +140,7 @@ const Signup: FC = () => {
 
       const response = await sdk.verifyUserDetails({ input });
 
-      if (response.verifyUserDetails) {
+      if (response && response.verifyUserDetails) {
         setShowModal(false);
         setToastData({ message: "Verification Successful", type: "success" });
         router.replace("/onboarding/user/intro");

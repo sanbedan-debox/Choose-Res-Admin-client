@@ -132,15 +132,25 @@ const Teams: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
       const response = await sdk.getTeamMembers();
       if (response && response?.getTeamMembers) {
         setTeamMembers(
-          response?.getTeamMembers?.map((el) => ({
-            _id: el?._id?._id ?? "",
-            firstName: el?.firstName ?? "",
-            lastName: el?.lastName ?? "",
-            email: el?.email ?? "",
-            phone: el?.phone ?? "",
-            role: el?.role ?? "",
-            onboardingStatus: el?.status ?? "",
-          }))
+          response?.getTeamMembers?.map(
+            (el: {
+              firstName: string;
+              lastName: string;
+              email: string;
+              phone: string;
+              role: string;
+              status: string;
+              _id?: { _id: string } | null;
+            }) => ({
+              _id: el?._id?._id ?? "",
+              firstName: el?.firstName ?? "",
+              lastName: el?.lastName ?? "",
+              email: el?.email ?? "",
+              phone: el?.phone ?? "",
+              role: el?.role ?? "",
+              onboardingStatus: el?.status ?? "",
+            })
+          )
         );
       }
     } catch (error: any) {

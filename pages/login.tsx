@@ -95,9 +95,7 @@ const Login: FC = () => {
   };
 
   const resendOtp = async () => {
-    // reset();
     await onSubmit({ email });
-    // reset();
     setOtp("");
     setToastData({ message: "OTP Sent Successfully", type: "success" });
   };
@@ -113,7 +111,7 @@ const Login: FC = () => {
 
       const response = await sdk.VerifyOtpForLogin(variables);
 
-      if (response) {
+      if (response && response.verifyOtpForLogin) {
         setBtnLoading(false);
 
         setShowModal(false);

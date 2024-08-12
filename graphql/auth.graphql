@@ -39,6 +39,7 @@ query MeUser {
     }
   }
 }
+
 # Query to verify OTP for login
 query VerifyOtpForLogin($key: String!, $input: String!, $otp: String!) {
   verifyOtpForLogin(key: $key, input: $input, otp: $otp)

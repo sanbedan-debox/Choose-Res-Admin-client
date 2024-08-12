@@ -110,13 +110,13 @@ const AddCategoryForm = () => {
     const setTimings = async () => {
       try {
         const response = await sdk.getRestaurantDetails();
-        const restaurantAvailibility =
-          response.getRestaurantDetails?.availability;
-        if (restaurantAvailibility) {
-          const originalAvailability = reverseFormatAvailability(
-            restaurantAvailibility
-          );
-          setAvailability(originalAvailability);
+        if (response && response.getRestaurantDetails) {
+          const { availability } = response.getRestaurantDetails;
+          if (availability) {
+            const originalAvailability =
+              reverseFormatAvailability(availability);
+            setAvailability(originalAvailability);
+          }
         }
       } catch (error) {
         setToastData({
@@ -140,17 +140,22 @@ const AddCategoryForm = () => {
   const fetchMenuData = async () => {
     try {
       const response = await sdk.getMenuByRestaurant();
-      const menuItems = response.getMenuByRestaurant.map((menu) => ({
-        name: menu.name,
-        type: menu.type,
-      }));
 
-      const updatedVisibilities = menuItems.map((menu) => ({
-        menuType: menu.type,
-        status: StatusEnum.Inactive as StatusEnum,
-      }));
+      if (response && response.getMenuByRestaurant) {
+        const menuItems = response.getMenuByRestaurant.map(
+          (menu: { name: string; type: MenuTypeEnum }) => ({
+            name: menu.name,
+            type: menu.type,
+          })
+        );
 
-      setVisibilities(updatedVisibilities);
+        const updatedVisibilities = menuItems.map((menu) => ({
+          menuType: menu.type,
+          status: StatusEnum.Inactive as StatusEnum,
+        }));
+
+        setVisibilities(updatedVisibilities);
+      }
     } catch (error) {
       console.error("Error fetching menu data:", error);
     }
@@ -160,32 +165,36 @@ const AddCategoryForm = () => {
     if (editCatsId && (isEditCats || isDuplicateCats)) {
       try {
         const response = await sdk.getCategory({ id: editCatsId });
-        const item = response.getCategory;
-        setChangesMenu(response.getCategory);
-        setValue("name", item.name);
-        const nameDup = generateUniqueName(item?.name);
-        if (isDuplicateCats) {
-          setValue("name", nameDup);
+
+        if (response && response.getCategory) {
+          const { name, desc, items, status, visibility, availability } =
+            response.getCategory;
+
+          setChangesMenu(response.getCategory);
+          setValue("name", name);
+          const nameDup = generateUniqueName(name);
+          if (isDuplicateCats) {
+            setValue("name", nameDup);
+          }
+          setValue("description", desc);
+          const formateditemlist = items.map((el) => ({
+            _id: el.id,
+            name: el?.name ?? "",
+            price: el?.price ?? "",
+            image: el?.image ?? "",
+          }));
+          setValue("status", status === StatusEnum.Active ? true : false);
+          setVisibilities(visibility);
+          if (availability) {
+            const originalAvailability =
+              reverseFormatAvailability(availability);
+            setAvailability(originalAvailability);
+          }
+          setIncomingVisibilities(visibility);
+          setSelectedItems(formateditemlist);
+          setTempSelectedItems(formateditemlist);
+          setprevItemsbfrEdit(formateditemlist);
         }
-        setValue("description", item.desc);
-        const formateditemlist = item?.items.map((el) => ({
-          _id: el.id,
-          name: el?.name ?? "",
-          price: el?.price ?? "",
-          image: el?.image ?? "",
-        }));
-        setValue("status", item.status === StatusEnum.Active ? true : false);
-        setVisibilities(item.visibility);
-        if (item?.availability) {
-          const originalAvailability = reverseFormatAvailability(
-            item?.availability
-          );
-          setAvailability(originalAvailability);
-        }
-        setIncomingVisibilities(item.visibility);
-        setSelectedItems(formateditemlist);
-        setTempSelectedItems(formateditemlist);
-        setprevItemsbfrEdit(formateditemlist);
       } catch (error) {
         const errorMessage = extractErrorMessage(error);
         setToastData({
@@ -330,12 +339,19 @@ const AddCategoryForm = () => {
           value: "active",
         });
         if (items && items.getItems) {
-          const formattedItemsList = items.getItems.map((item) => ({
-            _id: item._id || "",
-            name: item?.name || "",
-            price: item?.price || 0,
-            image: item?.image || "",
-          }));
+          const formattedItemsList = items.getItems.map(
+            (item: {
+              _id: string;
+              name: string;
+              price: number;
+              image?: string | null;
+            }) => ({
+              _id: item._id ?? "",
+              name: item?.name ?? "",
+              price: item?.price ?? 0,
+              image: item?.image ?? "",
+            })
+          );
           const filteredItemsList = formattedItemsList.filter(
             (item) =>
               !selectedItems.some(
@@ -479,29 +495,37 @@ const AddCategoryForm = () => {
   ];
 
   const handleRemoveCategory = async () => {
-    setSelectedItems((prevSelected) =>
-      prevSelected.filter((item) => item._id !== removingId)
-    );
-
-    setTempSelectedItems((prevSelected) =>
-      prevSelected.filter((item) => item._id !== removingId)
-    );
-
-    const isPresentInPrevItems = prevItemsbfrEdit.some(
-      (item) => item._id === removingId
-    );
-
-    if (isEditCats && isPresentInPrevItems) {
-      const res = await sdk.removeItemFromCategory({
-        categoryId: editCatsId || "",
-        itemId: removingId,
-      });
-
-      setprevItemsbfrEdit((prevSelected) =>
+    try {
+      setSelectedItems((prevSelected) =>
         prevSelected.filter((item) => item._id !== removingId)
       );
+
+      setTempSelectedItems((prevSelected) =>
+        prevSelected.filter((item) => item._id !== removingId)
+      );
+
+      const isPresentInPrevItems = prevItemsbfrEdit.some(
+        (item) => item._id === removingId
+      );
+
+      if (isEditCats && isPresentInPrevItems) {
+        const res = await sdk.removeItemFromCategory({
+          categoryId: editCatsId || "",
+          itemId: removingId,
+        });
+
+        setprevItemsbfrEdit((prevSelected) =>
+          prevSelected.filter((item) => item._id !== removingId)
+        );
+      }
+      setConfirmationRemoval(false);
+    } catch (error) {
+      const errorMessage = extractErrorMessage(error);
+      setToastData({
+        type: "error",
+        message: errorMessage,
+      });
     }
-    setConfirmationRemoval(false);
   };
 
   return (

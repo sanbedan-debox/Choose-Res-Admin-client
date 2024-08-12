@@ -6,11 +6,9 @@ import useRestaurantsStore from "@/store/restaurant";
 import { useForm, Controller } from "react-hook-form";
 import ReusableModal from "../common/modal/modal";
 import useGlobalStore from "@/store/global";
-import CustomSwitch from "../common/customSwitch/customSwitch";
 import CButton from "../common/button/button";
 import { ButtonType } from "../common/button/interface";
 import useAuthStore from "@/store/auth";
-import { useRouter } from "next/router";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -31,7 +29,29 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     },
   });
 
-  const [isSwitchChecked, setIsSwitchChecked] = useState(false);
+  useEffect(() => {
+    fetchRestaurantUsers();
+  }, []);
+
+  const { isShowTaxSettings, setisShowTaxSettings } = useGlobalStore();
+
+  const {
+    setRestaurants,
+    setSelectedRestaurant,
+    setSelectedRestaurantTaxRateId,
+    selectedRestaurantId,
+    setSelectedRestaurantId,
+  } = useRestaurantsStore();
+
+  const handleCloseTaxSettings = () => {
+    setisShowTaxSettings(false);
+  };
+
+  const { setTaxRate, taxRate } = useAuthStore();
+
+  const [existingTaxRateId, setExistingTaxRateId] = useState<string | null>(
+    null
+  );
 
   const onSubmit = async (data: any) => {
     try {
@@ -69,7 +89,6 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           type: "success",
         });
       }
-      // router.reload();
       fetchRestaurantUsers();
       setisShowTaxSettings(false);
     } catch (error) {
@@ -78,20 +97,6 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     }
   };
 
-  const {
-    setRestaurants,
-    setSelectedRestaurant,
-    setSelectedRestaurantTaxRateId,
-    selectedRestaurantId,
-    setSelectedRestaurantId,
-  } = useRestaurantsStore();
-
-  const { setTaxRate, taxRate } = useAuthStore();
-
-  const router = useRouter();
-  const [existingTaxRateId, setExistingTaxRateId] = useState<string | null>(
-    null
-  );
   const fetchRestaurantUsers = async () => {
     try {
       const response = await sdk.getUserRestaurants();
@@ -104,17 +109,20 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         try {
           const res = await sdk.getRestaurantDetails();
           if (res?.getRestaurantDetails) {
-            const restaurantDetails = res.getRestaurantDetails;
+            const { name, _id, taxRates } = res.getRestaurantDetails;
 
-            setSelectedRestaurant(restaurantDetails.name || "");
-            setSelectedRestaurantId(restaurantDetails._id || "");
+            setSelectedRestaurant(name || "");
+            setSelectedRestaurantId(_id || "");
 
-            const taxRates = restaurantDetails.taxRates ?? null;
             if (taxRates && taxRates.length > 0) {
-              const existingTaxRate = taxRates[0];
+              const existingTaxRate: {
+                _id: string;
+                name: string;
+                salesTax: number;
+              } = taxRates[0];
 
-              setValue("name", existingTaxRate.name || "");
-              setValue("salesTax", existingTaxRate.salesTax.toString() || "");
+              setValue("name", existingTaxRate.name ?? "");
+              setValue("salesTax", existingTaxRate.salesTax.toString() ?? "");
 
               setSelectedRestaurantTaxRateId(existingTaxRate._id);
               setIsSaveButtonEnabled(false);
@@ -127,11 +135,13 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               setIsButtonVisible(true);
             }
             if (taxRates) {
-              const formattedTaxRate = taxRates.map((rate) => ({
-                id: rate._id,
-                name: rate.name,
-                salesTax: rate.salesTax,
-              }));
+              const formattedTaxRate = taxRates.map(
+                (rate: { _id: string; name: string; salesTax: number }) => ({
+                  id: rate._id,
+                  name: rate.name,
+                  salesTax: rate.salesTax,
+                })
+              );
               setTaxRate(formattedTaxRate[0]);
             }
           } else {
@@ -178,16 +188,6 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
       setIsButtonVisible(true);
     }
-  };
-
-  useEffect(() => {
-    fetchRestaurantUsers();
-  }, []);
-
-  const { isShowTaxSettings, setisShowTaxSettings } = useGlobalStore();
-
-  const handleCloseTaxSettings = () => {
-    setisShowTaxSettings(false);
   };
 
   return (

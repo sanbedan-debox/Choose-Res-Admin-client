@@ -14,6 +14,7 @@ import {
   Day,
   ItemOptionsEnum,
   MenuTypeEnum,
+  PriceTypeEnum,
   StatusEnum,
 } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
@@ -191,24 +192,28 @@ const AddItemForm = () => {
   const fetchMenuData = async () => {
     try {
       const response = await sdk.getMenuByRestaurant();
-      const menuItems = response.getMenuByRestaurant.map((menu) => ({
-        name: menu.name,
-        type: menu.type,
-      }));
+      if (response && response.getMenuByRestaurant) {
+        const menuItems = response.getMenuByRestaurant.map(
+          (menu: { name: string; type: MenuTypeEnum }) => ({
+            name: menu.name,
+            type: menu.type,
+          })
+        );
 
-      const updatedVisibilities = menuItems.map((menu) => ({
-        menuType: menu.type,
-        status: StatusEnum.Inactive as StatusEnum,
-      }));
+        const updatedVisibilities = menuItems.map((menu) => ({
+          menuType: menu.type,
+          status: StatusEnum.Inactive as StatusEnum,
+        }));
 
-      const updatedPricings = menuItems.map((menu) => ({
-        menuType: menu.type,
-        price: parseFloat(watch("price").toString()),
-      }));
+        const updatedPricings = menuItems.map((menu) => ({
+          menuType: menu.type,
+          price: parseFloat(watch("price").toString()),
+        }));
 
-      setVisibilities(updatedVisibilities);
+        setVisibilities(updatedVisibilities);
 
-      setPricingOptions(updatedPricings);
+        setPricingOptions(updatedPricings);
+      }
     } catch (error) {
       console.error("Error fetching menu data:", error);
     }
@@ -231,58 +236,82 @@ const AddItemForm = () => {
     if (editItemId && (isEditItem || isDuplicateItem)) {
       try {
         const response = await sdk.getItem({ id: editItemId });
-        const item = response.getItem;
-        setChangesMenu(response.getItem);
-        const nameDup = generateUniqueName(item?.name);
-        setValue("name", item.name);
-        if (isDuplicateItem) {
-          setValue("name", nameDup);
-        }
-        setValue("desc", item.desc);
-        setValue("status", item.status === StatusEnum.Active ? true : false);
-        setValue("price", item.price);
+        if (response && response.getItem) {
+          const {
+            name,
+            desc,
+            status,
+            price,
+            orderLimit,
+            visibility,
+            priceOptions,
+            availability,
+            image,
+            modifierGroup,
+            options,
+            subCategory,
+          } = response.getItem;
+          setChangesMenu(response.getItem);
+          const nameDup = generateUniqueName(name);
+          setValue("name", name);
+          if (isDuplicateItem) {
+            setValue("name", nameDup);
+          }
+          setValue("desc", desc);
+          setValue("status", status === StatusEnum.Active ? true : false);
+          setValue("price", price);
 
-        if (item?.orderLimit) {
-          setValue("limit", item?.orderLimit);
-        }
+          if (orderLimit) {
+            setValue("limit", orderLimit);
+          }
 
-        setVisibilities(item.visibility);
-        setPricingOptions(item?.priceOptions);
+          setVisibilities(visibility);
+          setPricingOptions(priceOptions);
 
-        const formateditemlist = item?.modifierGroup.map((el) => ({
-          _id: el?.id,
-          name: el?.name ?? "",
-        }));
-        setSelectedItems(formateditemlist);
-        setTempSelectedItems(formateditemlist);
-        setprevItemsbfrEdit(formateditemlist);
-
-        setPreviewUrl(item.image || "");
-        if (item?.availability) {
-          const originalAvailability = reverseFormatAvailability(
-            item?.availability
+          const formateditemlist = modifierGroup.map(
+            (el: { name: string; pricingType: PriceTypeEnum; id: string }) => ({
+              _id: el?.id,
+              name: el?.name ?? "",
+            })
           );
-          setAvailability(originalAvailability);
-        }
-        const formattedOptions: IOption[] = item?.options.map((it) => ({
-          _id: it._id,
-          desc: it.desc,
-          displayName: it.displayName,
-          status: it.status,
-          type: it.type,
-        }));
-        setOptions(formattedOptions);
+          setSelectedItems(formateditemlist);
+          setTempSelectedItems(formateditemlist);
+          setprevItemsbfrEdit(formateditemlist);
 
-        if (item?.subCategory !== null) {
-          setSelectedSubCategories({
-            desc: item?.subCategory?.desc ?? "",
-            name: item?.subCategory?.name ?? "",
-            id: item?.subCategory?.id ?? null,
-          });
-          setValue("subCategory", {
-            label: item?.subCategory?.name ?? "",
-            value: item?.subCategory?.name ?? "",
-          });
+          setPreviewUrl(image || "");
+          if (availability) {
+            const originalAvailability =
+              reverseFormatAvailability(availability);
+            setAvailability(originalAvailability);
+          }
+          const formattedOptions: IOption[] = options.map(
+            (it: {
+              _id: string;
+              desc: string;
+              displayName: string;
+              status: boolean;
+              type: ItemOptionsEnum;
+            }) => ({
+              _id: it._id,
+              desc: it.desc,
+              displayName: it.displayName,
+              status: it.status,
+              type: it.type,
+            })
+          );
+          setOptions(formattedOptions);
+
+          if (subCategory !== null) {
+            setSelectedSubCategories({
+              desc: subCategory?.desc ?? "",
+              name: subCategory?.name ?? "",
+              id: subCategory?.id ?? null,
+            });
+            setValue("subCategory", {
+              label: subCategory?.name ?? "",
+              value: subCategory?.name ?? "",
+            });
+          }
         }
       } catch (error) {
         const errorMessage = extractErrorMessage(error);
@@ -298,7 +327,7 @@ const AddItemForm = () => {
     const fetchOptions = async () => {
       try {
         const optsResp = await sdk.getAllItemOptions();
-        if (optsResp.getAllItemOptions.length > 0) {
+        if (optsResp && optsResp.getAllItemOptions.length > 0) {
           setOptions(formatOptions(optsResp.getAllItemOptions));
         }
       } catch (error: any) {
@@ -334,16 +363,15 @@ const AddItemForm = () => {
     const fetchSubCategories = async () => {
       try {
         const data = await sdk.getSubCategories();
-        if (data.getSubCategories.length === 0) {
-          setSubCategories([]);
-          setMainSubCategories([]);
-        } else {
+        if (data && data.getSubCategories) {
           setMainSubCategories(
-            data.getSubCategories.map((cat) => ({
-              _id: cat._id.toString(),
-              desc: cat.desc,
-              name: cat.name,
-            }))
+            data.getSubCategories.map(
+              (cat: { _id: string; desc: string; name: string }) => ({
+                _id: cat._id.toString(),
+                desc: cat.desc,
+                name: cat.name,
+              })
+            )
           );
           const formattedSubCategories = data.getSubCategories.map((cat) => ({
             value: cat._id,
@@ -363,13 +391,13 @@ const AddItemForm = () => {
     const setTimings = async () => {
       try {
         const response = await sdk.getRestaurantDetails();
-        const restaurantAvailibility =
-          response.getRestaurantDetails?.availability;
-        if (restaurantAvailibility) {
-          const originalAvailability = reverseFormatAvailability(
-            restaurantAvailibility
-          );
-          setAvailability(originalAvailability);
+        if (response && response.getRestaurantDetails) {
+          const { availability } = response.getRestaurantDetails;
+          if (availability) {
+            const originalAvailability =
+              reverseFormatAvailability(availability);
+            setAvailability(originalAvailability);
+          }
         }
       } catch (error) {
         setToastData({
@@ -595,11 +623,17 @@ const AddItemForm = () => {
       try {
         const items = await sdk.getModifierGroupsforItemsDropDown();
         if (items && items.getModifierGroups) {
-          const formattedItemsList = items.getModifierGroups.map((item) => ({
-            _id: item._id || "",
-            name: item?.name || "",
-            length: item?.modifiers?.length || 0,
-          }));
+          const formattedItemsList = items.getModifierGroups.map(
+            (item: {
+              _id: string;
+              name: string;
+              modifiers: { name: string }[];
+            }) => ({
+              _id: item._id || "",
+              name: item?.name || "",
+              length: item?.modifiers?.length || 0,
+            })
+          );
           const filteredItemsList = formattedItemsList.filter(
             (item) =>
               !selectedItems.some(
@@ -682,7 +716,7 @@ const AddItemForm = () => {
 
     if (isEditItem && isPresentInPrevItems) {
       try {
-        const res = await sdk.removeModifierGroupFromItem({
+        await sdk.removeModifierGroupFromItem({
           modifierGroupId: remmovingId,
           itemId: editItemId || "",
         });

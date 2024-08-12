@@ -101,13 +101,13 @@ const AddMenuForm = () => {
     const setTimings = async () => {
       try {
         const response = await sdk.getRestaurantDetails();
-        const restaurantAvailibility =
-          response.getRestaurantDetails?.availability;
-        if (restaurantAvailibility) {
-          const originalAvailability = reverseFormatAvailability(
-            restaurantAvailibility
-          );
-          setAvailability(originalAvailability);
+        if (response && response.getRestaurantDetails) {
+          const { availability } = response.getRestaurantDetails;
+          if (availability) {
+            const originalAvailability =
+              reverseFormatAvailability(availability);
+            setAvailability(originalAvailability);
+          }
         }
       } catch (error) {
         setToastData({
@@ -179,7 +179,7 @@ const AddMenuForm = () => {
           message: "Menu Added Successfully",
         });
       } else {
-        const res = await sdk.updateMenu({
+        await sdk.updateMenu({
           input: updateInput,
         });
 
@@ -237,10 +237,12 @@ const AddMenuForm = () => {
           value: "",
         });
         if (categories && categories.getCategories) {
-          const formattedItemsList = categories.getCategories.map((cats) => ({
-            _id: cats._id,
-            name: cats?.name,
-          }));
+          const formattedItemsList = categories.getCategories.map(
+            (cats: { name: string; _id: string }) => ({
+              _id: cats._id,
+              name: cats?.name,
+            })
+          );
           const filteredItemsList = formattedItemsList.filter(
             (item) =>
               !selectedItems.some(
@@ -365,33 +367,35 @@ const AddMenuForm = () => {
       if (editMenuId && (isEditMenu || isDuplicateMenu)) {
         try {
           const response = await sdk.getMenusByType({ id: editMenuId });
-          const menu = response.getMenusByType;
-          setChangesMenu(response.getMenusByType);
-          const nameDup = generateUniqueName(menu[0]?.name);
-          setValue("name", menu[0].name);
-          if (isDuplicateMenu) {
-            setValue("name", nameDup);
-          }
-          const selectedMenuType = menuTypeOptions.find(
-            (option) => option.value === menu[0]?.type
-          );
-          setValue("type", selectedMenuType);
-
-          const formateditemlist = menu[0]?.categories.map((el) => ({
-            _id: el._id._id,
-            name: el?.name ?? "",
-            length: 0,
-          }));
-          if (menu[0]?.availability) {
-            const originalAvailability = reverseFormatAvailability(
-              menu[0]?.availability
+          if (response && response.getMenusByType) {
+            const menu = response.getMenusByType;
+            setChangesMenu(response.getMenusByType);
+            const nameDup = generateUniqueName(menu[0]?.name);
+            setValue("name", menu[0].name);
+            if (isDuplicateMenu) {
+              setValue("name", nameDup);
+            }
+            const selectedMenuType = menuTypeOptions.find(
+              (option) => option.value === menu[0]?.type
             );
-            setAvailability(originalAvailability);
+            setValue("type", selectedMenuType);
+
+            const formateditemlist = menu[0]?.categories.map((el) => ({
+              _id: el._id._id,
+              name: el?.name ?? "",
+              length: 0,
+            }));
+            if (menu[0]?.availability) {
+              const originalAvailability = reverseFormatAvailability(
+                menu[0]?.availability
+              );
+              setAvailability(originalAvailability);
+            }
+            setSelectedItems(formateditemlist);
+            setTempSelectedItems(formateditemlist);
+            setprevItemsbfrEdit(formateditemlist);
+            setIncomingTaxId(menu[0]?.taxes?._id || "");
           }
-          setSelectedItems(formateditemlist);
-          setTempSelectedItems(formateditemlist);
-          setprevItemsbfrEdit(formateditemlist);
-          setIncomingTaxId(menu[0]?.taxes?._id || "");
         } catch (error) {
           const errorMessage = extractErrorMessage(error);
           setToastData({

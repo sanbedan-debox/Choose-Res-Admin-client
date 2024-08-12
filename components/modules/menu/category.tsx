@@ -30,13 +30,21 @@ const Categories: React.FC = () => {
       const response = await sdk.getCategories();
       if (response && response.getCategories) {
         setCats(
-          response.getCategories.map((el) => ({
-            desc: el.desc,
-            items: el.items.length,
-            name: el.name,
-            _id: el._id,
-            status: el.status,
-          }))
+          response.getCategories.map(
+            (el: {
+              desc: string;
+              name: string;
+              _id: string;
+              status: string;
+              items: any[];
+            }) => ({
+              desc: el.desc,
+              items: el.items.length,
+              name: el.name,
+              _id: el._id,
+              status: el.status,
+            })
+          )
         );
       }
     } catch (error: any) {
@@ -173,7 +181,7 @@ const Categories: React.FC = () => {
       if (response && response.deleteCategory) {
         fetchCategories();
       }
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage = extractErrorMessage(error);
       setToastData({
         type: "error",

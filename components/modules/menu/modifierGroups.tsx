@@ -29,11 +29,13 @@ const Modifiers: React.FC = () => {
       const response = await sdk.getModifierGroups();
       if (response && response.getModifierGroups) {
         setModifierGroups(
-          response.getModifierGroups.map((el) => ({
-            _id: el?._id,
-            name: el?.name,
-            status: el?.status,
-          }))
+          response.getModifierGroups.map(
+            (el: { _id: string; name: string; status: StatusEnum }) => ({
+              _id: el?._id,
+              name: el?.name,
+              status: el?.status,
+            })
+          )
         );
       }
     } catch (error: any) {

@@ -91,45 +91,47 @@ const RestaurantAvailability = () => {
   async function fetchBusinessDetails() {
     try {
       const response = await sdk.getBusinessDetails();
-      const businessDetails = response.getBusinessDetails.address;
+      if (response && response.getBusinessDetails) {
+        const { address } = response.getBusinessDetails;
 
-      setValue("addressLine1", businessDetails?.addressLine1 || "");
-      setAddressLine1(businessDetails?.addressLine1 || "");
+        setValue("addressLine1", address?.addressLine1 || "");
+        setAddressLine1(address?.addressLine1 || "");
 
-      setValue("addressLine2", businessDetails?.addressLine2 || "");
-      setAddressLine2(businessDetails?.addressLine2 || "");
+        setValue("addressLine2", address?.addressLine2 || "");
+        setAddressLine2(address?.addressLine2 || "");
 
-      setValue("city", businessDetails?.city || "");
-      setCity(businessDetails?.city || "");
+        setValue("city", address?.city || "");
+        setCity(address?.city || "");
 
-      setValue("state", {
-        id: businessDetails?.state?.stateId || "",
-        value: businessDetails?.state?.stateName || "",
-      });
-      setState({
-        id: businessDetails?.state?.stateId || "",
-        value: businessDetails?.state?.stateName || "",
-      });
+        setValue("state", {
+          id: address?.state?.stateId || "",
+          value: address?.state?.stateName || "",
+        });
+        setState({
+          id: address?.state?.stateId || "",
+          value: address?.state?.stateName || "",
+        });
 
-      setValue("zipcode", businessDetails?.zipcode || 0);
-      setZipcode(businessDetails?.zipcode ?? 0);
+        setValue("zipcode", address?.zipcode || 0);
+        setZipcode(address?.zipcode ?? 0);
 
-      setSelectedPlace({
-        label: businessDetails?.place?.displayName || "",
-        value: businessDetails?.place?.displayName || "",
-      });
-      setPlace({
-        displayName: businessDetails?.place?.displayName || "",
-        placeId: businessDetails?.place?.placeId || "",
-      });
+        setSelectedPlace({
+          label: address?.place?.displayName || "",
+          value: address?.place?.displayName || "",
+        });
+        setPlace({
+          displayName: address?.place?.displayName || "",
+          placeId: address?.place?.placeId || "",
+        });
 
-      const coordinates = businessDetails?.coordinate?.coordinates;
-      if (coordinates && coordinates.length === 2) {
-        setCoords(coordinates);
-        setCords([coordinates[0], coordinates[1]]);
-      } else {
-        setCoords([0, 0]);
-        setCords([0, 0]);
+        const coordinates = address?.coordinate?.coordinates;
+        if (coordinates && coordinates.length === 2) {
+          setCoords(coordinates);
+          setCords([coordinates[0], coordinates[1]]);
+        } else {
+          setCoords([0, 0]);
+          setCords([0, 0]);
+        }
       }
     } catch (error) {
       console.error("Failed to fetch business details:", error);
@@ -231,7 +233,7 @@ const RestaurantAvailability = () => {
   ) => {
     sdk.AllPlaces({ input: inputValue }).then((d) => {
       callback(
-        d.getPlacesList.map((el) => ({
+        d.getPlacesList.map((el: { displayName: string; placeId: string }) => ({
           label: el.displayName,
           value: el.placeId,
         }))
@@ -280,7 +282,7 @@ const RestaurantAvailability = () => {
             type="button"
             className="text-sm text-primary flex items-center cursor-pointer"
             onClick={async () => {
-              fetchBusinessDetails(); // Call the API to fetch business details
+              fetchBusinessDetails();
             }}
           >
             <span className="ml-2 hover:underline">

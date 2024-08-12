@@ -32,16 +32,18 @@ const OnboardingLayout = ({ children }: Props) => {
       try {
         const resstates = await sdk.getActiveStates();
         if (resstates && resstates.getActiveStates) {
-          const formattedStates = resstates.getActiveStates.map((state) => ({
-            value: state._id,
-            label: state.value,
-          }));
+          const formattedStates = resstates.getActiveStates.map(
+            (state: { value: string; _id: string }) => ({
+              value: state._id,
+              label: state.value,
+            })
+          );
           setMasterStates(formattedStates);
         }
         const resTimeZones = await sdk.getActiveTimezones();
         if (resTimeZones && resTimeZones.getActiveTimezones) {
           const formattedTimeZones = resTimeZones.getActiveTimezones.map(
-            (timeZone) => ({
+            (timeZone: { gmtOffset: number; value: string; _id: string }) => ({
               value: timeZone._id,
               label: `${timeZone.value} (GMT${timeZone.gmtOffset / 3600})`,
             })

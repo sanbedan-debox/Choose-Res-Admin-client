@@ -33,16 +33,18 @@ const OnboardingRestaurantLayout = ({ children }: Props) => {
       try {
         const resstates = await sdk.getActiveStates();
         if (resstates && resstates.getActiveStates) {
-          const formattedStates = resstates.getActiveStates.map((state) => ({
-            value: state._id,
-            label: state.value,
-          }));
+          const formattedStates = resstates.getActiveStates.map(
+            (state: { value: string; _id: string }) => ({
+              value: state._id,
+              label: state.value,
+            })
+          );
           setMasterStates(formattedStates);
         }
         const resTimeZones = await sdk.getActiveTimezones();
         if (resTimeZones && resTimeZones.getActiveTimezones) {
           const formattedTimeZones = resTimeZones.getActiveTimezones.map(
-            (timeZone) => {
+            (timeZone: { gmtOffset: number; value: string; _id: string }) => {
               const gmtOffsetHours = timeZone.gmtOffset / 3600;
               const sign = gmtOffsetHours >= 0 ? "+" : "-";
               const formattedLabel = `${timeZone.value} (GMT ${sign} ${Math.abs(

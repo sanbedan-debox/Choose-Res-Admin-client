@@ -60,15 +60,18 @@ const AddSubCategoryForm = () => {
       if (editSubCategoryId) {
         try {
           const response = await sdk.getSubCategory({ id: editSubCategoryId });
-          const menu = response.getSubCategory;
-          setChangesSubCat(response.getSubCategory);
-          const nameDup = generateUniqueName(menu?.name);
-          setValue("name", menu.name);
-          if (isDuplicateSubCategory) {
-            setValue("name", nameDup);
+          if (response && response.getSubCategory) {
+            const { name, desc } = response.getSubCategory;
+            setChangesSubCat(response.getSubCategory);
+
+            const nameDup = generateUniqueName(name);
+            setValue("name", name);
+            if (isDuplicateSubCategory) {
+              setValue("name", nameDup);
+            }
+            setValue("desc", desc);
+            setChangesMenu(response.getSubCategory);
           }
-          setValue("desc", menu?.desc);
-          setChangesMenu(response.getSubCategory);
         } catch (error) {
           const errorMessage = extractErrorMessage(error);
           setToastData({

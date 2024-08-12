@@ -26,11 +26,13 @@ const Modifiers: React.FC = () => {
       const response = await sdk.getModifiers();
       if (response && response.getModifiers) {
         setModifier(
-          response.getModifiers.map((el) => ({
-            _id: el._id,
-            name: el.name,
-            price: el.price,
-          }))
+          response.getModifiers.map(
+            (el: { _id: string; name: string; price: number }) => ({
+              _id: el._id,
+              name: el.name,
+              price: el.price,
+            })
+          )
         );
       }
     } catch (error: any) {

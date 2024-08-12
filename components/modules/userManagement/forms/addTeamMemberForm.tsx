@@ -126,7 +126,11 @@ const AddTeamMemberForm = () => {
     try {
       const response = await sdk.getAllPermissions();
       const formattedPermissions = response.getAllPermissions.map(
-        (permission) => ({
+        (permission: {
+          type: PermissionTypeEnum;
+          _id: string;
+          preselect: UserRole[];
+        }) => ({
           type: permission.type,
           _id: permission._id,
           isTicked: false,

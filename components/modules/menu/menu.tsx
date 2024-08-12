@@ -45,13 +45,23 @@ const Menu: React.FC = () => {
       const response = await sdk.getMenuByRestaurant();
       if (response && response.getMenuByRestaurant) {
         setMenu(
-          response.getMenuByRestaurant.map((el) => ({
-            name: el.name,
-            categories: el.categories.length,
-            status: el.status,
-            type: el.type.toString(),
-            _id: el._id,
-          }))
+          response.getMenuByRestaurant.map(
+            (el: {
+              name: string;
+              status: string;
+              type: MenuTypeEnum;
+              _id: string;
+              categories: {
+                name?: string | null;
+              }[];
+            }) => ({
+              name: el.name,
+              categories: el.categories.length,
+              status: el.status,
+              type: el.type.toString(),
+              _id: el._id,
+            })
+          )
         );
       }
     } catch (error: any) {

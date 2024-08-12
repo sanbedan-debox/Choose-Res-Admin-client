@@ -39,13 +39,21 @@ const Items: React.FC = () => {
       const response = await sdk.getItems();
       if (response && response.getItems) {
         setItems(
-          response.getItems.map((el) => ({
-            _id: el._id,
-            name: el.name,
-            desc: el.desc,
-            status: el.status,
-            price: el.price,
-          }))
+          response.getItems.map(
+            (el: {
+              _id: string;
+              name: string;
+              desc: string;
+              status: string;
+              price: number;
+            }) => ({
+              _id: el._id,
+              name: el.name,
+              desc: el.desc,
+              status: el.status,
+              price: el.price,
+            })
+          )
         );
       }
     } catch (error: any) {

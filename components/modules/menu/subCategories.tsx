@@ -27,11 +27,13 @@ const SubCategories: React.FC = () => {
       const response = await sdk.getSubCategories();
       if (response && response.getSubCategories) {
         setCats(
-          response.getSubCategories.map((el) => ({
-            desc: el.desc,
-            name: el.name,
-            _id: el._id,
-          }))
+          response.getSubCategories.map(
+            (el: { desc: string; name: string; _id: string }) => ({
+              desc: el.desc,
+              name: el.name,
+              _id: el._id,
+            })
+          )
         );
       }
     } catch (error: any) {
