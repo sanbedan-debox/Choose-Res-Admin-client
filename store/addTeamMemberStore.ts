@@ -1,5 +1,5 @@
 // store/useAddTeamMemberFormStore.ts
-import create from 'zustand';
+import { create } from 'zustand';
 
 interface IFormInput {
     firstName: string;
