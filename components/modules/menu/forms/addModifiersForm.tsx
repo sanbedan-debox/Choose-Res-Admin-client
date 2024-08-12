@@ -221,7 +221,7 @@ const AddModifierForm = () => {
       setEditModId(null);
       setisDuplicateMods(false);
       setEditModId(null);
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage = extractErrorMessage(error);
       setToastData({
         type: "error",

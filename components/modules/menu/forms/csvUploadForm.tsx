@@ -73,7 +73,7 @@ const CsvUploadForm = () => {
         if (headersResp && headersResp.getCsvHeaders.length > 0) {
           setExpectedHeaders(headersResp.getCsvHeaders);
         }
-      } catch (error: any) {
+      } catch (error) {
         const errorMessage = extractErrorMessage(error);
         setToastData({
           type: "error",

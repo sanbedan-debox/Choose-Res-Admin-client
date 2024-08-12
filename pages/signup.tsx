@@ -104,7 +104,7 @@ const Signup: FC = () => {
           });
         }, 1000);
       }
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage = extractErrorMessage(error);
       setToastData({
         type: "error",
@@ -145,7 +145,7 @@ const Signup: FC = () => {
         setToastData({ message: "Verification Successful", type: "success" });
         router.replace("/onboarding/user/intro");
       }
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage = extractErrorMessage(error);
       setToastData({
         type: "error",

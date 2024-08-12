@@ -36,7 +36,13 @@ const Categories: React.FC = () => {
               name: string;
               _id: string;
               status: string;
-              items: any[];
+              items: {
+                name?: string | null;
+                _id: {
+                  __typename?: "Item";
+                  _id: string;
+                };
+              }[];
             }) => ({
               desc: el.desc,
               items: el.items.length,
@@ -47,7 +53,7 @@ const Categories: React.FC = () => {
           )
         );
       }
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage = extractErrorMessage(error);
       setToastData({
         type: "error",
@@ -158,7 +164,7 @@ const Categories: React.FC = () => {
       if (response && response.changeCategoryStatus) {
         fetchCategories();
       }
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage = extractErrorMessage(error);
       setToastData({
         type: "error",

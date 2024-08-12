@@ -53,7 +53,7 @@ const UserVerification = () => {
         });
         router.push("/onboarding/user/user-info");
         return;
-      } catch (error: any) {
+      } catch (error) {
         const errorMessage = extractErrorMessage(error);
         setToastData({
           type: "error",
@@ -71,7 +71,7 @@ const UserVerification = () => {
         });
         router.push("/onboarding/user/user-location");
         return;
-      } catch (error: any) {
+      } catch (error) {
         const errorMessage = extractErrorMessage(error);
         setToastData({
           type: "error",
@@ -98,7 +98,7 @@ const UserVerification = () => {
           router.replace("/account/verification-pending");
         }
       }
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage = extractErrorMessage(error);
       setToastData({
         type: "error",

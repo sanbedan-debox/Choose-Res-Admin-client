@@ -50,7 +50,7 @@ const OnboardingLayout = ({ children }: Props) => {
           );
           setMasterTimezones(formattedTimeZones);
         }
-      } catch (error: any) {
+      } catch (error) {
         const errorMessage = extractErrorMessage(error);
         setToastData({
           type: "error",

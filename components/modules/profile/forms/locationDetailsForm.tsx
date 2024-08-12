@@ -144,7 +144,7 @@ const UserLocationForm: React.FC = () => {
         type: "success",
       });
       setIsModalOpen(false);
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage = extractErrorMessage(error);
       setToastData({
         type: "error",

@@ -9,12 +9,11 @@ import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import React, { useEffect, useState } from "react";
 import { BsCopy } from "react-icons/bs";
-import { FaTrash, FaEdit } from "react-icons/fa";
-import { IoDuplicateOutline } from "react-icons/io5";
 import { MdOutlineEdit } from "react-icons/md";
 
 const Modifiers: React.FC = () => {
-  const [modifier, setModifier] = useState<any>();
+  const [modifier, setModifier] =
+    useState<{ _id: string; name: string; price: number }[]>();
   const { setToastData } = useGlobalStore();
   const { setisAddModifierModalOpen, fetchMenuDatas } = useMenuOptionsStore();
   const [tableLoading, setTableLoading] = useState(false);
@@ -35,7 +34,7 @@ const Modifiers: React.FC = () => {
           )
         );
       }
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage = extractErrorMessage(error);
       setToastData({
         type: "error",
@@ -122,7 +121,7 @@ const Modifiers: React.FC = () => {
       if (response && response.deleteModifier) {
         fetchModifiers();
       }
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage = extractErrorMessage(error);
       setToastData({
         type: "error",
@@ -139,7 +138,7 @@ const Modifiers: React.FC = () => {
         loading={tableLoading}
         itemsPerPage={10}
         headings={headings}
-        data={modifier}
+        data={modifier ?? []}
         mainActions={mainActions}
       />
       {/* DELETE ITEM MODAL */}

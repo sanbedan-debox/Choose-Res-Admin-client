@@ -134,7 +134,7 @@ const UserLocation = () => {
         type: "success",
       });
       router.push("/onboarding/user/user-verification");
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage = extractErrorMessage(error);
       setToastData({
         type: "error",

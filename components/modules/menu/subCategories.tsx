@@ -36,7 +36,7 @@ const SubCategories: React.FC = () => {
           )
         );
       }
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage = extractErrorMessage(error);
       setToastData({
         type: "error",
@@ -60,13 +60,13 @@ const SubCategories: React.FC = () => {
     //     const subCategory = response.getSubCategory;
     //     setSubCategoryName(subCategory.name);
     //     setSelectedCategories(
-    //       subCategory.categories.map((cat: any) => ({
+    //       subCategory.categories.map((cat) => ({
     //         value: cat._id,
     //         label: cat.name,
     //       }))
     //     );
     //   }
-    // } catch (error: any) {
+    // } catch (error) {
     //   const errorMessage = extractErrorMessage(error);
     //   setToastData({
     //     type: "error",
@@ -95,7 +95,7 @@ const SubCategories: React.FC = () => {
   //       type: "success",
   //       message: `SubCategory ${isEdit ? "updated" : "added"} successfully.`,
   //     });
-  //   } catch (error: any) {
+  //   } catch (error) {
   //     const errorMessage = extractErrorMessage(error);
   //     setToastData({
   //       type: "error",
@@ -155,7 +155,7 @@ const SubCategories: React.FC = () => {
   //     if (response && response.changeCategoryStatus) {
   //       fetchCategories();
   //     }
-  //   } catch (error: any) {
+  //   } catch (error) {
   //     const errorMessage = extractErrorMessage(error);
   //     setToastData({
   //       type: "error",
@@ -178,7 +178,7 @@ const SubCategories: React.FC = () => {
   //     if (response && response.deleteCategory) {
   //       fetchCategories();
   //     }
-  //   } catch (error: any) {
+  //   } catch (error) {
   //     const errorMessage = extractErrorMessage(error);
   //     setToastData({
   //       type: "error",

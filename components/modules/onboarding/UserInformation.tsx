@@ -142,7 +142,7 @@ const UserInfo = () => {
         type: "success",
       });
       router.push("/onboarding/user/user-location");
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage = extractErrorMessage(error);
       setToastData({
         type: "error",

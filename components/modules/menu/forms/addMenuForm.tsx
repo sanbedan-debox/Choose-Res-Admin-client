@@ -45,6 +45,11 @@ const menuTypeOptions: any[] = [
   { value: MenuTypeEnum.DineIn, label: "Dine In" },
   { value: MenuTypeEnum.Catering, label: "Catering" },
 ];
+// const menuTypeOptions: { value: MenuTypeEnum; label: string }[] = [
+//   { value: MenuTypeEnum.OnlineOrdering, label: "Online Ordering" },
+//   { value: MenuTypeEnum.DineIn, label: "Dine In" },
+//   { value: MenuTypeEnum.Catering, label: "Catering" },
+// ];
 
 const AddMenuForm = () => {
   const {

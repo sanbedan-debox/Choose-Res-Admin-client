@@ -93,7 +93,7 @@ const Navbar: React.FC = () => {
       if (response && response.logout) {
         router.replace("/login");
       }
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage = extractErrorMessage(error);
       setToastData({
         type: "error",

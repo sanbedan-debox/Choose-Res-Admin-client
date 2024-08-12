@@ -64,7 +64,7 @@ const Menu: React.FC = () => {
           )
         );
       }
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage = extractErrorMessage(error);
       setToastData({
         type: "error",
@@ -192,7 +192,7 @@ const Menu: React.FC = () => {
       if (response && response.changeMenuStatus) {
         fetchAllMenus();
       }
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage = extractErrorMessage(error);
       setToastData({
         type: "error",
@@ -215,7 +215,7 @@ const Menu: React.FC = () => {
       if (response && response.deleteMenu) {
         fetchAllMenus();
       }
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage = extractErrorMessage(error);
       setToastData({
         type: "error",

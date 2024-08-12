@@ -127,7 +127,7 @@ const AddSubCategoryForm = () => {
       setisEditSubCategory(false);
 
       setisAddSubCategoryModalOpen(false);
-    } catch (error: any) {
+    } catch (error) {
       setBtnLoading(false);
       const errorMessage = extractErrorMessage(error);
       setToastData({

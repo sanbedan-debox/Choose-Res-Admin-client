@@ -319,7 +319,7 @@ const AddCategoryForm = () => {
         setfetchMenuDatas(!fetchMenuDatas);
         setEditItemId(null);
       }
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage = extractErrorMessage(error);
       setToastData({
         type: "error",
@@ -361,7 +361,7 @@ const AddCategoryForm = () => {
 
           setItemsOption(filteredItemsList);
         }
-      } catch (error: any) {
+      } catch (error) {
         const errorMessage = extractErrorMessage(error);
         setToastData({
           type: "error",

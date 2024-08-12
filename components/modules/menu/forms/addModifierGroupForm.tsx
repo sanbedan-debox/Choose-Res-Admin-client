@@ -127,7 +127,7 @@ const AddModifierGroupForm = () => {
 
           setModifiersOption(filteredItemsList);
         }
-      } catch (error: any) {
+      } catch (error) {
         const errorMessage = extractErrorMessage(error);
         setToastData({
           type: "error",
@@ -452,7 +452,7 @@ const AddModifierGroupForm = () => {
         type: "success",
         message: "Modifier Groups Updated Successfully",
       });
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage = extractErrorMessage(error);
       setToastData({
         type: "error",

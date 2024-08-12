@@ -330,7 +330,7 @@ const AddItemForm = () => {
         if (optsResp && optsResp.getAllItemOptions.length > 0) {
           setOptions(formatOptions(optsResp.getAllItemOptions));
         }
-      } catch (error: any) {
+      } catch (error) {
         const errorMessage = extractErrorMessage(error);
         setToastData({
           type: "error",
@@ -557,7 +557,7 @@ const AddItemForm = () => {
           message: "Item Updated Successfully",
         });
       }
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage = extractErrorMessage(error);
       setToastData({
         type: "error",
@@ -643,7 +643,7 @@ const AddItemForm = () => {
 
           setItemsOption(filteredItemsList);
         }
-      } catch (error: any) {
+      } catch (error) {
         const errorMessage = extractErrorMessage(error);
         setToastData({
           type: "error",

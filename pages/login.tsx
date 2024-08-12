@@ -84,7 +84,7 @@ const Login: FC = () => {
           });
         }, 1000);
       }
-    } catch (error: any) {
+    } catch (error) {
       setBtnLoading(false);
       const errorMessage = extractErrorMessage(error);
       setToastData({
@@ -121,7 +121,7 @@ const Login: FC = () => {
         });
         router.replace("/dashboard");
       }
-    } catch (error: any) {
+    } catch (error) {
       setBtnLoading(false);
       const errorMessage = extractErrorMessage(error);
       setToastData({

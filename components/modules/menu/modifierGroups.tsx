@@ -16,7 +16,13 @@ import { IoDuplicateOutline } from "react-icons/io5";
 import { MdOutlineEdit } from "react-icons/md";
 
 const Modifiers: React.FC = () => {
-  const [modifierGroups, setModifierGroups] = useState<any>();
+  const [modifierGroups, setModifierGroups] = useState<
+    {
+      _id: string;
+      name: string;
+      status: StatusEnum;
+    }[]
+  >();
   const { setToastData } = useGlobalStore();
   const { setisAddModifierGroupModalOpen, fetchMenuDatas } =
     useMenuOptionsStore();
@@ -38,7 +44,7 @@ const Modifiers: React.FC = () => {
           )
         );
       }
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage = extractErrorMessage(error);
       setToastData({
         type: "error",
@@ -111,7 +117,7 @@ const Modifiers: React.FC = () => {
       if (response && response.removeModifierGroup) {
         fetchModifierGroups();
       }
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage = extractErrorMessage(error);
       setToastData({
         type: "error",
@@ -173,7 +179,7 @@ const Modifiers: React.FC = () => {
       if (response && response.changeModifierGroupStatus) {
         fetchModifierGroups();
       }
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage = extractErrorMessage(error);
       setToastData({
         type: "error",
@@ -189,7 +195,7 @@ const Modifiers: React.FC = () => {
         loading={tableLoading}
         itemsPerPage={20}
         headings={headings}
-        data={modifierGroups}
+        data={modifierGroups ?? []}
         mainActions={mainActions}
       />
       {/* DELETE ITEM MODAL */}

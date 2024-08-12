@@ -152,7 +152,7 @@ const Teams: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
           )
         );
       }
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage = extractErrorMessage(error);
       setToastData({
         type: "error",
@@ -237,7 +237,7 @@ const Teams: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
       if (response && response.removeTeamMember) {
         fetchTeamMembers();
       }
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage = extractErrorMessage(error);
       setToastData({
         type: "error",
@@ -281,7 +281,7 @@ const Teams: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
         onClose={handleAddMemberModalClose}
         actionButtonLabel="Add Member"
         // onActionButtonClick={handleAddMenuItemClick}
-        onActionButtonClick={() =>{}}
+        onActionButtonClick={() => {}}
       >
         <div className="flex justify-center">
           <AddTeamMemberForm />

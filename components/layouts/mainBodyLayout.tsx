@@ -53,7 +53,11 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     null
   );
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: {
+    name: string;
+    salesTax: string;
+    default: boolean;
+  }) => {
     try {
       const currentFormValues = getValues();
       const changedData: any = { _id: existingTaxRateId };
