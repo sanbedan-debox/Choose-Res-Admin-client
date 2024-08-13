@@ -171,7 +171,7 @@ const Categories: React.FC = () => {
         message: errorMessage,
       });
     } finally {
-      setBtnLoading(true);
+      setBtnLoading(false);
     }
   };
 
