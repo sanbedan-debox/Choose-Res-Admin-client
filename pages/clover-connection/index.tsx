@@ -65,7 +65,6 @@ const CloverConnectionVerify = () => {
         setLoading(false);
       }
     };
-
     connectToClover();
   }, [router]);
 

@@ -163,9 +163,7 @@ const AddMenuForm = () => {
       }
 
       if (data.name !== changesMenu[0]?.name.value) {
-        updateInput.name = {
-          value: data.name,
-        };
+        updateInput.name = data.name;
       }
 
       if (!isEditMenu) {
@@ -371,35 +369,35 @@ const AddMenuForm = () => {
     const fetchMenuData = async () => {
       if (editMenuId && (isEditMenu || isDuplicateMenu)) {
         try {
-          const response = await sdk.getMenusByType({ id: editMenuId });
-          if (response && response.getMenusByType) {
-            const menu = response.getMenusByType;
-            setChangesMenu(response.getMenusByType);
-            const nameDup = generateUniqueName(menu[0]?.name);
-            setValue("name", menu[0].name);
+          const response = await sdk.getMenu({ id: editMenuId });
+          if (response && response.getMenu) {
+            const menu = response.getMenu;
+            setChangesMenu(response.getMenu);
+            const nameDup = generateUniqueName(menu?.name);
+            setValue("name", menu.name);
             if (isDuplicateMenu) {
               setValue("name", nameDup);
             }
             const selectedMenuType = menuTypeOptions.find(
-              (option) => option.value === menu[0]?.type
+              (option) => option.value === menu?.type
             );
             setValue("type", selectedMenuType);
 
-            const formateditemlist = menu[0]?.categories.map((el) => ({
+            const formateditemlist = menu?.categories.map((el) => ({
               _id: el._id._id,
               name: el?.name ?? "",
               length: 0,
             }));
-            if (menu[0]?.availability) {
+            if (menu?.availability) {
               const originalAvailability = reverseFormatAvailability(
-                menu[0]?.availability
+                menu?.availability
               );
               setAvailability(originalAvailability);
             }
             setSelectedItems(formateditemlist);
             setTempSelectedItems(formateditemlist);
             setprevItemsbfrEdit(formateditemlist);
-            setIncomingTaxId(menu[0]?.taxes?._id || "");
+            setIncomingTaxId(menu?.taxes?._id || "");
           }
         } catch (error) {
           const errorMessage = extractErrorMessage(error);

@@ -1334,7 +1334,6 @@ export type QueryGetItemsArgs = {
 
 export type QueryGetMenuArgs = {
   id?: InputMaybe<Scalars['String']['input']>;
-  type?: InputMaybe<MenuTypeEnum>;
 };
 
 
@@ -2126,6 +2125,13 @@ export type GetAllMenusQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetAllMenusQuery = { __typename?: 'Query', getAllMenus: Array<{ __typename?: 'Menu', _id: string, type: MenuTypeEnum, name: string, createdAt: any, updatedAt: any, status: StatusEnum, categories: Array<{ __typename?: 'CategoryInfo', name?: string | null }> }> };
 
+export type GetMenuQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type GetMenuQuery = { __typename?: 'Query', getMenu: { __typename?: 'Menu', _id: string, name: string, status: StatusEnum, createdAt: any, updatedAt: any, type: MenuTypeEnum, availability?: Array<{ __typename?: 'Availability', day: string, active: boolean, hours: Array<{ __typename?: 'Hours', start: any, end: any }> }> | null, taxes?: { __typename?: 'TaxRateInfo', _id: string, salesTax: number, name: string } | null, categories: Array<{ __typename?: 'CategoryInfo', name?: string | null, status: StatusEnum, _id: { __typename?: 'Category', _id: string } }> } };
+
 export type GetModifierGroupsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -2812,6 +2818,38 @@ export const GetAllMenusDocument = gql`
   }
 }
     `;
+export const GetMenuDocument = gql`
+    query getMenu($id: String!) {
+  getMenu(id: $id) {
+    _id
+    name
+    status
+    createdAt
+    updatedAt
+    type
+    availability {
+      day
+      hours {
+        start
+        end
+      }
+      active
+    }
+    taxes {
+      _id
+      salesTax
+      name
+    }
+    categories {
+      name
+      status
+      _id {
+        _id
+      }
+    }
+  }
+}
+    `;
 export const GetModifierGroupsDocument = gql`
     query getModifierGroups {
   getModifierGroups {
@@ -3273,6 +3311,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     getAllMenus(variables?: GetAllMenusQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetAllMenusQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetAllMenusQuery>(GetAllMenusDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getAllMenus', 'query', variables);
+    },
+    getMenu(variables: GetMenuQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetMenuQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetMenuQuery>(GetMenuDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getMenu', 'query', variables);
     },
     getModifierGroups(variables?: GetModifierGroupsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetModifierGroupsQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetModifierGroupsQuery>(GetModifierGroupsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getModifierGroups', 'query', variables);
