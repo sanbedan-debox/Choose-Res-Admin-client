@@ -462,21 +462,19 @@ const AddItemForm = () => {
       let hasChanges = false;
       const imgUrl = await handleLogoUpload();
 
-      const addChange = (field: string, newValue: any) => {
-        updateInput[field] = { value: newValue };
+      if (data.name !== changesMenu?.name) {
+        updateInput.name = data.name;
         hasChanges = true;
-      };
-
-      if (data.name !== changesMenu?.name?.value) {
-        addChange("name", data.name);
       }
 
-      if (data.desc !== changesMenu?.desc?.value) {
-        addChange("desc", data.desc);
+      if (data.desc !== changesMenu?.desc) {
+        updateInput.desc = data.desc;
+        hasChanges = true;
       }
 
-      if (data.price !== changesMenu?.price?.value) {
-        addChange("price", parsedPrice);
+      if (data.price !== changesMenu?.price) {
+        updateInput.price = parsedPrice;
+        hasChanges = true;
       }
       if (data.limit !== changesMenu?.orderLimit) {
         // addChange("orderLimit", parsedLimit);

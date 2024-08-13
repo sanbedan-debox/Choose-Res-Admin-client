@@ -242,17 +242,15 @@ const AddCategoryForm = () => {
       };
 
       let hasChanges = false;
-      const addChange = (field: string, newValue: any) => {
-        updateInput[field] = { value: newValue };
-        hasChanges = true;
-      };
 
-      if (data.name !== changesMenu?.name?.value) {
-        addChange("name", data.name);
+      if (data.name !== changesMenu?.name) {
+        updateInput.name = data.name;
+        hasChanges = true;
       }
 
-      if (data.description !== changesMenu?.desc?.value) {
-        addChange("desc", data.description);
+      if (data.description !== changesMenu?.desc) {
+        updateInput.desc = data.description;
+        hasChanges = true;
       }
 
       setBtnLoading(true);
@@ -295,23 +293,21 @@ const AddCategoryForm = () => {
         }
       } else {
         // EDIT CATEGORIES
-
-        const resupdate = await sdk.updateCategory({
-          input: updateInput,
-        });
-
+        if (hasChanges) {
+          const resupdate = await sdk.updateCategory({
+            input: updateInput,
+          });
+          if (resupdate.updateCategory)
+            setToastData({
+              type: "success",
+              message: "Category Updated Successfully",
+            });
+        }
         isMenuAdded &&
           (await sdk.addItemToCategory({
             itemId: addedMenuIds,
             categoryId: editCatsId || "",
           }));
-
-        if (resupdate.updateCategory)
-          setToastData({
-            type: "success",
-            message: "Category Updated Successfully",
-          });
-
         setBtnLoading(false);
         setisDuplicateCats(false);
         setisEditCats(false);

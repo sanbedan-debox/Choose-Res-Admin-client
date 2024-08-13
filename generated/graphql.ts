@@ -1333,7 +1333,7 @@ export type QueryGetItemsArgs = {
 
 
 export type QueryGetMenuArgs = {
-  id?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['String']['input'];
 };
 
 

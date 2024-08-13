@@ -379,13 +379,8 @@ const AddModifierGroupForm = () => {
       };
       let hasChanges = false;
 
-      const addChange = (field: string, newValue: any) => {
-        updateInput[field] = { value: newValue };
-        hasChanges = true;
-      };
-
       if (data.name !== changesMenu?.name) {
-        addChange("name", data.name);
+        updateInput.name = data.name;
         hasChanges = true;
       }
 

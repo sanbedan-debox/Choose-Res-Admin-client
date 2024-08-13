@@ -162,19 +162,19 @@ const AddModifierForm = () => {
     const parsedPrice = roundOffPrice(parseFloat(data.price.toString()));
     let updateInput: any = { _id: editModId || "" };
     let hasChanges = false;
-    const addChange = (field: string, newValue: any) => {
-      updateInput[field] = { value: newValue };
+
+    if (data.name !== changesModifiers?.name) {
+      updateInput.name = data.name;
       hasChanges = true;
-    };
-    if (data.name !== changesModifiers?.name?.value) {
-      addChange("name", data.name);
     }
-    if (data.desc !== changesModifiers?.desc?.value) {
-      addChange("desc", data.desc);
+    if (data.desc !== changesModifiers?.desc) {
+      updateInput.desc = data.desc;
+      hasChanges = true;
     }
 
-    if (data.price !== changesModifiers?.price?.value) {
-      addChange("price", parsedPrice);
+    if (data.price !== changesModifiers?.price) {
+      updateInput.price = parsedPrice;
+      hasChanges = true;
     }
 
     if (data.preSelect !== changesModifiers?.preSelect) {
@@ -206,13 +206,15 @@ const AddModifierForm = () => {
           message: "Modifier Added Successfully",
         });
       } else {
-        await sdk.updateModifier({
-          input: updateInput,
-        });
-        setToastData({
-          type: "success",
-          message: "Modifier Updated Successfully",
-        });
+        if (hasChanges) {
+          await sdk.updateModifier({
+            input: updateInput,
+          });
+          setToastData({
+            type: "success",
+            message: "Modifier Updated Successfully",
+          });
+        }
       }
 
       setisAddModifierModalOpen(false);

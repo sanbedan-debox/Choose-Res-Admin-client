@@ -156,13 +156,13 @@ const AddMenuForm = () => {
         updateInput.taxRateId = taxRate?.id;
       }
       const selectedMenuType = menuTypeOptions.find(
-        (option) => option.value === changesMenu[0]?.type
+        (option) => option.value === changesMenu?.type
       );
       if (data.type.value !== selectedMenuType?.value) {
         updateInput.type = data.type.value as MenuTypeEnum;
       }
 
-      if (data.name !== changesMenu[0]?.name.value) {
+      if (data.name !== changesMenu?.name) {
         updateInput.name = data.name;
       }
 
