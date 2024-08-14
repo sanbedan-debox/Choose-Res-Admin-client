@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import useGlobalStore from "@/store/global";
@@ -24,13 +24,20 @@ import {
 } from "react-icons/md";
 import { BiWorld } from "react-icons/bi";
 import { RiReservedLine } from "react-icons/ri";
+import { PermissionTypeEnum } from "@/generated/graphql";
+import useUserStore from "@/store/user";
 
 const Sidebar: React.FC = () => {
   const { isSidebarExpanded, selectedMenu, setSelectedMenu } = useGlobalStore();
   const router = useRouter();
 
-  const userRole = "admin";
-  const hasAccess = (moduleRoles: string[]) => moduleRoles.includes(userRole);
+  const { meUser } = useUserStore();
+  const permissions = meUser?.permissions || [];
+
+  const hasAccess = (permissionType: PermissionTypeEnum) =>
+    permissions.some(
+      (permission) => permission.type === permissionType && permission.status
+    );
 
   const getIconComponent = (iconName: string) => {
     const icons: { [key: string]: JSX.Element } = {
@@ -82,7 +89,7 @@ const Sidebar: React.FC = () => {
         <hr className="border-gray-600 " />
         <ul className="mx-1">
           {modules.map((module) =>
-            hasAccess(module.roles) ? (
+            hasAccess(module.access) ? (
               <li
                 key={module.name}
                 className={`cursor-pointer mb-1 transition-colors ${

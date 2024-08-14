@@ -5,13 +5,16 @@ import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
 import { sdk } from "@/utils/graphqlClient";
 import useAuthStore from "@/store/auth";
-import { UserStatus } from "@/generated/graphql";
+import { PermissionTypeEnum, UserStatus } from "@/generated/graphql";
 import QuickActions from "@/components/common/quickLinks/quickLink";
 import MainLayout from "@/components/layouts/mainBodyLayout";
 import { Searchfeatures } from "@/utils/searchFeatures";
-import IncompleteRestaurants from "@/components/common/incompleteRestaurant/incompleteRestaurant";
+import IncompleteRestaurants from "@/components/common/ScrollableQuickActionCard/ScrollableQuickActionCard";
 import { useRouter } from "next/router";
 import QuickActionsDashboard from "@/components/common/quickAction/quickAction";
+import { hasAccess } from "@/utils/hasAccess";
+import useUserStore from "@/store/user";
+import ScrollableQuickActionCard from "@/components/common/ScrollableQuickActionCard/ScrollableQuickActionCard";
 
 type NextPageWithLayout = React.FC & {
   getLayout?: (page: React.ReactNode) => React.ReactNode;
@@ -28,6 +31,7 @@ type UserRepo = {
 
 const Dashboard: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
   const { setSelectedMenu, isShowSetupPanel } = useGlobalStore();
+  const [canEditRestaurant, setCanEditRestaurant] = useState(false);
 
   const router = useRouter();
   const {
@@ -81,10 +85,27 @@ const Dashboard: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
       router.push("/onboarding-restaurant/restaurant-basic-information");
     }
   };
+  const completeMenuUpload = async (id: string) => {
+    const res = await sdk.setRestaurantIdAsCookie({ id });
+    if (res.setRestaurantIdAsCookie) {
+      router.push("/onboarding-restaurant/restaurant-basic-information");
+    }
+  };
 
   const [restaurants, setRestaurants] = useState<
     { name: string; id: string }[]
   >([]);
+
+  const [csvFails, setCsvFails] = useState<
+    {
+      id: string;
+      issues: string[];
+      errorFile: string;
+      updatedAt: string;
+    }[]
+  >([]);
+  const { meUser } = useUserStore();
+  const permissions = meUser?.permissions ?? [];
 
   useEffect(() => {
     async function fetchPendingRestaurants() {
@@ -103,8 +124,28 @@ const Dashboard: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
         console.error("Failed to fetch pending restaurants:", error);
       }
     }
+    async function fetchPendingCsvUploads() {
+      try {
+        const response = await sdk.getCsvErrors();
+
+        if (response && response.getCsvErrors) {
+          const restaurantsIncomplete = response.getCsvErrors.map((res) => ({
+            id: res._id,
+            issues: res.issues,
+            errorFile: res.errorFile,
+            updatedAt: res.updatedAt,
+          }));
+          setCsvFails(restaurantsIncomplete);
+        }
+      } catch (error) {
+        console.error("Failed to fetch pending restaurants:", error);
+      }
+    }
+    const canAddRestaurant = hasAccess(permissions, PermissionTypeEnum.Menu);
+    setCanEditRestaurant(canAddRestaurant);
 
     fetchPendingRestaurants();
+    fetchPendingCsvUploads();
   }, []);
 
   const { setisShowSetupPanel, setisShowTaxSettings } = useGlobalStore();
@@ -142,12 +183,22 @@ const Dashboard: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
 
       <div className="grid grid-cols-6 gap-4 mb-4">
         <QuickActionsDashboard actions={actions} />
-        {restaurants.length > 0 && (
-          <IncompleteRestaurants
-            restaurants={restaurants}
-            completeRes={completeRes}
+        {restaurants.length > 0 && canEditRestaurant && (
+          <ScrollableQuickActionCard
+            list={restaurants}
+            onClick={completeRes}
+            title="Incomplete Restaurants"
+            emptyContentText="No Incomplete restaurants"
           />
         )}
+        {/* {restaurants.length > -1 && canEditRestaurant && (
+          <ScrollableQuickActionCard
+            list={csvFails}
+            onClick={completeMenuUpload}
+            title="Incomplete Menu Uploads"
+            emptyContentText="No Incomplete menu Uploads"
+          />
+        )} */}
       </div>
     </div>
   );
@@ -181,8 +232,21 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     );
 
     if (response && response.meUser) {
-      const { _id, email, firstName, status, lastName, phone } =
+      const { _id, email, firstName, status, lastName, phone, permissions } =
         response.meUser;
+
+      const canAccessMenu = hasAccess(
+        permissions,
+        PermissionTypeEnum.Dashboard
+      );
+      if (!canAccessMenu) {
+        return {
+          redirect: {
+            destination: "/500",
+            permanent: false,
+          },
+        };
+      }
 
       if (status === UserStatus.Blocked) {
         return {

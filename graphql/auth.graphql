@@ -20,6 +20,10 @@ query MeUser {
     email
     phone
     ownerUserId
+    permissions {
+      status
+      type
+    }
     role
     businessInfo {
       businessName
@@ -28,9 +32,9 @@ query MeUser {
       estimatedRevenue
       employeeSize
       establishedAt
-      address {
-        ...addressInfo
-      }
+      # address {
+      #   ...addressInfo
+      # }
     }
     restaurants {
       id

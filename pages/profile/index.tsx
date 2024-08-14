@@ -162,6 +162,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
     if (response && response.meUser) {
       const { _id, email, firstName, lastName, phone } = response.meUser;
+
       return {
         props: {
           repo: {

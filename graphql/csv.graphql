@@ -9,3 +9,15 @@ query uploadCSVMenuData($input: UploadCsvInput!) {
 query saveCsvError($input: UploadCsvErrorInput!) {
   saveCsvError(input: $input)
 }
+
+query getCsvErrors {
+  getCsvErrors {
+    _id
+    restaurantId {
+      _id
+    }
+    issues
+    errorFile
+    updatedAt
+  }
+}

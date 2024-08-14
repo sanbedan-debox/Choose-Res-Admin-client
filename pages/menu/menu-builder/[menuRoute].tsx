@@ -13,7 +13,7 @@ import Menu from "@/components/modules/menu/menu";
 import ModifiersGroup from "@/components/modules/menu/modifierGroups";
 import Modifiers from "@/components/modules/menu/modifiers";
 import SubCategories from "@/components/modules/menu/subCategories";
-import { UserStatus } from "@/generated/graphql";
+import { PermissionTypeEnum, UserStatus } from "@/generated/graphql";
 import useAuthStore from "@/store/auth";
 import useGlobalStore from "@/store/global";
 import useMenuCategoryStore from "@/store/menuCategory";
@@ -25,6 +25,7 @@ import useModStore from "@/store/modifiers";
 import useSubCategoryStore from "@/store/subCategoryStore";
 import useSubCategory from "@/store/subCategoryStore";
 import { sdk } from "@/utils/graphqlClient";
+import { hasAccess } from "@/utils/hasAccess";
 
 import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
@@ -188,7 +189,7 @@ const MenuPage = ({ repo }: { repo?: UserRepo }) => {
         onClose={handleAddMenuItemClose}
         actionButtonLabel="Save Item"
         // onActionButtonClick={handleAddMenuItemClick}
-        onActionButtonClick={() =>{}}
+        onActionButtonClick={() => {}}
       >
         <div className="flex justify-center">
           <AddItemForm />
@@ -199,7 +200,7 @@ const MenuPage = ({ repo }: { repo?: UserRepo }) => {
         title="Sub Category"
         onClose={handleAddSubCategoryModalclose}
         actionButtonLabel="Save SubCategory"
-        onActionButtonClick={() =>{}}
+        onActionButtonClick={() => {}}
       >
         <div className="flex justify-center">
           <AddSubCategoryForm />
@@ -211,7 +212,7 @@ const MenuPage = ({ repo }: { repo?: UserRepo }) => {
         onClose={handleAddMenuCategoryClose}
         actionButtonLabel="Save Category"
         // onActionButtonClick={handleAddMenuItemClick}
-        onActionButtonClick={() =>{}}
+        onActionButtonClick={() => {}}
       >
         <div className="flex justify-center">
           <AddCategoryForm />
@@ -225,7 +226,7 @@ const MenuPage = ({ repo }: { repo?: UserRepo }) => {
         onClose={handleAddMenuClose}
         actionButtonLabel="Save Menu"
         // onActionButtonClick={handleAddMenuItemClick}
-        onActionButtonClick={() =>{}}
+        onActionButtonClick={() => {}}
       >
         <div className="flex justify-center">
           <AddMenuForm />
@@ -267,7 +268,7 @@ const MenuPage = ({ repo }: { repo?: UserRepo }) => {
         }}
         actionButtonLabel="Save Modifier Group"
         // onActionButtonClick={handleAddMenuItemClick}
-        onActionButtonClick={() =>{}}
+        onActionButtonClick={() => {}}
       >
         <div className="flex justify-center">
           <AddModifierGroupForm />
@@ -281,7 +282,7 @@ const MenuPage = ({ repo }: { repo?: UserRepo }) => {
         onClose={handleAddModifierClose}
         actionButtonLabel="Save Modifier"
         // onActionButtonClick={handleAddMenuItemClick}
-        onActionButtonClick={() =>{}}
+        onActionButtonClick={() => {}}
       >
         <div className="flex justify-center">
           <AddModifierForm />
@@ -296,7 +297,7 @@ export default MenuPage;
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const cookieHeader = context.req.headers.cookie ?? "";
 
-  const tokenExists = cookieHeader.includes('accessToken=');
+  const tokenExists = cookieHeader.includes("accessToken=");
 
   if (!tokenExists) {
     return {
@@ -316,9 +317,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     );
 
     if (response && response.meUser) {
-      const { _id, email, firstName, status, lastName, phone } =
+      const { _id, email, firstName, status, lastName, phone, permissions } =
         response.meUser;
 
+      const canAccessMenu = hasAccess(permissions, PermissionTypeEnum.Menu);
+      if (!canAccessMenu) {
+        return {
+          redirect: {
+            destination: "/",
+            permanent: false,
+          },
+        };
+      }
       if (status === UserStatus.Blocked) {
         return {
           redirect: {

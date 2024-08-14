@@ -10,6 +10,7 @@ import CButton from "../common/button/button";
 import { ButtonType } from "../common/button/interface";
 import useAuthStore from "@/store/auth";
 import { extractErrorMessage } from "@/utils/utilFUncs";
+import useUserStore from "@/store/user";
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [initialFormValues, setInitialFormValues] = useState({
@@ -30,7 +31,8 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   });
 
   useEffect(() => {
-    fetchRestaurantUsers();
+    fetchUserDetails();
+    fetchUserRestaurants();
   }, []);
 
   const { isShowTaxSettings, setisShowTaxSettings } = useGlobalStore();
@@ -93,7 +95,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           type: "success",
         });
       }
-      fetchRestaurantUsers();
+      fetchUserRestaurants();
       setisShowTaxSettings(false);
     } catch (error) {
       console.error("Error submitting tax rate:", error);
@@ -101,7 +103,42 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     }
   };
 
-  const fetchRestaurantUsers = async () => {
+  const fetchUserDetails = async () => {
+    try {
+      const response = await sdk.MeUser();
+      if (response?.meUser) {
+        const {
+          _id,
+          firstName,
+          lastName,
+          status,
+          email,
+          phone,
+          ownerUserId,
+          permissions,
+          role,
+          businessInfo,
+          restaurants,
+        } = response.meUser;
+        useUserStore.getState().setMeUser({
+          _id,
+          firstName,
+          lastName,
+          status,
+          email,
+          phone,
+          ownerUserId,
+          permissions,
+          role,
+        });
+      }
+    } catch (error) {
+      console.error("Failed to fetch user details:", error);
+      setToastData({ message: extractErrorMessage(error), type: "error" });
+    }
+  };
+
+  const fetchUserRestaurants = async () => {
     try {
       const response = await sdk.getUserRestaurants();
       if (response?.getUserRestaurants) {

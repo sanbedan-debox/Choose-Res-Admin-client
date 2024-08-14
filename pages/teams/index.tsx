@@ -6,7 +6,7 @@ import RoopTable from "@/components/common/table/table";
 import MainLayout from "@/components/layouts/mainBodyLayout";
 import Loader from "@/components/loader";
 import AddTeamMemberForm from "@/components/modules/userManagement/forms/addTeamMemberForm";
-import { UserRole, UserStatus } from "@/generated/graphql";
+import { PermissionTypeEnum, UserRole, UserStatus } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
 import useUserManagementStore from "@/store/userManagement";
 import { sdk } from "@/utils/graphqlClient";
@@ -17,6 +17,7 @@ import useAddTeamMemberFormStore from "../../store/addTeamMemberStore";
 import { parseCookies } from "nookies";
 import { GetServerSideProps } from "next";
 import useAuthStore from "@/store/auth";
+import { hasAccess } from "@/utils/hasAccess";
 
 type NextPageWithLayout = React.FC & {
   getLayout?: (page: React.ReactNode) => React.ReactNode;
@@ -320,9 +321,20 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     );
 
     if (response && response.meUser) {
-      const { _id, email, firstName, status, lastName, phone } =
+      const { _id, email, firstName, status, lastName, phone, permissions } =
         response.meUser;
-
+      const canAccessMenu = hasAccess(
+        permissions,
+        PermissionTypeEnum.UserManagement
+      );
+      if (!canAccessMenu) {
+        return {
+          redirect: {
+            destination: "/",
+            permanent: false,
+          },
+        };
+      }
       if (status === UserStatus.Blocked) {
         return {
           redirect: {

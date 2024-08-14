@@ -1,5 +1,9 @@
 import useGlobalStore from "@/store/global";
-import { MenuTypeEnum, UserStatus } from "@/generated/graphql";
+import {
+  MenuTypeEnum,
+  PermissionTypeEnum,
+  UserStatus,
+} from "@/generated/graphql";
 import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
 import { sdk } from "@/utils/graphqlClient";
@@ -11,6 +15,8 @@ import QuickActions from "@/components/common/quickLinks/quickLink";
 import ReusableModal from "@/components/common/modal/modal";
 import CsvUploadForm from "@/components/modules/menu/forms/csvUploadForm";
 import useMenuPageStore from "../../store/menuStore";
+import { hasAccess } from "@/utils/hasAccess";
+import { useRouter } from "next/router";
 
 type NextPageWithLayout = React.FC & {
   getLayout?: (page: React.ReactNode) => React.ReactNode;
@@ -130,8 +136,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     );
 
     if (response && response.meUser) {
-      const { _id, email, firstName, status, lastName, phone } =
+      const { _id, email, firstName, status, lastName, phone, permissions } =
         response.meUser;
+
+      const canAccessMenu = hasAccess(permissions, PermissionTypeEnum.Menu);
+      if (!canAccessMenu) {
+        return {
+          redirect: {
+            destination: "/",
+            permanent: false,
+          },
+        };
+      }
 
       if (status === UserStatus.Blocked) {
         return {

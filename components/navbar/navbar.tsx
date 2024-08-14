@@ -16,9 +16,11 @@ import CButton from "../common/button/button";
 import { ButtonType } from "../common/button/interface";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import RestaurantOnboardingStore from "@/store/restaurantOnboarding";
-import { RestaurantStatus } from "@/generated/graphql";
+import { PermissionTypeEnum, RestaurantStatus } from "@/generated/graphql";
 import { Searchfeatures } from "@/utils/searchFeatures";
 import { IoSearchSharp } from "react-icons/io5";
+import useUserStore from "@/store/user";
+import { hasAccess } from "@/utils/hasAccess";
 
 const Navbar: React.FC = () => {
   const { firstName } = useAuthStore();
@@ -27,14 +29,10 @@ const Navbar: React.FC = () => {
   const { isSidebarExpanded, setisSidebarExpanded, setToastData } =
     useGlobalStore();
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const [canAddRestaurant, setCanAddRestaurant] = useState(false);
   const [isRestaurantDropdownOpen, setIsRestaurantDropdownOpen] =
     useState(false);
   const router = useRouter();
-  const {
-    setSelectedRestaurant,
-    setRefreshRestaurantChange,
-    refreshRestaurantChange,
-  } = useRestaurantsStore();
   const toggleSidebar = () => {
     setisSidebarExpanded(!isSidebarExpanded);
   };
@@ -86,6 +84,14 @@ const Navbar: React.FC = () => {
     setIsProfileDropdownOpen(!isProfileDropdownOpen);
   };
 
+  const { meUser } = useUserStore();
+  const permissions = meUser?.permissions ?? [];
+
+  useEffect(() => {
+    const canAddRestaurant = hasAccess(permissions, PermissionTypeEnum.Menu);
+    setCanAddRestaurant(canAddRestaurant);
+  }, []);
+
   const handleLogout = async () => {
     try {
       const response = await sdk.Logout();
@@ -126,6 +132,7 @@ const Navbar: React.FC = () => {
 
   const handleAddRestaurant = async () => {
     try {
+      console.log("hello");
       const res = await sdk.setRestaurantIdAsCookie({
         id: "",
       });
@@ -186,22 +193,26 @@ const Navbar: React.FC = () => {
                           {restaurant?.name}
                         </div>
                       ))
-                    ) : (
+                    ) : canAddRestaurant ? (
                       <div
-                        className="block px-4 py-2 text-sm hover:bg-primary hover:text-white"
+                        className="block px-4 cursor-pointer py-2 text-sm hover:bg-primary hover:text-white"
                         onClick={() => handleAddRestaurant()}
                       >
-                        <CButton variant={ButtonType.Primary}>
-                          Add Restaurant
-                        </CButton>
+                        Add Restaurant
+                      </div>
+                    ) : (
+                      <div className="block px-4 py-2 text-sm text-gray-500">
+                        No Restaurants Available
                       </div>
                     )}
-                    <div
-                      className="block px-4 cursor-pointer py-2 text-sm hover:bg-primary hover:text-white"
-                      onClick={() => handleAddRestaurant()}
-                    >
-                      Add Restaurant
-                    </div>
+                    {canAddRestaurant && (
+                      <div
+                        className="block px-4 cursor-pointer py-2 text-sm hover:bg-primary hover:text-white"
+                        onClick={() => handleAddRestaurant()}
+                      >
+                        Add Restaurant
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

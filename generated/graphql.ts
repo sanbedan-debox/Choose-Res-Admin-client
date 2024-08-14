@@ -1801,7 +1801,7 @@ export type GenerateOtpForLoginQuery = { __typename?: 'Query', generateOtpForLog
 export type MeUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MeUserQuery = { __typename?: 'Query', meUser: { __typename?: 'User', _id: string, firstName: string, lastName: string, status: UserStatus, email: string, phone: string, ownerUserId?: string | null, role: UserRole, businessInfo?: { __typename?: 'Business', businessName?: string | null, ein?: string | null, businessType?: BusinessTypeEnum | null, estimatedRevenue?: EstimatedRevenueEnum | null, employeeSize?: StaffCountEnum | null, establishedAt?: string | null, address?: { __typename?: 'AddressInfo', addressLine1: string, addressLine2?: string | null, city: string, zipcode: number, state: { __typename?: 'StateData', stateId: string, stateName: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string, placeId: string } | null } | null } | null, restaurants?: Array<{ __typename?: 'RestaurantInfo', id: string, name: string, status: RestaurantStatus }> | null } };
+export type MeUserQuery = { __typename?: 'Query', meUser: { __typename?: 'User', _id: string, firstName: string, lastName: string, status: UserStatus, email: string, phone: string, ownerUserId?: string | null, role: UserRole, permissions: Array<{ __typename?: 'UserPermission', status: boolean, type: PermissionTypeEnum }>, businessInfo?: { __typename?: 'Business', businessName?: string | null, ein?: string | null, businessType?: BusinessTypeEnum | null, estimatedRevenue?: EstimatedRevenueEnum | null, employeeSize?: StaffCountEnum | null, establishedAt?: string | null } | null, restaurants?: Array<{ __typename?: 'RestaurantInfo', id: string, name: string, status: RestaurantStatus }> | null } };
 
 export type VerifyOtpForLoginQueryVariables = Exact<{
   key: Scalars['String']['input'];
@@ -1914,6 +1914,11 @@ export type SaveCsvErrorQueryVariables = Exact<{
 
 
 export type SaveCsvErrorQuery = { __typename?: 'Query', saveCsvError: boolean };
+
+export type GetCsvErrorsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetCsvErrorsQuery = { __typename?: 'Query', getCsvErrors: Array<{ __typename?: 'CsvUploadError', _id: string, issues: Array<string>, errorFile: string, updatedAt: any, restaurantId: { __typename?: 'Restaurant', _id: string } }> };
 
 export type AddressInfoFragment = { __typename?: 'AddressInfo', addressLine1: string, addressLine2?: string | null, city: string, zipcode: number, state: { __typename?: 'StateData', stateId: string, stateName: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string, placeId: string } | null };
 
@@ -2311,6 +2316,10 @@ export const MeUserDocument = gql`
     email
     phone
     ownerUserId
+    permissions {
+      status
+      type
+    }
     role
     businessInfo {
       businessName
@@ -2319,9 +2328,6 @@ export const MeUserDocument = gql`
       estimatedRevenue
       employeeSize
       establishedAt
-      address {
-        ...addressInfo
-      }
     }
     restaurants {
       id
@@ -2330,7 +2336,7 @@ export const MeUserDocument = gql`
     }
   }
 }
-    ${AddressInfoFragmentDoc}`;
+    `;
 export const VerifyOtpForLoginDocument = gql`
     query VerifyOtpForLogin($key: String!, $input: String!, $otp: String!) {
   verifyOtpForLogin(key: $key, input: $input, otp: $otp)
@@ -2465,6 +2471,19 @@ export const UploadCsvMenuDataDocument = gql`
 export const SaveCsvErrorDocument = gql`
     query saveCsvError($input: UploadCsvErrorInput!) {
   saveCsvError(input: $input)
+}
+    `;
+export const GetCsvErrorsDocument = gql`
+    query getCsvErrors {
+  getCsvErrors {
+    _id
+    restaurantId {
+      _id
+    }
+    issues
+    errorFile
+    updatedAt
+  }
 }
     `;
 export const ChangeItemStatusDocument = gql`
@@ -3069,6 +3088,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     saveCsvError(variables: SaveCsvErrorQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<SaveCsvErrorQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<SaveCsvErrorQuery>(SaveCsvErrorDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'saveCsvError', 'query', variables);
+    },
+    getCsvErrors(variables?: GetCsvErrorsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetCsvErrorsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetCsvErrorsQuery>(GetCsvErrorsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getCsvErrors', 'query', variables);
     },
     changeItemStatus(variables: ChangeItemStatusMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<ChangeItemStatusMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<ChangeItemStatusMutation>(ChangeItemStatusDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'changeItemStatus', 'mutation', variables);
