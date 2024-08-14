@@ -70,10 +70,11 @@ PaymentPending.getLayout = function getLayout(page: React.ReactNode) {
 export default PaymentPending;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const cookies = parseCookies(context);
-  const token = cookies.accessToken;
+  const cookieHeader = context.req.headers.cookie ?? "";
 
-  if (!token) {
+  const tokenExists = cookieHeader.includes("accessToken=");
+
+  if (!tokenExists) {
     return {
       redirect: {
         destination: "/login",

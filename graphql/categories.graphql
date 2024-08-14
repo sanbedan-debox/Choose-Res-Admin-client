@@ -6,9 +6,6 @@ mutation addItemToCategory($categoryId: String!, $itemId: [String!]!) {
   addItemsToCategory(categoryId: $categoryId, itemIds: $itemId)
 }
 
-mutation deleteCategory($id: String!) {
-  deleteCategory(id: $id)
-}
 query getCategories {
   getCategories {
     _id

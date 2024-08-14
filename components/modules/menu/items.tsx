@@ -22,8 +22,7 @@ const Items: React.FC = () => {
 
   const [showStatusConfirmationModal, setShowStatusConfirmationModal] =
     useState(false);
-  const [showDeleteConfirmationModal, setshowDeleteConfirmationModal] =
-    useState(false);
+
   const [availableCaption, setAvailableCaption] = useState(
     "are you sure you want to block the user."
   );
@@ -90,10 +89,6 @@ const Items: React.FC = () => {
 
   const renderActions = (rowData: { _id: string }) => (
     <div className="flex space-x-2 justify-end">
-      {/* <FaTrash
-        className="text-primary text-md cursor-pointer"
-        onClick={() => handleDeleteItem(rowData._id)}
-      /> */}
       <MdOutlineEdit
         className="text-primary text-lg cursor-pointer"
         onClick={() => handleEditItem(rowData._id)}
@@ -112,13 +107,6 @@ const Items: React.FC = () => {
       rowData.status === StatusEnum.Inactive
         ? "are you sure you want to activate the item?"
         : "are you sure you want to block the item?"
-    );
-  };
-  const handleDeleteItem = (_id: string) => {
-    setshowDeleteConfirmationModal(true);
-    setSelectedItemId(_id);
-    setAvailableCaption(
-      " By clicking yes the selected Item / Items will be deleted. This action cannot be undone."
     );
   };
 
@@ -174,32 +162,12 @@ const Items: React.FC = () => {
       setBtnLoading(false);
     }
   };
-  const handleDeleteConfirmation = async () => {
-    setBtnLoading(true);
-    try {
-      const response = await sdk.deleteItem({ id: selectedItemId });
-      if (response && response.deleteItem) {
-        fetchMenuItems();
-      }
-    } catch (error) {
-      const errorMessage = extractErrorMessage(error);
-      setToastData({
-        type: "error",
-        message: errorMessage,
-      });
-    } finally {
-      setBtnLoading(false);
-      setshowDeleteConfirmationModal(false);
-    }
-  };
+
   const handleStatusCloseConfirmationModal = () => {
     setShowStatusConfirmationModal(false);
     setSelectedItemId("");
   };
-  const handleDeleteCloseConfirmationModal = () => {
-    setshowDeleteConfirmationModal(false);
-    setSelectedItemId("");
-  };
+
   return (
     <div className="py-2">
       <RoopTable
@@ -222,25 +190,6 @@ const Items: React.FC = () => {
             loading={btnLoading}
             variant={ButtonType.Primary}
             onClick={handleStatusConfirmation}
-          >
-            Yes
-          </CButton>
-        </div>
-      </ReusableModal>
-
-      {/* DELETE ITEM MODAL */}
-      <ReusableModal
-        isOpen={showDeleteConfirmationModal}
-        onClose={handleDeleteCloseConfirmationModal}
-        title="Are you sure ?"
-        comments={availableCaption}
-      >
-        <div className="flex justify-end space-x-4">
-          <CButton
-            loading={btnLoading}
-            variant={ButtonType.Primary}
-            // className=""
-            onClick={handleDeleteConfirmation}
           >
             Yes
           </CButton>

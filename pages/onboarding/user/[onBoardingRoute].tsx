@@ -25,8 +25,6 @@ type HomePageProps = {
 };
 
 const OnboardingPage = ({ repo }: HomePageProps) => {
-  const router = useRouter();
-  // const { onBoardingRoute } = router.query;
   const {
     setAddressLine1,
     setAddressLine2,
@@ -102,9 +100,11 @@ export default OnboardingPage;
 export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
   context
 ) => {
-  const cookies = parseCookies(context);
-  const token = cookies.accessToken;
-  if (!token) {
+  const cookieHeader = context.req.headers.cookie ?? "";
+
+  const tokenExists = cookieHeader.includes("accessToken=");
+
+  if (!tokenExists) {
     return {
       redirect: {
         destination: "/login",
@@ -119,6 +119,7 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
         cookie: context.req.headers.cookie?.toString() ?? "",
       }
     );
+    console.log(response);
 
     if (response && response.getBusinessOnboardingDetails) {
       const {

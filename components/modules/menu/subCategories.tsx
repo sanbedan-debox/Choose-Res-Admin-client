@@ -16,9 +16,6 @@ const SubCategories: React.FC = () => {
   const { setToastData } = useGlobalStore();
   const { setisAddSubCategoryModalOpen, fetchMenuDatas } =
     useMenuOptionsStore();
-  const [showDeleteConfirmationModal, setshowDeleteConfirmationModal] =
-    useState(false);
-
   const [tableLoading, setTableLoading] = useState(false);
   const { setisEditSubCategory, seteditSubCategoryId } = useSubCategoryStore();
   const fetchCategories = async () => {
@@ -106,14 +103,6 @@ const SubCategories: React.FC = () => {
   //   }
   // };
 
-  const handleDeleteItem = (_id: string) => {
-    setshowDeleteConfirmationModal(true);
-    // setSelectedItemId(_id);
-    // setAvailableCaption(
-    //   "By clicking yes the selected Category / Categories will be deleted. This action cannot be undone."
-    // );
-  };
-
   const renderActions = (rowData: { _id: string }) => (
     <div className="flex space-x-2 justify-end">
       <MdOutlineEdit
@@ -166,29 +155,6 @@ const SubCategories: React.FC = () => {
   //   }
   // };
 
-  // const handleDeleteCloseConfirmationModal = () => {
-  //   setshowDeleteConfirmationModal(false);
-  //   setSelectedItemId("");
-  // };
-  // const handleDeleteConfirmation = async () => {
-  //   setBtnLoading(true);
-  //   setshowDeleteConfirmationModal(false);
-  //   try {
-  //     const response = await sdk.deleteCategory({ id: selectedItemId });
-  //     if (response && response.deleteCategory) {
-  //       fetchCategories();
-  //     }
-  //   } catch (error) {
-  //     const errorMessage = extractErrorMessage(error);
-  //     setToastData({
-  //       type: "error",
-  //       message: errorMessage,
-  //     });
-  //   } finally {
-  //     setBtnLoading(false);
-  //   }
-  // };
-
   return (
     <div className="py-2">
       <RoopTable
@@ -215,23 +181,7 @@ const SubCategories: React.FC = () => {
         </div>
       </ReusableModal>
 
-      <ReusableModal
-        isOpen={showDeleteConfirmationModal}
-        onClose={handleDeleteCloseConfirmationModal}
-        title="Are you sure ?"
-        comments={availableCaption}
-      >
-        <div className="flex justify-end space-x-4">
-          <CButton
-            loading={btnLoading}
-            variant={ButtonType.Primary}
-            onClick={handleDeleteConfirmation}
-          >
-            Yes
-          </CButton>
-        </div>
-      </ReusableModal> */}
-
+     
       {/* <ReusableModal
         isOpen={isAddCategoryModalOpen}
         onClose={() => setisAddCategoryModalOpen(false)}

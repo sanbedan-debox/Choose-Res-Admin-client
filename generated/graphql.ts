@@ -39,7 +39,6 @@ export type AccountPreferenceInput = {
 export type AddAdminInput = {
   email: Scalars['String']['input'];
   name: Scalars['String']['input'];
-  password: Scalars['String']['input'];
   role: AdminRole;
 };
 
@@ -208,9 +207,8 @@ export type Admin = {
   lastLoggedIn?: Maybe<Scalars['DateTimeISO']['output']>;
   lastLoggedOut?: Maybe<Scalars['DateTimeISO']['output']>;
   name: Scalars['String']['output'];
-  numberOfResetPassword: Scalars['Float']['output'];
   role: AdminRole;
-  status: PlatformStatus;
+  status: AdminStatus;
   unBlockedBy: Admin;
   updatedAt: Scalars['DateTimeISO']['output'];
   updatedBy: Admin;
@@ -221,6 +219,12 @@ export enum AdminRole {
   Admin = 'admin',
   Master = 'master',
   Normal = 'normal'
+}
+
+/** Types of status for Admin */
+export enum AdminStatus {
+  Active = 'active',
+  Blocked = 'blocked'
 }
 
 export type Availability = {
@@ -361,6 +365,7 @@ export type DeviceInfo = {
   deviceName: Scalars['String']['output'];
   deviceOS: Scalars['String']['output'];
   type: Scalars['String']['output'];
+  uniqueId: Scalars['String']['output'];
 };
 
 export type EmailBuilderTemplate = {
@@ -715,17 +720,10 @@ export type Mutation = {
   completeBusinessOnboarding: Scalars['Boolean']['output'];
   createEmailCampaign: Scalars['Boolean']['output'];
   createEmailTemplate: Scalars['Boolean']['output'];
-  deleteAdmin: Scalars['Boolean']['output'];
-  deleteCategory: Scalars['Boolean']['output'];
   deleteEmailTemplate: Scalars['Boolean']['output'];
-  deleteItem: Scalars['Boolean']['output'];
-  deleteMenu: Scalars['Boolean']['output'];
-  deleteModifier: Scalars['Boolean']['output'];
-  getItemByCategory: Item;
   removeCategoryFromMenu: Scalars['Boolean']['output'];
   removeItemFromCategory: Scalars['Boolean']['output'];
   removeModifierFromModifierGroup: Scalars['Boolean']['output'];
-  removeModifierGroup: Scalars['Boolean']['output'];
   removeModifierGroupFromItem: Scalars['Boolean']['output'];
   removeTeamMember: Scalars['Boolean']['output'];
   restaurantOnboarding: Scalars['Boolean']['output'];
@@ -873,7 +871,7 @@ export type MutationAdminUserDetailsVerificationArgs = {
 
 export type MutationBlockAdminArgs = {
   id: Scalars['String']['input'];
-  updateStatus: PlatformStatus;
+  updateStatus: AdminStatus;
 };
 
 
@@ -928,38 +926,8 @@ export type MutationCreateEmailTemplateArgs = {
 };
 
 
-export type MutationDeleteAdminArgs = {
-  id: Scalars['String']['input'];
-};
-
-
-export type MutationDeleteCategoryArgs = {
-  id: Scalars['String']['input'];
-};
-
-
 export type MutationDeleteEmailTemplateArgs = {
   id: Scalars['String']['input'];
-};
-
-
-export type MutationDeleteItemArgs = {
-  id: Scalars['String']['input'];
-};
-
-
-export type MutationDeleteMenuArgs = {
-  id: Scalars['String']['input'];
-};
-
-
-export type MutationDeleteModifierArgs = {
-  id: Scalars['String']['input'];
-};
-
-
-export type MutationGetItemByCategoryArgs = {
-  categoryId: Scalars['String']['input'];
 };
 
 
@@ -978,11 +946,6 @@ export type MutationRemoveItemFromCategoryArgs = {
 export type MutationRemoveModifierFromModifierGroupArgs = {
   modifierGroupId: Scalars['String']['input'];
   modifierId: Scalars['String']['input'];
-};
-
-
-export type MutationRemoveModifierGroupArgs = {
-  id: Scalars['String']['input'];
 };
 
 
@@ -1160,15 +1123,6 @@ export type Places = {
   placeId: Scalars['String']['output'];
 };
 
-/** Restaurant user status */
-export enum PlatformStatus {
-  Active = 'active',
-  Blocked = 'blocked',
-  InternalVerificationPending = 'internalVerificationPending',
-  OnboardingPending = 'onboardingPending',
-  PaymentPending = 'paymentPending'
-}
-
 export type PriceOptions = {
   __typename?: 'PriceOptions';
   menuType: MenuTypeEnum;
@@ -1217,7 +1171,6 @@ export type Query = {
   getBusinessOnboardingDetails?: Maybe<Business>;
   getCategories: Array<Category>;
   getCategory: Category;
-  getCategoryByMenu: Category;
   getConfig: Config;
   getCsvError: CsvUploadError;
   getCsvErrors: Array<CsvUploadError>;
@@ -1225,8 +1178,6 @@ export type Query = {
   getItem: Item;
   getItems: Array<Item>;
   getMenu: Menu;
-  getMenuByRestaurant: Array<Menu>;
-  getMenusByType: Array<Menu>;
   getModifier: Modifier;
   getModifierGroup: ModifierGroup;
   getModifierGroups: Array<ModifierGroup>;
@@ -1246,17 +1197,17 @@ export type Query = {
   logout: Scalars['Boolean']['output'];
   me: Admin;
   meUser: User;
-  resetPasswordAdmin: Scalars['Boolean']['output'];
+  revokeAdminAccess: Scalars['Boolean']['output'];
   saveCsvError: Scalars['Boolean']['output'];
   setRestaurantIdAsCookie: Scalars['Boolean']['output'];
   uploadCsvData: Scalars['Boolean']['output'];
+  verifyAdminLogin: Scalars['String']['output'];
   verifyOtpForLogin: Scalars['Boolean']['output'];
 };
 
 
 export type QueryAdminLoginArgs = {
   email: Scalars['String']['input'];
-  password: Scalars['String']['input'];
 };
 
 
@@ -1306,11 +1257,6 @@ export type QueryGetCategoryArgs = {
 };
 
 
-export type QueryGetCategoryByMenuArgs = {
-  menuId: Scalars['String']['input'];
-};
-
-
 export type QueryGetConfigArgs = {
   type: ConfigTypeEnum;
 };
@@ -1334,12 +1280,6 @@ export type QueryGetItemsArgs = {
 
 export type QueryGetMenuArgs = {
   id: Scalars['String']['input'];
-};
-
-
-export type QueryGetMenusByTypeArgs = {
-  id: Scalars['String']['input'];
-  type?: InputMaybe<MenuTypeEnum>;
 };
 
 
@@ -1391,9 +1331,8 @@ export type QueryGetUsersForTargetArgs = {
 };
 
 
-export type QueryResetPasswordAdminArgs = {
+export type QueryRevokeAdminAccessArgs = {
   id: Scalars['String']['input'];
-  password: Scalars['String']['input'];
 };
 
 
@@ -1409,6 +1348,13 @@ export type QuerySetRestaurantIdAsCookieArgs = {
 
 export type QueryUploadCsvDataArgs = {
   input: UploadCsvInput;
+};
+
+
+export type QueryVerifyAdminLoginArgs = {
+  email: Scalars['String']['input'];
+  otp: Scalars['String']['input'];
+  otpKey: Scalars['String']['input'];
 };
 
 
@@ -1907,13 +1853,6 @@ export type AddItemToCategoryMutationVariables = Exact<{
 
 export type AddItemToCategoryMutation = { __typename?: 'Mutation', addItemsToCategory: boolean };
 
-export type DeleteCategoryMutationVariables = Exact<{
-  id: Scalars['String']['input'];
-}>;
-
-
-export type DeleteCategoryMutation = { __typename?: 'Mutation', deleteCategory: boolean };
-
 export type GetCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -1985,13 +1924,6 @@ export type ChangeItemStatusMutationVariables = Exact<{
 
 export type ChangeItemStatusMutation = { __typename?: 'Mutation', changeItemStatus: boolean };
 
-export type DeleteItemMutationVariables = Exact<{
-  id: Scalars['String']['input'];
-}>;
-
-
-export type DeleteItemMutation = { __typename?: 'Mutation', deleteItem: boolean };
-
 export type GetItemsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -2055,11 +1987,6 @@ export type GetActiveTimezonesQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetActiveTimezonesQuery = { __typename?: 'Query', getActiveTimezones: Array<{ __typename?: 'Timezone', value: string, gmtOffset: number, _id: string }> };
 
-export type GetMenuByRestaurantQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetMenuByRestaurantQuery = { __typename?: 'Query', getMenuByRestaurant: Array<{ __typename?: 'Menu', _id: string, name: string, status: StatusEnum, createdAt: any, updatedAt: any, type: MenuTypeEnum, categories: Array<{ __typename?: 'CategoryInfo', name?: string | null }> }> };
-
 export type AddMenuMutationVariables = Exact<{
   input: AddMenuInput;
 }>;
@@ -2083,13 +2010,6 @@ export type ChangeMenuStatusMutationVariables = Exact<{
 
 export type ChangeMenuStatusMutation = { __typename?: 'Mutation', changeMenuStatus: boolean };
 
-export type DeleteMenuMutationVariables = Exact<{
-  id: Scalars['String']['input'];
-}>;
-
-
-export type DeleteMenuMutation = { __typename?: 'Mutation', deleteMenu: boolean };
-
 export type AddCategoryToMenuMutationVariables = Exact<{
   categoryId: Array<Scalars['String']['input']> | Scalars['String']['input'];
   menuId: Scalars['String']['input'];
@@ -2097,13 +2017,6 @@ export type AddCategoryToMenuMutationVariables = Exact<{
 
 
 export type AddCategoryToMenuMutation = { __typename?: 'Mutation', addCategoriesToMenu: boolean };
-
-export type GetMenusByTypeQueryVariables = Exact<{
-  id: Scalars['String']['input'];
-}>;
-
-
-export type GetMenusByTypeQuery = { __typename?: 'Query', getMenusByType: Array<{ __typename?: 'Menu', _id: string, name: string, status: StatusEnum, createdAt: any, updatedAt: any, type: MenuTypeEnum, availability?: Array<{ __typename?: 'Availability', day: string, active: boolean, hours: Array<{ __typename?: 'Hours', start: any, end: any }> }> | null, taxes?: { __typename?: 'TaxRateInfo', _id: string, salesTax: number, name: string } | null, categories: Array<{ __typename?: 'CategoryInfo', name?: string | null, status: StatusEnum, _id: { __typename?: 'Category', _id: string } }> }> };
 
 export type UpdateMenuMutationVariables = Exact<{
   input: UpdateMenuInput;
@@ -2157,13 +2070,6 @@ export type GetModifiersforGroupDropDownQueryVariables = Exact<{ [key: string]: 
 
 export type GetModifiersforGroupDropDownQuery = { __typename?: 'Query', getModifiers: Array<{ __typename?: 'Modifier', _id: string, name: string, price: number }> };
 
-export type RemoveModifierGroupMutationVariables = Exact<{
-  id: Scalars['String']['input'];
-}>;
-
-
-export type RemoveModifierGroupMutation = { __typename?: 'Mutation', removeModifierGroup: boolean };
-
 export type GetModifierGroupQueryVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
@@ -2205,13 +2111,6 @@ export type AddModifierMutationVariables = Exact<{
 
 
 export type AddModifierMutation = { __typename?: 'Mutation', addModifier: boolean };
-
-export type DeleteModifierMutationVariables = Exact<{
-  id: Scalars['String']['input'];
-}>;
-
-
-export type DeleteModifierMutation = { __typename?: 'Mutation', deleteModifier: boolean };
 
 export type GetModifierQueryVariables = Exact<{
   id: Scalars['String']['input'];
@@ -2477,11 +2376,6 @@ export const AddItemToCategoryDocument = gql`
   addItemsToCategory(categoryId: $categoryId, itemIds: $itemId)
 }
     `;
-export const DeleteCategoryDocument = gql`
-    mutation deleteCategory($id: String!) {
-  deleteCategory(id: $id)
-}
-    `;
 export const GetCategoriesDocument = gql`
     query getCategories {
   getCategories {
@@ -2576,11 +2470,6 @@ export const SaveCsvErrorDocument = gql`
 export const ChangeItemStatusDocument = gql`
     mutation changeItemStatus($id: String!) {
   changeItemStatus(id: $id)
-}
-    `;
-export const DeleteItemDocument = gql`
-    mutation deleteItem($id: String!) {
-  deleteItem(id: $id)
 }
     `;
 export const GetItemsDocument = gql`
@@ -2713,21 +2602,6 @@ export const GetActiveTimezonesDocument = gql`
   }
 }
     `;
-export const GetMenuByRestaurantDocument = gql`
-    query getMenuByRestaurant {
-  getMenuByRestaurant {
-    _id
-    name
-    status
-    createdAt
-    updatedAt
-    type
-    categories {
-      name
-    }
-  }
-}
-    `;
 export const AddMenuDocument = gql`
     mutation addMenu($input: AddMenuInput!) {
   addMenu(input: $input)
@@ -2751,46 +2625,9 @@ export const ChangeMenuStatusDocument = gql`
   changeMenuStatus(id: $id)
 }
     `;
-export const DeleteMenuDocument = gql`
-    mutation deleteMenu($id: String!) {
-  deleteMenu(id: $id)
-}
-    `;
 export const AddCategoryToMenuDocument = gql`
     mutation addCategoryToMenu($categoryId: [String!]!, $menuId: String!) {
   addCategoriesToMenu(categoryIds: $categoryId, menuId: $menuId)
-}
-    `;
-export const GetMenusByTypeDocument = gql`
-    query getMenusByType($id: String!) {
-  getMenusByType(id: $id) {
-    _id
-    name
-    status
-    createdAt
-    updatedAt
-    type
-    availability {
-      day
-      hours {
-        start
-        end
-      }
-      active
-    }
-    taxes {
-      _id
-      salesTax
-      name
-    }
-    categories {
-      name
-      status
-      _id {
-        _id
-      }
-    }
-  }
 }
     `;
 export const UpdateMenuDocument = gql`
@@ -2878,11 +2715,6 @@ export const GetModifiersforGroupDropDownDocument = gql`
   }
 }
     `;
-export const RemoveModifierGroupDocument = gql`
-    mutation removeModifierGroup($id: String!) {
-  removeModifierGroup(id: $id)
-}
-    `;
 export const GetModifierGroupDocument = gql`
     query getModifierGroup($id: String!) {
   getModifierGroup(id: $id) {
@@ -2935,11 +2767,6 @@ export const GetModifiersDocument = gql`
 export const AddModifierDocument = gql`
     mutation addModifier($input: AddModifierInput!) {
   addModifier(input: $input)
-}
-    `;
-export const DeleteModifierDocument = gql`
-    mutation deleteModifier($id: String!) {
-  deleteModifier(id: $id)
 }
     `;
 export const GetModifierDocument = gql`
@@ -3216,9 +3043,6 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     addItemToCategory(variables: AddItemToCategoryMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddItemToCategoryMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<AddItemToCategoryMutation>(AddItemToCategoryDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'addItemToCategory', 'mutation', variables);
     },
-    deleteCategory(variables: DeleteCategoryMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<DeleteCategoryMutation> {
-      return withWrapper((wrappedRequestHeaders) => client.request<DeleteCategoryMutation>(DeleteCategoryDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'deleteCategory', 'mutation', variables);
-    },
     getCategories(variables?: GetCategoriesQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetCategoriesQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetCategoriesQuery>(GetCategoriesDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getCategories', 'query', variables);
     },
@@ -3248,9 +3072,6 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     changeItemStatus(variables: ChangeItemStatusMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<ChangeItemStatusMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<ChangeItemStatusMutation>(ChangeItemStatusDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'changeItemStatus', 'mutation', variables);
-    },
-    deleteItem(variables: DeleteItemMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<DeleteItemMutation> {
-      return withWrapper((wrappedRequestHeaders) => client.request<DeleteItemMutation>(DeleteItemDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'deleteItem', 'mutation', variables);
     },
     getItems(variables?: GetItemsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetItemsQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetItemsQuery>(GetItemsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getItems', 'query', variables);
@@ -3282,9 +3103,6 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     getActiveTimezones(variables?: GetActiveTimezonesQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetActiveTimezonesQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetActiveTimezonesQuery>(GetActiveTimezonesDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getActiveTimezones', 'query', variables);
     },
-    getMenuByRestaurant(variables?: GetMenuByRestaurantQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetMenuByRestaurantQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<GetMenuByRestaurantQuery>(GetMenuByRestaurantDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getMenuByRestaurant', 'query', variables);
-    },
     addMenu(variables: AddMenuMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddMenuMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<AddMenuMutation>(AddMenuDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'addMenu', 'mutation', variables);
     },
@@ -3294,14 +3112,8 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     changeMenuStatus(variables: ChangeMenuStatusMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<ChangeMenuStatusMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<ChangeMenuStatusMutation>(ChangeMenuStatusDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'changeMenuStatus', 'mutation', variables);
     },
-    deleteMenu(variables: DeleteMenuMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<DeleteMenuMutation> {
-      return withWrapper((wrappedRequestHeaders) => client.request<DeleteMenuMutation>(DeleteMenuDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'deleteMenu', 'mutation', variables);
-    },
     addCategoryToMenu(variables: AddCategoryToMenuMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddCategoryToMenuMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<AddCategoryToMenuMutation>(AddCategoryToMenuDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'addCategoryToMenu', 'mutation', variables);
-    },
-    getMenusByType(variables: GetMenusByTypeQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetMenusByTypeQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<GetMenusByTypeQuery>(GetMenusByTypeDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getMenusByType', 'query', variables);
     },
     updateMenu(variables: UpdateMenuMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UpdateMenuMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<UpdateMenuMutation>(UpdateMenuDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'updateMenu', 'mutation', variables);
@@ -3327,9 +3139,6 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     getModifiersforGroupDropDown(variables?: GetModifiersforGroupDropDownQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetModifiersforGroupDropDownQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetModifiersforGroupDropDownQuery>(GetModifiersforGroupDropDownDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getModifiersforGroupDropDown', 'query', variables);
     },
-    removeModifierGroup(variables: RemoveModifierGroupMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<RemoveModifierGroupMutation> {
-      return withWrapper((wrappedRequestHeaders) => client.request<RemoveModifierGroupMutation>(RemoveModifierGroupDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'removeModifierGroup', 'mutation', variables);
-    },
     getModifierGroup(variables: GetModifierGroupQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetModifierGroupQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetModifierGroupQuery>(GetModifierGroupDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getModifierGroup', 'query', variables);
     },
@@ -3347,9 +3156,6 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     addModifier(variables: AddModifierMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddModifierMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<AddModifierMutation>(AddModifierDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'addModifier', 'mutation', variables);
-    },
-    deleteModifier(variables: DeleteModifierMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<DeleteModifierMutation> {
-      return withWrapper((wrappedRequestHeaders) => client.request<DeleteModifierMutation>(DeleteModifierDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'deleteModifier', 'mutation', variables);
     },
     getModifier(variables: GetModifierQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetModifierQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetModifierQuery>(GetModifierDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getModifier', 'query', variables);

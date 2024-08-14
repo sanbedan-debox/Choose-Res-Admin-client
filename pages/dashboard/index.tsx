@@ -160,10 +160,10 @@ Dashboard.getLayout = function getLayout(page: React.ReactNode) {
 export default Dashboard;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const cookies = parseCookies(context);
-  const token = cookies.accessToken;
+  const cookieHeader = context.req.headers.cookie ?? "";
+  const tokenExists = cookieHeader.includes("accessToken=");
 
-  if (!token) {
+  if (!tokenExists) {
     return {
       redirect: {
         destination: "/login",

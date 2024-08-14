@@ -1,18 +1,3 @@
-query getMenuByRestaurant {
-  getMenuByRestaurant {
-    _id
-    name
-    status
-    createdAt
-    updatedAt
-    type
-
-    categories {
-      name
-    }
-  }
-}
-
 mutation addMenu($input: AddMenuInput!) {
   addMenu(input: $input)
 }
@@ -37,44 +22,8 @@ mutation changeMenuStatus($id: String!) {
   changeMenuStatus(id: $id)
 }
 
-mutation deleteMenu($id: String!) {
-  deleteMenu(id: $id)
-}
-
 mutation addCategoryToMenu($categoryId: [String!]!, $menuId: String!) {
   addCategoriesToMenu(categoryIds: $categoryId, menuId: $menuId)
-}
-
-query getMenusByType($id: String!) {
-  getMenusByType(id: $id) {
-    _id
-    name
-    status
-    createdAt
-    updatedAt
-    type
-    availability {
-      day
-      hours {
-        start
-        end
-      }
-      active
-    }
-    taxes {
-      _id
-      salesTax
-      name
-    }
-    categories {
-      name
-      status
-
-      _id {
-        _id
-      }
-    }
-  }
 }
 
 mutation updateMenu($input: UpdateMenuInput!) {

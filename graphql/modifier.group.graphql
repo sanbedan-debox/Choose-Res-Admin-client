@@ -24,10 +24,6 @@ query getModifiersforGroupDropDown {
   }
 }
 
-mutation removeModifierGroup($id: String!) {
-  removeModifierGroup(id: $id)
-}
-
 query getModifierGroup($id: String!) {
   getModifierGroup(id: $id) {
     _id

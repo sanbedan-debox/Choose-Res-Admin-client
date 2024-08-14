@@ -10,10 +10,6 @@ mutation addModifier($input: AddModifierInput!) {
   addModifier(input: $input)
 }
 
-mutation deleteModifier($id: String!) {
-  deleteModifier(id: $id)
-}
-
 query getModifier($id: String!) {
   getModifier(id: $id) {
     _id
@@ -23,10 +19,6 @@ query getModifier($id: String!) {
     name
     price
   }
-}
-
-mutation deleteModifier($id: String!) {
-  deleteModifier(id: $id)
 }
 
 mutation updateModifier($input: UpdateModifierInput!) {

@@ -20,8 +20,6 @@ const Categories: React.FC = () => {
   >([]);
   const { setToastData } = useGlobalStore();
   const { setisAddCategoryModalOpen, fetchMenuDatas } = useMenuOptionsStore();
-  const [showDeleteConfirmationModal, setshowDeleteConfirmationModal] =
-    useState(false);
 
   const [tableLoading, setTableLoading] = useState(false);
   const fetchCategories = async () => {
@@ -111,10 +109,6 @@ const Categories: React.FC = () => {
 
   const renderActions = (rowData: { _id: string }) => (
     <div className="flex space-x-2 justify-end">
-      {/* <FaTrash
-        className="text-primary text-md cursor-pointer"
-        onClick={() => handleDeleteItem(rowData._id)}
-      /> */}
       <MdOutlineEdit
         className="text-primary text-lg cursor-pointer"
         onClick={() => handleEditCategory(rowData._id)}
@@ -126,14 +120,6 @@ const Categories: React.FC = () => {
       />
     </div>
   );
-
-  const handleDeleteItem = (_id: string) => {
-    setshowDeleteConfirmationModal(true);
-    setSelectedItemId(_id);
-    setAvailableCaption(
-      "By clicking yes the selected Category / Categories will be deleted. This action cannot be undone."
-    );
-  };
 
   const headings = [
     { title: "Name", dataKey: "name" },
@@ -175,29 +161,6 @@ const Categories: React.FC = () => {
     }
   };
 
-  const handleDeleteCloseConfirmationModal = () => {
-    setshowDeleteConfirmationModal(false);
-    setSelectedItemId("");
-  };
-  const handleDeleteConfirmation = async () => {
-    setBtnLoading(true);
-    setshowDeleteConfirmationModal(false);
-    try {
-      const response = await sdk.deleteCategory({ id: selectedItemId });
-      if (response && response.deleteCategory) {
-        fetchCategories();
-      }
-    } catch (error) {
-      const errorMessage = extractErrorMessage(error);
-      setToastData({
-        type: "error",
-        message: errorMessage,
-      });
-    } finally {
-      setBtnLoading(false);
-    }
-  };
-
   return (
     <div className="py-2">
       <RoopTable
@@ -224,25 +187,6 @@ const Categories: React.FC = () => {
             variant={ButtonType.Primary}
             // className=""
             onClick={handleStatusConfirmation}
-          >
-            Yes
-          </CButton>
-        </div>
-      </ReusableModal>
-
-      {/* DELETE ITEM MODAL */}
-      <ReusableModal
-        isOpen={showDeleteConfirmationModal}
-        onClose={handleDeleteCloseConfirmationModal}
-        title="Are you sure ?"
-        comments={availableCaption}
-      >
-        <div className="flex justify-end space-x-4">
-          <CButton
-            loading={btnLoading}
-            variant={ButtonType.Primary}
-            // className=""
-            onClick={handleDeleteConfirmation}
           >
             Yes
           </CButton>

@@ -140,10 +140,13 @@ export default OnboardingPage;
 export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
   context
 ) => {
-  const cookies = parseCookies(context);
+  const cookieHeader = context.req.headers.cookie ?? "";
 
-  const token = cookies.accessToken;
-  if (!token) {
+  // Check if the accessToken exists in the cookieHeader
+  const tokenExists = cookieHeader.includes("accessToken=");
+  const resIdExists = cookieHeader.includes("restaurantOnboarding=");
+
+  if (!tokenExists) {
     return {
       redirect: {
         destination: "/login",
@@ -153,8 +156,7 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
   }
 
   try {
-    const res_id = cookies.restaurantOnboarding;
-    if (!res_id) {
+    if (!resIdExists) {
       return {
         props: {
           repo: {

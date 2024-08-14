@@ -59,8 +59,6 @@ const Modifiers: React.FC = () => {
     fetchModifierGroups();
   }, [fetchMenuDatas]);
 
-  const [showDeleteConfirmationModal, setshowDeleteConfirmationModal] =
-    useState(false);
   const { setEditModGroupId, setisEditModGroup, setisDuplicateModifierGroup } =
     useModGroupStore();
 
@@ -68,13 +66,6 @@ const Modifiers: React.FC = () => {
   const [availableCaption, setAvailableCaption] = useState(
     "are you sure you want to block the user."
   );
-  const handleDeleteItem = (_id: string) => {
-    setshowDeleteConfirmationModal(true);
-    setSelectedItemId(_id);
-    setAvailableCaption(
-      " By clicking yes the selected Modifer Group / Modifier Groups will be deleted. This action cannot be undone."
-    );
-  };
 
   const handleEditItem = (_id: string) => {
     setisAddModifierGroupModalOpen(true);
@@ -92,10 +83,6 @@ const Modifiers: React.FC = () => {
 
   const renderActions = (rowData: { _id: string }) => (
     <div className="flex space-x-3 justify-end">
-      {/* <FaTrash
-        className="text-primary text-md cursor-pointer"
-        onClick={() => handleDeleteItem(rowData._id)}
-      /> */}
       <MdOutlineEdit
         className="text-primary text-lg cursor-pointer"
         onClick={() => handleEditItem(rowData._id)}
@@ -109,25 +96,6 @@ const Modifiers: React.FC = () => {
   );
 
   const [btnLoading, setBtnLoading] = useState(false);
-
-  const handleDeleteConfirmation = async () => {
-    setBtnLoading(true);
-    try {
-      const response = await sdk.removeModifierGroup({ id: selectedItemId });
-      if (response && response.removeModifierGroup) {
-        fetchModifierGroups();
-      }
-    } catch (error) {
-      const errorMessage = extractErrorMessage(error);
-      setToastData({
-        type: "error",
-        message: errorMessage,
-      });
-    } finally {
-      setBtnLoading(false);
-      setshowDeleteConfirmationModal(false);
-    }
-  };
 
   const handleToggleSwitch = (rowData: { status: string; _id: string }) => {
     setShowStatusConfirmationModal(true);
@@ -161,10 +129,7 @@ const Modifiers: React.FC = () => {
       onClick: () => setisAddModifierGroupModalOpen(true),
     },
   ];
-  const handleDeleteCloseConfirmationModal = () => {
-    setshowDeleteConfirmationModal(false);
-    setSelectedItemId("");
-  };
+
   const handleStatusCloseConfirmationModal = () => {
     setShowStatusConfirmationModal(false);
     setSelectedItemId("");
@@ -198,23 +163,7 @@ const Modifiers: React.FC = () => {
         data={modifierGroups ?? []}
         mainActions={mainActions}
       />
-      {/* DELETE ITEM MODAL */}
-      <ReusableModal
-        isOpen={showDeleteConfirmationModal}
-        onClose={handleDeleteCloseConfirmationModal}
-        title="Are you sure ?"
-        comments={availableCaption}
-      >
-        <div className="flex justify-end space-x-4">
-          <CButton
-            loading={btnLoading}
-            variant={ButtonType.Primary}
-            onClick={handleDeleteConfirmation}
-          >
-            Yes
-          </CButton>
-        </div>
-      </ReusableModal>
+
       {/* STATUS CHANGE MODAL */}
       <ReusableModal
         isOpen={showStatusConfirmationModal}

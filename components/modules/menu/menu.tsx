@@ -32,8 +32,7 @@ const Menu: React.FC = () => {
     useState(false);
   const [selectedItemId, setSelectedItemId] = useState<string>("");
   const [availableCaption, setAvailableCaption] = useState("");
-  const [showDeleteConfirmationModal, setshowDeleteConfirmationModal] =
-    useState(false);
+
   const { setToastData } = useGlobalStore();
   const [tableLoading, setTableLoading] = useState(false);
   const { setEditMenuId, setisEditMenu, setisDuplicateMenu } =
@@ -42,10 +41,10 @@ const Menu: React.FC = () => {
   const fetchAllMenus = async () => {
     setTableLoading(true);
     try {
-      const response = await sdk.getMenuByRestaurant();
-      if (response && response.getMenuByRestaurant) {
+      const response = await sdk.getAllMenus();
+      if (response && response.getAllMenus) {
         setMenu(
-          response.getMenuByRestaurant.map(
+          response.getAllMenus.map(
             (el: {
               name: string;
               status: string;
@@ -78,14 +77,6 @@ const Menu: React.FC = () => {
     fetchAllMenus();
   }, [fetchMenuDatas, setToastData]);
 
-  const handleDeleteItem = (_id: string) => {
-    setshowDeleteConfirmationModal(true);
-    setSelectedItemId(_id);
-    setAvailableCaption(
-      " By clicking yes the selected Menu / Menus will be deleted. This action cannot be undone."
-    );
-  };
-
   const handleEditMenu = (_id: string) => {
     setisAddMenuModalOpen(true);
     setIsFromUploadCSV(false);
@@ -104,10 +95,6 @@ const Menu: React.FC = () => {
 
   const renderActions = (rowData: { _id: string }) => (
     <div className="flex space-x-2 justify-end">
-      {/* <FaTrash
-        className="text-primary text-md cursor-pointer"
-        onClick={() => handleDeleteItem(rowData._id)}
-      /> */}
       <MdOutlineEdit
         className="text-primary text-lg cursor-pointer"
         onClick={() => handleEditMenu(rowData._id)}
@@ -202,29 +189,6 @@ const Menu: React.FC = () => {
       setBtnLoading(false);
     }
   };
-  const handleDeleteCloseConfirmationModal = () => {
-    setshowDeleteConfirmationModal(false);
-    setSelectedItemId("");
-  };
-
-  const handleDeleteConfirmation = async () => {
-    setBtnLoading(true);
-    setshowDeleteConfirmationModal(false);
-    try {
-      const response = await sdk.deleteMenu({ id: selectedItemId });
-      if (response && response.deleteMenu) {
-        fetchAllMenus();
-      }
-    } catch (error) {
-      const errorMessage = extractErrorMessage(error);
-      setToastData({
-        type: "error",
-        message: errorMessage,
-      });
-    } finally {
-      setBtnLoading(false);
-    }
-  };
 
   return (
     <div className="py-2">
@@ -251,25 +215,6 @@ const Menu: React.FC = () => {
             variant={ButtonType.Primary}
             // className=""
             onClick={handleStatusConfirmation}
-          >
-            Yes
-          </CButton>
-        </div>
-      </ReusableModal>
-
-      {/* DELETE ITEM MODAL */}
-      <ReusableModal
-        isOpen={showDeleteConfirmationModal}
-        onClose={handleDeleteCloseConfirmationModal}
-        title="Are you sure?"
-        comments={availableCaption}
-      >
-        <div className="flex justify-end space-x-4">
-          <CButton
-            loading={btnLoading}
-            variant={ButtonType.Primary}
-            // className=""
-            onClick={handleDeleteConfirmation}
           >
             Yes
           </CButton>
