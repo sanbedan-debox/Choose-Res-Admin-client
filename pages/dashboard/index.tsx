@@ -32,6 +32,7 @@ type UserRepo = {
 const Dashboard: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
   const { setSelectedMenu, isShowSetupPanel } = useGlobalStore();
   const [canEditRestaurant, setCanEditRestaurant] = useState(false);
+  const [canEditTaxRate, setCanEditTaxRate] = useState(false);
 
   const router = useRouter();
   const {
@@ -143,21 +144,34 @@ const Dashboard: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
     }
     const canAddRestaurant = hasAccess(permissions, PermissionTypeEnum.Menu);
     setCanEditRestaurant(canAddRestaurant);
+    const canUpdateTax = hasAccess(permissions, PermissionTypeEnum.UpdateTax);
+    const canUpdateBusiness = hasAccess(
+      permissions,
+      PermissionTypeEnum.UpdateBusiness
+    );
+    const canUpdateRestarant = hasAccess(
+      permissions,
+      PermissionTypeEnum.UpdateRestaurant
+    );
+    setCanEditTaxRate(canUpdateTax && canUpdateBusiness && canUpdateRestarant);
 
     fetchPendingRestaurants();
     fetchPendingCsvUploads();
   }, []);
 
-  const { setisShowSetupPanel, setisShowTaxSettings } = useGlobalStore();
+  const { setisShowTaxSettings } = useGlobalStore();
   const { taxRate } = useAuthStore();
 
-  const actions = [
-    {
-      name: taxRate?.salesTax ? "Update tax rate" : "Set Tax Rate",
-      link: "#",
-      onClick: () => setisShowTaxSettings(true),
-    },
-  ];
+  canEditTaxRate;
+  const actions = canEditTaxRate
+    ? [
+        {
+          name: taxRate?.salesTax ? "Update tax rate" : "Set Tax Rate",
+          link: "#",
+          onClick: () => setisShowTaxSettings(true),
+        },
+      ]
+    : [];
 
   const { firstName } = useAuthStore();
   const currentDate = new Date();

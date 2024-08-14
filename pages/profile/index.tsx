@@ -13,6 +13,9 @@ import useProfileStore from "@/store/profile";
 import { hideEmail, hidePhoneNumber } from "@/utils/utilFUncs";
 import UserBasicInformationForm from "@/components/modules/profile/forms/userBasicInformationForm";
 import { useBasicProfileStore } from "@/components/modules/profile/store/basicProfileInformation";
+import { hasAccess } from "@/utils/hasAccess";
+import { PermissionTypeEnum } from "@/generated/graphql";
+import useUserStore from "@/store/user";
 
 type NextPageWithLayout = React.FC & {
   getLayout?: (page: React.ReactNode) => React.ReactNode;
@@ -29,7 +32,11 @@ type UserRepo = {
 const Profile: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
   const { setSelectedMenu } = useGlobalStore();
   const { _id, email, firstName, lastName, phone } = repo || {};
+  const [CanUpdateBusinessDetails, setCanUpdateBusinessDetails] =
+    useState(false);
+  const { meUser } = useUserStore();
 
+  const permissions = meUser?.permissions ?? [];
   useEffect(() => {
     if (repo) {
       useBasicProfileStore.getState().setProfileData({
@@ -96,6 +103,11 @@ const Profile: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
         setLoading(false);
       }
     };
+    const canUpdateRestarant = hasAccess(
+      permissions,
+      PermissionTypeEnum.UpdateBusiness
+    );
+    setCanUpdateBusinessDetails(canUpdateRestarant);
     fetchBusinessDetails();
   }, []);
 
@@ -103,28 +115,36 @@ const Profile: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
     return <Loader />;
   }
 
-  const contentList = [
-    {
-      id: "userBasicInformation",
-      title: "User Basic Information",
-      Component: UserBasicInformationForm,
-    },
-    {
-      id: "businessInformation",
-      title: "Business Information",
-      Component: BusinessInformationForm,
-    },
-    {
-      id: "locationDetails",
-      title: "Location Details",
-      Component: LocationDetailsForm,
-    },
-    {
-      id: "identityVerification",
-      title: "Identity Verification",
-      Component: IdentityVerificationForm,
-    },
-  ];
+  const contentList = CanUpdateBusinessDetails
+    ? [
+        {
+          id: "userBasicInformation",
+          title: "User Basic Information",
+          Component: UserBasicInformationForm,
+        },
+        {
+          id: "businessInformation",
+          title: "Business Information",
+          Component: BusinessInformationForm,
+        },
+        {
+          id: "locationDetails",
+          title: "Location Details",
+          Component: LocationDetailsForm,
+        },
+        {
+          id: "identityVerification",
+          title: "Identity Verification",
+          Component: IdentityVerificationForm,
+        },
+      ]
+    : [
+        {
+          id: "userBasicInformation",
+          title: "User Basic Information",
+          Component: UserBasicInformationForm,
+        },
+      ];
 
   return (
     <div className="text-black">
