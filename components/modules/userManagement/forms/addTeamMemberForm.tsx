@@ -32,7 +32,7 @@ const AddTeamMemberForm = () => {
   const [permissions, setPermissions] = useState<
     {
       type: string;
-      _id: string;
+      id: string;
       isTicked: boolean;
       preselect: string[];
     }[]
@@ -41,7 +41,7 @@ const AddTeamMemberForm = () => {
   const formatPermissions = (
     permissions: {
       type: string;
-      _id: string;
+      id: string;
       isTicked: boolean;
       preselect: string[];
     }[]
@@ -49,7 +49,7 @@ const AddTeamMemberForm = () => {
     return permissions.map((permission) => ({
       type: permission.type,
       status: permission.isTicked,
-      _id: permission._id,
+      id: permission.id,
     }));
   };
 
@@ -129,7 +129,7 @@ const AddTeamMemberForm = () => {
           preselect: UserRole[];
         }) => ({
           type: permission.type,
-          _id: permission._id,
+          id: permission._id,
           isTicked: false,
           preselect: permission.preselect,
         })
@@ -409,7 +409,7 @@ const AddTeamMemberForm = () => {
         >
           {permissions.map((permission) => (
             <CustomSwitchCard
-              key={permission._id}
+              key={permission.id}
               label={`Do you want to give this user permission for ${permission.type}?`}
               title={permission?.type || ""}
               caption={`Toggle to enable or disable ${permission.type} permission`}

@@ -29,9 +29,8 @@ const EditTeamMemberForm: React.FC = () => {
   });
 
   const [permissionsList, setPermissionsList] = useState<
-    { _id: string; type: PermissionTypeEnum; status: boolean }[]
+    { id: string; type: PermissionTypeEnum; status: boolean }[]
   >([]);
-
   const getUser = async () => {
     if (isEditTeamMemberId) {
       try {
@@ -41,15 +40,16 @@ const EditTeamMemberForm: React.FC = () => {
           setValue("role", role);
           setPermissionsList(
             res.getUser.permissions.map((permission) => ({
-              _id: permission.id,
+              id: permission.id,
               type: permission.type,
               status: permission.status,
             }))
           );
+
           reset({
             role: role,
             permissions: res.getUser.permissions.map((p) => ({
-              _id: p.id,
+              id: p.id,
               status: p.status,
               type: p.type,
             })),
@@ -75,24 +75,23 @@ const EditTeamMemberForm: React.FC = () => {
           },
         });
       } else {
-        const updatedPermissions = permissionsList
-          .filter((perm) =>
-            formData.permissions.some(
-              (fp) => fp._id === perm._id && fp.status !== perm.status
-            )
-          )
-          .map((perm) => ({
-            _id: perm._id,
-            type: perm.type,
-            status:
-              formData.permissions.find((p) => p._id === perm._id)?.status ??
-              false,
-          }));
+        //       const updatedPermissions = permissionsList
+        // .filter((perm) =>
+        //   formData.permissions.some(
+        //     (fp) => fp.id === perm.id && fp.status !== perm.status
+        //   )
+        // )
+        // .map((perm) => ({
+        //   id: perm.id,
+        //   type: perm.type,
+        //   status:
+        //     formData.permissions.find((p) => p.id === perm.id)?.status ?? false,
+        // }));
 
         await sdk.updateSubuserPermissions({
           input: {
             id: isEditTeamMemberId ?? "",
-            permissions: updatedPermissions,
+            permissions: permissionsList,
           },
         });
       }
@@ -146,7 +145,7 @@ const EditTeamMemberForm: React.FC = () => {
         <div className="space-y-4">
           {permissionsList.map((permission) => (
             <CustomSwitchCard
-              key={permission._id}
+              key={permission.id}
               label={permission.type}
               switchChecked={permission.status}
               onSwitchChange={() => handlePermissionChange(permission.type)}
