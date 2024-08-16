@@ -1,7 +1,7 @@
-import { motion } from "framer-motion";
-import { STAGGER_CHILD_VARIANTS } from "@/lib/constants";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
+import { STAGGER_CHILD_VARIANTS } from "@/lib/constants";
+import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 
 const Intro = () => {

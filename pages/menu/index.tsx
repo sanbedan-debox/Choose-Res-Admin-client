@@ -1,22 +1,16 @@
-import useGlobalStore from "@/store/global";
-import {
-  MenuTypeEnum,
-  PermissionTypeEnum,
-  UserStatus,
-} from "@/generated/graphql";
-import { GetServerSideProps } from "next";
-import { parseCookies } from "nookies";
-import { sdk } from "@/utils/graphqlClient";
-import useAuthStore from "@/store/auth";
-import { useEffect, useState } from "react";
-import MainLayout from "@/components/layouts/mainBodyLayout";
 import ArrowCard from "@/components/common/arrowCard/arrowCard";
-import QuickActions from "@/components/common/quickLinks/quickLink";
 import ReusableModal from "@/components/common/modal/modal";
+import QuickActions from "@/components/common/quickLinks/quickLink";
+import MainLayout from "@/components/layouts/mainBodyLayout";
 import CsvUploadForm from "@/components/modules/menu/forms/csvUploadForm";
-import useMenuPageStore from "../../store/menuStore";
+import { PermissionTypeEnum, UserStatus } from "@/generated/graphql";
+import useAuthStore from "@/store/auth";
+import useGlobalStore from "@/store/global";
+import { sdk } from "@/utils/graphqlClient";
 import { hasAccess } from "@/utils/hasAccess";
-import { useRouter } from "next/router";
+import { GetServerSideProps } from "next";
+import { useEffect } from "react";
+import useMenuPageStore from "../../store/menuStore";
 
 type NextPageWithLayout = React.FC & {
   getLayout?: (page: React.ReactNode) => React.ReactNode;

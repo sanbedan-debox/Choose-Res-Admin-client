@@ -1,9 +1,7 @@
+import { fadeIn } from "@/utils/animations";
+import { AnimatePresence, motion } from "framer-motion";
 import React, { useEffect } from "react";
 import ReactDOM from "react-dom";
-import CButton from "../button/button";
-import { ButtonType } from "../button/interface";
-import { AnimatePresence, motion } from "framer-motion";
-import { fadeIn } from "@/utils/animations";
 
 interface FullPageModalProps {
   isOpen: boolean;

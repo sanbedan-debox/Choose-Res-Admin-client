@@ -4,20 +4,18 @@ import FullPageModal from "@/components/common/modal/fullPageModal";
 import ReusableModal from "@/components/common/modal/modal";
 import RoopTable from "@/components/common/table/table";
 import MainLayout from "@/components/layouts/mainBodyLayout";
-import Loader from "@/components/loader";
 import AddTeamMemberForm from "@/components/modules/userManagement/forms/addTeamMemberForm";
-import { PermissionTypeEnum, UserRole, UserStatus } from "@/generated/graphql";
+import { PermissionTypeEnum, UserStatus } from "@/generated/graphql";
+import useAuthStore from "@/store/auth";
 import useGlobalStore from "@/store/global";
 import useUserManagementStore from "@/store/userManagement";
 import { sdk } from "@/utils/graphqlClient";
+import { hasAccess } from "@/utils/hasAccess";
 import { extractErrorMessage } from "@/utils/utilFUncs";
+import { GetServerSideProps } from "next";
 import React, { useEffect, useState } from "react";
 import { FaTrash } from "react-icons/fa";
 import useAddTeamMemberFormStore from "../../store/addTeamMemberStore";
-import { parseCookies } from "nookies";
-import { GetServerSideProps } from "next";
-import useAuthStore from "@/store/auth";
-import { hasAccess } from "@/utils/hasAccess";
 
 type NextPageWithLayout = React.FC & {
   getLayout?: (page: React.ReactNode) => React.ReactNode;
@@ -234,8 +232,13 @@ const Teams: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
   const handleDeleteConfirmation = async () => {
     setBtnLoading(true);
     try {
-      const response = await sdk.removeTeamMember({ teamId: SelectedMemberId });
-      if (response && response.removeTeamMember) {
+      const response = await sdk.removeRestaurantSubuser({
+        restaurantSubUser: {
+          id: SelectedMemberId,
+          // restaurants:[]
+        },
+      });
+      if (response && response.removeRestaurantSubuser) {
         fetchTeamMembers();
       }
     } catch (error) {

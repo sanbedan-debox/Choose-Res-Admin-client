@@ -1,21 +1,19 @@
-import Loader from "@/components/loader";
-import useGlobalStore from "@/store/global";
-import React, { useEffect, useState } from "react";
-import { GetServerSideProps } from "next";
-import { parseCookies } from "nookies";
-import { sdk } from "@/utils/graphqlClient";
-import MainLayout from "@/components/layouts/mainBodyLayout";
 import MenuSection from "@/components/common/menuSection/menuSection";
+import MainLayout from "@/components/layouts/mainBodyLayout";
+import Loader from "@/components/loader";
 import BusinessInformationForm from "@/components/modules/profile/forms/businessInformationForm";
-import LocationDetailsForm from "@/components/modules/profile/forms/locationDetailsForm";
 import IdentityVerificationForm from "@/components/modules/profile/forms/identityVerificationForm";
-import useProfileStore from "@/store/profile";
-import { hideEmail, hidePhoneNumber } from "@/utils/utilFUncs";
+import LocationDetailsForm from "@/components/modules/profile/forms/locationDetailsForm";
 import UserBasicInformationForm from "@/components/modules/profile/forms/userBasicInformationForm";
 import { useBasicProfileStore } from "@/components/modules/profile/store/basicProfileInformation";
-import { hasAccess } from "@/utils/hasAccess";
 import { PermissionTypeEnum } from "@/generated/graphql";
+import useGlobalStore from "@/store/global";
+import useProfileStore from "@/store/profile";
 import useUserStore from "@/store/user";
+import { sdk } from "@/utils/graphqlClient";
+import { hasAccess } from "@/utils/hasAccess";
+import { GetServerSideProps } from "next";
+import React, { useEffect, useState } from "react";
 
 type NextPageWithLayout = React.FC & {
   getLayout?: (page: React.ReactNode) => React.ReactNode;
@@ -70,7 +68,7 @@ const Profile: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
   useEffect(() => {
     const fetchBusinessDetails = async () => {
       try {
-        const response = await sdk.getBusinessDetails();
+        const response = await sdk.userBusinessDetails();
         const {
           businessType,
           businessName,
@@ -78,7 +76,7 @@ const Profile: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
           estimatedRevenue,
           address,
           ein,
-        } = response.getBusinessDetails;
+        } = response.userBusinessDetails;
         setAddressLine1(address?.addressLine1 || "");
         setAddressLine2(address?.addressLine2 || "");
         setCity(address?.city || "");

@@ -1,18 +1,16 @@
-import React, { useState } from "react";
-import Select from "react-select";
-import { MdOutlineEdit } from "react-icons/md";
-import useProfileStore from "@/store/profile";
+import CButton from "@/components/common/button/button";
+import { ButtonType } from "@/components/common/button/interface";
+import ReusableModal from "@/components/common/modal/modal";
 import {
   BusinessTypeEnum,
   EstimatedRevenueEnum,
   StaffCountEnum,
 } from "@/generated/graphql";
-import ReusableModal from "@/components/common/modal/modal";
-import CButton from "@/components/common/button/button";
-import { ButtonType } from "@/components/common/button/interface";
 import useGlobalStore from "@/store/global";
-import { extractErrorMessage } from "@/utils/utilFUncs";
-import { sdk } from "@/utils/graphqlClient";
+import useProfileStore from "@/store/profile";
+import React, { useState } from "react";
+import { MdOutlineEdit } from "react-icons/md";
+import Select from "react-select";
 
 const formatBusinessTypeEnum = (value: BusinessTypeEnum) => {
   switch (value) {
@@ -99,37 +97,37 @@ const BusinessInformationForm: React.FC = () => {
   const [btnLoading, setBtnLoading] = useState(false);
 
   const updateBusinessInfo = async () => {
-    if (!isFormChanged) {
-      handleCloseModal();
-      return;
-    }
-    try {
-      setBtnLoading(true);
-      const businessTypeValue = businessType as BusinessTypeEnum;
-      const estimatedRevenueValue = estimatedRevenue as EstimatedRevenueEnum;
-      const employeeSizeValue = employeeSize as StaffCountEnum;
-      const response = await sdk.updateUserProfile({
-        input: {
-          businessName: businessName,
-          businessType: businessTypeValue,
-          estimatedRevenue: estimatedRevenueValue,
-          employeeSize: employeeSizeValue,
-        },
-      });
-      setToastData({
-        message: "Business details updated successfully!",
-        type: "success",
-      });
-      setIsModalOpen(false);
-    } catch (error) {
-      const errorMessage = extractErrorMessage(error);
-      setToastData({
-        type: "error",
-        message: errorMessage,
-      });
-    } finally {
-      setBtnLoading(false);
-    }
+    // if (!isFormChanged) {
+    //   handleCloseModal();
+    //   return;
+    // }
+    // try {
+    //   setBtnLoading(true);
+    //   const businessTypeValue = businessType as BusinessTypeEnum;
+    //   const estimatedRevenueValue = estimatedRevenue as EstimatedRevenueEnum;
+    //   const employeeSizeValue = employeeSize as StaffCountEnum;
+    //   const response = await sdk.updateUserProfile({
+    //     input: {
+    //       businessName: businessName,
+    //       businessType: businessTypeValue,
+    //       estimatedRevenue: estimatedRevenueValue,
+    //       employeeSize: employeeSizeValue,
+    //     },
+    //   });
+    //   setToastData({
+    //     message: "Business details updated successfully!",
+    //     type: "success",
+    //   });
+    //   setIsModalOpen(false);
+    // } catch (error) {
+    //   const errorMessage = extractErrorMessage(error);
+    //   setToastData({
+    //     type: "error",
+    //     message: errorMessage,
+    //   });
+    // } finally {
+    //   setBtnLoading(false);
+    // }
   };
 
   return (

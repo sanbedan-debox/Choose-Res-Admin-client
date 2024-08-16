@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
-import Select from "react-select";
-import moment from "moment";
 import useGlobalStore from "@/store/global";
 import { extractErrorMessage } from "@/utils/utilFUncs";
-import CustomSwitch from "../customSwitch/customSwitch";
+import moment from "moment";
+import React, { useEffect, useState } from "react";
 import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
+import Select from "react-select";
+import CustomSwitch from "../customSwitch/customSwitch";
 import {
   Availability,
   AvailabilityComponentProps,

@@ -1,19 +1,19 @@
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import CButton from "@/components/common/button/button";
+import { ButtonType } from "@/components/common/button/interface";
+import { RestaurantCategory, RestaurantType } from "@/generated/graphql";
 import { STAGGER_CHILD_VARIANTS } from "@/lib/constants";
-import { useRouter } from "next/router";
 import useGlobalStore from "@/store/global";
-import { useForm, Controller } from "react-hook-form";
-import Select from "react-select";
+import RestaurantOnboardingStore from "@/store/restaurantOnboarding";
 import { sdk } from "@/utils/graphqlClient";
-import { RestaurantType, RestaurantCategory } from "@/generated/graphql";
 import {
   extractErrorMessage,
   formatWebsiteUrlClickable,
 } from "@/utils/utilFUncs";
-import CButton from "@/components/common/button/button";
-import { ButtonType } from "@/components/common/button/interface";
-import RestaurantOnboardingStore from "@/store/restaurantOnboarding";
+import { motion } from "framer-motion";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import Select from "react-select";
 
 interface IFormInput {
   restaurantName: string;

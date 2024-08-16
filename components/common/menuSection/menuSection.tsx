@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useRef, useState } from "react";
 import { SectionContent } from "./interface";
 
 type MenuSectionProps = {

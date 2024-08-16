@@ -23,12 +23,10 @@ import useMenuOptionsStore from "@/store/menuOptions";
 import useModGroupStore from "@/store/modifierGroup";
 import useModStore from "@/store/modifiers";
 import useSubCategoryStore from "@/store/subCategoryStore";
-import useSubCategory from "@/store/subCategoryStore";
 import { sdk } from "@/utils/graphqlClient";
 import { hasAccess } from "@/utils/hasAccess";
 
 import { GetServerSideProps } from "next";
-import { parseCookies } from "nookies";
 import { useEffect } from "react";
 
 type UserRepo = {

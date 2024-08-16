@@ -22,7 +22,7 @@ const Tabs: React.FC<TabsProps> = ({ items, activeTab, onTabClick }) => {
               ? "border-b-2 border-primary text-primary"
               : "text-black"
           }`}
-          onClick={() => onTabClick(index)} // Ensure onTabClick is invoked correctly on click
+          onClick={() => onTabClick(index)}
         >
           {item.label}
         </button>

@@ -1,20 +1,14 @@
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { useForm, Controller } from "react-hook-form";
-import Select from "react-select";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
-import { sdk } from "@/utils/graphqlClient";
 import useGlobalStore from "@/store/global";
+import { sdk } from "@/utils/graphqlClient";
+import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 
-import ReusableModal from "@/components/common/modal/modal";
-import {
-  extractErrorMessage,
-  generateUniqueName,
-  isValidNameAlphabetic,
-} from "@/utils/utilFUncs";
-import useSubCategoryStore from "@/store/subCategoryStore";
 import useMenuOptionsStore from "@/store/menuOptions";
+import useSubCategoryStore from "@/store/subCategoryStore";
+import { extractErrorMessage, generateUniqueName } from "@/utils/utilFUncs";
 
 interface IFormInput {
   name: string;

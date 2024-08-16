@@ -1,8 +1,6 @@
 import Link from "next/link";
 import { FC } from "react";
-import { BiChevronRightCircle } from "react-icons/bi";
 import { FaArrowRight } from "react-icons/fa";
-import { TbSquareRoundedArrowRight } from "react-icons/tb";
 
 interface ArrowCardProps {
   title: string;

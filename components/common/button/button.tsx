@@ -1,6 +1,6 @@
 import React from "react";
-import { ButtonType } from "./interface";
 import { FaSpinner } from "react-icons/fa";
+import { ButtonType } from "./interface";
 
 interface ReusableButtonProps {
   type?: "button" | "submit" | "reset";

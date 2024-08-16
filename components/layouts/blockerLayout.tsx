@@ -1,18 +1,14 @@
-import { ReactNode } from "react";
-import { useRouter } from "next/router";
 import { AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import logo1 from "../../assets/logo/logoDark.png";
 import Link from "next/link";
+import { ReactNode } from "react";
+import logo1 from "../../assets/logo/logoDark.png";
 
 type Props = {
   children: ReactNode;
 };
 
 const BlockerLayouout = ({ children }: Props) => {
-  const router = useRouter();
-  const { pathname, query } = router;
-
   return (
     <div className="bg-white text-black min-h-screen flex flex-col justify-between">
       <div className="flex items-center justify-between px-4 py-2 border-b ">

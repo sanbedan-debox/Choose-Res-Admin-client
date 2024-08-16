@@ -1,13 +1,13 @@
 # import "./fragments.graphql"
 
 # Query to log out the currently logged-in user
-query Logout {
-  logout
+query userLogout {
+  userLogout
 }
 
 # Query to generate OTP for login
-query GenerateOtpForLogin($input: String!) {
-  generateOtpForLogin(input: $input)
+query userLogin($input: String!) {
+  userLogin(input: $input)
 }
 
 # Query to fetch user's profile
@@ -19,7 +19,7 @@ query MeUser {
     status
     email
     phone
-    ownerUserId
+    creatorUser
     permissions {
       status
       type
@@ -31,10 +31,10 @@ query MeUser {
       businessType
       estimatedRevenue
       employeeSize
-      establishedAt
-      # address {
-      #   ...addressInfo
-      # }
+
+      address {
+        ...addressInfo
+      }
     }
     restaurants {
       id
@@ -45,26 +45,26 @@ query MeUser {
 }
 
 # Query to verify OTP for login
-query VerifyOtpForLogin($key: String!, $input: String!, $otp: String!) {
-  verifyOtpForLogin(key: $key, input: $input, otp: $otp)
+query userLoginVerification($input: UserLoginVerificationInput!) {
+  userLoginVerification(input: $input)
 }
 
-mutation addUser($input: AddUserInput!) {
-  addUser(input: $input)
+query UserSignUp($input: UserSignupInput!) {
+  userSignup(input: $input)
 }
+
 # Mutation to verify restaurant user details
-mutation verifyUserDetails($input: VerifyUserDetails!) {
-  verifyUserDetails(input: $input)
+query userSignupVerification($input: UserSignupVerificationInput!) {
+  userSignupVerification(input: $input)
 }
-
 # Input for communication preferences
 input CommunicationPreferenceInput {
   whatsApp: Boolean!
   email: Boolean!
 }
 
-query getBusinessDetails {
-  getBusinessDetails {
+query userBusinessDetails {
+  userBusinessDetails {
     businessName
     estimatedRevenue
     employeeSize

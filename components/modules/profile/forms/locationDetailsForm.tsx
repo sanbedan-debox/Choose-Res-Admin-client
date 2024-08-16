@@ -1,16 +1,15 @@
-import React, { useEffect, useState } from "react";
-import Select from "react-select";
-import AsyncSelect from "react-select/async";
-import debounce from "lodash.debounce";
+import CButton from "@/components/common/button/button";
+import { ButtonType } from "@/components/common/button/interface";
+import ReusableModal from "@/components/common/modal/modal";
+import useGlobalStore from "@/store/global";
 import useMasterStore from "@/store/masters";
 import useProfileStore from "@/store/profile";
 import { sdk } from "@/utils/graphqlClient";
-import ReusableModal from "@/components/common/modal/modal";
+import debounce from "lodash.debounce";
+import React, { useEffect, useState } from "react";
 import { MdOutlineEdit } from "react-icons/md";
-import CButton from "@/components/common/button/button";
-import { ButtonType } from "@/components/common/button/interface";
-import useGlobalStore from "@/store/global";
-import { extractErrorMessage } from "@/utils/utilFUncs";
+import Select from "react-select";
+import AsyncSelect from "react-select/async";
 
 interface IFormInput {
   addressLine1: string;
@@ -42,22 +41,8 @@ const loadOptions = (
 
 const UserLocationForm: React.FC = () => {
   const { statesOptions } = useMasterStore();
-  const {
-    addressLine1,
-    addressLine2,
-    city,
-    state,
-    zipcode,
-    cords,
-    place,
-    // setAddressLine1,
-    // setAddressLine2,
-    // setCity,
-    // setState,
-    // setZipcode,
-    // setCords,
-    // setPlace,
-  } = useProfileStore();
+  const { addressLine1, addressLine2, city, state, zipcode, cords, place } =
+    useProfileStore();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalField, setModalField] = useState<keyof IFormInput | null>(null);
@@ -96,63 +81,55 @@ const UserLocationForm: React.FC = () => {
   const [coords, setCoords] = useState<number[]>(cords);
 
   const updateBusinessInfo = async () => {
-    const hasChanges =
-      addressLine1 !== formState.addressLine1 ||
-      addressLine2 !== formState.addressLine2 ||
-      city !== formState.city ||
-      state?.id !== formState.state?.id ||
-      zipcode !== formState.zipcode ||
-      place?.placeId !== selectedPlace?.value ||
-      cords !== coords;
-
-    if (!hasChanges) {
-      setIsModalOpen(false);
-      return;
-    }
-
-    try {
-      setBtnLoading(true);
-
-      const response = await sdk.updateUserProfile({
-        input: {
-          address: {
-            addressLine1: formState.addressLine1,
-
-            addressLine2: formState.addressLine2 ? formState.addressLine2 : "",
-
-            city: formState.city,
-
-            state: {
-              stateId: formState.state?.id || "",
-              stateName: formState.state?.value || "",
-            },
-            zipcode: zipcode,
-
-            place: {
-              displayName: selectedPlace?.label ?? "",
-              placeId: selectedPlace?.value ?? "",
-            },
-            coordinate: {
-              coordinates: coords,
-            },
-          },
-        },
-      });
-
-      setToastData({
-        message: "Business Location updated successfully!",
-        type: "success",
-      });
-      setIsModalOpen(false);
-    } catch (error) {
-      const errorMessage = extractErrorMessage(error);
-      setToastData({
-        type: "error",
-        message: errorMessage,
-      });
-    } finally {
-      setBtnLoading(false);
-    }
+    // const hasChanges =
+    //   addressLine1 !== formState.addressLine1 ||
+    //   addressLine2 !== formState.addressLine2 ||
+    //   city !== formState.city ||
+    //   state?.id !== formState.state?.id ||
+    //   zipcode !== formState.zipcode ||
+    //   place?.placeId !== selectedPlace?.value ||
+    //   cords !== coords;
+    // if (!hasChanges) {
+    //   setIsModalOpen(false);
+    //   return;
+    // }
+    // try {
+    //   setBtnLoading(true);
+    //   const response = await sdk.updateUserProfile({
+    //     input: {
+    //       address: {
+    //         addressLine1: formState.addressLine1,
+    //         addressLine2: formState.addressLine2 ? formState.addressLine2 : "",
+    //         city: formState.city,
+    //         state: {
+    //           stateId: formState.state?.id || "",
+    //           stateName: formState.state?.value || "",
+    //         },
+    //         zipcode: zipcode,
+    //         place: {
+    //           displayName: selectedPlace?.label ?? "",
+    //           placeId: selectedPlace?.value ?? "",
+    //         },
+    //         coordinate: {
+    //           coordinates: coords,
+    //         },
+    //       },
+    //     },
+    //   });
+    //   setToastData({
+    //     message: "Business Location updated successfully!",
+    //     type: "success",
+    //   });
+    //   setIsModalOpen(false);
+    // } catch (error) {
+    //   const errorMessage = extractErrorMessage(error);
+    //   setToastData({
+    //     type: "error",
+    //     message: errorMessage,
+    //   });
+    // } finally {
+    //   setBtnLoading(false);
+    // }
   };
 
   return (

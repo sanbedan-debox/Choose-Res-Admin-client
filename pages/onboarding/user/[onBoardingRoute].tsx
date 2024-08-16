@@ -8,8 +8,6 @@ import Intro from "@/components/modules/onboarding/WelcomeUser";
 import useOnboardingStore from "@/store/onboarding";
 import { sdk } from "@/utils/graphqlClient";
 import { GetServerSideProps } from "next";
-import { useRouter } from "next/router";
-import { parseCookies } from "nookies";
 import { useEffect } from "react";
 
 type HomePageProps = {
@@ -113,7 +111,7 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
     };
   }
   try {
-    const response = await sdk.getBusinessOnboardingDetails(
+    const response = await sdk.businessOnboardingDetails(
       {},
       {
         cookie: context.req.headers.cookie?.toString() ?? "",
@@ -121,7 +119,7 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
     );
     console.log(response);
 
-    if (response && response.getBusinessOnboardingDetails) {
+    if (response && response.businessOnboardingDetails) {
       const {
         address,
         businessType,
@@ -129,7 +127,7 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
         employeeSize,
         estimatedRevenue,
         businessName,
-      } = response.getBusinessOnboardingDetails;
+      } = response.businessOnboardingDetails;
       return {
         props: {
           repo: {
@@ -143,7 +141,7 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
           },
         },
       };
-    } else if (response.getBusinessOnboardingDetails === null) {
+    } else if (response.businessOnboardingDetails === null) {
       return {
         props: {
           repo: {

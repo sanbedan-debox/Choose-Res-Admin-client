@@ -1,20 +1,16 @@
-import Loader from "@/components/loader";
-import useGlobalStore from "@/store/global";
-import React, { useState, useEffect } from "react";
-import { GetServerSideProps } from "next";
-import { parseCookies } from "nookies";
-import { sdk } from "@/utils/graphqlClient";
-import useAuthStore from "@/store/auth";
-import { PermissionTypeEnum, UserStatus } from "@/generated/graphql";
-import QuickActions from "@/components/common/quickLinks/quickLink";
-import MainLayout from "@/components/layouts/mainBodyLayout";
-import { Searchfeatures } from "@/utils/searchFeatures";
-import IncompleteRestaurants from "@/components/common/ScrollableQuickActionCard/ScrollableQuickActionCard";
-import { useRouter } from "next/router";
 import QuickActionsDashboard from "@/components/common/quickAction/quickAction";
-import { hasAccess } from "@/utils/hasAccess";
-import useUserStore from "@/store/user";
 import ScrollableQuickActionCard from "@/components/common/ScrollableQuickActionCard/ScrollableQuickActionCard";
+import MainLayout from "@/components/layouts/mainBodyLayout";
+import Loader from "@/components/loader";
+import { PermissionTypeEnum, UserStatus } from "@/generated/graphql";
+import useAuthStore from "@/store/auth";
+import useGlobalStore from "@/store/global";
+import useUserStore from "@/store/user";
+import { sdk } from "@/utils/graphqlClient";
+import { hasAccess } from "@/utils/hasAccess";
+import { GetServerSideProps } from "next";
+import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
 
 type NextPageWithLayout = React.FC & {
   getLayout?: (page: React.ReactNode) => React.ReactNode;
@@ -111,9 +107,9 @@ const Dashboard: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
   useEffect(() => {
     async function fetchPendingRestaurants() {
       try {
-        const response = await sdk.getUserRestaurantsPending();
-        if (response && response.getUserRestaurantsPending) {
-          const restaurantsIncomplete = response.getUserRestaurantsPending.map(
+        const response = await sdk.userRestaurantsPending();
+        if (response && response.userRestaurantsPending) {
+          const restaurantsIncomplete = response.userRestaurantsPending.map(
             (res: { name: string; id: string }) => ({
               name: res.name,
               id: res.id,

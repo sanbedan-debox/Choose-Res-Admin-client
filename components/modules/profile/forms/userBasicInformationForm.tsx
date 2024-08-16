@@ -1,8 +1,8 @@
-import React from "react";
+import useRestaurantsStore from "@/store/restaurant";
 import { hideEmail, hidePhoneNumber } from "@/utils/utilFUncs";
+import React from "react";
 import { FaExclamationTriangle } from "react-icons/fa";
 import { useBasicProfileStore } from "../store/basicProfileInformation";
-import useRestaurantsStore from "@/store/restaurant";
 
 const UserBasicInformationForm: React.FC = () => {
   const { firstName, lastName, email, phone } = useBasicProfileStore();

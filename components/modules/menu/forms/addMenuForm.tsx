@@ -1,34 +1,33 @@
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { useForm, Controller } from "react-hook-form";
-import Select from "react-select";
+import AddFormDropdown from "@/components/common/addFormDropDown/addFormDropdown";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
+import ReusableModal from "@/components/common/modal/modal";
+import FormAddTable from "@/components/common/table/formTable";
+import {
+  Availability,
+  formatAvailability,
+  reverseFormatAvailability,
+} from "@/components/common/timingAvailibility/interface";
+import AvailabilityComponent from "@/components/common/timingAvailibility/timingAvailibility";
+import { Day, FilterOperatorsEnum, MenuTypeEnum } from "@/generated/graphql";
+import useAuthStore from "@/store/auth";
+import useGlobalStore from "@/store/global";
+import useMenuCategoryStore from "@/store/menuCategory";
+import useMenuMenuStore from "@/store/menumenu";
+import useMenuOptionsStore from "@/store/menuOptions";
 import { sdk } from "@/utils/graphqlClient";
 import {
   extractErrorMessage,
   generateUniqueName,
   isValidNameAlphabetic,
 } from "@/utils/utilFUncs";
-import { Day, FilterOperatorsEnum, MenuTypeEnum } from "@/generated/graphql";
-import useGlobalStore from "@/store/global";
-import useMenuOptionsStore from "@/store/menuOptions";
-import FormAddTable from "@/components/common/table/formTable";
-import AddFormDropdown from "@/components/common/addFormDropDown/addFormDropdown";
-import { MdArrowOutward } from "react-icons/md";
-import useMenuMenuStore from "@/store/menumenu";
-import useMenuCategoryStore from "@/store/menuCategory";
-import ReusableModal from "@/components/common/modal/modal";
-import useRestaurantsStore from "@/store/restaurant";
-import useAuthStore from "@/store/auth";
+import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { IoIosAddCircleOutline, IoIosCloseCircleOutline } from "react-icons/io";
+import { MdArrowOutward } from "react-icons/md";
 import { RiEditCircleLine } from "react-icons/ri";
-import AvailabilityComponent from "@/components/common/timingAvailibility/timingAvailibility";
-import {
-  Availability,
-  formatAvailability,
-  reverseFormatAvailability,
-} from "@/components/common/timingAvailibility/interface";
+import Select from "react-select";
 
 interface IFormInput {
   type: { value: string; label: string };
@@ -105,9 +104,9 @@ const AddMenuForm = () => {
   useEffect(() => {
     const setTimings = async () => {
       try {
-        const response = await sdk.getRestaurantDetails();
-        if (response && response.getRestaurantDetails) {
-          const { availability } = response.getRestaurantDetails;
+        const response = await sdk.restaurantDetails();
+        if (response && response.restaurantDetails) {
+          const { availability } = response.restaurantDetails;
           if (availability) {
             const originalAvailability =
               reverseFormatAvailability(availability);

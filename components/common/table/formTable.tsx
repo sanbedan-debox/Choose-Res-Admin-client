@@ -1,9 +1,9 @@
 import React, { useState } from "react";
+import { CiImageOn } from "react-icons/ci";
+import { ImFileEmpty } from "react-icons/im";
+import { IoIosAddCircleOutline } from "react-icons/io";
 import CButton from "../button/button";
 import { ButtonType } from "../button/interface";
-import { ImFileEmpty } from "react-icons/im";
-import { CiImageOn } from "react-icons/ci";
-import { IoIosAddCircleOutline } from "react-icons/io";
 
 interface Heading {
   title: string;

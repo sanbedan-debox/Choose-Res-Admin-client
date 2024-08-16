@@ -1,7 +1,7 @@
 # import "./fragments.graphql"
 
-query getUserRestaurants {
-  getUserRestaurants {
+query userRestaurants {
+  userRestaurants {
     name
     id
     status
@@ -12,8 +12,8 @@ query setRestaurantIdAsCookie($id: String!) {
   setRestaurantIdAsCookie(id: $id)
 }
 
-query getRestaurantDetails {
-  getRestaurantDetails {
+query restaurantDetails {
+  restaurantDetails {
     _id
     name
     availability {
@@ -41,8 +41,8 @@ mutation addTaxRate($input: TaxRateInput!) {
   addTaxRate(input: $input)
 }
 
-query getUserRestaurantsPending {
-  getUserRestaurantsPending {
+query userRestaurantsPending {
+  userRestaurantsPending {
     name
     id
   }

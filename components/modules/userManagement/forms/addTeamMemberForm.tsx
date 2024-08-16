@@ -1,18 +1,15 @@
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import Select from "react-select";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
-import { sdk } from "@/utils/graphqlClient";
-import useGlobalStore from "@/store/global";
-import ReusableModal from "@/components/common/modal/modal";
-import { extractErrorMessage, isValidNameAlphabetic } from "@/utils/utilFUncs";
-import { PermissionTypeEnum, UserRole } from "@/generated/graphql";
 import CustomSwitchCard from "@/components/common/customSwitchCard/customSwitchCard";
-import ArrowCard from "@/components/common/arrowCard/arrowCard";
-import useUserManagementStore from "@/store/userManagement";
+import { PermissionTypeEnum, UserRole } from "@/generated/graphql";
 import useAddTeamMemberFormStore from "@/store/addTeamMemberStore";
-import { IoArrowBackCircleOutline } from "react-icons/io5";
+import useGlobalStore from "@/store/global";
+import useUserManagementStore from "@/store/userManagement";
+import { sdk } from "@/utils/graphqlClient";
+import { extractErrorMessage, isValidNameAlphabetic } from "@/utils/utilFUncs";
+import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import Select from "react-select";
 
 const userRoleOptions = [
   { value: UserRole.Owner, label: "Owner" },
@@ -157,8 +154,8 @@ const AddTeamMemberForm = () => {
 
   const fetchUserRestaurants = async () => {
     try {
-      const response = await sdk.getUserRestaurants();
-      const options = response.getUserRestaurants.map(
+      const response = await sdk.userRestaurants();
+      const options = response.userRestaurants.map(
         (restaurant: { name: string; id: string }) => ({
           label: restaurant.name,
           value: restaurant.id,

@@ -1,20 +1,16 @@
-import { FC, useEffect, useState } from "react";
-import logo1 from "../assets/logo/logoDark.png";
-import Image from "next/image";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { useRouter } from "next/router";
-import { sdk } from "@/utils/graphqlClient";
-import useGlobalStore from "@/store/global";
-import { VerifyUserDetails, AddUserInput } from "@/generated/graphql";
-import ReusableModal from "@/components/common/modal/modal";
-import useAuthStore from "@/store/auth";
-import Link from "next/link";
-import { GetServerSideProps } from "next";
-import { parseCookies } from "nookies";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
+import ReusableModal from "@/components/common/modal/modal";
+import useGlobalStore from "@/store/global";
+import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
-import CustomSwitch from "@/components/common/customSwitch/customSwitch";
+import { GetServerSideProps } from "next";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { FC, useEffect, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import logo1 from "../assets/logo/logoDark.png";
 
 enum CommunicationType {
   Email = "EMAIL",
@@ -74,20 +70,23 @@ const Signup: FC = () => {
         Array.isArray(commPref) &&
         commPref.includes(CommunicationType.WhatsApp),
     };
-    const input: AddUserInput = {
-      firstName,
-      lastName,
-      email,
-      phone,
-      accountPreferences,
-    };
 
     try {
-      const response = await sdk.addUser({ input });
+      const response = await sdk.UserSignUp({
+        input: {
+          firstName,
+          lastName,
+          email,
+          phone,
+          accountPreferences,
+        },
+      });
 
-      if (response && response.addUser) {
-        setEmailOtpVerifyKey(response.addUser);
-        setToastData({ message: "Signup Successful", type: "success" });
+      if (response && response.userSignup) {
+        setToastData({
+          message: "Verification OTP sent to your email",
+          type: "success",
+        });
 
         setShowModal(true);
         setTimer(20);
@@ -125,22 +124,21 @@ const Signup: FC = () => {
     const { emailOtp } = data;
 
     try {
-      const input: VerifyUserDetails = {
-        email,
-        phone,
-        emailOtp,
-        firstName,
-        lastName,
-        emailOtpVerifyKey,
-        accountPreferences: {
-          email: commPref.includes(CommunicationType.Email),
-          whatsApp: commPref.includes(CommunicationType.WhatsApp),
+      const response = await sdk.userSignupVerification({
+        input: {
+          email,
+          phone,
+          otp: emailOtp,
+          firstName,
+          lastName,
+          accountPreferences: {
+            email: commPref.includes(CommunicationType.Email),
+            whatsApp: commPref.includes(CommunicationType.WhatsApp),
+          },
         },
-      };
+      });
 
-      const response = await sdk.verifyUserDetails({ input });
-
-      if (response && response.verifyUserDetails) {
+      if (response && response.userSignupVerification) {
         setShowModal(false);
         setToastData({ message: "Verification Successful", type: "success" });
         router.replace("/onboarding/user/intro");

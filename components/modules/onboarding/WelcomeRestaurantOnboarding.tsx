@@ -1,10 +1,11 @@
-import { motion } from "framer-motion";
-import { STAGGER_CHILD_VARIANTS } from "@/lib/constants";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
-import { useRouter } from "next/router";
+import { UserStatus } from "@/generated/graphql";
+import { STAGGER_CHILD_VARIANTS } from "@/lib/constants";
 import useGlobalStore from "@/store/global";
 import { sdk } from "@/utils/graphqlClient";
+import { motion } from "framer-motion";
+import { useRouter } from "next/router";
 import { useEffect } from "react";
 
 const WelcomeRestaurantOnboarding = () => {
@@ -16,7 +17,7 @@ const WelcomeRestaurantOnboarding = () => {
 
       if (res && res.meUser) {
         const { status } = res.meUser;
-        if (status === "internalVerificationPending") {
+        if (status === UserStatus.InternalVerificationPending) {
           setisVerificationToRestaurantAdd(true);
         }
       }

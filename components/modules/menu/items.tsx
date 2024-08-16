@@ -11,8 +11,6 @@ import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import React, { useEffect, useState } from "react";
 import { BsCopy } from "react-icons/bs";
-import { FaTrash, FaEdit, FaShieldAlt } from "react-icons/fa";
-import { IoDuplicateOutline } from "react-icons/io5";
 import { MdOutlineEdit } from "react-icons/md";
 
 const Items: React.FC = () => {

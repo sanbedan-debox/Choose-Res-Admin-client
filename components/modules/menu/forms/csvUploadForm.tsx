@@ -1,18 +1,11 @@
-import { useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import Select from "react-select";
-import Papa from "papaparse";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import FullPageModal from "@/components/common/modal/fullPageModal";
-import { sdk } from "@/utils/graphqlClient";
-import { extractErrorMessage } from "@/utils/utilFUncs";
-import useGlobalStore from "@/store/global";
 import useAuthStore from "@/store/auth";
-import useRestaurantsStore from "@/store/restaurant";
-import useMenuPageStore from "@/store/menuStore";
+import useGlobalStore from "@/store/global";
 import useMenuOptionsStore from "@/store/menuOptions";
-import AddMenuForm from "./addMenuForm";
+import useMenuPageStore from "@/store/menuStore";
+import useRestaurantsStore from "@/store/restaurant";
 import {
   invalidBooleanCellValue,
   invalidItemDescLimit,
@@ -21,6 +14,13 @@ import {
   invalidStringCellValue,
   sanitizeCellValue,
 } from "@/utils/csvHelper";
+import { sdk } from "@/utils/graphqlClient";
+import { extractErrorMessage } from "@/utils/utilFUncs";
+import Papa from "papaparse";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import Select from "react-select";
+import AddMenuForm from "./addMenuForm";
 
 const CsvUploadForm = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -105,9 +105,9 @@ const CsvUploadForm = () => {
   useEffect(() => {
     const fetchMenus = async () => {
       try {
-        const response = await sdk.getMenuByRestaurant();
-        if (response && response.getMenuByRestaurant) {
-          const menus = response.getMenuByRestaurant;
+        const response = await sdk.getAllMenus();
+        if (response && response.getAllMenus) {
+          const menus = response.getAllMenus;
           const formattedMenus = menus.map((menu) => ({
             label: menu.name,
             value: menu._id,

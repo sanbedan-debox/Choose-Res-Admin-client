@@ -1,15 +1,11 @@
 import BlockerLayout from "@/components/layouts/blockerLayout";
-
-import React from "react";
-
-import { FaArrowRight } from "react-icons/fa";
-import { GetServerSideProps } from "next";
-import { parseCookies } from "nookies";
-import { sdk } from "@/utils/graphqlClient";
 import { UserStatus } from "@/generated/graphql";
+import { sdk } from "@/utils/graphqlClient";
+import { GetServerSideProps } from "next";
 import Link from "next/link";
-import useGlobalStore from "@/store/global";
 import { useRouter } from "next/router";
+import React from "react";
+import { FaArrowRight } from "react-icons/fa";
 
 type NextPageWithLayout = React.FC & {
   getLayout?: (page: React.ReactNode) => React.ReactNode;

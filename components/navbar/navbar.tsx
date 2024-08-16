@@ -1,26 +1,25 @@
-import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
-import {
-  FaUser,
-  FaQuestionCircle,
-  FaExpandArrowsAlt,
-  FaCompressArrowsAlt,
-  FaMapMarkerAlt,
-} from "react-icons/fa";
-import useGlobalStore from "@/store/global";
+import { PermissionTypeEnum } from "@/generated/graphql";
 import useAuthStore from "@/store/auth";
-import { sdk } from "@/utils/graphqlClient";
-import { useRouter } from "next/router";
+import useGlobalStore from "@/store/global";
 import useRestaurantsStore from "@/store/restaurant";
+import RestaurantOnboardingStore from "@/store/restaurantOnboarding";
+import useUserStore from "@/store/user";
+import { sdk } from "@/utils/graphqlClient";
+import { hasAccess } from "@/utils/hasAccess";
+import { Searchfeatures } from "@/utils/searchFeatures";
+import { extractErrorMessage } from "@/utils/utilFUncs";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { useEffect, useRef, useState } from "react";
+import {
+  FaCompressArrowsAlt,
+  FaExpandArrowsAlt,
+  FaMapMarkerAlt,
+  FaQuestionCircle,
+  FaUser,
+} from "react-icons/fa";
 import CButton from "../common/button/button";
 import { ButtonType } from "../common/button/interface";
-import { extractErrorMessage } from "@/utils/utilFUncs";
-import RestaurantOnboardingStore from "@/store/restaurantOnboarding";
-import { PermissionTypeEnum, RestaurantStatus } from "@/generated/graphql";
-import { Searchfeatures } from "@/utils/searchFeatures";
-import { IoSearchSharp } from "react-icons/io5";
-import useUserStore from "@/store/user";
-import { hasAccess } from "@/utils/hasAccess";
 
 const Navbar: React.FC = () => {
   const { firstName } = useAuthStore();
@@ -94,9 +93,9 @@ const Navbar: React.FC = () => {
 
   const handleLogout = async () => {
     try {
-      const response = await sdk.Logout();
+      const response = await sdk.userLogout();
 
-      if (response && response.logout) {
+      if (response && response.userLogout) {
         router.replace("/login");
       }
     } catch (error) {

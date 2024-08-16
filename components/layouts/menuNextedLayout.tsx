@@ -1,6 +1,6 @@
-import { ReactNode } from "react";
-import { useRouter } from "next/router";
 import { AnimatePresence } from "framer-motion";
+import { useRouter } from "next/router";
+import { ReactNode } from "react";
 
 import MainLayout from "./mainBodyLayout";
 

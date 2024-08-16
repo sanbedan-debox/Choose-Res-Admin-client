@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import CustomSwitch from "../customSwitch/customSwitch";
 import {
   IoIosAddCircleOutline,
   IoIosRemoveCircleOutline,

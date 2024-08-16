@@ -157,14 +157,6 @@ export type AddTimezoneInput = {
   value: Scalars['String']['input'];
 };
 
-export type AddUserInput = {
-  accountPreferences: AccountPreferenceInput;
-  email: Scalars['String']['input'];
-  firstName: Scalars['String']['input'];
-  lastName: Scalars['String']['input'];
-  phone: Scalars['String']['input'];
-};
-
 export type AddWaitListUserInput = {
   email: Scalars['String']['input'];
   name: Scalars['String']['input'];
@@ -256,11 +248,19 @@ export type Business = {
   createdAt: Scalars['DateTimeISO']['output'];
   ein?: Maybe<Scalars['String']['output']>;
   employeeSize?: Maybe<StaffCountEnum>;
-  establishedAt?: Maybe<Scalars['String']['output']>;
   estimatedRevenue?: Maybe<EstimatedRevenueEnum>;
   updatedAt: Scalars['DateTimeISO']['output'];
   updatedBy?: Maybe<User>;
   user: UserInfo;
+};
+
+export type BusinessDetailsInput = {
+  address?: InputMaybe<AddressInfoInput>;
+  businessName?: InputMaybe<Scalars['String']['input']>;
+  businessType?: InputMaybe<BusinessTypeEnum>;
+  ein?: InputMaybe<Scalars['String']['input']>;
+  employeeSize?: InputMaybe<StaffCountEnum>;
+  estimatedRevenue?: InputMaybe<EstimatedRevenueEnum>;
 };
 
 /** Business type enum */
@@ -699,12 +699,12 @@ export type Mutation = {
   addModifierGroupToItem: Scalars['Boolean']['output'];
   addModifierToModifierGroup: Scalars['Boolean']['output'];
   addPermission: Scalars['Boolean']['output'];
+  addRestaurantSubuser: Scalars['Boolean']['output'];
   addState: Scalars['Boolean']['output'];
   addSubCategory: Scalars['Boolean']['output'];
   addTaxRate: Scalars['String']['output'];
   addTeamMember: Scalars['Boolean']['output'];
   addTimezone: Scalars['Boolean']['output'];
-  addUser: Scalars['String']['output'];
   addWaitListUser: Scalars['Boolean']['output'];
   adminUserDetailsRejection: Scalars['Boolean']['output'];
   adminUserDetailsVerification: Scalars['Boolean']['output'];
@@ -725,7 +725,7 @@ export type Mutation = {
   removeItemFromCategory: Scalars['Boolean']['output'];
   removeModifierFromModifierGroup: Scalars['Boolean']['output'];
   removeModifierGroupFromItem: Scalars['Boolean']['output'];
-  removeTeamMember: Scalars['Boolean']['output'];
+  removeRestaurantSubuser: Scalars['Boolean']['output'];
   restaurantOnboarding: Scalars['Boolean']['output'];
   sendTestEmails: Scalars['Boolean']['output'];
   updateCategory: Scalars['Boolean']['output'];
@@ -739,11 +739,11 @@ export type Mutation = {
   updatePermissionPreselect: Scalars['Boolean']['output'];
   updateStateStatus: Scalars['Boolean']['output'];
   updateSubCategory: Scalars['Boolean']['output'];
+  updateSubuserPermissions: Scalars['Boolean']['output'];
+  updateSubuserRole: Scalars['Boolean']['output'];
   updateTaxRate: Scalars['Boolean']['output'];
   updateTimezoneStatus: Scalars['Boolean']['output'];
-  updateUserProfile: Scalars['Boolean']['output'];
   verifyTeamEmail: Scalars['Boolean']['output'];
-  verifyUserDetails: Scalars['Boolean']['output'];
 };
 
 
@@ -823,6 +823,11 @@ export type MutationAddPermissionArgs = {
 };
 
 
+export type MutationAddRestaurantSubuserArgs = {
+  input: RestaurantSubuserInput;
+};
+
+
 export type MutationAddStateArgs = {
   input: AddStateInput;
 };
@@ -845,11 +850,6 @@ export type MutationAddTeamMemberArgs = {
 
 export type MutationAddTimezoneArgs = {
   input: AddTimezoneInput;
-};
-
-
-export type MutationAddUserArgs = {
-  input: AddUserInput;
 };
 
 
@@ -876,7 +876,7 @@ export type MutationBlockAdminArgs = {
 
 
 export type MutationBusinessOnboardingArgs = {
-  input: RegisterBusinessInput;
+  input: BusinessDetailsInput;
 };
 
 
@@ -955,8 +955,8 @@ export type MutationRemoveModifierGroupFromItemArgs = {
 };
 
 
-export type MutationRemoveTeamMemberArgs = {
-  id: Scalars['String']['input'];
+export type MutationRemoveRestaurantSubuserArgs = {
+  input: RestaurantSubuserInput;
 };
 
 
@@ -1027,6 +1027,16 @@ export type MutationUpdateSubCategoryArgs = {
 };
 
 
+export type MutationUpdateSubuserPermissionsArgs = {
+  input: UpdateSubuserPermissionsInput;
+};
+
+
+export type MutationUpdateSubuserRoleArgs = {
+  input: UpdateSubuserRoleInput;
+};
+
+
 export type MutationUpdateTaxRateArgs = {
   input: UpdateTaxRateInput;
 };
@@ -1037,18 +1047,8 @@ export type MutationUpdateTimezoneStatusArgs = {
 };
 
 
-export type MutationUpdateUserProfileArgs = {
-  input: UpdateUserProfileInput;
-};
-
-
 export type MutationVerifyTeamEmailArgs = {
   token: Scalars['String']['input'];
-};
-
-
-export type MutationVerifyUserDetailsArgs = {
-  input: VerifyUserDetails;
 };
 
 export type Options = {
@@ -1145,13 +1145,11 @@ export type Query = {
   __typename?: 'Query';
   adminLogin: Scalars['String']['output'];
   adminLogout: Scalars['Boolean']['output'];
-  changeRestaurantStatusFromUser: Scalars['Boolean']['output'];
+  businessOnboardingDetails?: Maybe<Business>;
+  changeUserStatus: Scalars['Boolean']['output'];
   completeRestaurantOnboarding: Scalars['Boolean']['output'];
   deleteData: Scalars['Boolean']['output'];
   deleteMenuData: Scalars['Boolean']['output'];
-  emailOtpVerification: Scalars['Boolean']['output'];
-  generateOtpForEmailVerification: Scalars['String']['output'];
-  generateOtpForLogin: Scalars['String']['output'];
   getActiveCuisines: Array<Cuisine>;
   getActiveStates: Array<State>;
   getActiveTimezones: Array<Timezone>;
@@ -1167,8 +1165,6 @@ export type Query = {
   getAllRestaurants: Array<Restaurant>;
   getAllStates: Array<State>;
   getAllTimezones: Array<Timezone>;
-  getBusinessDetails: Business;
-  getBusinessOnboardingDetails?: Maybe<Business>;
   getCategories: Array<Category>;
   getCategory: Category;
   getConfig: Config;
@@ -1184,25 +1180,31 @@ export type Query = {
   getModifiers: Array<Modifier>;
   getPlaceDetails?: Maybe<PlaceDetail>;
   getPlacesList: Array<Places>;
-  getRestaurantDetails: Restaurant;
-  getRestaurantOnboardingData: Restaurant;
   getSubCategories: Array<SubCategory>;
   getSubCategory: SubCategory;
   getTaxRate: TaxRate;
   getTeamMembers: Array<SubUser>;
-  getUserRestaurants: Array<RestaurantInfo>;
-  getUserRestaurantsPending: Array<RestaurantInfo>;
   getUsersForTarget: Scalars['Float']['output'];
   getWaitListUsers: Array<WaitListUser>;
-  logout: Scalars['Boolean']['output'];
   me: Admin;
-  meUser: User;
+  meUser?: Maybe<User>;
+  rejectUserDetails: Scalars['Boolean']['output'];
+  restaurantDetails: Restaurant;
+  restaurantOnboardingData: Restaurant;
   revokeAdminAccess: Scalars['Boolean']['output'];
   saveCsvError: Scalars['Boolean']['output'];
   setRestaurantIdAsCookie: Scalars['Boolean']['output'];
   uploadCsvData: Scalars['Boolean']['output'];
+  userBusinessDetails: Business;
+  userLogin: Scalars['String']['output'];
+  userLoginVerification: Scalars['Boolean']['output'];
+  userLogout: Scalars['Boolean']['output'];
+  userRestaurants: Array<RestaurantInfo>;
+  userRestaurantsPending: Array<RestaurantInfo>;
+  userSignup: Scalars['Boolean']['output'];
+  userSignupVerification: Scalars['Boolean']['output'];
   verifyAdminLogin: Scalars['String']['output'];
-  verifyOtpForLogin: Scalars['Boolean']['output'];
+  verifyUserDetails: Scalars['Boolean']['output'];
 };
 
 
@@ -1211,20 +1213,8 @@ export type QueryAdminLoginArgs = {
 };
 
 
-export type QueryEmailOtpVerificationArgs = {
-  email: Scalars['String']['input'];
-  key: Scalars['String']['input'];
-  otp: Scalars['String']['input'];
-};
-
-
-export type QueryGenerateOtpForEmailVerificationArgs = {
-  email: Scalars['String']['input'];
-};
-
-
-export type QueryGenerateOtpForLoginArgs = {
-  input: Scalars['String']['input'];
+export type QueryChangeUserStatusArgs = {
+  input: UserStatusChangeInput;
 };
 
 
@@ -1331,6 +1321,11 @@ export type QueryGetUsersForTargetArgs = {
 };
 
 
+export type QueryRejectUserDetailsArgs = {
+  input: RejectUserDetailsInput;
+};
+
+
 export type QueryRevokeAdminAccessArgs = {
   id: Scalars['String']['input'];
 };
@@ -1351,27 +1346,34 @@ export type QueryUploadCsvDataArgs = {
 };
 
 
+export type QueryUserLoginArgs = {
+  input: Scalars['String']['input'];
+};
+
+
+export type QueryUserLoginVerificationArgs = {
+  input: UserLoginVerificationInput;
+};
+
+
+export type QueryUserSignupArgs = {
+  input: UserSignupInput;
+};
+
+
+export type QueryUserSignupVerificationArgs = {
+  input: UserSignupVerificationInput;
+};
+
+
 export type QueryVerifyAdminLoginArgs = {
   email: Scalars['String']['input'];
   otp: Scalars['String']['input'];
-  otpKey: Scalars['String']['input'];
 };
 
 
-export type QueryVerifyOtpForLoginArgs = {
-  input: Scalars['String']['input'];
-  key: Scalars['String']['input'];
-  otp: Scalars['String']['input'];
-};
-
-export type RegisterBusinessInput = {
-  address?: InputMaybe<AddressInfoInput>;
-  businessName?: InputMaybe<Scalars['String']['input']>;
-  businessType?: InputMaybe<BusinessTypeEnum>;
-  ein?: InputMaybe<Scalars['String']['input']>;
-  employeeSize?: InputMaybe<StaffCountEnum>;
-  establishedAt?: InputMaybe<Scalars['String']['input']>;
-  estimatedRevenue?: InputMaybe<EstimatedRevenueEnum>;
+export type QueryVerifyUserDetailsArgs = {
+  id: Scalars['String']['input'];
 };
 
 export type RejectRecord = {
@@ -1380,6 +1382,11 @@ export type RejectRecord = {
   createdAt: Scalars['DateTimeISO']['output'];
   name: Scalars['String']['output'];
   reason: Scalars['String']['output'];
+};
+
+export type RejectUserDetailsInput = {
+  content: Scalars['String']['input'];
+  id: Scalars['String']['input'];
 };
 
 export type Restaurant = {
@@ -1435,6 +1442,11 @@ export enum RestaurantStatus {
   OnboardingPending = 'onboardingPending'
 }
 
+export type RestaurantSubuserInput = {
+  id: Scalars['String']['input'];
+  restaurants?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
 /** Restaurant type enum. */
 export enum RestaurantType {
   Independent = 'Independent',
@@ -1460,6 +1472,7 @@ export type SocialInfoInput = {
 export enum SoftWareEnum {
   Clover = 'Clover',
   None = 'None',
+  Owner = 'Owner',
   Square = 'Square',
   Toast = 'Toast'
 }
@@ -1659,21 +1672,20 @@ export type UpdateSubCategoryInput = {
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UpdateSubuserPermissionsInput = {
+  id: Scalars['String']['input'];
+  permissions?: InputMaybe<Array<UserPermissionInput>>;
+};
+
+export type UpdateSubuserRoleInput = {
+  id: Scalars['String']['input'];
+  role?: InputMaybe<UserRole>;
+};
+
 export type UpdateTaxRateInput = {
   _id: Scalars['String']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
   salesTax?: InputMaybe<Scalars['Float']['input']>;
-};
-
-export type UpdateUserProfileInput = {
-  address?: InputMaybe<AddressInfoInput>;
-  businessName?: InputMaybe<Scalars['String']['input']>;
-  businessType?: InputMaybe<BusinessTypeEnum>;
-  dob?: InputMaybe<Scalars['DateTimeISO']['input']>;
-  ein?: InputMaybe<Scalars['String']['input']>;
-  employeeSize?: InputMaybe<StaffCountEnum>;
-  establishedAt?: InputMaybe<Scalars['String']['input']>;
-  estimatedRevenue?: InputMaybe<EstimatedRevenueEnum>;
 };
 
 export type UploadCsvErrorInput = {
@@ -1693,12 +1705,12 @@ export type User = {
   accountPreferences?: Maybe<AccountPreference>;
   businessInfo?: Maybe<Business>;
   createdAt: Scalars['DateTimeISO']['output'];
+  creatorUser?: Maybe<Scalars['String']['output']>;
   email: Scalars['String']['output'];
   firstName: Scalars['String']['output'];
   lastLoggedIn: Scalars['DateTimeISO']['output'];
   lastLoggedOut: Scalars['DateTimeISO']['output'];
   lastName: Scalars['String']['output'];
-  ownerUserId?: Maybe<Scalars['String']['output']>;
   permissions: Array<UserPermission>;
   phone: Scalars['String']['output'];
   restaurants?: Maybe<Array<RestaurantInfo>>;
@@ -1718,6 +1730,11 @@ export type UserInfo = {
   name: Scalars['String']['output'];
   phone: Scalars['String']['output'];
   status: UserStatus;
+};
+
+export type UserLoginVerificationInput = {
+  emailOrNumber: Scalars['String']['input'];
+  otp: Scalars['String']['input'];
 };
 
 export type UserPermission = {
@@ -1741,6 +1758,23 @@ export enum UserRole {
   Staff = 'Staff'
 }
 
+export type UserSignupInput = {
+  accountPreferences: AccountPreferenceInput;
+  email: Scalars['String']['input'];
+  firstName: Scalars['String']['input'];
+  lastName: Scalars['String']['input'];
+  phone: Scalars['String']['input'];
+};
+
+export type UserSignupVerificationInput = {
+  accountPreferences: AccountPreferenceInput;
+  email: Scalars['String']['input'];
+  firstName: Scalars['String']['input'];
+  lastName: Scalars['String']['input'];
+  otp: Scalars['String']['input'];
+  phone: Scalars['String']['input'];
+};
+
 /** UserStatus type enum  */
 export enum UserStatus {
   Active = 'active',
@@ -1752,14 +1786,9 @@ export enum UserStatus {
   SubUserEmailVerificationPending = 'subUserEmailVerificationPending'
 }
 
-export type VerifyUserDetails = {
-  accountPreferences: AccountPreferenceInput;
-  email: Scalars['String']['input'];
-  emailOtp: Scalars['String']['input'];
-  emailOtpVerifyKey: Scalars['String']['input'];
-  firstName: Scalars['String']['input'];
-  lastName: Scalars['String']['input'];
-  phone: Scalars['String']['input'];
+export type UserStatusChangeInput = {
+  block: Scalars['Boolean']['input'];
+  id: Scalars['String']['input'];
 };
 
 export type Visibility = {
@@ -1786,50 +1815,48 @@ export type WaitListUser = {
   website: Scalars['String']['output'];
 };
 
-export type LogoutQueryVariables = Exact<{ [key: string]: never; }>;
+export type UserLogoutQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type LogoutQuery = { __typename?: 'Query', logout: boolean };
+export type UserLogoutQuery = { __typename?: 'Query', userLogout: boolean };
 
-export type GenerateOtpForLoginQueryVariables = Exact<{
+export type UserLoginQueryVariables = Exact<{
   input: Scalars['String']['input'];
 }>;
 
 
-export type GenerateOtpForLoginQuery = { __typename?: 'Query', generateOtpForLogin: string };
+export type UserLoginQuery = { __typename?: 'Query', userLogin: string };
 
 export type MeUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MeUserQuery = { __typename?: 'Query', meUser: { __typename?: 'User', _id: string, firstName: string, lastName: string, status: UserStatus, email: string, phone: string, ownerUserId?: string | null, role: UserRole, permissions: Array<{ __typename?: 'UserPermission', status: boolean, type: PermissionTypeEnum }>, businessInfo?: { __typename?: 'Business', businessName?: string | null, ein?: string | null, businessType?: BusinessTypeEnum | null, estimatedRevenue?: EstimatedRevenueEnum | null, employeeSize?: StaffCountEnum | null, establishedAt?: string | null } | null, restaurants?: Array<{ __typename?: 'RestaurantInfo', id: string, name: string, status: RestaurantStatus }> | null } };
+export type MeUserQuery = { __typename?: 'Query', meUser?: { __typename?: 'User', _id: string, firstName: string, lastName: string, status: UserStatus, email: string, phone: string, creatorUser?: string | null, role: UserRole, permissions: Array<{ __typename?: 'UserPermission', status: boolean, type: PermissionTypeEnum }>, businessInfo?: { __typename?: 'Business', businessName?: string | null, ein?: string | null, businessType?: BusinessTypeEnum | null, estimatedRevenue?: EstimatedRevenueEnum | null, employeeSize?: StaffCountEnum | null, address?: { __typename?: 'AddressInfo', addressLine1: string, addressLine2?: string | null, city: string, zipcode: number, state: { __typename?: 'StateData', stateId: string, stateName: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string, placeId: string } | null } | null } | null, restaurants?: Array<{ __typename?: 'RestaurantInfo', id: string, name: string, status: RestaurantStatus }> | null } | null };
 
-export type VerifyOtpForLoginQueryVariables = Exact<{
-  key: Scalars['String']['input'];
-  input: Scalars['String']['input'];
-  otp: Scalars['String']['input'];
+export type UserLoginVerificationQueryVariables = Exact<{
+  input: UserLoginVerificationInput;
 }>;
 
 
-export type VerifyOtpForLoginQuery = { __typename?: 'Query', verifyOtpForLogin: boolean };
+export type UserLoginVerificationQuery = { __typename?: 'Query', userLoginVerification: boolean };
 
-export type AddUserMutationVariables = Exact<{
-  input: AddUserInput;
+export type UserSignUpQueryVariables = Exact<{
+  input: UserSignupInput;
 }>;
 
 
-export type AddUserMutation = { __typename?: 'Mutation', addUser: string };
+export type UserSignUpQuery = { __typename?: 'Query', userSignup: boolean };
 
-export type VerifyUserDetailsMutationVariables = Exact<{
-  input: VerifyUserDetails;
+export type UserSignupVerificationQueryVariables = Exact<{
+  input: UserSignupVerificationInput;
 }>;
 
 
-export type VerifyUserDetailsMutation = { __typename?: 'Mutation', verifyUserDetails: boolean };
+export type UserSignupVerificationQuery = { __typename?: 'Query', userSignupVerification: boolean };
 
-export type GetBusinessDetailsQueryVariables = Exact<{ [key: string]: never; }>;
+export type UserBusinessDetailsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetBusinessDetailsQuery = { __typename?: 'Query', getBusinessDetails: { __typename?: 'Business', businessName?: string | null, estimatedRevenue?: EstimatedRevenueEnum | null, employeeSize?: StaffCountEnum | null, businessType?: BusinessTypeEnum | null, ein?: string | null, address?: { __typename?: 'AddressInfo', addressLine1: string, addressLine2?: string | null, city: string, zipcode: number, state: { __typename?: 'StateData', stateId: string, stateName: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string, placeId: string } | null } | null } };
+export type UserBusinessDetailsQuery = { __typename?: 'Query', userBusinessDetails: { __typename?: 'Business', businessName?: string | null, estimatedRevenue?: EstimatedRevenueEnum | null, employeeSize?: StaffCountEnum | null, businessType?: BusinessTypeEnum | null, ein?: string | null, address?: { __typename?: 'AddressInfo', addressLine1: string, addressLine2?: string | null, city: string, zipcode: number, state: { __typename?: 'StateData', stateId: string, stateName: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string, placeId: string } | null } | null } };
 
 export type UpdateTaxRateMutationVariables = Exact<{
   input: UpdateTaxRateInput;
@@ -2145,15 +2172,8 @@ export type PlaceDetailsQueryVariables = Exact<{
 
 export type PlaceDetailsQuery = { __typename?: 'Query', getPlaceDetails?: { __typename?: 'PlaceDetail', latitude: number, longitude: number } | null };
 
-export type UpdateUserProfileMutationVariables = Exact<{
-  input: UpdateUserProfileInput;
-}>;
-
-
-export type UpdateUserProfileMutation = { __typename?: 'Mutation', updateUserProfile: boolean };
-
 export type BusinessOnboardingMutationVariables = Exact<{
-  input: RegisterBusinessInput;
+  input: BusinessDetailsInput;
 }>;
 
 
@@ -2164,10 +2184,10 @@ export type CompleteBusinessOnboardingMutationVariables = Exact<{ [key: string]:
 
 export type CompleteBusinessOnboardingMutation = { __typename?: 'Mutation', completeBusinessOnboarding: boolean };
 
-export type GetBusinessOnboardingDetailsQueryVariables = Exact<{ [key: string]: never; }>;
+export type BusinessOnboardingDetailsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetBusinessOnboardingDetailsQuery = { __typename?: 'Query', getBusinessOnboardingDetails?: { __typename?: 'Business', ein?: string | null, businessName?: string | null, employeeSize?: StaffCountEnum | null, establishedAt?: string | null, businessType?: BusinessTypeEnum | null, estimatedRevenue?: EstimatedRevenueEnum | null, address?: { __typename?: 'AddressInfo', addressLine1: string, addressLine2?: string | null, city: string, zipcode: number, state: { __typename?: 'StateData', stateId: string, stateName: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string, placeId: string } | null } | null } | null };
+export type BusinessOnboardingDetailsQuery = { __typename?: 'Query', businessOnboardingDetails?: { __typename?: 'Business', ein?: string | null, businessName?: string | null, employeeSize?: StaffCountEnum | null, businessType?: BusinessTypeEnum | null, estimatedRevenue?: EstimatedRevenueEnum | null, address?: { __typename?: 'AddressInfo', addressLine1: string, addressLine2?: string | null, city: string, zipcode: number, state: { __typename?: 'StateData', stateId: string, stateName: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string, placeId: string } | null } | null } | null };
 
 export type RestaurantOnboardingMutationVariables = Exact<{
   input: UpdateRestaurantDetailsInput;
@@ -2181,20 +2201,20 @@ export type CompleteRestaurantOnboardingQueryVariables = Exact<{ [key: string]: 
 
 export type CompleteRestaurantOnboardingQuery = { __typename?: 'Query', completeRestaurantOnboarding: boolean };
 
-export type GetRestaurantOnboardingDataQueryVariables = Exact<{ [key: string]: never; }>;
+export type RestaurantOnboardingDataQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetRestaurantOnboardingDataQuery = { __typename?: 'Query', getRestaurantOnboardingData: { __typename?: 'Restaurant', name: string, brandingLogo?: string | null, website?: string | null, category?: Array<RestaurantCategory> | null, beverageCategory?: Array<BeverageCategory> | null, foodType?: Array<FoodType> | null, meatType?: MeatType | null, type?: RestaurantType | null, dineInCapacity?: number | null, address?: { __typename?: 'AddressInfo', addressLine1: string, addressLine2?: string | null, city: string, zipcode: number, state: { __typename?: 'StateData', stateId: string, stateName: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string, placeId: string } | null } | null, socialInfo?: { __typename?: 'SocialInfo', facebook?: string | null, instagram?: string | null, twitter?: string | null } | null, availability?: Array<{ __typename?: 'Availability', day: string, active: boolean, hours: Array<{ __typename?: 'Hours', start: any, end: any }> }> | null, timezone?: { __typename?: 'TimezoneData', timezoneId: string, timezoneName: string } | null } };
+export type RestaurantOnboardingDataQuery = { __typename?: 'Query', restaurantOnboardingData: { __typename?: 'Restaurant', name: string, brandingLogo?: string | null, website?: string | null, category?: Array<RestaurantCategory> | null, beverageCategory?: Array<BeverageCategory> | null, foodType?: Array<FoodType> | null, meatType?: MeatType | null, type?: RestaurantType | null, dineInCapacity?: number | null, address?: { __typename?: 'AddressInfo', addressLine1: string, addressLine2?: string | null, city: string, zipcode: number, state: { __typename?: 'StateData', stateId: string, stateName: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string, placeId: string } | null } | null, socialInfo?: { __typename?: 'SocialInfo', facebook?: string | null, instagram?: string | null, twitter?: string | null } | null, availability?: Array<{ __typename?: 'Availability', day: string, active: boolean, hours: Array<{ __typename?: 'Hours', start: any, end: any }> }> | null, timezone?: { __typename?: 'TimezoneData', timezoneId: string, timezoneName: string } | null } };
 
 export type MeUserInResOnboardingQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MeUserInResOnboardingQuery = { __typename?: 'Query', meUser: { __typename?: 'User', status: UserStatus } };
+export type MeUserInResOnboardingQuery = { __typename?: 'Query', meUser?: { __typename?: 'User', status: UserStatus } | null };
 
-export type GetUserRestaurantsQueryVariables = Exact<{ [key: string]: never; }>;
+export type UserRestaurantsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetUserRestaurantsQuery = { __typename?: 'Query', getUserRestaurants: Array<{ __typename?: 'RestaurantInfo', name: string, id: string, status: RestaurantStatus }> };
+export type UserRestaurantsQuery = { __typename?: 'Query', userRestaurants: Array<{ __typename?: 'RestaurantInfo', name: string, id: string, status: RestaurantStatus }> };
 
 export type SetRestaurantIdAsCookieQueryVariables = Exact<{
   id: Scalars['String']['input'];
@@ -2203,10 +2223,10 @@ export type SetRestaurantIdAsCookieQueryVariables = Exact<{
 
 export type SetRestaurantIdAsCookieQuery = { __typename?: 'Query', setRestaurantIdAsCookie: boolean };
 
-export type GetRestaurantDetailsQueryVariables = Exact<{ [key: string]: never; }>;
+export type RestaurantDetailsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetRestaurantDetailsQuery = { __typename?: 'Query', getRestaurantDetails: { __typename?: 'Restaurant', _id: string, name: string, brandingLogo?: string | null, website?: string | null, availability?: Array<{ __typename?: 'Availability', day: string, active: boolean, hours: Array<{ __typename?: 'Hours', start: any, end: any }> }> | null, address?: { __typename?: 'AddressInfo', addressLine1: string, addressLine2?: string | null, city: string, zipcode: number, state: { __typename?: 'StateData', stateId: string, stateName: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string, placeId: string } | null } | null, taxRates?: Array<{ __typename?: 'TaxRateInfo', _id: string, name: string, salesTax: number }> | null } };
+export type RestaurantDetailsQuery = { __typename?: 'Query', restaurantDetails: { __typename?: 'Restaurant', _id: string, name: string, brandingLogo?: string | null, website?: string | null, availability?: Array<{ __typename?: 'Availability', day: string, active: boolean, hours: Array<{ __typename?: 'Hours', start: any, end: any }> }> | null, address?: { __typename?: 'AddressInfo', addressLine1: string, addressLine2?: string | null, city: string, zipcode: number, state: { __typename?: 'StateData', stateId: string, stateName: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string, placeId: string } | null } | null, taxRates?: Array<{ __typename?: 'TaxRateInfo', _id: string, name: string, salesTax: number }> | null } };
 
 export type AddTaxRateMutationVariables = Exact<{
   input: TaxRateInput;
@@ -2215,10 +2235,10 @@ export type AddTaxRateMutationVariables = Exact<{
 
 export type AddTaxRateMutation = { __typename?: 'Mutation', addTaxRate: string };
 
-export type GetUserRestaurantsPendingQueryVariables = Exact<{ [key: string]: never; }>;
+export type UserRestaurantsPendingQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetUserRestaurantsPendingQuery = { __typename?: 'Query', getUserRestaurantsPending: Array<{ __typename?: 'RestaurantInfo', name: string, id: string }> };
+export type UserRestaurantsPendingQuery = { __typename?: 'Query', userRestaurantsPending: Array<{ __typename?: 'RestaurantInfo', name: string, id: string }> };
 
 export type GetSubCategoryQueryVariables = Exact<{
   id: Scalars['String']['input'];
@@ -2258,12 +2278,12 @@ export type GetTeamMembersQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetTeamMembersQuery = { __typename?: 'Query', getTeamMembers: Array<{ __typename?: 'SubUser', firstName: string, lastName: string, email: string, phone: string, role: string, status: UserStatus, _id?: { __typename?: 'User', _id: string } | null }> };
 
-export type RemoveTeamMemberMutationVariables = Exact<{
-  teamId: Scalars['String']['input'];
+export type RemoveRestaurantSubuserMutationVariables = Exact<{
+  restaurantSubUser: RestaurantSubuserInput;
 }>;
 
 
-export type RemoveTeamMemberMutation = { __typename?: 'Mutation', removeTeamMember: boolean };
+export type RemoveRestaurantSubuserMutation = { __typename?: 'Mutation', removeRestaurantSubuser: boolean };
 
 export type VerifyTeamEmailMutationVariables = Exact<{
   token: Scalars['String']['input'];
@@ -2296,14 +2316,14 @@ export const AddressInfoFragmentDoc = gql`
   }
 }
     `;
-export const LogoutDocument = gql`
-    query Logout {
-  logout
+export const UserLogoutDocument = gql`
+    query userLogout {
+  userLogout
 }
     `;
-export const GenerateOtpForLoginDocument = gql`
-    query GenerateOtpForLogin($input: String!) {
-  generateOtpForLogin(input: $input)
+export const UserLoginDocument = gql`
+    query userLogin($input: String!) {
+  userLogin(input: $input)
 }
     `;
 export const MeUserDocument = gql`
@@ -2315,7 +2335,7 @@ export const MeUserDocument = gql`
     status
     email
     phone
-    ownerUserId
+    creatorUser
     permissions {
       status
       type
@@ -2327,7 +2347,9 @@ export const MeUserDocument = gql`
       businessType
       estimatedRevenue
       employeeSize
-      establishedAt
+      address {
+        ...addressInfo
+      }
     }
     restaurants {
       id
@@ -2336,25 +2358,25 @@ export const MeUserDocument = gql`
     }
   }
 }
-    `;
-export const VerifyOtpForLoginDocument = gql`
-    query VerifyOtpForLogin($key: String!, $input: String!, $otp: String!) {
-  verifyOtpForLogin(key: $key, input: $input, otp: $otp)
+    ${AddressInfoFragmentDoc}`;
+export const UserLoginVerificationDocument = gql`
+    query userLoginVerification($input: UserLoginVerificationInput!) {
+  userLoginVerification(input: $input)
 }
     `;
-export const AddUserDocument = gql`
-    mutation addUser($input: AddUserInput!) {
-  addUser(input: $input)
+export const UserSignUpDocument = gql`
+    query UserSignUp($input: UserSignupInput!) {
+  userSignup(input: $input)
 }
     `;
-export const VerifyUserDetailsDocument = gql`
-    mutation verifyUserDetails($input: VerifyUserDetails!) {
-  verifyUserDetails(input: $input)
+export const UserSignupVerificationDocument = gql`
+    query userSignupVerification($input: UserSignupVerificationInput!) {
+  userSignupVerification(input: $input)
 }
     `;
-export const GetBusinessDetailsDocument = gql`
-    query getBusinessDetails {
-  getBusinessDetails {
+export const UserBusinessDetailsDocument = gql`
+    query userBusinessDetails {
+  userBusinessDetails {
     businessName
     estimatedRevenue
     employeeSize
@@ -2821,13 +2843,8 @@ export const PlaceDetailsDocument = gql`
   }
 }
     `;
-export const UpdateUserProfileDocument = gql`
-    mutation updateUserProfile($input: UpdateUserProfileInput!) {
-  updateUserProfile(input: $input)
-}
-    `;
 export const BusinessOnboardingDocument = gql`
-    mutation businessOnboarding($input: RegisterBusinessInput!) {
+    mutation businessOnboarding($input: BusinessDetailsInput!) {
   businessOnboarding(input: $input)
 }
     `;
@@ -2836,16 +2853,15 @@ export const CompleteBusinessOnboardingDocument = gql`
   completeBusinessOnboarding
 }
     `;
-export const GetBusinessOnboardingDetailsDocument = gql`
-    query getBusinessOnboardingDetails {
-  getBusinessOnboardingDetails {
+export const BusinessOnboardingDetailsDocument = gql`
+    query businessOnboardingDetails {
+  businessOnboardingDetails {
     ein
     businessName
     address {
       ...addressInfo
     }
     employeeSize
-    establishedAt
     businessType
     estimatedRevenue
   }
@@ -2861,9 +2877,9 @@ export const CompleteRestaurantOnboardingDocument = gql`
   completeRestaurantOnboarding
 }
     `;
-export const GetRestaurantOnboardingDataDocument = gql`
-    query getRestaurantOnboardingData {
-  getRestaurantOnboardingData {
+export const RestaurantOnboardingDataDocument = gql`
+    query restaurantOnboardingData {
+  restaurantOnboardingData {
     name
     address {
       ...addressInfo
@@ -2903,9 +2919,9 @@ export const MeUserInResOnboardingDocument = gql`
   }
 }
     `;
-export const GetUserRestaurantsDocument = gql`
-    query getUserRestaurants {
-  getUserRestaurants {
+export const UserRestaurantsDocument = gql`
+    query userRestaurants {
+  userRestaurants {
     name
     id
     status
@@ -2917,9 +2933,9 @@ export const SetRestaurantIdAsCookieDocument = gql`
   setRestaurantIdAsCookie(id: $id)
 }
     `;
-export const GetRestaurantDetailsDocument = gql`
-    query getRestaurantDetails {
-  getRestaurantDetails {
+export const RestaurantDetailsDocument = gql`
+    query restaurantDetails {
+  restaurantDetails {
     _id
     name
     availability {
@@ -2948,9 +2964,9 @@ export const AddTaxRateDocument = gql`
   addTaxRate(input: $input)
 }
     `;
-export const GetUserRestaurantsPendingDocument = gql`
-    query getUserRestaurantsPending {
-  getUserRestaurantsPending {
+export const UserRestaurantsPendingDocument = gql`
+    query userRestaurantsPending {
+  userRestaurantsPending {
     name
     id
   }
@@ -3004,9 +3020,9 @@ export const GetTeamMembersDocument = gql`
   }
 }
     `;
-export const RemoveTeamMemberDocument = gql`
-    mutation removeTeamMember($teamId: String!) {
-  removeTeamMember(id: $teamId)
+export const RemoveRestaurantSubuserDocument = gql`
+    mutation removeRestaurantSubuser($restaurantSubUser: RestaurantSubuserInput!) {
+  removeRestaurantSubuser(input: $restaurantSubUser)
 }
     `;
 export const VerifyTeamEmailDocument = gql`
@@ -3032,26 +3048,26 @@ const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationTy
 
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
-    Logout(variables?: LogoutQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<LogoutQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<LogoutQuery>(LogoutDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Logout', 'query', variables);
+    userLogout(variables?: UserLogoutQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UserLogoutQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<UserLogoutQuery>(UserLogoutDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'userLogout', 'query', variables);
     },
-    GenerateOtpForLogin(variables: GenerateOtpForLoginQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GenerateOtpForLoginQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<GenerateOtpForLoginQuery>(GenerateOtpForLoginDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'GenerateOtpForLogin', 'query', variables);
+    userLogin(variables: UserLoginQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UserLoginQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<UserLoginQuery>(UserLoginDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'userLogin', 'query', variables);
     },
     MeUser(variables?: MeUserQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<MeUserQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<MeUserQuery>(MeUserDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'MeUser', 'query', variables);
     },
-    VerifyOtpForLogin(variables: VerifyOtpForLoginQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<VerifyOtpForLoginQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<VerifyOtpForLoginQuery>(VerifyOtpForLoginDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'VerifyOtpForLogin', 'query', variables);
+    userLoginVerification(variables: UserLoginVerificationQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UserLoginVerificationQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<UserLoginVerificationQuery>(UserLoginVerificationDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'userLoginVerification', 'query', variables);
     },
-    addUser(variables: AddUserMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddUserMutation> {
-      return withWrapper((wrappedRequestHeaders) => client.request<AddUserMutation>(AddUserDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'addUser', 'mutation', variables);
+    UserSignUp(variables: UserSignUpQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UserSignUpQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<UserSignUpQuery>(UserSignUpDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'UserSignUp', 'query', variables);
     },
-    verifyUserDetails(variables: VerifyUserDetailsMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<VerifyUserDetailsMutation> {
-      return withWrapper((wrappedRequestHeaders) => client.request<VerifyUserDetailsMutation>(VerifyUserDetailsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'verifyUserDetails', 'mutation', variables);
+    userSignupVerification(variables: UserSignupVerificationQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UserSignupVerificationQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<UserSignupVerificationQuery>(UserSignupVerificationDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'userSignupVerification', 'query', variables);
     },
-    getBusinessDetails(variables?: GetBusinessDetailsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetBusinessDetailsQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<GetBusinessDetailsQuery>(GetBusinessDetailsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getBusinessDetails', 'query', variables);
+    userBusinessDetails(variables?: UserBusinessDetailsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UserBusinessDetailsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<UserBusinessDetailsQuery>(UserBusinessDetailsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'userBusinessDetails', 'query', variables);
     },
     updateTaxRate(variables: UpdateTaxRateMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UpdateTaxRateMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<UpdateTaxRateMutation>(UpdateTaxRateDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'updateTaxRate', 'mutation', variables);
@@ -3191,17 +3207,14 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     PlaceDetails(variables: PlaceDetailsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<PlaceDetailsQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<PlaceDetailsQuery>(PlaceDetailsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'PlaceDetails', 'query', variables);
     },
-    updateUserProfile(variables: UpdateUserProfileMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UpdateUserProfileMutation> {
-      return withWrapper((wrappedRequestHeaders) => client.request<UpdateUserProfileMutation>(UpdateUserProfileDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'updateUserProfile', 'mutation', variables);
-    },
     businessOnboarding(variables: BusinessOnboardingMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<BusinessOnboardingMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<BusinessOnboardingMutation>(BusinessOnboardingDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'businessOnboarding', 'mutation', variables);
     },
     completeBusinessOnboarding(variables?: CompleteBusinessOnboardingMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<CompleteBusinessOnboardingMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<CompleteBusinessOnboardingMutation>(CompleteBusinessOnboardingDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'completeBusinessOnboarding', 'mutation', variables);
     },
-    getBusinessOnboardingDetails(variables?: GetBusinessOnboardingDetailsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetBusinessOnboardingDetailsQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<GetBusinessOnboardingDetailsQuery>(GetBusinessOnboardingDetailsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getBusinessOnboardingDetails', 'query', variables);
+    businessOnboardingDetails(variables?: BusinessOnboardingDetailsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<BusinessOnboardingDetailsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<BusinessOnboardingDetailsQuery>(BusinessOnboardingDetailsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'businessOnboardingDetails', 'query', variables);
     },
     restaurantOnboarding(variables: RestaurantOnboardingMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<RestaurantOnboardingMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<RestaurantOnboardingMutation>(RestaurantOnboardingDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'restaurantOnboarding', 'mutation', variables);
@@ -3209,26 +3222,26 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     completeRestaurantOnboarding(variables?: CompleteRestaurantOnboardingQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<CompleteRestaurantOnboardingQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<CompleteRestaurantOnboardingQuery>(CompleteRestaurantOnboardingDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'completeRestaurantOnboarding', 'query', variables);
     },
-    getRestaurantOnboardingData(variables?: GetRestaurantOnboardingDataQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetRestaurantOnboardingDataQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<GetRestaurantOnboardingDataQuery>(GetRestaurantOnboardingDataDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getRestaurantOnboardingData', 'query', variables);
+    restaurantOnboardingData(variables?: RestaurantOnboardingDataQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<RestaurantOnboardingDataQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<RestaurantOnboardingDataQuery>(RestaurantOnboardingDataDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'restaurantOnboardingData', 'query', variables);
     },
     meUserInResOnboarding(variables?: MeUserInResOnboardingQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<MeUserInResOnboardingQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<MeUserInResOnboardingQuery>(MeUserInResOnboardingDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'meUserInResOnboarding', 'query', variables);
     },
-    getUserRestaurants(variables?: GetUserRestaurantsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetUserRestaurantsQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<GetUserRestaurantsQuery>(GetUserRestaurantsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getUserRestaurants', 'query', variables);
+    userRestaurants(variables?: UserRestaurantsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UserRestaurantsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<UserRestaurantsQuery>(UserRestaurantsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'userRestaurants', 'query', variables);
     },
     setRestaurantIdAsCookie(variables: SetRestaurantIdAsCookieQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<SetRestaurantIdAsCookieQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<SetRestaurantIdAsCookieQuery>(SetRestaurantIdAsCookieDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'setRestaurantIdAsCookie', 'query', variables);
     },
-    getRestaurantDetails(variables?: GetRestaurantDetailsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetRestaurantDetailsQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<GetRestaurantDetailsQuery>(GetRestaurantDetailsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getRestaurantDetails', 'query', variables);
+    restaurantDetails(variables?: RestaurantDetailsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<RestaurantDetailsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<RestaurantDetailsQuery>(RestaurantDetailsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'restaurantDetails', 'query', variables);
     },
     addTaxRate(variables: AddTaxRateMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddTaxRateMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<AddTaxRateMutation>(AddTaxRateDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'addTaxRate', 'mutation', variables);
     },
-    getUserRestaurantsPending(variables?: GetUserRestaurantsPendingQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetUserRestaurantsPendingQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<GetUserRestaurantsPendingQuery>(GetUserRestaurantsPendingDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getUserRestaurantsPending', 'query', variables);
+    userRestaurantsPending(variables?: UserRestaurantsPendingQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UserRestaurantsPendingQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<UserRestaurantsPendingQuery>(UserRestaurantsPendingDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'userRestaurantsPending', 'query', variables);
     },
     getSubCategory(variables: GetSubCategoryQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetSubCategoryQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetSubCategoryQuery>(GetSubCategoryDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getSubCategory', 'query', variables);
@@ -3248,8 +3261,8 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     getTeamMembers(variables?: GetTeamMembersQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetTeamMembersQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetTeamMembersQuery>(GetTeamMembersDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getTeamMembers', 'query', variables);
     },
-    removeTeamMember(variables: RemoveTeamMemberMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<RemoveTeamMemberMutation> {
-      return withWrapper((wrappedRequestHeaders) => client.request<RemoveTeamMemberMutation>(RemoveTeamMemberDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'removeTeamMember', 'mutation', variables);
+    removeRestaurantSubuser(variables: RemoveRestaurantSubuserMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<RemoveRestaurantSubuserMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<RemoveRestaurantSubuserMutation>(RemoveRestaurantSubuserDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'removeRestaurantSubuser', 'mutation', variables);
     },
     verifyTeamEmail(variables: VerifyTeamEmailMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<VerifyTeamEmailMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<VerifyTeamEmailMutation>(VerifyTeamEmailDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'verifyTeamEmail', 'mutation', variables);

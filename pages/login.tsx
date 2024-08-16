@@ -1,17 +1,16 @@
-import { FC, useState, useEffect } from "react";
-import Image from "next/image";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { useRouter } from "next/router";
-import useGlobalStore from "@/store/global";
-import ReusableModal from "@/components/common/modal/modal";
-import { sdk } from "@/utils/graphqlClient";
-import logo1 from "../assets/logo/logoDark.png";
-import Link from "next/link";
-import { GetServerSideProps } from "next";
-import { parseCookies } from "nookies";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
+import ReusableModal from "@/components/common/modal/modal";
+import useGlobalStore from "@/store/global";
+import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
+import { GetServerSideProps } from "next";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { FC, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import logo1 from "../assets/logo/logoDark.png";
 
 interface IFormInput {
   email: string;
@@ -32,8 +31,6 @@ const Login: FC = () => {
   const { setToastData } = useGlobalStore();
   const [showModal, setShowModal] = useState<boolean>(false);
   const [otp, setOtp] = useState<string>("");
-  const [otpError, setOtpError] = useState<string>("");
-  const [otpKey, setOtpKey] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [btnloading, setBtnLoading] = useState(false);
   const [timer, setTimer] = useState<number>(20);
@@ -62,10 +59,9 @@ const Login: FC = () => {
     }
     try {
       setBtnLoading(true);
-      const response = await sdk.GenerateOtpForLogin({ input: email });
+      const response = await sdk.userLogin({ input: email });
 
       if (response) {
-        setOtpKey(response.generateOtpForLogin);
         setShowModal(true);
         setToastData({ message: "OTP sent successfully", type: "success" });
         setBtnLoading(false);
@@ -103,15 +99,15 @@ const Login: FC = () => {
   const onSubmitOtp: SubmitHandler<IFormInput> = async () => {
     try {
       setBtnLoading(true);
-      const variables = {
-        key: otpKey,
-        input: email,
-        otp: otp,
-      };
 
-      const response = await sdk.VerifyOtpForLogin(variables);
+      const response = await sdk.userLoginVerification({
+        input: {
+          emailOrNumber: email,
+          otp: otp,
+        },
+      });
 
-      if (response && response.verifyOtpForLogin) {
+      if (response && response.userLoginVerification) {
         setBtnLoading(false);
 
         setShowModal(false);
@@ -251,7 +247,6 @@ const Login: FC = () => {
                 className="input input-primary mb-1"
                 placeholder="Enter OTP"
               />
-              {otpError && <p className="text-red-500">{otpError}</p>}
               {showResendButton ? (
                 <button
                   type="button"

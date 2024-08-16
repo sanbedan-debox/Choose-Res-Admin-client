@@ -1,28 +1,26 @@
-import { motion } from "framer-motion";
-import { STAGGER_CHILD_VARIANTS } from "@/lib/constants";
-import { useRouter } from "next/router";
-import useGlobalStore from "@/store/global";
-import { useForm, Controller } from "react-hook-form";
-import Select from "react-select";
-import AsyncSelect from "react-select/async";
-import debounce from "lodash.debounce";
-import { useEffect, useState } from "react";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
+import { STAGGER_CHILD_VARIANTS } from "@/lib/constants";
+import useGlobalStore from "@/store/global";
+import useMasterStore from "@/store/masters";
+import RestaurantOnboardingStore from "@/store/restaurantOnboarding";
 import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
-import RestaurantOnboardingStore from "@/store/restaurantOnboarding";
-import useMasterStore from "@/store/masters";
+import { motion } from "framer-motion";
+import debounce from "lodash.debounce";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import Select from "react-select";
+import AsyncSelect from "react-select/async";
 
-import AvailabilityComponent from "@/components/common/timingAvailibility/timingAvailibility";
-import { AvailabilityInput, Day } from "@/generated/graphql";
-import moment from "moment";
-import CustomSwitch from "@/components/common/customSwitch/customSwitch";
 import {
   Availability,
   formatAvailability,
   reverseFormatAvailability,
 } from "@/components/common/timingAvailibility/interface";
+import AvailabilityComponent from "@/components/common/timingAvailibility/timingAvailibility";
+import { Day } from "@/generated/graphql";
 
 interface IFormData {
   addressLine1: string;
@@ -90,9 +88,9 @@ const RestaurantAvailability = () => {
 
   async function fetchBusinessDetails() {
     try {
-      const response = await sdk.getBusinessDetails();
-      if (response && response.getBusinessDetails) {
-        const { address } = response.getBusinessDetails;
+      const response = await sdk.userBusinessDetails();
+      if (response && response.userBusinessDetails) {
+        const { address } = response.userBusinessDetails;
 
         setValue("addressLine1", address?.addressLine1 || "");
         setAddressLine1(address?.addressLine1 || "");

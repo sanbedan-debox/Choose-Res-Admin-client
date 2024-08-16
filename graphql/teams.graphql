@@ -16,8 +16,8 @@ query getTeamMembers {
   }
 }
 
-mutation removeTeamMember($teamId: String!) {
-  removeTeamMember(id: $teamId)
+mutation removeRestaurantSubuser($restaurantSubUser: RestaurantSubuserInput!) {
+  removeRestaurantSubuser(input: $restaurantSubUser)
 }
 
 mutation verifyTeamEmail($token: String!) {

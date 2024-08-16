@@ -3,7 +3,6 @@ import { ButtonType } from "@/components/common/button/interface";
 import CustomSwitch from "@/components/common/customSwitch/customSwitch";
 import ReusableModal from "@/components/common/modal/modal";
 import RoopTable from "@/components/common/table/table";
-import CBTable from "@/components/common/table/table";
 import { MenuTypeEnum, StatusEnum } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
 import useMenuMenuStore from "@/store/menumenu";
@@ -12,8 +11,6 @@ import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import React, { useEffect, useState } from "react";
 import { BsCopy } from "react-icons/bs";
-import { FaTrash, FaEdit, FaShieldAlt, FaCopy } from "react-icons/fa";
-import { IoDuplicateOutline } from "react-icons/io5";
 import { MdOutlineEdit } from "react-icons/md";
 
 const Menu: React.FC = () => {

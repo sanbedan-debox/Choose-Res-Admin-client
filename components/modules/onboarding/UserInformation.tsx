@@ -1,20 +1,20 @@
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { STAGGER_CHILD_VARIANTS } from "@/lib/constants";
-import { useRouter } from "next/router";
-import useGlobalStore from "@/store/global";
-import useOnboardingStore from "@/store/onboarding";
-import { useForm, Controller } from "react-hook-form";
-import Select from "react-select";
-import { sdk } from "@/utils/graphqlClient";
+import CButton from "@/components/common/button/button";
+import { ButtonType } from "@/components/common/button/interface";
 import {
   BusinessTypeEnum,
   EstimatedRevenueEnum,
   StaffCountEnum,
 } from "@/generated/graphql";
-import CButton from "@/components/common/button/button";
-import { ButtonType } from "@/components/common/button/interface";
+import { STAGGER_CHILD_VARIANTS } from "@/lib/constants";
+import useGlobalStore from "@/store/global";
+import useOnboardingStore from "@/store/onboarding";
+import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
+import { motion } from "framer-motion";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import Select from "react-select";
 
 interface IFormInput {
   businessType: string;

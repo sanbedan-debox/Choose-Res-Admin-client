@@ -1,12 +1,7 @@
 // components/common/QuickActions.tsx
 import {
   FaChartLine,
-  FaUserFriends,
-  FaUtensils,
-  FaEdit,
-  FaCheck,
-  FaUsers,
-  FaClock,
+  FaUtensils
 } from "react-icons/fa";
 
 const quickActions = [

@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
-import { sdk } from "@/utils/graphqlClient";
-import { FaSpinner } from "react-icons/fa";
 import BlockerLayout from "@/components/layouts/blockerLayout";
-import Link from "next/link";
+import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { FaSpinner } from "react-icons/fa";
 
 const SubUserVerify = () => {
   const [loading, setLoading] = useState(true);

@@ -5,12 +5,11 @@ import RestaurantBasicInformation from "@/components/modules/onboarding/Restaura
 import WelcomeRestaurantOnboarding from "@/components/modules/onboarding/WelcomeRestaurantOnboarding";
 import { sdk } from "@/utils/graphqlClient";
 
-import { GetServerSideProps } from "next";
-import { parseCookies } from "nookies";
-import { useEffect } from "react";
 import RestaurantAdditionalInformation from "@/components/modules/onboarding/RestaurantAdditionalInfo";
-import RestaurantOnboardingStore from "@/store/restaurantOnboarding";
 import { MeatType } from "@/generated/graphql";
+import RestaurantOnboardingStore from "@/store/restaurantOnboarding";
+import { GetServerSideProps } from "next";
+import { useEffect } from "react";
 
 type HomePageProps = {
   repo: {
@@ -166,12 +165,12 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
       };
     }
 
-    const response = await sdk.getRestaurantOnboardingData(
+    const response = await sdk.restaurantOnboardingData(
       {},
       { cookie: context.req.headers.cookie?.toString() ?? "" }
     );
-
-    if (response && response.getRestaurantOnboardingData) {
+    console.log(response.restaurantOnboardingData);
+    if (response && response.restaurantOnboardingData) {
       const {
         address,
         beverageCategory,
@@ -186,7 +185,7 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
         socialInfo,
         website,
         availability,
-      } = response.getRestaurantOnboardingData;
+      } = response.restaurantOnboardingData;
 
       return {
         props: {

@@ -1,17 +1,16 @@
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { STAGGER_CHILD_VARIANTS } from "@/lib/constants";
-import { useRouter } from "next/router";
-import useGlobalStore from "@/store/global";
-import { Controller, useForm } from "react-hook-form";
-import Select from "react-select";
-import { sdk } from "@/utils/graphqlClient";
-import { MeatType, FoodType, BeverageCategory } from "@/generated/graphql";
-import useRestaurantInfoStore from "@/store/restaurantOnboarding";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
+import { BeverageCategory, FoodType, MeatType } from "@/generated/graphql";
+import { STAGGER_CHILD_VARIANTS } from "@/lib/constants";
+import useGlobalStore from "@/store/global";
+import useRestaurantInfoStore from "@/store/restaurantOnboarding";
+import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
-import useRestaurantsStore from "@/store/restaurant";
+import { motion } from "framer-motion";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import Select from "react-select";
 
 interface IFormInput {
   instagramLink?: string;

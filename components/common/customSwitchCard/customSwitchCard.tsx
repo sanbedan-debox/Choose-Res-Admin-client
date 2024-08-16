@@ -1,5 +1,5 @@
-import React from "react";
 import CustomSwitch from "@/components/common/customSwitch/customSwitch";
+import React from "react";
 
 interface CustomSwitchCardProps {
   title: string;

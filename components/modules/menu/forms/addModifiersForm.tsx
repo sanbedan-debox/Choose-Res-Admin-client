@@ -1,8 +1,12 @@
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { useForm } from "react-hook-form";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
+import CustomSwitch from "@/components/common/customSwitch/customSwitch";
+import CustomSwitchCard from "@/components/common/customSwitchCard/customSwitchCard";
+import ReusableModal from "@/components/common/modal/modal";
+import { MenuTypeEnum } from "@/generated/graphql";
+import useGlobalStore from "@/store/global";
+import useMenuOptionsStore from "@/store/menuOptions";
+import useModStore from "@/store/modifiers";
 import { sdk } from "@/utils/graphqlClient";
 import {
   extractErrorMessage,
@@ -10,15 +14,11 @@ import {
   isValidNameAlphabetic,
   roundOffPrice,
 } from "@/utils/utilFUncs";
-import useGlobalStore from "@/store/global";
-import useMenuOptionsStore from "@/store/menuOptions";
-import CustomSwitchCard from "@/components/common/customSwitchCard/customSwitchCard";
-import useModStore from "@/store/modifiers";
+import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import { RiEditCircleLine } from "react-icons/ri";
-import CustomSwitch from "@/components/common/customSwitch/customSwitch";
-import ReusableModal from "@/components/common/modal/modal";
-import { MenuTypeEnum } from "@/generated/graphql";
 
 interface IFormInput {
   isItemFromMenu: boolean;

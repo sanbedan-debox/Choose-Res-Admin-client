@@ -13,15 +13,12 @@ query PlaceDetails($placeId: String!) {
     longitude
   }
 }
-# Mutation to update the restaurant user's profile
-mutation updateUserProfile($input: UpdateUserProfileInput!) {
-  updateUserProfile(input: $input)
-}
 
 # Mutation to update user onboarding details
-mutation businessOnboarding($input: RegisterBusinessInput!) {
+mutation businessOnboarding($input: BusinessDetailsInput!) {
   businessOnboarding(input: $input)
 }
+
 # Inputs
 
 mutation completeBusinessOnboarding {
@@ -36,16 +33,15 @@ type AddRestaurantUser {
   numberOtpVerifyKey: String!
 }
 
-query getBusinessOnboardingDetails {
-  getBusinessOnboardingDetails {
+query businessOnboardingDetails {
+  businessOnboardingDetails {
     ein
-    # ssn
     businessName
     address {
       ...addressInfo
     }
     employeeSize
-    establishedAt
+
     businessType
     estimatedRevenue
   }
@@ -78,13 +74,6 @@ input VerifyRestaurantUserDetails {
   communication: CommunicationPreferenceInput!
 }
 
-# Input for updating user profile
-input UpdateUserProfileInput {
-  name: String
-  communication: [CommunicationPreferenceInput]
-  restaurantIds: [String]
-}
-
 # Input for communication preferences
 input CommunicationPreferenceInput {
   whatsApp: Boolean!
@@ -94,11 +83,10 @@ input CommunicationPreferenceInput {
 type Mutation {
   createRestaurantUser(input: AddRestaurantUserInput!): AddRestaurantUser
   verifyRestaurantUserDetails(input: VerifyRestaurantUserDetails!): Boolean
-  updateRestaurantUserProfile(input: UpdateUserProfileInput!): Boolean
 }
 
-query getRestaurantOnboardingData {
-  getRestaurantOnboardingData {
+query restaurantOnboardingData {
+  restaurantOnboardingData {
     name
     address {
       ...addressInfo

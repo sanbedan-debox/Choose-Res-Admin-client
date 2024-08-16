@@ -1,31 +1,24 @@
-import React, { useEffect, useState } from "react";
+import useGlobalStore from "@/store/global";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import useGlobalStore from "@/store/global";
-import logo1 from "../../assets/logo/logoDark.png";
-import {
-  FaHome,
-  FaCog,
-  FaChartBar,
-  FaListUl,
-  FaUsers,
-  FaTable,
-} from "react-icons/fa";
-import { TbSocial } from "react-icons/tb";
+import React from "react";
+import { FaChartBar, FaCog, FaHome, FaListUl, FaUsers } from "react-icons/fa";
 import { GrGift, GrRestaurant } from "react-icons/gr";
+import { TbSocial } from "react-icons/tb";
+import logo1 from "../../assets/logo/logoDark.png";
 
+import { PermissionTypeEnum } from "@/generated/graphql";
+import useUserStore from "@/store/user";
 import Image from "next/image";
-import { modules } from "./common/accessConfig";
+import { BiWorld } from "react-icons/bi";
 import {
   MdOutlineIntegrationInstructions,
   MdOutlineInventory2,
   MdOutlinePayments,
   MdRestaurantMenu,
 } from "react-icons/md";
-import { BiWorld } from "react-icons/bi";
 import { RiReservedLine } from "react-icons/ri";
-import { PermissionTypeEnum } from "@/generated/graphql";
-import useUserStore from "@/store/user";
+import { modules } from "./common/accessConfig";
 
 const Sidebar: React.FC = () => {
   const { isSidebarExpanded, selectedMenu, setSelectedMenu } = useGlobalStore();

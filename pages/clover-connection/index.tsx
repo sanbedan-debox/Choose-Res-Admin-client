@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
-import { FaSpinner } from "react-icons/fa";
 import BlockerLayout from "@/components/layouts/blockerLayout";
-import { sdk } from "@/utils/graphqlClient";
 import useGlobalStore from "@/store/global";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { FaSpinner } from "react-icons/fa";
 
 const CloverConnectionVerify = () => {
   const { setToastData } = useGlobalStore();

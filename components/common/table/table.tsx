@@ -1,20 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { CSVLink } from "react-csv";
-import {
-  HiDotsVertical,
-  HiChevronLeft,
-  HiChevronRight,
-  HiFilter,
-} from "react-icons/hi";
-import Select from "react-select";
 import useGlobalStore from "@/store/global";
+import React, { useEffect, useState } from "react";
+import { CSVLink } from "react-csv";
+import { HiChevronLeft, HiChevronRight, HiFilter } from "react-icons/hi";
+import Select from "react-select";
 
-import ReusableModal from "../modal/modal";
-import noDataImage from "../../../assets/svg/noData.svg";
 import Image from "next/image";
+import { FaSpinner } from "react-icons/fa";
+import noDataImage from "../../../assets/svg/noData.svg";
 import CButton from "../button/button";
 import { ButtonType } from "../button/interface";
-import { FaSpinner } from "react-icons/fa";
+import ReusableModal from "../modal/modal";
 
 interface TableProps {
   data: any[];

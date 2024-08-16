@@ -6,7 +6,6 @@ import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 
 import React, { useEffect, useState } from "react";
-import { BsCopy } from "react-icons/bs";
 import { MdOutlineEdit } from "react-icons/md";
 
 const SubCategories: React.FC = () => {

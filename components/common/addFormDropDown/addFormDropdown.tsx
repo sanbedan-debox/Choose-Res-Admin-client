@@ -1,11 +1,9 @@
-import { useState } from "react";
-import ReusableModal from "@/components/common/modal/modal";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
-
+import ReusableModal from "@/components/common/modal/modal";
+import { useState } from "react";
 import { BsArrowUpRightCircle } from "react-icons/bs";
 import { IoIosAddCircleOutline } from "react-icons/io";
-import CustomSwitch from "../customSwitch/customSwitch";
 
 interface Props {
   title: string;

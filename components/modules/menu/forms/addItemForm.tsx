@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { Controller, useForm } from "react-hook-form";
+import AddFormDropdown from "@/components/common/addFormDropDown/addFormDropdown";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
-import { sdk } from "@/utils/graphqlClient";
+import CustomSwitchCard from "@/components/common/customSwitchCard/customSwitchCard";
+import ReusableModal from "@/components/common/modal/modal";
+import FormAddTable from "@/components/common/table/formTable";
 import {
-  extractErrorMessage,
-  generateUniqueName,
-  isValidNameAlphabetic,
-  roundOffPrice,
-} from "@/utils/utilFUncs";
+  Availability,
+  formatAvailability,
+  reverseFormatAvailability,
+} from "@/components/common/timingAvailibility/interface";
+import AvailabilityComponent from "@/components/common/timingAvailibility/timingAvailibility";
 import {
   Day,
   ItemOptionsEnum,
@@ -17,25 +17,24 @@ import {
   PriceTypeEnum,
   StatusEnum,
 } from "@/generated/graphql";
-import useGlobalStore from "@/store/global";
-import useMenuOptionsStore from "@/store/menuOptions";
-import useMenuItemsStore from "@/store/menuItems";
-import CustomSwitchCard from "@/components/common/customSwitchCard/customSwitchCard";
-import FormAddTable from "@/components/common/table/formTable";
-import AddFormDropdown from "@/components/common/addFormDropDown/addFormDropdown";
-import { MdArrowOutward } from "react-icons/md";
-import useModGroupStore from "@/store/modifierGroup";
-import ReusableModal from "@/components/common/modal/modal";
 import useAuthStore from "@/store/auth";
-import { IoIosAddCircleOutline, IoIosCloseCircleOutline } from "react-icons/io";
-import { RiEditCircleLine } from "react-icons/ri";
-import AvailabilityComponent from "@/components/common/timingAvailibility/timingAvailibility";
-import moment from "moment";
+import useGlobalStore from "@/store/global";
+import useMenuItemsStore from "@/store/menuItems";
+import useMenuOptionsStore from "@/store/menuOptions";
+import useModGroupStore from "@/store/modifierGroup";
+import { sdk } from "@/utils/graphqlClient";
 import {
-  Availability,
-  formatAvailability,
-  reverseFormatAvailability,
-} from "@/components/common/timingAvailibility/interface";
+  extractErrorMessage,
+  generateUniqueName,
+  isValidNameAlphabetic,
+  roundOffPrice,
+} from "@/utils/utilFUncs";
+import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { IoIosAddCircleOutline, IoIosCloseCircleOutline } from "react-icons/io";
+import { MdArrowOutward } from "react-icons/md";
+import { RiEditCircleLine } from "react-icons/ri";
 import Select from "react-select";
 
 interface IFormInput {
@@ -191,9 +190,9 @@ const AddItemForm = () => {
 
   const fetchMenuData = async () => {
     try {
-      const response = await sdk.getMenuByRestaurant();
-      if (response && response.getMenuByRestaurant) {
-        const menuItems = response.getMenuByRestaurant.map(
+      const response = await sdk.getAllMenus();
+      if (response && response.getAllMenus) {
+        const menuItems = response.getAllMenus.map(
           (menu: { name: string; type: MenuTypeEnum }) => ({
             name: menu.name,
             type: menu.type,
@@ -390,9 +389,9 @@ const AddItemForm = () => {
   useEffect(() => {
     const setTimings = async () => {
       try {
-        const response = await sdk.getRestaurantDetails();
-        if (response && response.getRestaurantDetails) {
-          const { availability } = response.getRestaurantDetails;
+        const response = await sdk.restaurantDetails();
+        if (response && response.restaurantDetails) {
+          const { availability } = response.restaurantDetails;
           if (availability) {
             const originalAvailability =
               reverseFormatAvailability(availability);

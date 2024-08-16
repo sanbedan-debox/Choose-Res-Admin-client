@@ -1,30 +1,29 @@
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { useForm, Controller } from "react-hook-form";
-import Select from "react-select";
+import AddFormDropdown from "@/components/common/addFormDropDown/addFormDropdown";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
+import CountSelector from "@/components/common/countSelector/countSelector";
+import CustomSwitchCard from "@/components/common/customSwitchCard/customSwitchCard";
+import ReusableModal from "@/components/common/modal/modal";
+import FormAddTable from "@/components/common/table/formTable";
+import { PriceTypeEnum } from "@/generated/graphql";
+import useGlobalStore from "@/store/global";
+import useMenuOptionsStore from "@/store/menuOptions";
+import useModGroupStore from "@/store/modifierGroup";
+import useModStore from "@/store/modifiers";
+import { sdk } from "@/utils/graphqlClient";
 import {
   extractErrorMessage,
   generateUniqueName,
   isValidNameAlphabetic,
   roundOffPrice,
 } from "@/utils/utilFUncs";
-import { PriceTypeEnum } from "@/generated/graphql";
-import useGlobalStore from "@/store/global";
-import useMenuOptionsStore from "@/store/menuOptions";
-import CustomSwitchCard from "@/components/common/customSwitchCard/customSwitchCard";
-import CountSelector from "@/components/common/countSelector/countSelector";
-import { sdk } from "@/utils/graphqlClient";
-import FormAddTable from "@/components/common/table/formTable";
-import { FaTrash } from "react-icons/fa";
-import AddFormDropdown from "@/components/common/addFormDropDown/addFormDropdown";
-import { MdArrowOutward } from "react-icons/md";
-import useModGroupStore from "@/store/modifierGroup";
-import useModStore from "@/store/modifiers";
-import ReusableModal from "@/components/common/modal/modal";
+import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { IoIosAddCircleOutline, IoIosCloseCircleOutline } from "react-icons/io";
+import { MdArrowOutward } from "react-icons/md";
 import { RiEditCircleLine } from "react-icons/ri";
+import Select from "react-select";
 
 interface IFormInput {
   name: string;

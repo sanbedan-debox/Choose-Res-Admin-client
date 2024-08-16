@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
 import useProfileStore from "@/store/profile";
 import { hideEIN } from "@/utils/utilFUncs";
+import React, { useEffect, useState } from "react";
 
 const IdentityVerificationForm: React.FC = () => {
   const { ein } = useProfileStore();
