@@ -35,6 +35,7 @@ const Login: FC = () => {
   const [btnloading, setBtnLoading] = useState(false);
   const [timer, setTimer] = useState<number>(20);
   const [showResendButton, setShowResendButton] = useState<boolean>(false);
+  const [otpId, setOTPId] = useState<string>("");
 
   const {
     register,
@@ -65,7 +66,7 @@ const Login: FC = () => {
         setShowModal(true);
         setToastData({ message: "OTP sent successfully", type: "success" });
         setBtnLoading(false);
-
+        setOTPId(response.userLogin);
         setTimer(20);
         setShowResendButton(false);
 
@@ -102,6 +103,7 @@ const Login: FC = () => {
 
       const response = await sdk.userLoginVerification({
         input: {
+          otpId: otpId,
           emailOrNumber: email,
           otp: otp,
         },

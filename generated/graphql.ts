@@ -1184,6 +1184,7 @@ export type Query = {
   getSubCategory: SubCategory;
   getTaxRate: TaxRate;
   getTeamMembers: Array<SubUser>;
+  getUser?: Maybe<User>;
   getUsersForTarget: Scalars['Float']['output'];
   getWaitListUsers: Array<WaitListUser>;
   me: Admin;
@@ -1201,7 +1202,7 @@ export type Query = {
   userLogout: Scalars['Boolean']['output'];
   userRestaurants: Array<RestaurantInfo>;
   userRestaurantsPending: Array<RestaurantInfo>;
-  userSignup: Scalars['Boolean']['output'];
+  userSignup: Scalars['String']['output'];
   userSignupVerification: Scalars['Boolean']['output'];
   verifyAdminLogin: Scalars['String']['output'];
   verifyUserDetails: Scalars['Boolean']['output'];
@@ -1316,6 +1317,11 @@ export type QueryGetSubCategoryArgs = {
 };
 
 
+export type QueryGetUserArgs = {
+  id: Scalars['String']['input'];
+};
+
+
 export type QueryGetUsersForTargetArgs = {
   target: EmailCampaignTargetTypes;
 };
@@ -1369,6 +1375,7 @@ export type QueryUserSignupVerificationArgs = {
 export type QueryVerifyAdminLoginArgs = {
   email: Scalars['String']['input'];
   otp: Scalars['String']['input'];
+  otpId: Scalars['String']['input'];
 };
 
 
@@ -1533,7 +1540,9 @@ export type SubUser = {
   email: Scalars['String']['output'];
   firstName: Scalars['String']['output'];
   lastName: Scalars['String']['output'];
+  permissions: Array<UserPermission>;
   phone: Scalars['String']['output'];
+  restaurants?: Maybe<Array<RestaurantInfo>>;
   role: Scalars['String']['output'];
   status: UserStatus;
   updatedAt: Scalars['DateTimeISO']['output'];
@@ -1707,6 +1716,7 @@ export type User = {
   createdAt: Scalars['DateTimeISO']['output'];
   creatorUser?: Maybe<Scalars['String']['output']>;
   email: Scalars['String']['output'];
+  enable2FA: Scalars['Boolean']['output'];
   firstName: Scalars['String']['output'];
   lastLoggedIn: Scalars['DateTimeISO']['output'];
   lastLoggedOut: Scalars['DateTimeISO']['output'];
@@ -1715,6 +1725,7 @@ export type User = {
   phone: Scalars['String']['output'];
   restaurants?: Maybe<Array<RestaurantInfo>>;
   role: UserRole;
+  secret2FA?: Maybe<Scalars['String']['output']>;
   status: UserStatus;
   statusUpdatedBy?: Maybe<Admin>;
   updatedAt: Scalars['DateTimeISO']['output'];
@@ -1735,16 +1746,18 @@ export type UserInfo = {
 export type UserLoginVerificationInput = {
   emailOrNumber: Scalars['String']['input'];
   otp: Scalars['String']['input'];
+  otpId: Scalars['String']['input'];
 };
 
 export type UserPermission = {
   __typename?: 'UserPermission';
+  id: Scalars['ID']['output'];
   status: Scalars['Boolean']['output'];
   type: PermissionTypeEnum;
 };
 
 export type UserPermissionInput = {
-  _id: Scalars['String']['input'];
+  id: Scalars['String']['input'];
   status: Scalars['Boolean']['input'];
   type: PermissionTypeEnum;
 };
@@ -1772,6 +1785,7 @@ export type UserSignupVerificationInput = {
   firstName: Scalars['String']['input'];
   lastName: Scalars['String']['input'];
   otp: Scalars['String']['input'];
+  otpId: Scalars['String']['input'];
   phone: Scalars['String']['input'];
 };
 
@@ -1844,7 +1858,7 @@ export type UserSignUpQueryVariables = Exact<{
 }>;
 
 
-export type UserSignUpQuery = { __typename?: 'Query', userSignup: boolean };
+export type UserSignUpQuery = { __typename?: 'Query', userSignup: string };
 
 export type UserSignupVerificationQueryVariables = Exact<{
   input: UserSignupVerificationInput;
@@ -2273,10 +2287,31 @@ export type AddTeamMemberMutationVariables = Exact<{
 
 export type AddTeamMemberMutation = { __typename?: 'Mutation', addTeamMember: boolean };
 
+export type UpdateSubuserPermissionsMutationVariables = Exact<{
+  input: UpdateSubuserPermissionsInput;
+}>;
+
+
+export type UpdateSubuserPermissionsMutation = { __typename?: 'Mutation', updateSubuserPermissions: boolean };
+
+export type UpdateSubuserRoleMutationVariables = Exact<{
+  input: UpdateSubuserRoleInput;
+}>;
+
+
+export type UpdateSubuserRoleMutation = { __typename?: 'Mutation', updateSubuserRole: boolean };
+
 export type GetTeamMembersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetTeamMembersQuery = { __typename?: 'Query', getTeamMembers: Array<{ __typename?: 'SubUser', firstName: string, lastName: string, email: string, phone: string, role: string, status: UserStatus, _id?: { __typename?: 'User', _id: string } | null }> };
+
+export type GetUserQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type GetUserQuery = { __typename?: 'Query', getUser?: { __typename?: 'User', _id: string, firstName: string, lastName: string, status: UserStatus, email: string, phone: string, creatorUser?: string | null, role: UserRole, permissions: Array<{ __typename?: 'UserPermission', status: boolean, type: PermissionTypeEnum, id: string }>, businessInfo?: { __typename?: 'Business', businessName?: string | null, ein?: string | null, businessType?: BusinessTypeEnum | null, estimatedRevenue?: EstimatedRevenueEnum | null, employeeSize?: StaffCountEnum | null, address?: { __typename?: 'AddressInfo', addressLine1: string, addressLine2?: string | null, city: string, zipcode: number, state: { __typename?: 'StateData', stateId: string, stateName: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string, placeId: string } | null } | null } | null, restaurants?: Array<{ __typename?: 'RestaurantInfo', id: string, name: string, status: RestaurantStatus }> | null } | null };
 
 export type RemoveRestaurantSubuserMutationVariables = Exact<{
   restaurantSubUser: RestaurantSubuserInput;
@@ -3005,6 +3040,16 @@ export const AddTeamMemberDocument = gql`
   addTeamMember(input: $AddTeamMemberInput)
 }
     `;
+export const UpdateSubuserPermissionsDocument = gql`
+    mutation updateSubuserPermissions($input: UpdateSubuserPermissionsInput!) {
+  updateSubuserPermissions(input: $input)
+}
+    `;
+export const UpdateSubuserRoleDocument = gql`
+    mutation updateSubuserRole($input: UpdateSubuserRoleInput!) {
+  updateSubuserRole(input: $input)
+}
+    `;
 export const GetTeamMembersDocument = gql`
     query getTeamMembers {
   getTeamMembers {
@@ -3020,6 +3065,40 @@ export const GetTeamMembersDocument = gql`
   }
 }
     `;
+export const GetUserDocument = gql`
+    query getUser($id: String!) {
+  getUser(id: $id) {
+    _id
+    firstName
+    lastName
+    status
+    email
+    phone
+    creatorUser
+    permissions {
+      status
+      type
+      id
+    }
+    role
+    businessInfo {
+      businessName
+      ein
+      businessType
+      estimatedRevenue
+      employeeSize
+      address {
+        ...addressInfo
+      }
+    }
+    restaurants {
+      id
+      name
+      status
+    }
+  }
+}
+    ${AddressInfoFragmentDoc}`;
 export const RemoveRestaurantSubuserDocument = gql`
     mutation removeRestaurantSubuser($restaurantSubUser: RestaurantSubuserInput!) {
   removeRestaurantSubuser(input: $restaurantSubUser)
@@ -3258,8 +3337,17 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     addTeamMember(variables: AddTeamMemberMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddTeamMemberMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<AddTeamMemberMutation>(AddTeamMemberDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'addTeamMember', 'mutation', variables);
     },
+    updateSubuserPermissions(variables: UpdateSubuserPermissionsMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UpdateSubuserPermissionsMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<UpdateSubuserPermissionsMutation>(UpdateSubuserPermissionsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'updateSubuserPermissions', 'mutation', variables);
+    },
+    updateSubuserRole(variables: UpdateSubuserRoleMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UpdateSubuserRoleMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<UpdateSubuserRoleMutation>(UpdateSubuserRoleDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'updateSubuserRole', 'mutation', variables);
+    },
     getTeamMembers(variables?: GetTeamMembersQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetTeamMembersQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetTeamMembersQuery>(GetTeamMembersDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getTeamMembers', 'query', variables);
+    },
+    getUser(variables: GetUserQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetUserQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetUserQuery>(GetUserDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getUser', 'query', variables);
     },
     removeRestaurantSubuser(variables: RemoveRestaurantSubuserMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<RemoveRestaurantSubuserMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<RemoveRestaurantSubuserMutation>(RemoveRestaurantSubuserDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'removeRestaurantSubuser', 'mutation', variables);

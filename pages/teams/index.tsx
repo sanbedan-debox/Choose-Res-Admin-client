@@ -5,6 +5,7 @@ import ReusableModal from "@/components/common/modal/modal";
 import RoopTable from "@/components/common/table/table";
 import MainLayout from "@/components/layouts/mainBodyLayout";
 import AddTeamMemberForm from "@/components/modules/userManagement/forms/addTeamMemberForm";
+import EditTeamMemberForm from "@/components/modules/userManagement/forms/editTeamMemberForm";
 import { PermissionTypeEnum, UserStatus } from "@/generated/graphql";
 import useAuthStore from "@/store/auth";
 import useGlobalStore from "@/store/global";
@@ -15,6 +16,8 @@ import { extractErrorMessage } from "@/utils/utilFUncs";
 import { GetServerSideProps } from "next";
 import React, { useEffect, useState } from "react";
 import { FaTrash } from "react-icons/fa";
+import { IoSettingsOutline } from "react-icons/io5";
+import { MdOutlineAdminPanelSettings } from "react-icons/md";
 import useAddTeamMemberFormStore from "../../store/addTeamMemberStore";
 
 type NextPageWithLayout = React.FC & {
@@ -173,12 +176,37 @@ const Teams: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
       " By clicking yes the selected Team Member / Members will be deleted. This action cannot be undone."
     );
   };
+  const {
+    setIsEditTeamMember,
+    setIsEditTeamMemberId,
+    setIsEditTeamRole,
+    isEditTeamMember,
+  } = useUserManagementStore();
+  const onEditRole = (id: string) => {
+    setIsEditTeamMember(true);
+    setIsEditTeamMemberId(id);
+    setIsEditTeamRole(true);
+  };
+
+  const onEditPermissions = (id: string) => {
+    setIsEditTeamMember(true);
+    setIsEditTeamMemberId(id);
+    setIsEditTeamRole(false);
+  };
 
   const renderActions = (rowData: { _id: string }) => (
     <div className="flex space-x-2 justify-end">
       <FaTrash
-        className="text-primary text-md cursor-pointer"
+        className="text-primary text-lg cursor-pointer"
         onClick={() => handleDeleteMember(rowData._id)}
+      />
+      <IoSettingsOutline
+        className="text-primary text-lg cursor-pointer"
+        onClick={() => onEditRole(rowData._id)}
+      />
+      <MdOutlineAdminPanelSettings
+        className="text-primary text-lg cursor-pointer"
+        onClick={() => onEditPermissions(rowData._id)}
       />
     </div>
   );
@@ -222,6 +250,11 @@ const Teams: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
 
   const handleAddMemberModalClose = () => {
     setIsAddTeamMemberModalOpen(false);
+  };
+  const handleEditMemberModalClose = () => {
+    setIsEditTeamMember(false);
+    setIsEditTeamMemberId("");
+    setIsEditTeamRole(false);
   };
   const handleDeleteCloseConfirmationModal = () => {
     setshowDeleteConfirmationModal(false);
@@ -289,6 +322,18 @@ const Teams: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
       >
         <div className="flex justify-center">
           <AddTeamMemberForm />
+        </div>
+      </FullPageModal>
+      <FullPageModal
+        isOpen={isEditTeamMember}
+        title="Edit Team Member"
+        onClose={handleEditMemberModalClose}
+        actionButtonLabel="Edit Member"
+        // onActionButtonClick={handleAddMenuItemClick}
+        onActionButtonClick={() => {}}
+      >
+        <div className="flex justify-center">
+          <EditTeamMemberForm />
         </div>
       </FullPageModal>
     </div>

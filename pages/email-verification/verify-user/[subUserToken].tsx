@@ -24,7 +24,6 @@ const SubUserVerify = () => {
           }
         }
       } catch (error) {
-        console.error("Failed to fetch user details:", error);
         setError(extractErrorMessage(error));
       } finally {
         setLoading(false);

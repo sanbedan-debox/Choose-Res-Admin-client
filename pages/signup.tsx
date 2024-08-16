@@ -44,6 +44,7 @@ const Signup: FC = () => {
   const [otpEmail, setOtpEmail] = useState<string>("");
   const [otpWhatsApp, setOtpWhatsApp] = useState<string>("");
   const [otpError, setOtpError] = useState<string>("");
+  const [otpId, setOTPId] = useState<string>("");
   const [timer, setTimer] = useState<number>(20);
   const [showResendButton, setShowResendButton] = useState<boolean>(false);
 
@@ -87,7 +88,7 @@ const Signup: FC = () => {
           message: "Verification OTP sent to your email",
           type: "success",
         });
-
+        setOTPId(response.userSignup);
         setShowModal(true);
         setTimer(20);
         setShowResendButton(false);
@@ -126,6 +127,7 @@ const Signup: FC = () => {
     try {
       const response = await sdk.userSignupVerification({
         input: {
+          otpId: otpId,
           email,
           phone,
           otp: emailOtp,

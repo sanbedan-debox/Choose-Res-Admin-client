@@ -1,6 +1,12 @@
 mutation addTeamMember($AddTeamMemberInput: AddTeamMemberInput!) {
   addTeamMember(input: $AddTeamMemberInput)
 }
+mutation updateSubuserPermissions($input: UpdateSubuserPermissionsInput!) {
+  updateSubuserPermissions(input: $input)
+}
+mutation updateSubuserRole($input: UpdateSubuserRoleInput!) {
+  updateSubuserRole(input: $input)
+}
 
 query getTeamMembers {
   getTeamMembers {
@@ -13,6 +19,41 @@ query getTeamMembers {
     phone
     role
     status
+  }
+}
+
+# Query to fetch user's profile
+query getUser($id: String!) {
+  getUser(id: $id) {
+    _id
+    firstName
+    lastName
+    status
+    email
+    phone
+    creatorUser
+    permissions {
+      status
+      type
+      id
+    }
+    role
+    businessInfo {
+      businessName
+      ein
+      businessType
+      estimatedRevenue
+      employeeSize
+
+      address {
+        ...addressInfo
+      }
+    }
+    restaurants {
+      id
+      name
+      status
+    }
   }
 }
 
