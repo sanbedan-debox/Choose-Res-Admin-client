@@ -169,7 +169,7 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
       {},
       { cookie: context.req.headers.cookie?.toString() ?? "" }
     );
-    console.log(response.restaurantOnboardingData);
+
     if (response && response.restaurantOnboardingData) {
       const {
         address,
@@ -208,7 +208,6 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
         },
       };
     } else {
-      console.error("Failed to fetch user details:", response);
       return {
         redirect: {
           destination: "/login",
@@ -217,7 +216,6 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async (
       };
     }
   } catch (error) {
-    console.error("Failed to fetch user details:", error);
     return {
       redirect: {
         destination: "/login",

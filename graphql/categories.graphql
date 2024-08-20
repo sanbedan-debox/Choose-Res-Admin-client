@@ -2,7 +2,7 @@ mutation changeCategoryStatus($id: String!) {
   changeCategoryStatus(id: $id)
 }
 
-mutation addItemToCategory($categoryId: String!, $itemId: [String!]!) {
+mutation addItemsToCategory($categoryId: String!, $itemId: [String!]!) {
   addItemsToCategory(categoryId: $categoryId, itemIds: $itemId)
 }
 
@@ -21,12 +21,8 @@ query getCategories {
   }
 }
 
-query getItemsForCategoryDropdown(
-  $field: String!
-  $operator: FilterOperatorsEnum!
-  $value: String
-) {
-  getItems(filter: { field: $field, operator: $operator, value: $value }) {
+query getItemsForCategoryDropdown {
+  getItems {
     _id
     name
     price

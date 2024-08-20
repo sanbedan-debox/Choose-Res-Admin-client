@@ -10,12 +10,7 @@ import {
   reverseFormatAvailability,
 } from "@/components/common/timingAvailibility/interface";
 import AvailabilityComponent from "@/components/common/timingAvailibility/timingAvailibility";
-import {
-  Day,
-  FilterOperatorsEnum,
-  MenuTypeEnum,
-  StatusEnum,
-} from "@/generated/graphql";
+import { Day, MenuTypeEnum, StatusEnum } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
 import useMenuCategoryStore from "@/store/menuCategory";
 import useMenuItemsStore from "@/store/menuItems";
@@ -148,12 +143,16 @@ const AddCategoryForm = () => {
           })
         );
 
-        const updatedVisibilities = menuItems.map((menu) => ({
-          menuType: menu.type,
-          status: StatusEnum.Inactive as StatusEnum,
-        }));
+        let uniqueType = new Set<MenuTypeEnum>();
 
-        setVisibilities(updatedVisibilities);
+        menuItems.map((e) => uniqueType.add(e.type));
+
+        setVisibilities(
+          Array.from(uniqueType).map((e) => ({
+            menuType: e,
+            status: StatusEnum.Inactive,
+          }))
+        );
       }
     } catch (error) {
       console.error("Error fetching menu data:", error);
@@ -303,7 +302,7 @@ const AddCategoryForm = () => {
             });
         }
         isMenuAdded &&
-          (await sdk.addItemToCategory({
+          (await sdk.addItemsToCategory({
             itemId: addedMenuIds,
             categoryId: editCatsId || "",
           }));
@@ -328,11 +327,7 @@ const AddCategoryForm = () => {
   useEffect(() => {
     const fetch = async () => {
       try {
-        const items = await sdk.getItemsForCategoryDropdown({
-          field: "status",
-          operator: FilterOperatorsEnum.Any,
-          value: "active",
-        });
+        const items = await sdk.getItemsForCategoryDropdown();
         if (items && items.getItems) {
           const formattedItemsList = items.getItems.map(
             (item: {
@@ -525,7 +520,7 @@ const AddCategoryForm = () => {
 
   return (
     <motion.div
-      className="z-10 w-full min-h-full max-w-2xl flex flex-col items-center space-y-5 text-center"
+      className="z-10 w-full min-h-full max-w-4xl flex flex-col items-center space-y-5 text-center"
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}

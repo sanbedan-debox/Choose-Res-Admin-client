@@ -28,6 +28,7 @@ import Select from "react-select";
 interface IFormInput {
   name: string;
   optional: boolean;
+  multiSelect: boolean;
   pricingType: { label: string; value: string };
   maxSelections: number;
   minSelections: number;
@@ -155,6 +156,7 @@ const AddModifierGroupForm = () => {
               price,
               pricingType,
               optional,
+              multiSelect,
             } = response.getModifierGroup;
             setChangesMenu(response.getModifierGroup);
 
@@ -172,6 +174,7 @@ const AddModifierGroupForm = () => {
             setValue("desc", desc || "");
             setValue("commonPrice", price ?? 0);
             setValue("optional", optional ?? false);
+            setValue("multiSelect", multiSelect ?? false);
             const selectedPriceType = PricingTypeOptions.find(
               (option) => option.value === pricingType
             );
@@ -315,6 +318,7 @@ const AddModifierGroupForm = () => {
       const parsedMinSelection =
         parseFloat(data?.minSelections?.toString()) || 0;
       const parsedOptionalBoolean = data.optional ? true : false;
+      const parsedMultiSelectBoolean = data.multiSelect ? true : false;
       parseFloat(data?.minSelections?.toString()) || 0;
       const prevSelectedMenuIds = await prevItemsbfrEdit.map(
         (item) => item._id
@@ -375,6 +379,8 @@ const AddModifierGroupForm = () => {
         minSelections: parsedMinSelection || 0,
 
         maxSelections: parsedMaxSelection || 0,
+        optional: data.optional,
+        multiSelect: data.multiSelect,
       };
       let hasChanges = false;
 
@@ -387,8 +393,8 @@ const AddModifierGroupForm = () => {
         updateInput.optional = data.optional;
         hasChanges = true;
       }
-      if (data.optional !== changesMenu?.optional) {
-        updateInput.optional = data.optional;
+      if (data.multiSelect !== changesMenu?.multiSelect) {
+        updateInput.multiSelect = data.multiSelect;
         hasChanges = true;
       }
 
@@ -411,6 +417,7 @@ const AddModifierGroupForm = () => {
             maxSelections: parsedMaxSelection,
 
             optional: parsedOptionalBoolean,
+            multiSelect: parsedMultiSelectBoolean,
             pricingType: data.pricingType?.value as PriceTypeEnum,
           },
           modifiers: selectedItemsIds,
@@ -421,7 +428,7 @@ const AddModifierGroupForm = () => {
         });
       } else {
         isMenuAdded &&
-          (await sdk.addModifierToModifierGroup({
+          (await sdk.addModifierToGroup({
             modifierIds: addedMenuIds,
             modifierGroupId: editModGroupId || "",
           }));
@@ -479,7 +486,7 @@ const AddModifierGroupForm = () => {
       (item) => item._id === remmovingId
     );
     if (isEditModGroup && isPresentInPrevItems) {
-      const res = await sdk.removeModifierFromModifierGroup({
+      const res = await sdk.removeModifierFromGroup({
         modifierId: remmovingId,
         modifierGroupId: editModGroupId || "",
       });
@@ -512,7 +519,7 @@ const AddModifierGroupForm = () => {
 
   return (
     <motion.div
-      className="z-10 w-full min-h-full max-w-2xl flex flex-col items-center space-y-5 text-center"
+      className="z-10 w-full min-h-full max-w-4xl flex flex-col items-center space-y-5 text-center"
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
@@ -663,6 +670,28 @@ const AddModifierGroupForm = () => {
               </p>
             )}
           </div>
+
+          <div className="">
+            <CustomSwitchCard
+              label="multiselect"
+              title="Multi-Select"
+              caption="If its checked, customers can select any item more than once"
+              switchChecked={watch("multiSelect")}
+              onSwitchChange={() =>
+                setValue("multiSelect", !watch("multiSelect"))
+              }
+            />
+            <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
+              Turn on if you want customers to select any item more than once
+            </p>
+
+            {errors.multiSelect && (
+              <p className="text-red-500 text-sm text-start">
+                {errors.multiSelect.message}
+              </p>
+            )}
+          </div>
+
           <div>
             <FormAddTable
               data={data}

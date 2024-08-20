@@ -152,12 +152,12 @@ const AddModifierForm = () => {
       }
     }
 
-    if (!data.price || data.price <= 0) {
+    if (!data.price || data.price < 0) {
       setToastData({
-        message:
-          "An Modifier cannot be added without price, please add a numerical value that is greater than zero to save and continue",
+        message: "Price cannot be less than zero, please try again!",
         type: "error",
       });
+      return;
     }
     const parsedPrice = roundOffPrice(parseFloat(data.price.toString()));
     let updateInput: any = { _id: editModId || "" };
@@ -263,7 +263,7 @@ const AddModifierForm = () => {
 
   return (
     <motion.div
-      className="z-10 w-full min-h-full max-w-2xl flex flex-col items-center space-y-5 text-center"
+      className="z-10 w-full min-h-full max-w-4xl flex flex-col items-center space-y-5 text-center"
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}

@@ -27,12 +27,6 @@ mutation completeBusinessOnboarding {
 
 # Object types
 
-# Response for adding a restaurant user
-type AddRestaurantUser {
-  emailOtpVerifyKey: String!
-  numberOtpVerifyKey: String!
-}
-
 query businessOnboardingDetails {
   businessOnboardingDetails {
     ein
@@ -47,42 +41,12 @@ query businessOnboardingDetails {
   }
 }
 
-mutation restaurantOnboarding($input: UpdateRestaurantDetailsInput!) {
+mutation restaurantOnboarding($input: RestaurantDetailsInput!) {
   restaurantOnboarding(input: $input)
 }
 
 query completeRestaurantOnboarding {
   completeRestaurantOnboarding
-}
-# Input for adding a new restaurant user
-input AddRestaurantUserInput {
-  name: String!
-  email: String!
-  phone: String!
-  communication: CommunicationPreferenceInput!
-}
-
-# Input for verifying restaurant user details
-input VerifyRestaurantUserDetails {
-  email: String!
-  phone: String!
-  emailOtp: String!
-  numberOtp: String!
-  emailOtpVerifyKey: String!
-  numberOtpVerifyKey: String!
-  name: String!
-  communication: CommunicationPreferenceInput!
-}
-
-# Input for communication preferences
-input CommunicationPreferenceInput {
-  whatsApp: Boolean!
-  email: Boolean!
-}
-
-type Mutation {
-  createRestaurantUser(input: AddRestaurantUserInput!): AddRestaurantUser
-  verifyRestaurantUserDetails(input: VerifyRestaurantUserDetails!): Boolean
 }
 
 query restaurantOnboardingData {

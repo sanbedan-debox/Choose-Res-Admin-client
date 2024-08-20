@@ -99,11 +99,11 @@ mutation removeModifierGroupFromItem(
   )
 }
 
-mutation addModifierGroupToItem(
+mutation addModifierGroupsToItem(
   $modifierGroupId: [String!]!
   $itemId: String!
 ) {
-  addModifierGroupToItem(modifierGroupIds: $modifierGroupId, itemId: $itemId)
+  addModifierGroupsToItem(modifierGroupIds: $modifierGroupId, itemId: $itemId)
 }
 
 query getAllItemOptions {

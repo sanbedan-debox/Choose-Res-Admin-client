@@ -1,7 +1,6 @@
 query getModifierGroups {
   getModifierGroups {
     _id
-    status
     name
   }
 }
@@ -33,6 +32,7 @@ query getModifierGroup($id: String!) {
 
     pricingType
     optional
+    multiSelect
     modifiers {
       name
       price
@@ -42,26 +42,22 @@ query getModifierGroup($id: String!) {
     minSelections
   }
 }
-mutation removeModifierFromModifierGroup(
+mutation removeModifierFromGroup(
   $modifierGroupId: String!
   $modifierId: String!
 ) {
-  removeModifierFromModifierGroup(
+  removeModifierFromGroup(
     modifierGroupId: $modifierGroupId
     modifierId: $modifierId
   )
 }
 
-mutation addModifierToModifierGroup(
+mutation addModifierToGroup(
   $modifierIds: [String!]!
   $modifierGroupId: String!
 ) {
-  addModifierToModifierGroup(
+  addModifierToGroup(
     modifierGroupId: $modifierGroupId
     modifierIds: $modifierIds
   )
-}
-
-mutation changeModifierGroupStatus($id: String!) {
-  changeModifierGroupStatus(id: $id)
 }

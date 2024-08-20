@@ -137,7 +137,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         });
       }
     } catch (error) {
-      console.error("Failed to fetch user details:", error);
+      // console.error("Failed to fetch user details:", error);
       setToastData({ message: extractErrorMessage(error), type: "error" });
     }
   };

@@ -265,6 +265,7 @@ const Login: FC = () => {
             <CButton
               loading={btnloading}
               variant={ButtonType.Primary}
+              disabled={otp.length !== 6}
               className="btn btn-primary"
             >
               Submit
@@ -280,6 +281,7 @@ export default Login;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const cookieHeader = context.req.headers.cookie ?? "";
+  // console.log(cookieHeader);
 
   const tokenExists = cookieHeader.includes("accessToken=");
 
@@ -310,7 +312,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       };
     }
   } catch (error) {
-    console.error("Failed to fetch user details:", error);
+    // console.error("Failed to fetch user details:", error);
     return {
       props: {},
     };

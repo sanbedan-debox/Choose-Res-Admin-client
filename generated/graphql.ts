@@ -111,6 +111,7 @@ export type AddModifierGroupInput = {
   desc: Scalars['String']['input'];
   maxSelections: Scalars['Float']['input'];
   minSelections: Scalars['Float']['input'];
+  multiSelect: Scalars['Boolean']['input'];
   name: Scalars['String']['input'];
   optional: Scalars['Boolean']['input'];
   price: Scalars['Float']['input'];
@@ -518,7 +519,7 @@ export type Item = {
   __typename?: 'Item';
   _id: Scalars['ID']['output'];
   availability?: Maybe<Array<Availability>>;
-  category?: Maybe<Category>;
+  category?: Maybe<Array<Category>>;
   createdAt: Scalars['DateTimeISO']['output'];
   desc: Scalars['String']['output'];
   image?: Maybe<Scalars['String']['output']>;
@@ -623,7 +624,7 @@ export type MenuInfo = {
   type: MenuTypeEnum;
 };
 
-/** Menu status enum */
+/** Menu type enum */
 export enum MenuTypeEnum {
   Catering = 'Catering',
   DineIn = 'DineIn',
@@ -636,6 +637,7 @@ export type Modifier = {
   createdAt: Scalars['DateTimeISO']['output'];
   desc: Scalars['String']['output'];
   isItem: Scalars['Boolean']['output'];
+  modifierGroup?: Maybe<Array<ModifierGroup>>;
   name: Scalars['String']['output'];
   preSelect: Scalars['Boolean']['output'];
   price: Scalars['Float']['output'];
@@ -650,15 +652,16 @@ export type ModifierGroup = {
   _id: Scalars['ID']['output'];
   createdAt: Scalars['DateTimeISO']['output'];
   desc: Scalars['String']['output'];
+  item?: Maybe<Array<Item>>;
   maxSelections: Scalars['Float']['output'];
   minSelections: Scalars['Float']['output'];
   modifiers: Array<ModifierInfo>;
+  multiSelect: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
   optional: Scalars['Boolean']['output'];
   price: Scalars['Float']['output'];
   pricingType: PriceTypeEnum;
   restaurantId: Restaurant;
-  status: StatusEnum;
   updatedAt: Scalars['DateTimeISO']['output'];
   updatedBy?: Maybe<User>;
   user: User;
@@ -696,8 +699,8 @@ export type Mutation = {
   addMenu: Scalars['Boolean']['output'];
   addModifier: Scalars['Boolean']['output'];
   addModifierGroup: Scalars['Boolean']['output'];
-  addModifierGroupToItem: Scalars['Boolean']['output'];
-  addModifierToModifierGroup: Scalars['Boolean']['output'];
+  addModifierGroupsToItem: Scalars['Boolean']['output'];
+  addModifierToGroup: Scalars['Boolean']['output'];
   addPermission: Scalars['Boolean']['output'];
   addRestaurantSubuser: Scalars['Boolean']['output'];
   addState: Scalars['Boolean']['output'];
@@ -713,7 +716,6 @@ export type Mutation = {
   changeCategoryStatus: Scalars['Boolean']['output'];
   changeItemStatus: Scalars['Boolean']['output'];
   changeMenuStatus: Scalars['Boolean']['output'];
-  changeModifierGroupStatus: Scalars['Boolean']['output'];
   changeRestaurantStatus: Scalars['Boolean']['output'];
   changeRole: Scalars['Boolean']['output'];
   changeUserStatus: Scalars['Boolean']['output'];
@@ -723,11 +725,12 @@ export type Mutation = {
   deleteEmailTemplate: Scalars['Boolean']['output'];
   removeCategoryFromMenu: Scalars['Boolean']['output'];
   removeItemFromCategory: Scalars['Boolean']['output'];
-  removeModifierFromModifierGroup: Scalars['Boolean']['output'];
+  removeModifierFromGroup: Scalars['Boolean']['output'];
   removeModifierGroupFromItem: Scalars['Boolean']['output'];
   removeRestaurantSubuser: Scalars['Boolean']['output'];
   restaurantOnboarding: Scalars['Boolean']['output'];
   sendTestEmails: Scalars['Boolean']['output'];
+  tokensRefresh: Scalars['Boolean']['output'];
   updateCategory: Scalars['Boolean']['output'];
   updateConfig: Scalars['Boolean']['output'];
   updateCuisineStatus: Scalars['Boolean']['output'];
@@ -737,6 +740,7 @@ export type Mutation = {
   updateModifier: Scalars['Boolean']['output'];
   updateModifierGroup: Scalars['Boolean']['output'];
   updatePermissionPreselect: Scalars['Boolean']['output'];
+  updateRestaurantDetails: Scalars['Boolean']['output'];
   updateStateStatus: Scalars['Boolean']['output'];
   updateSubCategory: Scalars['Boolean']['output'];
   updateSubuserPermissions: Scalars['Boolean']['output'];
@@ -806,13 +810,13 @@ export type MutationAddModifierGroupArgs = {
 };
 
 
-export type MutationAddModifierGroupToItemArgs = {
+export type MutationAddModifierGroupsToItemArgs = {
   itemId: Scalars['String']['input'];
   modifierGroupIds: Array<Scalars['String']['input']>;
 };
 
 
-export type MutationAddModifierToModifierGroupArgs = {
+export type MutationAddModifierToGroupArgs = {
   modifierGroupId: Scalars['String']['input'];
   modifierIds: Array<Scalars['String']['input']>;
 };
@@ -895,11 +899,6 @@ export type MutationChangeMenuStatusArgs = {
 };
 
 
-export type MutationChangeModifierGroupStatusArgs = {
-  id: Scalars['String']['input'];
-};
-
-
 export type MutationChangeRestaurantStatusArgs = {
   id: Scalars['String']['input'];
 };
@@ -943,7 +942,7 @@ export type MutationRemoveItemFromCategoryArgs = {
 };
 
 
-export type MutationRemoveModifierFromModifierGroupArgs = {
+export type MutationRemoveModifierFromGroupArgs = {
   modifierGroupId: Scalars['String']['input'];
   modifierId: Scalars['String']['input'];
 };
@@ -961,7 +960,7 @@ export type MutationRemoveRestaurantSubuserArgs = {
 
 
 export type MutationRestaurantOnboardingArgs = {
-  input: UpdateRestaurantDetailsInput;
+  input: RestaurantDetailsInput;
 };
 
 
@@ -1014,6 +1013,11 @@ export type MutationUpdateModifierGroupArgs = {
 export type MutationUpdatePermissionPreselectArgs = {
   id: Scalars['String']['input'];
   preselect: Array<UserRole>;
+};
+
+
+export type MutationUpdateRestaurantDetailsArgs = {
+  input: UpdateRestaurantDetailsInput;
 };
 
 
@@ -1263,12 +1267,6 @@ export type QueryGetItemArgs = {
 };
 
 
-export type QueryGetItemsArgs = {
-  filter?: InputMaybe<PaginatedFilter>;
-  page?: Scalars['Float']['input'];
-};
-
-
 export type QueryGetMenuArgs = {
   id: Scalars['String']['input'];
 };
@@ -1281,18 +1279,6 @@ export type QueryGetModifierArgs = {
 
 export type QueryGetModifierGroupArgs = {
   id: Scalars['String']['input'];
-};
-
-
-export type QueryGetModifierGroupsArgs = {
-  filter?: InputMaybe<PaginatedFilter>;
-  page?: Scalars['Float']['input'];
-};
-
-
-export type QueryGetModifiersArgs = {
-  filter?: InputMaybe<PaginatedFilter>;
-  page?: Scalars['Float']['input'];
 };
 
 
@@ -1430,6 +1416,22 @@ export enum RestaurantCategory {
   Qsr = 'QSR',
   Takeout = 'Takeout'
 }
+
+export type RestaurantDetailsInput = {
+  address?: InputMaybe<AddressInfoInput>;
+  availability?: InputMaybe<Array<AvailabilityInput>>;
+  beverageCategory?: InputMaybe<Array<BeverageCategory>>;
+  brandingLogo?: InputMaybe<Scalars['String']['input']>;
+  category?: InputMaybe<Array<RestaurantCategory>>;
+  dineInCapacity?: InputMaybe<Scalars['Float']['input']>;
+  foodType?: InputMaybe<Array<FoodType>>;
+  meatType?: InputMaybe<MeatType>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  socialInfo?: InputMaybe<SocialInfoInput>;
+  timezone?: InputMaybe<TimezoneDataInput>;
+  type?: InputMaybe<RestaurantType>;
+  website?: InputMaybe<Scalars['String']['input']>;
+};
 
 export type RestaurantInfo = {
   __typename?: 'RestaurantInfo';
@@ -1644,6 +1646,7 @@ export type UpdateModifierGroupInput = {
   desc?: InputMaybe<Scalars['String']['input']>;
   maxSelections: Scalars['Float']['input'];
   minSelections: Scalars['Float']['input'];
+  multiSelect?: InputMaybe<Scalars['Boolean']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   optional?: InputMaybe<Scalars['Boolean']['input']>;
   price?: InputMaybe<Scalars['Float']['input']>;
@@ -1660,6 +1663,7 @@ export type UpdateModifierInput = {
 };
 
 export type UpdateRestaurantDetailsInput = {
+  _id: Scalars['ID']['input'];
   address?: InputMaybe<AddressInfoInput>;
   availability?: InputMaybe<Array<AvailabilityInput>>;
   beverageCategory?: InputMaybe<Array<BeverageCategory>>;
@@ -1886,24 +1890,20 @@ export type ChangeCategoryStatusMutationVariables = Exact<{
 
 export type ChangeCategoryStatusMutation = { __typename?: 'Mutation', changeCategoryStatus: boolean };
 
-export type AddItemToCategoryMutationVariables = Exact<{
+export type AddItemsToCategoryMutationVariables = Exact<{
   categoryId: Scalars['String']['input'];
   itemId: Array<Scalars['String']['input']> | Scalars['String']['input'];
 }>;
 
 
-export type AddItemToCategoryMutation = { __typename?: 'Mutation', addItemsToCategory: boolean };
+export type AddItemsToCategoryMutation = { __typename?: 'Mutation', addItemsToCategory: boolean };
 
 export type GetCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetCategoriesQuery = { __typename?: 'Query', getCategories: Array<{ __typename?: 'Category', _id: string, name: string, desc: string, status: StatusEnum, items: Array<{ __typename?: 'ItemInfo', name?: string | null, _id: { __typename?: 'Item', _id: string } }> }> };
 
-export type GetItemsForCategoryDropdownQueryVariables = Exact<{
-  field: Scalars['String']['input'];
-  operator: FilterOperatorsEnum;
-  value?: InputMaybe<Scalars['String']['input']>;
-}>;
+export type GetItemsForCategoryDropdownQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetItemsForCategoryDropdownQuery = { __typename?: 'Query', getItems: Array<{ __typename?: 'Item', _id: string, name: string, price: number, image?: string | null }> };
@@ -2010,13 +2010,13 @@ export type RemoveModifierGroupFromItemMutationVariables = Exact<{
 
 export type RemoveModifierGroupFromItemMutation = { __typename?: 'Mutation', removeModifierGroupFromItem: boolean };
 
-export type AddModifierGroupToItemMutationVariables = Exact<{
+export type AddModifierGroupsToItemMutationVariables = Exact<{
   modifierGroupId: Array<Scalars['String']['input']> | Scalars['String']['input'];
   itemId: Scalars['String']['input'];
 }>;
 
 
-export type AddModifierGroupToItemMutation = { __typename?: 'Mutation', addModifierGroupToItem: boolean };
+export type AddModifierGroupsToItemMutation = { __typename?: 'Mutation', addModifierGroupsToItem: boolean };
 
 export type GetAllItemOptionsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2040,11 +2040,7 @@ export type AddMenuMutationVariables = Exact<{
 
 export type AddMenuMutation = { __typename?: 'Mutation', addMenu: boolean };
 
-export type GetCategoriesForMenuDropdownQueryVariables = Exact<{
-  field: Scalars['String']['input'];
-  operator: FilterOperatorsEnum;
-  value?: InputMaybe<Scalars['String']['input']>;
-}>;
+export type GetCategoriesForMenuDropdownQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetCategoriesForMenuDropdownQuery = { __typename?: 'Query', getCategories: Array<{ __typename?: 'Category', _id: string, name: string, desc: string, status: StatusEnum, items: Array<{ __typename?: 'ItemInfo', name?: string | null }> }> };
@@ -2056,13 +2052,13 @@ export type ChangeMenuStatusMutationVariables = Exact<{
 
 export type ChangeMenuStatusMutation = { __typename?: 'Mutation', changeMenuStatus: boolean };
 
-export type AddCategoryToMenuMutationVariables = Exact<{
+export type AddCategoriesToMenuMutationVariables = Exact<{
   categoryId: Array<Scalars['String']['input']> | Scalars['String']['input'];
   menuId: Scalars['String']['input'];
 }>;
 
 
-export type AddCategoryToMenuMutation = { __typename?: 'Mutation', addCategoriesToMenu: boolean };
+export type AddCategoriesToMenuMutation = { __typename?: 'Mutation', addCategoriesToMenu: boolean };
 
 export type UpdateMenuMutationVariables = Exact<{
   input: UpdateMenuInput;
@@ -2094,7 +2090,7 @@ export type GetMenuQuery = { __typename?: 'Query', getMenu: { __typename?: 'Menu
 export type GetModifierGroupsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetModifierGroupsQuery = { __typename?: 'Query', getModifierGroups: Array<{ __typename?: 'ModifierGroup', _id: string, status: StatusEnum, name: string }> };
+export type GetModifierGroupsQuery = { __typename?: 'Query', getModifierGroups: Array<{ __typename?: 'ModifierGroup', _id: string, name: string }> };
 
 export type UpdateModifierGroupMutationVariables = Exact<{
   input: UpdateModifierGroupInput;
@@ -2121,30 +2117,23 @@ export type GetModifierGroupQueryVariables = Exact<{
 }>;
 
 
-export type GetModifierGroupQuery = { __typename?: 'Query', getModifierGroup: { __typename?: 'ModifierGroup', _id: string, name: string, price: number, desc: string, pricingType: PriceTypeEnum, optional: boolean, maxSelections: number, minSelections: number, modifiers: Array<{ __typename?: 'ModifierInfo', name: string, price: number, id: string }> } };
+export type GetModifierGroupQuery = { __typename?: 'Query', getModifierGroup: { __typename?: 'ModifierGroup', _id: string, name: string, price: number, desc: string, pricingType: PriceTypeEnum, optional: boolean, multiSelect: boolean, maxSelections: number, minSelections: number, modifiers: Array<{ __typename?: 'ModifierInfo', name: string, price: number, id: string }> } };
 
-export type RemoveModifierFromModifierGroupMutationVariables = Exact<{
+export type RemoveModifierFromGroupMutationVariables = Exact<{
   modifierGroupId: Scalars['String']['input'];
   modifierId: Scalars['String']['input'];
 }>;
 
 
-export type RemoveModifierFromModifierGroupMutation = { __typename?: 'Mutation', removeModifierFromModifierGroup: boolean };
+export type RemoveModifierFromGroupMutation = { __typename?: 'Mutation', removeModifierFromGroup: boolean };
 
-export type AddModifierToModifierGroupMutationVariables = Exact<{
+export type AddModifierToGroupMutationVariables = Exact<{
   modifierIds: Array<Scalars['String']['input']> | Scalars['String']['input'];
   modifierGroupId: Scalars['String']['input'];
 }>;
 
 
-export type AddModifierToModifierGroupMutation = { __typename?: 'Mutation', addModifierToModifierGroup: boolean };
-
-export type ChangeModifierGroupStatusMutationVariables = Exact<{
-  id: Scalars['String']['input'];
-}>;
-
-
-export type ChangeModifierGroupStatusMutation = { __typename?: 'Mutation', changeModifierGroupStatus: boolean };
+export type AddModifierToGroupMutation = { __typename?: 'Mutation', addModifierToGroup: boolean };
 
 export type GetModifiersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2204,7 +2193,7 @@ export type BusinessOnboardingDetailsQueryVariables = Exact<{ [key: string]: nev
 export type BusinessOnboardingDetailsQuery = { __typename?: 'Query', businessOnboardingDetails?: { __typename?: 'Business', ein?: string | null, businessName?: string | null, employeeSize?: StaffCountEnum | null, businessType?: BusinessTypeEnum | null, estimatedRevenue?: EstimatedRevenueEnum | null, address?: { __typename?: 'AddressInfo', addressLine1: string, addressLine2?: string | null, city: string, zipcode: number, state: { __typename?: 'StateData', stateId: string, stateName: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string, placeId: string } | null } | null } | null };
 
 export type RestaurantOnboardingMutationVariables = Exact<{
-  input: UpdateRestaurantDetailsInput;
+  input: RestaurantDetailsInput;
 }>;
 
 
@@ -2434,8 +2423,8 @@ export const ChangeCategoryStatusDocument = gql`
   changeCategoryStatus(id: $id)
 }
     `;
-export const AddItemToCategoryDocument = gql`
-    mutation addItemToCategory($categoryId: String!, $itemId: [String!]!) {
+export const AddItemsToCategoryDocument = gql`
+    mutation addItemsToCategory($categoryId: String!, $itemId: [String!]!) {
   addItemsToCategory(categoryId: $categoryId, itemIds: $itemId)
 }
     `;
@@ -2456,8 +2445,8 @@ export const GetCategoriesDocument = gql`
 }
     `;
 export const GetItemsForCategoryDropdownDocument = gql`
-    query getItemsForCategoryDropdown($field: String!, $operator: FilterOperatorsEnum!, $value: String) {
-  getItems(filter: {field: $field, operator: $operator, value: $value}) {
+    query getItemsForCategoryDropdown {
+  getItems {
     _id
     name
     price
@@ -2645,9 +2634,9 @@ export const RemoveModifierGroupFromItemDocument = gql`
   removeModifierGroupFromItem(itemId: $itemId, modifierGroupId: $modifierGroupId)
 }
     `;
-export const AddModifierGroupToItemDocument = gql`
-    mutation addModifierGroupToItem($modifierGroupId: [String!]!, $itemId: String!) {
-  addModifierGroupToItem(modifierGroupIds: $modifierGroupId, itemId: $itemId)
+export const AddModifierGroupsToItemDocument = gql`
+    mutation addModifierGroupsToItem($modifierGroupId: [String!]!, $itemId: String!) {
+  addModifierGroupsToItem(modifierGroupIds: $modifierGroupId, itemId: $itemId)
 }
     `;
 export const GetAllItemOptionsDocument = gql`
@@ -2684,8 +2673,8 @@ export const AddMenuDocument = gql`
 }
     `;
 export const GetCategoriesForMenuDropdownDocument = gql`
-    query getCategoriesForMenuDropdown($field: String!, $operator: FilterOperatorsEnum!, $value: String) {
-  getCategories(filter: {field: $field, operator: $operator, value: $value}) {
+    query getCategoriesForMenuDropdown {
+  getCategories {
     _id
     name
     desc
@@ -2701,8 +2690,8 @@ export const ChangeMenuStatusDocument = gql`
   changeMenuStatus(id: $id)
 }
     `;
-export const AddCategoryToMenuDocument = gql`
-    mutation addCategoryToMenu($categoryId: [String!]!, $menuId: String!) {
+export const AddCategoriesToMenuDocument = gql`
+    mutation addCategoriesToMenu($categoryId: [String!]!, $menuId: String!) {
   addCategoriesToMenu(categoryIds: $categoryId, menuId: $menuId)
 }
     `;
@@ -2767,7 +2756,6 @@ export const GetModifierGroupsDocument = gql`
     query getModifierGroups {
   getModifierGroups {
     _id
-    status
     name
   }
 }
@@ -2800,6 +2788,7 @@ export const GetModifierGroupDocument = gql`
     desc
     pricingType
     optional
+    multiSelect
     modifiers {
       name
       price
@@ -2810,25 +2799,17 @@ export const GetModifierGroupDocument = gql`
   }
 }
     `;
-export const RemoveModifierFromModifierGroupDocument = gql`
-    mutation removeModifierFromModifierGroup($modifierGroupId: String!, $modifierId: String!) {
-  removeModifierFromModifierGroup(
+export const RemoveModifierFromGroupDocument = gql`
+    mutation removeModifierFromGroup($modifierGroupId: String!, $modifierId: String!) {
+  removeModifierFromGroup(
     modifierGroupId: $modifierGroupId
     modifierId: $modifierId
   )
 }
     `;
-export const AddModifierToModifierGroupDocument = gql`
-    mutation addModifierToModifierGroup($modifierIds: [String!]!, $modifierGroupId: String!) {
-  addModifierToModifierGroup(
-    modifierGroupId: $modifierGroupId
-    modifierIds: $modifierIds
-  )
-}
-    `;
-export const ChangeModifierGroupStatusDocument = gql`
-    mutation changeModifierGroupStatus($id: String!) {
-  changeModifierGroupStatus(id: $id)
+export const AddModifierToGroupDocument = gql`
+    mutation addModifierToGroup($modifierIds: [String!]!, $modifierGroupId: String!) {
+  addModifierToGroup(modifierGroupId: $modifierGroupId, modifierIds: $modifierIds)
 }
     `;
 export const GetModifiersDocument = gql`
@@ -2903,7 +2884,7 @@ export const BusinessOnboardingDetailsDocument = gql`
 }
     ${AddressInfoFragmentDoc}`;
 export const RestaurantOnboardingDocument = gql`
-    mutation restaurantOnboarding($input: UpdateRestaurantDetailsInput!) {
+    mutation restaurantOnboarding($input: RestaurantDetailsInput!) {
   restaurantOnboarding(input: $input)
 }
     `;
@@ -3154,13 +3135,13 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     changeCategoryStatus(variables: ChangeCategoryStatusMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<ChangeCategoryStatusMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<ChangeCategoryStatusMutation>(ChangeCategoryStatusDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'changeCategoryStatus', 'mutation', variables);
     },
-    addItemToCategory(variables: AddItemToCategoryMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddItemToCategoryMutation> {
-      return withWrapper((wrappedRequestHeaders) => client.request<AddItemToCategoryMutation>(AddItemToCategoryDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'addItemToCategory', 'mutation', variables);
+    addItemsToCategory(variables: AddItemsToCategoryMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddItemsToCategoryMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<AddItemsToCategoryMutation>(AddItemsToCategoryDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'addItemsToCategory', 'mutation', variables);
     },
     getCategories(variables?: GetCategoriesQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetCategoriesQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetCategoriesQuery>(GetCategoriesDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getCategories', 'query', variables);
     },
-    getItemsForCategoryDropdown(variables: GetItemsForCategoryDropdownQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetItemsForCategoryDropdownQuery> {
+    getItemsForCategoryDropdown(variables?: GetItemsForCategoryDropdownQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetItemsForCategoryDropdownQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetItemsForCategoryDropdownQuery>(GetItemsForCategoryDropdownDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getItemsForCategoryDropdown', 'query', variables);
     },
     addCategory(variables: AddCategoryMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddCategoryMutation> {
@@ -3208,8 +3189,8 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     removeModifierGroupFromItem(variables: RemoveModifierGroupFromItemMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<RemoveModifierGroupFromItemMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<RemoveModifierGroupFromItemMutation>(RemoveModifierGroupFromItemDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'removeModifierGroupFromItem', 'mutation', variables);
     },
-    addModifierGroupToItem(variables: AddModifierGroupToItemMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddModifierGroupToItemMutation> {
-      return withWrapper((wrappedRequestHeaders) => client.request<AddModifierGroupToItemMutation>(AddModifierGroupToItemDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'addModifierGroupToItem', 'mutation', variables);
+    addModifierGroupsToItem(variables: AddModifierGroupsToItemMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddModifierGroupsToItemMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<AddModifierGroupsToItemMutation>(AddModifierGroupsToItemDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'addModifierGroupsToItem', 'mutation', variables);
     },
     getAllItemOptions(variables?: GetAllItemOptionsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetAllItemOptionsQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetAllItemOptionsQuery>(GetAllItemOptionsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getAllItemOptions', 'query', variables);
@@ -3223,14 +3204,14 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     addMenu(variables: AddMenuMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddMenuMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<AddMenuMutation>(AddMenuDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'addMenu', 'mutation', variables);
     },
-    getCategoriesForMenuDropdown(variables: GetCategoriesForMenuDropdownQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetCategoriesForMenuDropdownQuery> {
+    getCategoriesForMenuDropdown(variables?: GetCategoriesForMenuDropdownQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetCategoriesForMenuDropdownQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetCategoriesForMenuDropdownQuery>(GetCategoriesForMenuDropdownDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getCategoriesForMenuDropdown', 'query', variables);
     },
     changeMenuStatus(variables: ChangeMenuStatusMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<ChangeMenuStatusMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<ChangeMenuStatusMutation>(ChangeMenuStatusDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'changeMenuStatus', 'mutation', variables);
     },
-    addCategoryToMenu(variables: AddCategoryToMenuMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddCategoryToMenuMutation> {
-      return withWrapper((wrappedRequestHeaders) => client.request<AddCategoryToMenuMutation>(AddCategoryToMenuDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'addCategoryToMenu', 'mutation', variables);
+    addCategoriesToMenu(variables: AddCategoriesToMenuMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddCategoriesToMenuMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<AddCategoriesToMenuMutation>(AddCategoriesToMenuDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'addCategoriesToMenu', 'mutation', variables);
     },
     updateMenu(variables: UpdateMenuMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UpdateMenuMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<UpdateMenuMutation>(UpdateMenuDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'updateMenu', 'mutation', variables);
@@ -3259,14 +3240,11 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     getModifierGroup(variables: GetModifierGroupQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetModifierGroupQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetModifierGroupQuery>(GetModifierGroupDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getModifierGroup', 'query', variables);
     },
-    removeModifierFromModifierGroup(variables: RemoveModifierFromModifierGroupMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<RemoveModifierFromModifierGroupMutation> {
-      return withWrapper((wrappedRequestHeaders) => client.request<RemoveModifierFromModifierGroupMutation>(RemoveModifierFromModifierGroupDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'removeModifierFromModifierGroup', 'mutation', variables);
+    removeModifierFromGroup(variables: RemoveModifierFromGroupMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<RemoveModifierFromGroupMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<RemoveModifierFromGroupMutation>(RemoveModifierFromGroupDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'removeModifierFromGroup', 'mutation', variables);
     },
-    addModifierToModifierGroup(variables: AddModifierToModifierGroupMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddModifierToModifierGroupMutation> {
-      return withWrapper((wrappedRequestHeaders) => client.request<AddModifierToModifierGroupMutation>(AddModifierToModifierGroupDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'addModifierToModifierGroup', 'mutation', variables);
-    },
-    changeModifierGroupStatus(variables: ChangeModifierGroupStatusMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<ChangeModifierGroupStatusMutation> {
-      return withWrapper((wrappedRequestHeaders) => client.request<ChangeModifierGroupStatusMutation>(ChangeModifierGroupStatusDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'changeModifierGroupStatus', 'mutation', variables);
+    addModifierToGroup(variables: AddModifierToGroupMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddModifierToGroupMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<AddModifierToGroupMutation>(AddModifierToGroupDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'addModifierToGroup', 'mutation', variables);
     },
     getModifiers(variables?: GetModifiersQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetModifiersQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetModifiersQuery>(GetModifiersDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getModifiers', 'query', variables);

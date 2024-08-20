@@ -1,13 +1,13 @@
-import React, { ReactNode } from "react";
+import Toast from "@/components/common/toast/toast";
+import useGlobalStore from "@/store/global";
+import { NextPage } from "next";
+import { DefaultSeo } from "next-seo";
 import { AppProps } from "next/app";
+import localFont from "next/font/local";
 import Head from "next/head";
 import NextNProgress from "nextjs-progressbar";
-import { NextPage } from "next";
+import { ReactNode } from "react";
 import "../styles/globals.css";
-import localFont from "@next/font/local";
-import { DefaultSeo } from "next-seo";
-import useGlobalStore from "@/store/global";
-import Toast from "@/components/common/toast/toast";
 
 const geologica = localFont({ src: "../public/fonts/geologica.ttf" });
 

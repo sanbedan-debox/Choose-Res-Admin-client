@@ -1,6 +1,6 @@
 import type { Config } from "tailwindcss";
 
-const colors = require("tailwindcss/colors");
+// const colors = require("tailwindcss/colors");
 const {
   default: flattenColorPalette,
 } = require("tailwindcss/lib/util/flattenColorPalette");
@@ -234,7 +234,6 @@ const config: Config = {
       addComponents(checkboxes);
     },
   ],
-  colors: colors,
 };
 
 function addVariablesForColors({ addBase, theme }: any) {

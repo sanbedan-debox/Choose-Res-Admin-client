@@ -219,7 +219,7 @@ const AddTeamMemberForm = () => {
 
   return (
     <motion.div
-      className="z-10 w-full min-h-full max-w-2xl flex flex-col items-center space-y-5 text-center"
+      className="z-10 w-full min-h-full max-w-4xl flex flex-col items-center space-y-5 text-center"
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}

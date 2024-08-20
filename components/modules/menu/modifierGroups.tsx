@@ -1,7 +1,4 @@
-import CButton from "@/components/common/button/button";
-import { ButtonType } from "@/components/common/button/interface";
 import CustomSwitch from "@/components/common/customSwitch/customSwitch";
-import ReusableModal from "@/components/common/modal/modal";
 import RoopTable from "@/components/common/table/table";
 import { StatusEnum } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
@@ -18,7 +15,6 @@ const Modifiers: React.FC = () => {
     {
       _id: string;
       name: string;
-      status: StatusEnum;
     }[]
   >();
   const { setToastData } = useGlobalStore();
@@ -34,10 +30,9 @@ const Modifiers: React.FC = () => {
       if (response && response.getModifierGroups) {
         setModifierGroups(
           response.getModifierGroups.map(
-            (el: { _id: string; name: string; status: StatusEnum }) => ({
+            (el: { _id: string; name: string }) => ({
               _id: el?._id,
               name: el?.name,
-              status: el?.status,
             })
           )
         );
@@ -117,7 +112,7 @@ const Modifiers: React.FC = () => {
   const headings = [
     { title: "Name", dataKey: "name" },
 
-    { title: "Toggle Status", dataKey: "status", render: renderSwitch },
+    // { title: "Toggle Status", dataKey: "status", render: renderSwitch },
     { title: "Actions", dataKey: "_id", render: renderActions },
   ];
 
@@ -128,30 +123,30 @@ const Modifiers: React.FC = () => {
     },
   ];
 
-  const handleStatusCloseConfirmationModal = () => {
-    setShowStatusConfirmationModal(false);
-    setSelectedItemId("");
-  };
-  const handleStatusConfirmation = async () => {
-    setBtnLoading(true);
-    setShowStatusConfirmationModal(false);
-    try {
-      const response = await sdk.changeModifierGroupStatus({
-        id: selectedItemId,
-      });
-      if (response && response.changeModifierGroupStatus) {
-        fetchModifierGroups();
-      }
-    } catch (error) {
-      const errorMessage = extractErrorMessage(error);
-      setToastData({
-        type: "error",
-        message: errorMessage,
-      });
-    } finally {
-      setBtnLoading(false);
-    }
-  };
+  // const handleStatusCloseConfirmationModal = () => {
+  //   setShowStatusConfirmationModal(false);
+  //   setSelectedItemId("");
+  // };
+  // const handleStatusConfirmation = async () => {
+  //   setBtnLoading(true);
+  //   setShowStatusConfirmationModal(false);
+  //   try {
+  //     const response = await sdk.changeModifierGroupStatus({
+  //       id: selectedItemId,
+  //     });
+  //     if (response && response.changeModifierGroupStatus) {
+  //       fetchModifierGroups();
+  //     }
+  //   } catch (error) {
+  //     const errorMessage = extractErrorMessage(error);
+  //     setToastData({
+  //       type: "error",
+  //       message: errorMessage,
+  //     });
+  //   } finally {
+  //     setBtnLoading(false);
+  //   }
+  // };
   return (
     <div className="py-2">
       <RoopTable
@@ -163,7 +158,7 @@ const Modifiers: React.FC = () => {
       />
 
       {/* STATUS CHANGE MODAL */}
-      <ReusableModal
+      {/* <ReusableModal
         isOpen={showStatusConfirmationModal}
         onClose={handleStatusCloseConfirmationModal}
         title="Are you sure ?"
@@ -178,7 +173,7 @@ const Modifiers: React.FC = () => {
             Yes
           </CButton>
         </div>
-      </ReusableModal>
+      </ReusableModal> */}
     </div>
   );
 };

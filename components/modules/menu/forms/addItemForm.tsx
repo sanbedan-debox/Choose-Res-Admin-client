@@ -199,19 +199,23 @@ const AddItemForm = () => {
           })
         );
 
-        const updatedVisibilities = menuItems.map((menu) => ({
-          menuType: menu.type,
-          status: StatusEnum.Inactive as StatusEnum,
-        }));
+        let uniqueType = new Set<MenuTypeEnum>();
 
-        const updatedPricings = menuItems.map((menu) => ({
-          menuType: menu.type,
-          price: parseFloat(watch("price").toString()),
-        }));
+        menuItems.map((e) => uniqueType.add(e.type));
 
-        setVisibilities(updatedVisibilities);
+        setVisibilities(
+          Array.from(uniqueType).map((e) => ({
+            menuType: e,
+            status: StatusEnum.Inactive,
+          }))
+        );
 
-        setPricingOptions(updatedPricings);
+        setPricingOptions(
+          Array.from(uniqueType).map((e) => ({
+            menuType: e,
+            price: parseFloat(watch("price").toString()),
+          }))
+        );
       }
     } catch (error) {
       console.error("Error fetching menu data:", error);
@@ -536,7 +540,7 @@ const AddItemForm = () => {
           input: updateInput,
         });
         isMenuAdded &&
-          (await sdk.addModifierGroupToItem({
+          (await sdk.addModifierGroupsToItem({
             modifierGroupId: addedMenuIds,
             itemId: editItemId || "",
           }));
@@ -830,7 +834,7 @@ const AddItemForm = () => {
 
   return (
     <motion.div
-      className="z-10 w-full min-h-full max-w-2xl flex flex-col items-center space-y-5 text-center"
+      className="z-10 w-full min-h-full max-w-4xl flex flex-col items-center space-y-5 text-center"
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}

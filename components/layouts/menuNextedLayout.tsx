@@ -19,7 +19,7 @@ const MenuLayout = ({ children }: Props) => {
     { label: "Sub-Categories", route: "sub-categories" },
     { label: "Items", route: "items" },
     { label: "Modifier Groups", route: "modifier-group" },
-    { label: "Modifiers", route: "modifier" },
+    // { label: "Modifiers", route: "modifier" },
   ];
 
   return (

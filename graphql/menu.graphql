@@ -2,12 +2,8 @@ mutation addMenu($input: AddMenuInput!) {
   addMenu(input: $input)
 }
 
-query getCategoriesForMenuDropdown(
-  $field: String!
-  $operator: FilterOperatorsEnum!
-  $value: String
-) {
-  getCategories(filter: { field: $field, operator: $operator, value: $value }) {
+query getCategoriesForMenuDropdown {
+  getCategories {
     _id
     name
     desc
@@ -22,7 +18,7 @@ mutation changeMenuStatus($id: String!) {
   changeMenuStatus(id: $id)
 }
 
-mutation addCategoryToMenu($categoryId: [String!]!, $menuId: String!) {
+mutation addCategoriesToMenu($categoryId: [String!]!, $menuId: String!) {
   addCategoriesToMenu(categoryIds: $categoryId, menuId: $menuId)
 }
 

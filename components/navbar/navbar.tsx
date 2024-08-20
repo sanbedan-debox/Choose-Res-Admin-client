@@ -131,7 +131,6 @@ const Navbar: React.FC = () => {
 
   const handleAddRestaurant = async () => {
     try {
-      console.log("hello");
       const res = await sdk.setRestaurantIdAsCookie({
         id: "",
       });

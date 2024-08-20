@@ -386,7 +386,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       };
     }
   } catch (error) {
-    console.error("Failed to fetch user details:", error);
+    // console.error("Failed to fetch user details:", error);
     return {
       redirect: {
         destination: "/login",

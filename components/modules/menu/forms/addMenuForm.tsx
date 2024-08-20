@@ -9,7 +9,7 @@ import {
   reverseFormatAvailability,
 } from "@/components/common/timingAvailibility/interface";
 import AvailabilityComponent from "@/components/common/timingAvailibility/timingAvailibility";
-import { Day, FilterOperatorsEnum, MenuTypeEnum } from "@/generated/graphql";
+import { Day, MenuTypeEnum } from "@/generated/graphql";
 import useAuthStore from "@/store/auth";
 import useGlobalStore from "@/store/global";
 import useMenuCategoryStore from "@/store/menuCategory";
@@ -186,7 +186,7 @@ const AddMenuForm = () => {
         });
 
         isMenuAdded &&
-          (await sdk.addCategoryToMenu({
+          (await sdk.addCategoriesToMenu({
             categoryId: addedMenuIds,
             menuId: editMenuId || "",
           }));
@@ -233,11 +233,7 @@ const AddMenuForm = () => {
   useEffect(() => {
     const fetch = async () => {
       try {
-        const categories = await sdk.getCategoriesForMenuDropdown({
-          field: "status",
-          operator: FilterOperatorsEnum.Any,
-          value: "",
-        });
+        const categories = await sdk.getCategoriesForMenuDropdown();
         if (categories && categories.getCategories) {
           const formattedItemsList = categories.getCategories.map(
             (cats: { name: string; _id: string }) => ({
@@ -413,7 +409,7 @@ const AddMenuForm = () => {
 
   return (
     <motion.div
-      className="z-10 w-full min-h-full max-w-2xl flex flex-col items-center space-y-5 text-center"
+      className="z-10 w-full min-h-full max-w-4xl flex flex-col items-center space-y-5 text-center"
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
