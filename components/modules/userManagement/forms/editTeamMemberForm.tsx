@@ -1,9 +1,15 @@
+import CButton from "@/components/common/button/button";
+import { ButtonType } from "@/components/common/button/interface";
 import CustomSwitchCard from "@/components/common/customSwitchCard/customSwitchCard";
+import ReusableModal from "@/components/common/modal/modal";
 import { PermissionTypeEnum, UserRole } from "@/generated/graphql";
+import useGlobalStore from "@/store/global";
 import useUserManagementStore from "@/store/userManagement";
 import { sdk } from "@/utils/graphqlClient";
+import { extractErrorMessage } from "@/utils/utilFUncs";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { IoIosCloseCircleOutline } from "react-icons/io";
 import Select from "react-select";
 
 type FormData = {
@@ -17,9 +23,16 @@ const userRoleOptions = [
   { value: UserRole.MarketingPartner, label: "Marketing Partner" },
   { value: UserRole.Accountant, label: "Accountant" },
 ];
+
 const EditTeamMemberForm: React.FC = () => {
-  const { isEditTeamMemberId, isEditTeamRole, resetEditStates } =
-    useUserManagementStore();
+  const {
+    isEditTeamMemberId,
+    isEditTeamRole,
+    resetEditStates,
+    setIsEditTeamMember,
+    setIsEditTeamMemberId,
+    setIsEditTeamRole,
+  } = useUserManagementStore();
 
   const { register, handleSubmit, setValue, reset, watch } = useForm<FormData>({
     defaultValues: {
@@ -27,14 +40,30 @@ const EditTeamMemberForm: React.FC = () => {
       permissions: [],
     },
   });
+  const [showAddRestaurantModal, setShowAddRestaurantModal] =
+    useState<boolean>(false);
 
   const [permissionsList, setPermissionsList] = useState<
     { id: string; type: PermissionTypeEnum; status: boolean }[]
   >([]);
+
+  const [userRestaurants, setUserRestaurants] = useState<
+    { id: string; name: string; status: string; city: string }[]
+  >([]);
+  const [allRestaurants, setAllRestaurants] = useState<
+    { id: string; name: string; status: string; city: string }[]
+  >([]);
+
+  const [selectedRestaurants, setSelectedRestaurants] = useState<
+    { id: string; name: string }[]
+  >([]);
+
   const getUser = async () => {
     if (isEditTeamMemberId) {
       try {
         const res = await sdk.getUser({ id: isEditTeamMemberId });
+        const allRestaurantsRes = await sdk.userRestaurants();
+
         if (res.getUser) {
           const role = res.getUser.role || "";
           setValue("role", role);
@@ -54,10 +83,82 @@ const EditTeamMemberForm: React.FC = () => {
               type: p.type,
             })),
           });
+
+          if( res.getUser.restaurants){
+            setUserRestaurants(
+              res.getUser.restaurants.map((restaurant) => ({
+                id: restaurant.id,
+                name: restaurant.name,
+                status: restaurant.status,
+                city: restaurant.city ?? '',  
+              })) || []
+            );
+          }else{
+            setUserRestaurants([])
+          }
+          
+          
+          setAllRestaurants(
+            allRestaurantsRes.userRestaurants.map((restaurant: any) => ({
+              id: restaurant.id,
+              name: restaurant.name,
+              status: restaurant.status,
+              city: restaurant.city,
+            })) || []
+          );
         }
       } catch (error) {
         console.error("Failed to fetch user data", error);
       }
+    }
+  };
+
+  const handleRemoveRestaurant = async (restaurantId: string) => {
+    try {
+      await sdk.removeRestaurantSubuser({
+        restaurantSubUser: {
+          id: isEditTeamMemberId ?? "",
+          restaurants: [restaurantId],
+        },
+      });
+      setUserRestaurants((prev) =>
+        prev.filter((restaurant) => restaurant.id !== restaurantId)
+      );
+    } catch (error) {
+      setToastData({
+        message: extractErrorMessage(error),
+        type: "error",
+      });
+    }
+  };
+
+  const handleAddRestaurants = async () => {
+    try {
+      const selectedIds = selectedRestaurants.map(
+        (restaurant) => restaurant.id
+      );
+      await sdk.addRestaurantSubuser({
+        restaurantSubUser: {
+          id: isEditTeamMemberId ?? "",
+          restaurants: selectedIds,
+        },
+      });
+      setUserRestaurants((prev) => [
+        ...prev,
+        ...selectedRestaurants.map((restaurant) => ({
+          id: restaurant.id,
+          name: restaurant.name,
+          status: '', 
+          city: '',   
+        })),
+      ]);
+            setSelectedRestaurants([]);
+      setShowAddRestaurantModal(false);
+    } catch (error) {
+      setToastData({
+        message: extractErrorMessage(error),
+        type: "error",
+      });
     }
   };
 
@@ -74,32 +175,38 @@ const EditTeamMemberForm: React.FC = () => {
             role: formData.role as UserRole,
           },
         });
+        setToastData({
+          message: "Successfully updated user role",
+          type: "success",
+        });
       } else {
-        //       const updatedPermissions = permissionsList
-        // .filter((perm) =>
-        //   formData.permissions.some(
-        //     (fp) => fp.id === perm.id && fp.status !== perm.status
-        //   )
-        // )
-        // .map((perm) => ({
-        //   id: perm.id,
-        //   type: perm.type,
-        //   status:
-        //     formData.permissions.find((p) => p.id === perm.id)?.status ?? false,
-        // }));
-
         await sdk.updateSubuserPermissions({
           input: {
             id: isEditTeamMemberId ?? "",
             permissions: permissionsList,
           },
         });
+        setToastData({
+          message: "Successfully updated user permission",
+          type: "success",
+        });
       }
+      handleEditMemberModalClose();
       resetEditStates();
     } catch (error) {
-      console.error("Failed to update user", error);
+      setToastData({
+        message: extractErrorMessage(error),
+        type: "error",
+      });
     }
   };
+  const handleEditMemberModalClose = () => {
+    setIsEditTeamMember(false);
+    setIsEditTeamMemberId("");
+    setIsEditTeamRole(false);
+  };
+
+  const { setToastData } = useGlobalStore();
 
   const handlePermissionChange = (type: string) => {
     setPermissionsList((prevPermissions) =>
@@ -112,55 +219,125 @@ const EditTeamMemberForm: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      {isEditTeamRole ? (
-        <div className="col-span-2">
-          <label
-            htmlFor="role"
-            className="block mb-2 text-sm font-medium text-left text-gray-700"
-          >
-            Role
-          </label>
-          <Select
-            classNames={{
-              option: (state) =>
-                `!text-sm hover:!bg-primary hover:!text-white focus:!bg-transparent ${
-                  state.isSelected ? "!bg-primary text-white" : ""
-                }`,
-            }}
-            id="role"
-            options={userRoleOptions}
-            className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
-            classNamePrefix="react-select"
-            placeholder="Select role"
-            value={userRoleOptions.find(
-              (option) => option.value === watch("role")
-            )}
-            onChange={(selectedOption) =>
-              setValue("role", (selectedOption as any)?.value)
-            }
-          />
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {permissionsList.map((permission) => (
-            <CustomSwitchCard
-              key={permission.id}
-              label={permission.type}
-              switchChecked={permission.status}
-              onSwitchChange={() => handlePermissionChange(permission.type)}
-              title={permission.type}
-              caption={`Do you want ${"hello"} user to have the access`}
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full">
+      <div className="max-w-4xl mx-auto">
+        {isEditTeamRole ? (
+          <div className="w-full">
+            <label
+              htmlFor="role"
+              className="block mb-2 text-sm font-medium text-left text-gray-700"
+            >
+              Role
+            </label>
+            <Select
+              classNames={{
+                option: (state) =>
+                  `!text-sm hover:!bg-primary hover:!text-white focus:!bg-transparent ${
+                    state.isSelected ? "!bg-primary text-white" : ""
+                  }`,
+              }}
+              id="role"
+              options={userRoleOptions}
+              className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+              classNamePrefix="react-select"
+              placeholder="Select role"
+              value={userRoleOptions.find(
+                (option) => option.value === watch("role")
+              )}
+              onChange={(selectedOption) =>
+                setValue("role", (selectedOption as any)?.value)
+              }
             />
-          ))}
+          </div>
+        ) : (
+          <div className="space-y-4  w-full">
+            {permissionsList.map((permission) => (
+              <CustomSwitchCard
+                key={permission.id}
+                label={permission.type}
+                switchChecked={permission.status}
+                onSwitchChange={() => handlePermissionChange(permission.type)}
+                title={permission.type}
+                caption={`Do you want ${"hello"} user to have the access`}
+              />
+            ))}
+          </div>
+        )}
+        <div className="mt-4">
+          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
+            Restaurant Access
+          </label>{" "}
+          <div className="space-y-4">
+            {userRestaurants.map((restaurant) => (
+              <div
+                key={restaurant.id}
+                className="flex items-center justify-between p-4 border rounded-lg"
+              >
+                <div>
+                  <h4 className="text-lg font-semibold">{restaurant.name}</h4>
+                  <p className="text-sm">{`${restaurant.city}`}</p>
+                </div>
+                <IoIosCloseCircleOutline
+                  className="text-red-400 text-lg cursor-pointer"
+                  onClick={() => handleRemoveRestaurant(restaurant.id)}
+                />
+              </div>
+            ))}
+            <CButton
+              type="button"
+              className="w-full"
+              onClick={() => setShowAddRestaurantModal(true)}
+              variant={ButtonType.Outlined}
+            >
+              Add Restaurant Access
+            </CButton>
+          </div>
         </div>
+
+        <div className="flex justify-end mt-4">
+          <CButton
+            variant={ButtonType.Primary}
+            type="submit"
+            className="w-full"
+          >
+            {isEditTeamRole ? "Update User Role" : "Update User Permissions"}
+          </CButton>
+        </div>
+      </div>
+      {showAddRestaurantModal && (
+        <ReusableModal
+          isOpen={showAddRestaurantModal}
+          onClose={() => setShowAddRestaurantModal(false)}
+          title="Add Restaurant Access"
+          width="md"
+        >
+          <Select
+            isMulti
+            options={allRestaurants.map((restaurant) => ({
+              value: restaurant.id,
+              label: restaurant.name,
+            }))}
+            onChange={(selectedOptions) =>
+              setSelectedRestaurants(
+                selectedOptions.map((option: any) => ({
+                  id: option.value,
+                  name: option.label,
+                }))
+              )
+            }
+            className="basic-single"
+            classNamePrefix="select"
+          />
+          <div className="flex justify-end mt-4">
+            <CButton
+              onClick={handleAddRestaurants}
+              variant={ButtonType.Primary}
+            >
+              Add Restaurants
+            </CButton>
+          </div>
+        </ReusableModal>
       )}
-      <button
-        type="submit"
-        className="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-      >
-        {isEditTeamRole ? "Update User Role" : "Update User Permissions"}
-      </button>
     </form>
   );
 };

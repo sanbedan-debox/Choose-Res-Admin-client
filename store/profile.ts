@@ -1,6 +1,10 @@
 import { create } from "zustand";
 
 type ProfileStates = {
+
+    id: string;
+    setid: (e: string) => void;
+
     // STEP 1
     businessType: string;
     setbusinessType: (e: string) => void;
@@ -37,6 +41,9 @@ type ProfileStates = {
 };
 
 const useProfileStore = create<ProfileStates>((set) => ({
+    id: "",
+    setid: (e: string) => set({ id: e }),
+
     // STEP 1
     businessType: "",
     setbusinessType: (e: string) => set({ businessType: e }),

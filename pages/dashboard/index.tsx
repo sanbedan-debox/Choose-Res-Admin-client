@@ -2,12 +2,13 @@ import QuickActionsDashboard from "@/components/common/quickAction/quickAction";
 import ScrollableQuickActionCard from "@/components/common/ScrollableQuickActionCard/ScrollableQuickActionCard";
 import MainLayout from "@/components/layouts/mainBodyLayout";
 import Loader from "@/components/loader";
-import { PermissionTypeEnum, UserStatus } from "@/generated/graphql";
+import { PermissionTypeEnum } from "@/generated/graphql";
 import useAuthStore from "@/store/auth";
 import useGlobalStore from "@/store/global";
 import useUserStore from "@/store/user";
 import { sdk } from "@/utils/graphqlClient";
 import { hasAccess } from "@/utils/hasAccess";
+import { redirectForStatus } from "@/utils/redirectForStatus";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -16,14 +17,7 @@ type NextPageWithLayout = React.FC & {
   getLayout?: (page: React.ReactNode) => React.ReactNode;
 };
 
-type UserRepo = {
-  _id: string;
-  email: string;
-  phone: string;
-  firstName: string;
-  lastName: string;
-  status: string;
-};
+type UserRepo = {};
 
 const Dashboard: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
   const { setSelectedMenu, isShowSetupPanel } = useGlobalStore();
@@ -31,31 +25,6 @@ const Dashboard: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
   const [canEditTaxRate, setCanEditTaxRate] = useState(false);
 
   const router = useRouter();
-  const {
-    setEmail,
-    setFirstName,
-    setLastName,
-    setPhone,
-    setStatus,
-    setUserId,
-  } = useAuthStore();
-
-  useEffect(() => {
-    setUserId(repo?._id ?? "");
-    setEmail(repo?.email ?? "");
-    setPhone(repo?.phone ?? "");
-    setFirstName(repo?.firstName ?? "");
-    setLastName(repo?.lastName ?? "");
-    setStatus(repo?.status ?? "");
-  }, [
-    repo,
-    setEmail,
-    setFirstName,
-    setLastName,
-    setPhone,
-    setStatus,
-    setUserId,
-  ]);
 
   useEffect(() => {
     setSelectedMenu("dashboard");
@@ -234,7 +203,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   try {
-    const response = await sdk.MeUser(
+    const response = await sdk.MeCheckUser(
       {},
       {
         cookie: context.req.headers.cookie?.toString() ?? "",
@@ -242,8 +211,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     );
 
     if (response && response.meUser) {
-      const { _id, email, firstName, status, lastName, phone, permissions } =
-        response.meUser;
+      const { _id, firstName, status, permissions } = response.meUser;
 
       const canAccessMenu = hasAccess(
         permissions,
@@ -258,51 +226,17 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         };
       }
 
-      if (status === UserStatus.Blocked) {
-        return {
-          redirect: {
-            destination: "/account/blocked",
-            permanent: false,
-          },
-        };
-      } else if (status === UserStatus.OnboardingPending) {
-        return {
-          redirect: {
-            destination: "/onboarding/user/intro",
-            permanent: false,
-          },
-        };
-      } else if (status === UserStatus.PaymentPending) {
-        return {
-          redirect: {
-            destination: "/account/payment-pending",
-            permanent: false,
-          },
-        };
-      } else if (status === UserStatus.RestaurantOnboardingPending) {
-        return {
-          redirect: {
-            destination: "/onboarding-restaurant/restaurant-welcome",
-            permanent: false,
-          },
-        };
-      } else if (status === "internalVerificationPending") {
-        return {
-          redirect: {
-            destination: "/account/verification-pending",
-            permanent: false,
-          },
-        };
+      const redirectResult = redirectForStatus(status);
+
+      if (redirectResult) {
+        return redirectResult;
       }
 
       return {
         props: {
           repo: {
             _id,
-            email,
-            phone,
             firstName,
-            lastName,
             status,
           },
         },

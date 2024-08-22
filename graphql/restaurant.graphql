@@ -11,11 +11,25 @@ query userRestaurants {
 query setRestaurantIdAsCookie($id: String!) {
   setRestaurantIdAsCookie(id: $id)
 }
-
 query restaurantDetails {
   restaurantDetails {
-    _id
     name
+    _id
+    taxRates {
+      _id
+      name
+      salesTax
+    }
+    address {
+      ...addressInfo
+    }
+    brandingLogo
+    socialInfo {
+      facebook
+      instagram
+      twitter
+    }
+    website
     availability {
       day
       hours {
@@ -24,16 +38,16 @@ query restaurantDetails {
       }
       active
     }
-    brandingLogo
-    website
-    address {
-      ...addressInfo
+    timezone {
+      timezoneId
+      timezoneName
     }
-    taxRates {
-      _id
-      name
-      salesTax
-    }
+    category
+    beverageCategory
+    foodType
+    meatType
+    type
+    dineInCapacity
   }
 }
 
@@ -46,4 +60,8 @@ query userRestaurantsPending {
     name
     id
   }
+}
+
+mutation updateRestaurantDetails($input: RestaurantDetailsInput!) {
+  updateRestaurantDetails(input: $input)
 }

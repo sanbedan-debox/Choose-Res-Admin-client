@@ -8,9 +8,6 @@ query getCategoriesForMenuDropdown {
     name
     desc
     status
-    items {
-      name
-    }
   }
 }
 

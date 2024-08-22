@@ -1,6 +1,6 @@
 import BlockerLayout from "@/components/layouts/blockerLayout";
-import { UserStatus } from "@/generated/graphql";
 import { sdk } from "@/utils/graphqlClient";
+import { redirectForStatus } from "@/utils/redirectForStatus";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -90,41 +90,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     if (response && response.meUser) {
       const { status } = response.meUser;
 
-      if (status === UserStatus.Blocked) {
-        return {
-          redirect: {
-            destination: "/account/blocked",
-            permanent: false,
-          },
-        };
-      } else if (status === UserStatus.OnboardingPending) {
-        return {
-          redirect: {
-            destination: "/onboarding/user/intro",
-            permanent: false,
-          },
-        };
-      } else if (status === UserStatus.PaymentPending) {
-        return {
-          redirect: {
-            destination: "/account/payment-pending",
-            permanent: false,
-          },
-        };
-      } else if (status === UserStatus.RestaurantOnboardingPending) {
-        return {
-          redirect: {
-            destination: "/onboarding-restaurant/restaurant-welcome",
-            permanent: false,
-          },
-        };
-      } else if (status === UserStatus.Active) {
-        return {
-          redirect: {
-            destination: "/dashboard",
-            permanent: false,
-          },
-        };
+      const redirectResult = redirectForStatus(status);
+
+      if (redirectResult) {
+        return redirectResult;
       }
 
       return {

@@ -625,14 +625,9 @@ const AddItemForm = () => {
         const items = await sdk.getModifierGroupsforItemsDropDown();
         if (items && items.getModifierGroups) {
           const formattedItemsList = items.getModifierGroups.map(
-            (item: {
-              _id: string;
-              name: string;
-              modifiers: { name: string }[];
-            }) => ({
+            (item: { _id: string; name: string }) => ({
               _id: item._id || "",
               name: item?.name || "",
-              length: item?.modifiers?.length || 0,
             })
           );
           const filteredItemsList = formattedItemsList.filter(
@@ -832,6 +827,14 @@ const AddItemForm = () => {
     setPricingOptions(updatedPricingOptions);
   };
 
+  const resetToBasePrice = () => {
+    const updatedOptions = pricingOptions.map((option) => ({
+      ...option,
+      price: getValues("price"),
+    }));
+    setPricingOptions(updatedOptions);
+  };
+
   return (
     <motion.div
       className="z-10 w-full min-h-full max-w-4xl flex flex-col items-center space-y-5 text-center"
@@ -842,7 +845,7 @@ const AddItemForm = () => {
     >
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="max-w-4xl mx-auto p-6 w-full bg-white rounded-md "
+        className="max-w-full mx-auto p-6 w-full bg-white rounded-md "
       >
         <div className="col-span-2 grid grid-cols-1 gap-6">
           <div className="mb-1">
@@ -925,9 +928,18 @@ const AddItemForm = () => {
           </div>
           {pricingOptions.length > 1 && (
             <div className="mb-1">
-              <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-                Pricing Options
-              </label>
+              <div className="flex justify-between items-center">
+                <label className="block mb-2 text-sm font-medium text-left text-gray-700">
+                  Pricing Options
+                </label>
+                <button
+                  type="button"
+                  onClick={resetToBasePrice}
+                  className="text-primary hover:underline text-sm"
+                >
+                  Reset to Base Price
+                </button>
+              </div>
               <div className="grid grid-cols-1 gap-4">
                 {pricingOptions?.map((option, index) => (
                   <div

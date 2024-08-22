@@ -327,7 +327,7 @@ const AddTeamMemberForm = () => {
               options={userRoleOptions}
               className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
               classNamePrefix="react-select"
-              placeholder="Select role"
+              placeholder="Select Role"
               value={form.role}
               onChange={(selectedOption) =>
                 setFormValue("role", selectedOption)

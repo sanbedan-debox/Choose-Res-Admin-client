@@ -13,8 +13,7 @@ import Menu from "@/components/modules/menu/menu";
 import ModifiersGroup from "@/components/modules/menu/modifierGroups";
 import Modifiers from "@/components/modules/menu/modifiers";
 import SubCategories from "@/components/modules/menu/subCategories";
-import { PermissionTypeEnum, UserStatus } from "@/generated/graphql";
-import useAuthStore from "@/store/auth";
+import { PermissionTypeEnum } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
 import useMenuCategoryStore from "@/store/menuCategory";
 import useMenuItemsStore from "@/store/menuItems";
@@ -25,18 +24,15 @@ import useModStore from "@/store/modifiers";
 import useSubCategoryStore from "@/store/subCategoryStore";
 import { sdk } from "@/utils/graphqlClient";
 import { hasAccess } from "@/utils/hasAccess";
+import { redirectForStatus } from "@/utils/redirectForStatus";
 
 import { GetServerSideProps } from "next";
 import { useEffect } from "react";
 
 type UserRepo = {
   pagePath: string;
-
   _id: string;
-  email: string;
-  phone: string;
   firstName: string;
-  lastName: string;
   status: string;
 };
 const MenuPage = ({ repo }: { repo?: UserRepo }) => {
@@ -65,33 +61,6 @@ const MenuPage = ({ repo }: { repo?: UserRepo }) => {
   const { setEditModId, setisEditMod, setisDuplicateMods } = useModStore();
   const { setEditMenuId, setisEditMenu, setisDuplicateMenu } =
     useMenuMenuStore();
-
-  const {
-    setEmail,
-    setFirstName,
-    setLastName,
-    setPhone,
-    setStatus,
-    setUserId,
-    firstName,
-  } = useAuthStore();
-
-  useEffect(() => {
-    setUserId(repo?._id ?? "");
-    setEmail(repo?.email ?? "");
-    setPhone(repo?.phone ?? "");
-    setFirstName(repo?.firstName ?? "");
-    setLastName(repo?.lastName ?? "");
-    setStatus(repo?.status ?? "");
-  }, [
-    repo,
-    setEmail,
-    setFirstName,
-    setLastName,
-    setPhone,
-    setStatus,
-    setUserId,
-  ]);
 
   const { setEditItemId, setisEditItem, setisDuplicateItem } =
     useMenuItemsStore();
@@ -307,7 +276,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   try {
-    const response = await sdk.MeUser(
+    const response = await sdk.MeCheckUser(
       {},
       {
         cookie: context.req.headers.cookie?.toString() ?? "",
@@ -315,8 +284,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     );
 
     if (response && response.meUser) {
-      const { _id, email, firstName, status, lastName, phone, permissions } =
-        response.meUser;
+      const { _id, firstName, status, permissions } = response.meUser;
 
       const canAccessMenu = hasAccess(permissions, PermissionTypeEnum.Menu);
       if (!canAccessMenu) {
@@ -327,41 +295,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           },
         };
       }
-      if (status === UserStatus.Blocked) {
-        return {
-          redirect: {
-            destination: "/account/blocked",
-            permanent: false,
-          },
-        };
-      } else if (status === UserStatus.OnboardingPending) {
-        return {
-          redirect: {
-            destination: "/onboarding/user/intro",
-            permanent: false,
-          },
-        };
-      } else if (status === UserStatus.PaymentPending) {
-        return {
-          redirect: {
-            destination: "/account/payment-pending",
-            permanent: false,
-          },
-        };
-      } else if (status === UserStatus.RestaurantOnboardingPending) {
-        return {
-          redirect: {
-            destination: "/onboarding-restaurant/restaurant-welcome",
-            permanent: false,
-          },
-        };
-      } else if (status === "internalVerificationPending") {
-        return {
-          redirect: {
-            destination: "/account/verification-pending",
-            permanent: false,
-          },
-        };
+      const redirectResult = redirectForStatus(status);
+
+      if (redirectResult) {
+        return redirectResult;
       }
 
       return {
@@ -369,10 +306,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           repo: {
             pagePath: context.query["menuRoute"]?.toString() ?? "",
             _id,
-            email,
-            phone,
+
             firstName,
-            lastName,
             status,
           },
         },

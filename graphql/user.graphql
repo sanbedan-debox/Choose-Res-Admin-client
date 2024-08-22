@@ -1,3 +1,7 @@
-# mutation updateUserProfile($input: UpdateUserProfileInput!) {
-#   updateUserProfile(input: $input)
-# }
+query updateUserDetails($input: UpdateUserInput!) {
+  updateUserDetails(input: $input)
+}
+
+mutation updateBusinessDetails($input: UpdateBusinessDetailsInput!) {
+  updateBusinessDetails(input: $input)
+}

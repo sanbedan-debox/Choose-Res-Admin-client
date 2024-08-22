@@ -271,7 +271,7 @@ const AddModifierForm = () => {
     >
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="max-w-4xl mx-auto p-6 w-full bg-white rounded-md "
+        className=" mx-auto p-6 w-full bg-white rounded-md "
       >
         <div className="col-span-2 grid grid-cols-1 gap-6">
           <div className="w-full mb-1 flex items-center justify-between">

@@ -225,6 +225,7 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
                     }}
                     options={timeOptions}
                     value={hour.start}
+                    placeholder="Start"
                     onChange={(selectedOption) => {
                       const newAvailability = [...availability];
                       newAvailability[index].hours[hourIndex].start =
@@ -247,6 +248,7 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
                           state.isSelected ? "!bg-primary text-white" : ""
                         }  `,
                     }}
+                    placeholder="End"
                     options={timeOptions}
                     value={hour.end}
                     onChange={(selectedOption) => {

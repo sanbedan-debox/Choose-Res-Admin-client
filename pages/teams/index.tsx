@@ -7,11 +7,11 @@ import MainLayout from "@/components/layouts/mainBodyLayout";
 import AddTeamMemberForm from "@/components/modules/userManagement/forms/addTeamMemberForm";
 import EditTeamMemberForm from "@/components/modules/userManagement/forms/editTeamMemberForm";
 import { PermissionTypeEnum, UserStatus } from "@/generated/graphql";
-import useAuthStore from "@/store/auth";
 import useGlobalStore from "@/store/global";
 import useUserManagementStore from "@/store/userManagement";
 import { sdk } from "@/utils/graphqlClient";
 import { hasAccess } from "@/utils/hasAccess";
+import { redirectForStatus } from "@/utils/redirectForStatus";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import { GetServerSideProps } from "next";
 import React, { useEffect, useState } from "react";
@@ -26,10 +26,7 @@ type NextPageWithLayout = React.FC & {
 
 type UserRepo = {
   _id: string;
-  email: string;
-  phone: string;
-  firstName: string;
-  lastName: string;
+
   status: string;
 };
 
@@ -74,32 +71,7 @@ const formatUserRole = (role: string): string => {
 };
 
 const Teams: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
-  const {
-    setEmail,
-    setFirstName,
-    setLastName,
-    setPhone,
-    setStatus,
-    setUserId,
-  } = useAuthStore();
   const { setSelectedMenu, isShowSetupPanel } = useGlobalStore();
-
-  useEffect(() => {
-    setUserId(repo?._id ?? "");
-    setEmail(repo?.email ?? "");
-    setPhone(repo?.phone ?? "");
-    setFirstName(repo?.firstName ?? "");
-    setLastName(repo?.lastName ?? "");
-    setStatus(repo?.status ?? "");
-  }, [
-    repo,
-    setEmail,
-    setFirstName,
-    setLastName,
-    setPhone,
-    setStatus,
-    setUserId,
-  ]);
 
   useEffect(() => {
     setSelectedMenu("Team Management");
@@ -123,6 +95,23 @@ const Teams: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
     "are you sure you want to block the user."
   );
   const [SelectedMemberId, setSelectedMemberId] = useState<string>("");
+  const {
+    setIsEditTeamMember,
+    setIsEditTeamMemberId,
+    setIsEditTeamRole,
+    isEditTeamMember,
+  } = useUserManagementStore();
+  const onEditRole = (id: string) => {
+    setIsEditTeamMember(true);
+    setIsEditTeamMemberId(id);
+    setIsEditTeamRole(true);
+  };
+
+  const onEditPermissions = (id: string) => {
+    setIsEditTeamMember(true);
+    setIsEditTeamMemberId(id);
+    setIsEditTeamRole(false);
+  };
 
   const { setToastData } = useGlobalStore();
   const { isAddTeamMemberModalOpen, setIsAddTeamMemberModalOpen } =
@@ -167,7 +156,7 @@ const Teams: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
 
   useEffect(() => {
     fetchTeamMembers();
-  }, [isAddTeamMemberModalOpen]);
+  }, [isAddTeamMemberModalOpen, isEditTeamMember]);
 
   const handleDeleteMember = (_id: string) => {
     setshowDeleteConfirmationModal(true);
@@ -175,23 +164,6 @@ const Teams: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
     setAvailableCaption(
       " By clicking yes the selected Team Member / Members will be deleted. This action cannot be undone."
     );
-  };
-  const {
-    setIsEditTeamMember,
-    setIsEditTeamMemberId,
-    setIsEditTeamRole,
-    isEditTeamMember,
-  } = useUserManagementStore();
-  const onEditRole = (id: string) => {
-    setIsEditTeamMember(true);
-    setIsEditTeamMemberId(id);
-    setIsEditTeamRole(true);
-  };
-
-  const onEditPermissions = (id: string) => {
-    setIsEditTeamMember(true);
-    setIsEditTeamMemberId(id);
-    setIsEditTeamRole(false);
   };
 
   const renderActions = (rowData: { _id: string }) => (
@@ -265,13 +237,10 @@ const Teams: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
   const handleDeleteConfirmation = async () => {
     setBtnLoading(true);
     try {
-      const response = await sdk.removeRestaurantSubuser({
-        restaurantSubUser: {
-          id: SelectedMemberId,
-          // restaurants:[]
-        },
+      const response = await sdk.deleteTeamMember({
+        id: SelectedMemberId,
       });
-      if (response && response.removeRestaurantSubuser) {
+      if (response && response.deleteTeamMember) {
         fetchTeamMembers();
       }
     } catch (error) {
@@ -361,7 +330,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   try {
-    const response = await sdk.MeUser(
+    const response = await sdk.MeCheckUser(
       {},
       {
         cookie: context.req.headers.cookie?.toString() ?? "",
@@ -369,8 +338,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     );
 
     if (response && response.meUser) {
-      const { _id, email, firstName, status, lastName, phone, permissions } =
-        response.meUser;
+      const { _id, status, permissions } = response.meUser;
+
+      const redirectResult = redirectForStatus(status);
+
+      if (redirectResult) {
+        return redirectResult;
+      }
+
       const canAccessMenu = hasAccess(
         permissions,
         PermissionTypeEnum.UserManagement
@@ -424,10 +399,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         props: {
           repo: {
             _id,
-            email,
-            phone,
-            firstName,
-            lastName,
             status,
           },
         },

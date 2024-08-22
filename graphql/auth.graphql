@@ -44,6 +44,17 @@ query MeUser {
   }
 }
 
+query MeCheckUser {
+  meUser {
+    _id
+    firstName
+    status
+    permissions {
+      type
+      status
+    }
+  }
+}
 # Query to verify OTP for login
 query userLoginVerification($input: UserLoginVerificationInput!) {
   userLoginVerification(input: $input)
@@ -65,6 +76,7 @@ input CommunicationPreferenceInput {
 
 query userBusinessDetails {
   userBusinessDetails {
+    _id
     businessName
     estimatedRevenue
     employeeSize

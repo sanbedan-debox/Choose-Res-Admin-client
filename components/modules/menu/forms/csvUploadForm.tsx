@@ -126,7 +126,6 @@ const CsvUploadForm = () => {
   const handlePreview = () => {
     setIsPreviewModalOpen(true);
   };
-
   const processCsvData = (
     data: Array<Record<string, string>>,
     isFixedFile: boolean = false
@@ -195,67 +194,89 @@ const CsvUploadForm = () => {
 
         let rowError = false;
 
-        if (
-          invalidStringCellValue(Category.toString()) ||
-          ((subCategory?.toString() ?? "") !== "" &&
-            invalidStringCellValue(subCategory.toString())) ||
-          invalidStringCellValue(itemName.toString()) ||
-          invalidStringCellValue(itemDesc.toString())
-        ) {
-          issues.add("Invalid string values found, please try again!");
+        // Check string cell values
+        if (invalidStringCellValue(Category.toString())) {
+          issues.add("Category contains invalid characters.");
+          rowError = true;
+        }
+        if (subCategory && invalidStringCellValue(subCategory.toString())) {
+          issues.add("Sub Category contains invalid characters.");
+          rowError = true;
+        }
+        if (invalidStringCellValue(itemName.toString())) {
+          issues.add("Item Name contains invalid characters.");
+          rowError = true;
+        }
+        if (invalidStringCellValue(itemDesc.toString())) {
+          issues.add("Item Description contains invalid characters.");
           rowError = true;
         }
 
-        // Check cell number values
-        if (
-          invalidNumberCellValue(price) ||
-          ((itemLimit?.toString() ?? "") !== "" &&
-            invalidNumberCellValue(itemLimit))
-        ) {
-          issues.add("Invalid number values found, please try again!");
+        // Check number cell values
+        if (invalidNumberCellValue(price)) {
+          issues.add("Item Price is invalid or not a positive number.");
+          rowError = true;
+        }
+        if (itemLimit && invalidNumberCellValue(itemLimit)) {
+          issues.add("Item Limit is invalid or not a positive number.");
           rowError = true;
         }
 
-        // Check cell boolean values
-
-        if (
-          invalidBooleanCellValue(itemStatus.toString()) ||
-          invalidBooleanCellValue(onlineOrdering.toString()) ||
-          invalidBooleanCellValue(dineIn.toString()) ||
-          invalidBooleanCellValue(catering.toString()) ||
-          invalidBooleanCellValue(popularItem.toString()) ||
-          invalidBooleanCellValue(upSellItem.toString()) ||
-          invalidBooleanCellValue(isVegan.toString()) ||
-          invalidBooleanCellValue(hasNuts.toString()) ||
-          invalidBooleanCellValue(isGlutenFree.toString()) ||
-          invalidBooleanCellValue(isHalal.toString()) ||
-          invalidBooleanCellValue(isSpicy.toString())
-        ) {
-          issues.add("Invalid boolean values found, please try again!");
+        // Check boolean cell values
+        if (invalidBooleanCellValue(itemStatus.toString())) {
+          issues.add("Item Status must be 'true' or 'false'.");
+          rowError = true;
+        }
+        if (invalidBooleanCellValue(onlineOrdering.toString())) {
+          issues.add("Online Ordering must be 'true' or 'false'.");
+          rowError = true;
+        }
+        if (invalidBooleanCellValue(dineIn.toString())) {
+          issues.add("Dine In must be 'true' or 'false'.");
+          rowError = true;
+        }
+        if (invalidBooleanCellValue(catering.toString())) {
+          issues.add("Catering must be 'true' or 'false'.");
+          rowError = true;
+        }
+        if (invalidBooleanCellValue(popularItem.toString())) {
+          issues.add("Popular Item must be 'true' or 'false'.");
+          rowError = true;
+        }
+        if (invalidBooleanCellValue(upSellItem.toString())) {
+          issues.add("Up Sell Item must be 'true' or 'false'.");
+          rowError = true;
+        }
+        if (invalidBooleanCellValue(isVegan.toString())) {
+          issues.add("Is Vegan must be 'true' or 'false'.");
+          rowError = true;
+        }
+        if (invalidBooleanCellValue(hasNuts.toString())) {
+          issues.add("Has Nuts must be 'true' or 'false'.");
+          rowError = true;
+        }
+        if (invalidBooleanCellValue(isGlutenFree.toString())) {
+          issues.add("Is Gluten Free must be 'true' or 'false'.");
+          rowError = true;
+        }
+        if (invalidBooleanCellValue(isHalal.toString())) {
+          issues.add("Is Halal must be 'true' or 'false'.");
+          rowError = true;
+        }
+        if (invalidBooleanCellValue(isSpicy.toString())) {
+          issues.add("Is Spicy must be 'true' or 'false'.");
           rowError = true;
         }
 
         // Check item name and item desc limit
-        if (
-          invalidItemNameLimit(itemName.toString()) ||
-          invalidItemDescLimit(itemDesc.toString())
-        ) {
-          issues.add(
-            "Invalid limit for item name or item desc, please try again!"
-          );
+        if (invalidItemNameLimit(itemName.toString())) {
+          issues.add("Item Name exceeds the maximum length of 60 characters.");
           rowError = true;
         }
-
-        // if (isNaN(Number(price))) {
-        //   issuses.set(`Invalid price`;
-        // } else if (Nu)mber(price) <= 0) {
-        //   errorMessage = `Price Can't Be 0`;
-        // } else if (inames.includes(itemName.trim())) {
-        //   errorMessage = `Duplicate item name`;
-        // } else if (itemName.trim().length > 80) {
-        //   errorMessage = `Item name too long`;
-        // } else if (itemDesc.length < 40 || itemDesc.length > 200) {
-        //   errorMessage = `Item description length should be between 40 to 200 characters`;
+        if (invalidItemDescLimit(itemDesc.toString())) {
+          issues.add("Item Description must be between 40 and 160 characters.");
+          rowError = true;
+        }
 
         // Sanitized data
         const categorySanitized = sanitizeCellValue(
@@ -290,11 +311,9 @@ const CsvUploadForm = () => {
           categorySanitized.toString(),
           "boolean"
         );
-
         const itemLimitSanitized: number | null = itemLimit.toString()
           ? (sanitizeCellValue(itemLimit?.toString(), "number") as number)
           : null;
-
         const popularItemSanitized = sanitizeCellValue(
           popularItem.toString(),
           "boolean"
@@ -326,7 +345,7 @@ const CsvUploadForm = () => {
 
         // Check if any row have same item name
         if (inames.includes(itemNameSanitized as string)) {
-          issues.add("Item name cannot be same, please try again");
+          issues.add("Item Name must be unique.");
           rowError = true;
         } else {
           inames.push(itemNameSanitized as string);
@@ -334,19 +353,9 @@ const CsvUploadForm = () => {
 
         // Check if halal and vegan is not true in same row
         if ((isHalalSanitized as boolean) === (isVeganSanitized as boolean)) {
-          issues.add(
-            "Item cannot be halal and vegan at the same time, please check and try again!"
-          );
+          issues.add("Item cannot be both Halal and Vegan.");
           rowError = true;
         }
-
-        // if (errorMessage) {
-        //   if (!errors.find((err) => err["Item Name"] === itemNameSanitized)) {
-        //     errors.push({ ...row });
-        //     setErrorMessages((prev) => [...prev, errorMessage]);
-        //   }
-        //   return;
-        // }
 
         if (!rowError) {
           items.push({
@@ -543,6 +552,7 @@ const CsvUploadForm = () => {
     try {
       const cloudinaryUrl = await uploadValidCsvToCloudinary(csv);
 
+      console.log(data.menu.value, data.menu);
       if (cloudinaryUrl) {
         const res = await sdk.uploadCSVMenuData({
           input: {
@@ -576,7 +586,11 @@ const CsvUploadForm = () => {
     downloadA.download = "true";
     downloadA.click();
   };
-
+  const resetData = () => {
+    setErrorCsvData([]);
+    setPreviewData([]);
+    setErrorMessages([]);
+  };
   const [step, setStep] = useState(1);
 
   const nextStep = () => setStep((prevStep) => prevStep + 1);
@@ -796,7 +810,7 @@ const CsvUploadForm = () => {
               loading={isLoading}
               onClick={nextStep}
               // disabled={isLoading || !file || !watch("menu")}
-              disabled={isLoading || !file}
+              disabled={isLoading || !file || !watch("menu")}
             >
               Next
             </CButton>
@@ -868,7 +882,23 @@ const CsvUploadForm = () => {
                   )}
                 </div>
               ) : (
-                <p className="text-red-600">All rows are invalid.</p>
+                <div className="flex flex-col">
+                  {errorCsvData.length > 0 && (
+                    <div className="border rounded-lg p-4 shadow-md">
+                      <h3 className="text-md font-medium mb-2">
+                        All rows are invalid.These are the listed errors:
+                      </h3>
+                      <ul className="list-disc list-inside text-left text-red-600">
+                        {errorMessages.map((msg, index) => (
+                          <li key={index}>{msg}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  <p className="text-red-600 mt-2">
+                    Please upload fixed CSV and try again
+                  </p>
+                </div>
               )}
             </div>
 

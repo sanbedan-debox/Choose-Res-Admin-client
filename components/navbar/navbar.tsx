@@ -262,12 +262,12 @@ const Navbar: React.FC = () => {
                 >
                   My account
                 </Link>
-                {/* <Link
-                  href="/teams"
+                <Link
+                  href="/restaurant-settings"
                   className="block px-4 py-2 text-sm text-black hover:text-white hover:bg-primary"
                 >
-                  My Teams
-                </Link> */}
+                  Restaurant Settings
+                </Link>
                 <button
                   onClick={handleShowTaxRate}
                   className="block px-4 py-2 w-full text-left text-sm text-black hover:text-white hover:bg-primary"

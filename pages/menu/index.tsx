@@ -3,11 +3,11 @@ import ReusableModal from "@/components/common/modal/modal";
 import QuickActions from "@/components/common/quickLinks/quickLink";
 import MainLayout from "@/components/layouts/mainBodyLayout";
 import CsvUploadForm from "@/components/modules/menu/forms/csvUploadForm";
-import { PermissionTypeEnum, UserStatus } from "@/generated/graphql";
-import useAuthStore from "@/store/auth";
+import { PermissionTypeEnum } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
 import { sdk } from "@/utils/graphqlClient";
 import { hasAccess } from "@/utils/hasAccess";
+import { redirectForStatus } from "@/utils/redirectForStatus";
 import { GetServerSideProps } from "next";
 import { useEffect } from "react";
 import useMenuPageStore from "../../store/menuStore";
@@ -18,43 +18,16 @@ type NextPageWithLayout = React.FC & {
 
 type UserRepo = {
   _id: string;
-  email: string;
-  phone: string;
+
   firstName: string;
-  lastName: string;
   status: string;
 };
 
 const Menu: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
   const { setSelectedMenu } = useGlobalStore();
-  const {
-    setEmail,
-    setFirstName,
-    setLastName,
-    setPhone,
-    setStatus,
-    setUserId,
-    firstName,
-  } = useAuthStore();
 
   // const [isShowCSVuploadModal, setIsShowCSVuploadModal] = useState(false);
   const { isShowUploadCSV, setisShowUploadCSV } = useMenuPageStore();
-  useEffect(() => {
-    setUserId(repo?._id ?? "");
-    setEmail(repo?.email ?? "");
-    setPhone(repo?.phone ?? "");
-    setFirstName(repo?.firstName ?? "");
-    setLastName(repo?.lastName ?? "");
-    setStatus(repo?.status ?? "");
-  }, [
-    repo,
-    setEmail,
-    setFirstName,
-    setLastName,
-    setPhone,
-    setStatus,
-    setUserId,
-  ]);
 
   useEffect(() => {
     setSelectedMenu("dashboard");
@@ -122,7 +95,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   try {
-    const response = await sdk.MeUser(
+    const response = await sdk.MeCheckUser(
       {},
       {
         cookie: context.req.headers.cookie?.toString() ?? "",
@@ -130,8 +103,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     );
 
     if (response && response.meUser) {
-      const { _id, email, firstName, status, lastName, phone, permissions } =
-        response.meUser;
+      const { _id, firstName, status, permissions } = response.meUser;
 
       const canAccessMenu = hasAccess(permissions, PermissionTypeEnum.Menu);
       if (!canAccessMenu) {
@@ -142,52 +114,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           },
         };
       }
+      const redirectResult = redirectForStatus(status);
 
-      if (status === UserStatus.Blocked) {
-        return {
-          redirect: {
-            destination: "/account/blocked",
-            permanent: false,
-          },
-        };
-      } else if (status === UserStatus.OnboardingPending) {
-        return {
-          redirect: {
-            destination: "/onboarding/user/intro",
-            permanent: false,
-          },
-        };
-      } else if (status === UserStatus.PaymentPending) {
-        return {
-          redirect: {
-            destination: "/account/payment-pending",
-            permanent: false,
-          },
-        };
-      } else if (status === UserStatus.RestaurantOnboardingPending) {
-        return {
-          redirect: {
-            destination: "/onboarding-restaurant/restaurant-welcome",
-            permanent: false,
-          },
-        };
-      } else if (status === "internalVerificationPending") {
-        return {
-          redirect: {
-            destination: "/account/verification-pending",
-            permanent: false,
-          },
-        };
+      if (redirectResult) {
+        return redirectResult;
       }
 
       return {
         props: {
           repo: {
             _id,
-            email,
-            phone,
+
             firstName,
-            lastName,
             status,
           },
         },

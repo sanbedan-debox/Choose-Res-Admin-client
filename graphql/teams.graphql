@@ -26,39 +26,31 @@ query getTeamMembers {
 query getUser($id: String!) {
   getUser(id: $id) {
     _id
-    firstName
-    lastName
-    status
-    email
-    phone
-    creatorUser
     permissions {
       status
       type
       id
     }
     role
-    businessInfo {
-      businessName
-      ein
-      businessType
-      estimatedRevenue
-      employeeSize
-
-      address {
-        ...addressInfo
-      }
-    }
     restaurants {
       id
       name
       status
+      city
     }
   }
 }
 
 mutation removeRestaurantSubuser($restaurantSubUser: RestaurantSubuserInput!) {
   removeRestaurantSubuser(input: $restaurantSubUser)
+}
+
+query deleteTeamMember($id: String!) {
+  deleteTeamMember(id: $id)
+}
+
+mutation addRestaurantSubuser($restaurantSubUser: RestaurantSubuserInput!) {
+  addRestaurantSubuser(input: $restaurantSubUser)
 }
 
 mutation verifyTeamEmail($token: String!) {

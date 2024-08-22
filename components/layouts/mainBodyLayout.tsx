@@ -1,5 +1,6 @@
 import useAuthStore from "@/store/auth";
 import useGlobalStore from "@/store/global";
+import useMasterStore from "@/store/masters";
 import useRestaurantsStore from "@/store/restaurant";
 import useUserStore from "@/store/user";
 import { sdk } from "@/utils/graphqlClient";
@@ -109,6 +110,58 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     }
   };
 
+  const { setMasterStates, setMasterTimezones } = useMasterStore();
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        const resstates = await sdk.getActiveStates();
+        if (resstates && resstates.getActiveStates) {
+          const formattedStates = resstates.getActiveStates.map(
+            (state: { value: string; _id: string }) => ({
+              value: state._id,
+              label: state.value,
+            })
+          );
+          setMasterStates(formattedStates);
+        }
+        const resTimeZones = await sdk.getActiveTimezones();
+        if (resTimeZones && resTimeZones.getActiveTimezones) {
+          const formattedTimeZones = resTimeZones.getActiveTimezones.map(
+            (timeZone: { gmtOffset: number; value: string; _id: string }) => {
+              const gmtOffsetHours = timeZone.gmtOffset / 3600;
+              const sign = gmtOffsetHours >= 0 ? "+" : "-";
+              const formattedLabel = `${timeZone.value} (GMT ${sign} ${Math.abs(
+                gmtOffsetHours
+              )})`;
+              return {
+                value: timeZone._id,
+                label: formattedLabel,
+              };
+            }
+          );
+          setMasterTimezones(formattedTimeZones);
+        }
+      } catch (error) {
+        const errorMessage = extractErrorMessage(error);
+        setToastData({
+          type: "error",
+          message: errorMessage,
+        });
+      }
+    };
+
+    fetch();
+  }, [setMasterStates, setMasterTimezones]);
+
+  const {
+    setEmail,
+    setFirstName,
+    setLastName,
+    setPhone,
+    setStatus,
+    setUserId,
+    firstName,
+  } = useAuthStore();
   const fetchUserDetails = async () => {
     try {
       const response = await sdk.MeUser();
@@ -122,8 +175,6 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           phone,
           permissions,
           role,
-          businessInfo,
-          restaurants,
         } = response.meUser;
         useUserStore.getState().setMeUser({
           _id,
@@ -135,9 +186,14 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           permissions,
           role,
         });
+        setUserId(_id ?? "");
+        setEmail(email ?? "");
+        setPhone(phone ?? "");
+        setFirstName(firstName ?? "");
+        setLastName(lastName ?? "");
+        setStatus(status ?? "");
       }
     } catch (error) {
-      // console.error("Failed to fetch user details:", error);
       setToastData({ message: extractErrorMessage(error), type: "error" });
     }
   };

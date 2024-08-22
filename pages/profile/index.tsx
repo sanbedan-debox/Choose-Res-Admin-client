@@ -12,6 +12,7 @@ import useProfileStore from "@/store/profile";
 import useUserStore from "@/store/user";
 import { sdk } from "@/utils/graphqlClient";
 import { hasAccess } from "@/utils/hasAccess";
+import { redirectForStatus } from "@/utils/redirectForStatus";
 import { GetServerSideProps } from "next";
 import React, { useEffect, useState } from "react";
 
@@ -21,31 +22,15 @@ type NextPageWithLayout = React.FC & {
 
 type UserRepo = {
   _id: string;
-  email: string;
   firstName: string;
-  lastName: string;
-  phone: string;
 };
 
 const Profile: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
   const { setSelectedMenu } = useGlobalStore();
-  const { _id, email, firstName, lastName, phone } = repo || {};
-  const [CanUpdateBusinessDetails, setCanUpdateBusinessDetails] =
+  const [canUpdateBusinessDetails, setCanUpdateBusinessDetails] =
     useState(false);
   const { meUser } = useUserStore();
-
   const permissions = meUser?.permissions ?? [];
-  useEffect(() => {
-    if (repo) {
-      useBasicProfileStore.getState().setProfileData({
-        _id: _id || "",
-        email: email || "",
-        firstName: firstName || "",
-        lastName: lastName || "",
-        phone: phone || "",
-      });
-    }
-  }, [repo]);
 
   const {
     setAddressLine1,
@@ -61,11 +46,32 @@ const Profile: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
     setemployeeSize,
     setestablishedAt,
     setestimatedRevenue,
+    setid,
   } = useProfileStore();
 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const fetchRestaurantDetails = async () => {
+      try {
+        const response = await sdk.MeUser();
+        if (response && response.meUser) {
+          const { _id, email, firstName, lastName, phone } = response.meUser;
+          useBasicProfileStore.getState().setProfileData({
+            _id: _id || "",
+            email: email || "",
+            firstName: firstName || "",
+            lastName: lastName || "",
+            phone: phone || "",
+          });
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching restaurant details:", error);
+        setLoading(false);
+      }
+    };
+
     const fetchBusinessDetails = async () => {
       try {
         const response = await sdk.userBusinessDetails();
@@ -76,7 +82,10 @@ const Profile: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
           estimatedRevenue,
           address,
           ein,
+          _id,
         } = response.userBusinessDetails;
+
+        setid(_id);
         setAddressLine1(address?.addressLine1 || "");
         setAddressLine2(address?.addressLine2 || "");
         setCity(address?.city || "");
@@ -87,8 +96,8 @@ const Profile: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
         });
         setZipcode(address?.zipcode || 0);
         setState({
-          id: address?.state.stateId || "",
-          value: address?.state.stateName || "",
+          id: address?.state?.stateId || "",
+          value: address?.state?.stateName || "",
         });
         setbusinessName(businessName || "");
         setbusinessType(businessType || "");
@@ -101,23 +110,25 @@ const Profile: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
         setLoading(false);
       }
     };
-    const canUpdateRestarant = hasAccess(
+
+    const canUpdateRestaurant = hasAccess(
       permissions,
       PermissionTypeEnum.UpdateBusiness
     );
-    setCanUpdateBusinessDetails(canUpdateRestarant);
+    setCanUpdateBusinessDetails(canUpdateRestaurant);
+    fetchRestaurantDetails();
     fetchBusinessDetails();
-  }, []);
+  }, [permissions]);
 
   if (loading) {
     return <Loader />;
   }
 
-  const contentList = CanUpdateBusinessDetails
+  const contentList = canUpdateBusinessDetails
     ? [
         {
           id: "userBasicInformation",
-          title: "User Basic Information",
+          title: "Profile Information",
           Component: UserBasicInformationForm,
         },
         {
@@ -132,14 +143,14 @@ const Profile: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
         },
         {
           id: "identityVerification",
-          title: "Identity Verification",
+          title: "Security",
           Component: IdentityVerificationForm,
         },
       ]
     : [
         {
           id: "userBasicInformation",
-          title: "User Basic Information",
+          title: "Profile Information",
           Component: UserBasicInformationForm,
         },
       ];
@@ -154,11 +165,11 @@ const Profile: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
 Profile.getLayout = function getLayout(page: React.ReactNode) {
   return <MainLayout>{page}</MainLayout>;
 };
+
 export default Profile;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const cookieHeader = context.req.headers.cookie ?? "";
-
   const tokenExists = cookieHeader.includes("accessToken=");
 
   if (!tokenExists) {
@@ -171,7 +182,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   try {
-    const response = await sdk.MeUser(
+    const response = await sdk.MeCheckUser(
       {},
       {
         cookie: context.req.headers.cookie?.toString() ?? "",
@@ -179,16 +190,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     );
 
     if (response && response.meUser) {
-      const { _id, email, firstName, lastName, phone } = response.meUser;
+      const { _id, firstName, status } = response.meUser;
+      const redirectResult = redirectForStatus(status);
+
+      if (redirectResult) {
+        return redirectResult;
+      }
 
       return {
         props: {
           repo: {
             _id,
-            email,
             firstName,
-            lastName,
-            phone,
           },
         },
       };
@@ -201,7 +214,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       };
     }
   } catch (error) {
-    // console.error("Failed to fetch user details:", error);
     return {
       redirect: {
         destination: "/login",

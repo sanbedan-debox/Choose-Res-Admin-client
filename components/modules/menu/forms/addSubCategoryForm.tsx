@@ -140,7 +140,7 @@ const AddSubCategoryForm = () => {
       transition={{ duration: 0.3 }}
     >
       <form
-        className="space-y-4 md:space-y-3 w-full max-w-2xl"
+        className="space-y-4 md:space-y-3 w-full "
         onSubmit={handleSubmit(onSubmit)}
       >
         <div className="col-span-2">

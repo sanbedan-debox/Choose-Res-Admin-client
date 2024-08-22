@@ -292,7 +292,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   try {
-    const response = await sdk.MeUser(
+    const response = await sdk.MeCheckUser(
       {},
       {
         cookie: context.req.headers.cookie?.toString() ?? "",
@@ -312,7 +312,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       };
     }
   } catch (error) {
-    // console.error("Failed to fetch user details:", error);
     return {
       props: {},
     };

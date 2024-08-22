@@ -1,5 +1,6 @@
 import BlockerLayout from "@/components/layouts/blockerLayout";
 import { sdk } from "@/utils/graphqlClient";
+import { redirectForStatus } from "@/utils/redirectForStatus";
 import { GetServerSideProps } from "next";
 import React from "react";
 
@@ -40,7 +41,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   try {
-    const response = await sdk.MeUser(
+    const response = await sdk.MeCheckUser(
       {},
       {
         cookie: context.req.headers.cookie?.toString() ?? "",
@@ -50,34 +51,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     if (response && response.meUser) {
       const { status } = response.meUser;
 
-      if (status === "onboardingPending") {
-        return {
-          redirect: {
-            destination: "/onboarding/user/intro",
-            permanent: false,
-          },
-        };
-      } else if (status === "restaurantOnboardingPending") {
-        return {
-          redirect: {
-            destination: "/onboarding-restaurant/restaurant-",
-            permanent: false,
-          },
-        };
-      } else if (status === "internalVerificationPending") {
-        return {
-          redirect: {
-            destination: "/account/verification-pending",
-            permanent: false,
-          },
-        };
-      } else if (status === "paymentPending") {
-        return {
-          redirect: {
-            destination: "/account/payment-pending",
-            permanent: false,
-          },
-        };
+      const redirectResult = redirectForStatus(status);
+
+      if (redirectResult) {
+        return redirectResult;
       }
 
       return {
