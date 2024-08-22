@@ -6,6 +6,7 @@ import RoopTable from "@/components/common/table/table";
 import MainLayout from "@/components/layouts/mainBodyLayout";
 import AddTeamMemberForm from "@/components/modules/userManagement/forms/addTeamMemberForm";
 import EditTeamMemberForm from "@/components/modules/userManagement/forms/editTeamMemberForm";
+import ManageResTeamMemberForm from "@/components/modules/userManagement/forms/manageRestaurantsTeamMemberForm";
 import { PermissionTypeEnum, UserStatus } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
 import useUserManagementStore from "@/store/userManagement";
@@ -15,9 +16,9 @@ import { redirectForStatus } from "@/utils/redirectForStatus";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import { GetServerSideProps } from "next";
 import React, { useEffect, useState } from "react";
-import { FaTrash } from "react-icons/fa";
+import { CiShop } from "react-icons/ci";
 import { IoSettingsOutline } from "react-icons/io5";
-import { MdOutlineAdminPanelSettings } from "react-icons/md";
+import { MdDeleteOutline, MdOutlineAdminPanelSettings } from "react-icons/md";
 import useAddTeamMemberFormStore from "../../store/addTeamMemberStore";
 
 type NextPageWithLayout = React.FC & {
@@ -100,6 +101,8 @@ const Teams: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
     setIsEditTeamMemberId,
     setIsEditTeamRole,
     isEditTeamMember,
+    setisEditRestaurantTeamMember,
+    isEditRestaurantTeamMember,
   } = useUserManagementStore();
   const onEditRole = (id: string) => {
     setIsEditTeamMember(true);
@@ -111,6 +114,12 @@ const Teams: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
     setIsEditTeamMember(true);
     setIsEditTeamMemberId(id);
     setIsEditTeamRole(false);
+  };
+  const onManageResPermissions = (id: string) => {
+    setIsEditTeamMember(false);
+    setIsEditTeamMemberId(id);
+    setIsEditTeamRole(false);
+    setisEditRestaurantTeamMember(true);
   };
 
   const { setToastData } = useGlobalStore();
@@ -168,7 +177,7 @@ const Teams: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
 
   const renderActions = (rowData: { _id: string }) => (
     <div className="flex space-x-2 justify-end">
-      <FaTrash
+      <MdDeleteOutline
         className="text-primary text-lg cursor-pointer"
         onClick={() => handleDeleteMember(rowData._id)}
       />
@@ -179,6 +188,10 @@ const Teams: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
       <MdOutlineAdminPanelSettings
         className="text-primary text-lg cursor-pointer"
         onClick={() => onEditPermissions(rowData._id)}
+      />
+      <CiShop
+        className="text-primary text-lg cursor-pointer"
+        onClick={() => onManageResPermissions(rowData._id)}
       />
     </div>
   );
@@ -227,6 +240,12 @@ const Teams: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
     setIsEditTeamMember(false);
     setIsEditTeamMemberId("");
     setIsEditTeamRole(false);
+  };
+  const handleManageteamMemberModalClose = () => {
+    setIsEditTeamMember(false);
+    setIsEditTeamMemberId("");
+    setIsEditTeamRole(false);
+    setisEditRestaurantTeamMember(false);
   };
   const handleDeleteCloseConfirmationModal = () => {
     setshowDeleteConfirmationModal(false);
@@ -305,6 +324,18 @@ const Teams: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
           <EditTeamMemberForm />
         </div>
       </FullPageModal>
+      <FullPageModal
+        isOpen={isEditRestaurantTeamMember}
+        title="Edit Team Member"
+        onClose={handleManageteamMemberModalClose}
+        actionButtonLabel="Edit Member"
+        // onActionButtonClick={handleAddMenuItemClick}
+        onActionButtonClick={() => {}}
+      >
+        <div className="flex justify-center">
+          <ManageResTeamMemberForm />
+        </div>
+      </FullPageModal>
     </div>
   );
 };
@@ -354,42 +385,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         return {
           redirect: {
             destination: "/",
-            permanent: false,
-          },
-        };
-      }
-      if (status === UserStatus.Blocked) {
-        return {
-          redirect: {
-            destination: "/account/blocked",
-            permanent: false,
-          },
-        };
-      } else if (status === UserStatus.OnboardingPending) {
-        return {
-          redirect: {
-            destination: "/onboarding/user/intro",
-            permanent: false,
-          },
-        };
-      } else if (status === UserStatus.PaymentPending) {
-        return {
-          redirect: {
-            destination: "/account/payment-pending",
-            permanent: false,
-          },
-        };
-      } else if (status === UserStatus.RestaurantOnboardingPending) {
-        return {
-          redirect: {
-            destination: "/onboarding-restaurant/restaurant-welcome",
-            permanent: false,
-          },
-        };
-      } else if (status === "internalVerificationPending") {
-        return {
-          redirect: {
-            destination: "/account/verification-pending",
             permanent: false,
           },
         };

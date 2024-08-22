@@ -24,6 +24,9 @@ type UserManagementState = {
     isEditTeamMember: boolean;
     setIsEditTeamMember: (edit: boolean) => void;
 
+    isEditRestaurantTeamMember: boolean;
+    setisEditRestaurantTeamMember: (edit: boolean) => void;
+
     isEditTeamMemberId: string | null;
     setIsEditTeamMemberId: (id: string | null) => void;
 
@@ -41,6 +44,10 @@ const useUserManagementStore = create<UserManagementState>((set) => ({
     isEditTeamMember: false,
     setIsEditTeamMember: (edit: boolean) =>
         set({ isEditTeamMember: edit }),
+
+    isEditRestaurantTeamMember: false,
+    setisEditRestaurantTeamMember: (edit: boolean) =>
+        set({ isEditRestaurantTeamMember: edit }),
 
     isEditTeamMemberId: null,
     setIsEditTeamMemberId: (id: string | null) =>
