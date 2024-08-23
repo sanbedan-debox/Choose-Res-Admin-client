@@ -784,7 +784,7 @@ const CsvUploadForm = () => {
                       </svg>
                       <p className="mt-1 text-sm text-gray-500">
                         Drag and drop a CSV file or{" "}
-                        <span className="text-blue-600">browse file</span>
+                        <span className="text-primary">browse file</span>
                       </p>
                     </div>
                   </label>
