@@ -9,7 +9,6 @@ import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { IoIosCloseCircleOutline } from "react-icons/io";
 import Select from "react-select";
 
 type FormData = {
@@ -84,20 +83,19 @@ const EditTeamMemberForm: React.FC = () => {
             })),
           });
 
-          if( res.getUser.restaurants){
+          if (res.getUser.restaurants) {
             setUserRestaurants(
               res.getUser.restaurants.map((restaurant) => ({
                 id: restaurant.id,
                 name: restaurant.name,
                 status: restaurant.status,
-                city: restaurant.city ?? '',  
+                city: restaurant.city ?? "",
               })) || []
             );
-          }else{
-            setUserRestaurants([])
+          } else {
+            setUserRestaurants([]);
           }
-          
-          
+
           setAllRestaurants(
             allRestaurantsRes.userRestaurants.map((restaurant: any) => ({
               id: restaurant.id,
@@ -148,11 +146,11 @@ const EditTeamMemberForm: React.FC = () => {
         ...selectedRestaurants.map((restaurant) => ({
           id: restaurant.id,
           name: restaurant.name,
-          status: '', 
-          city: '',   
+          status: "",
+          city: "",
         })),
       ]);
-            setSelectedRestaurants([]);
+      setSelectedRestaurants([]);
       setShowAddRestaurantModal(false);
     } catch (error) {
       setToastData({
@@ -263,36 +261,6 @@ const EditTeamMemberForm: React.FC = () => {
             ))}
           </div>
         )}
-        <div className="mt-4">
-          <label className="block mb-2 text-sm font-medium text-left text-gray-700">
-            Restaurant Access
-          </label>{" "}
-          <div className="space-y-4">
-            {userRestaurants.map((restaurant) => (
-              <div
-                key={restaurant.id}
-                className="flex items-center justify-between p-4 border rounded-lg"
-              >
-                <div>
-                  <h4 className="text-lg font-semibold">{restaurant.name}</h4>
-                  <p className="text-sm">{`${restaurant.city}`}</p>
-                </div>
-                <IoIosCloseCircleOutline
-                  className="text-red-400 text-lg cursor-pointer"
-                  onClick={() => handleRemoveRestaurant(restaurant.id)}
-                />
-              </div>
-            ))}
-            <CButton
-              type="button"
-              className="w-full"
-              onClick={() => setShowAddRestaurantModal(true)}
-              variant={ButtonType.Outlined}
-            >
-              Add Restaurant Access
-            </CButton>
-          </div>
-        </div>
 
         <div className="flex justify-end mt-4">
           <CButton
