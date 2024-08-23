@@ -3,6 +3,7 @@ import { ButtonType } from "@/components/common/button/interface";
 import FullPageModal from "@/components/common/modal/fullPageModal";
 import { RestaurantCategory, RestaurantType } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
+import useRestaurantsStore from "@/store/restaurant";
 import useRestaurantEditStore from "@/store/useRestaurantEditStore";
 import { sdk } from "@/utils/graphqlClient";
 import {
@@ -57,6 +58,8 @@ const RestaurantBasicInformationEditForm: React.FC = () => {
     setPreviewUrl(brandingLogo);
   }, []);
 
+  const { setSelectedRestaurant } = useRestaurantsStore();
+
   const onSubmit = async (data: any) => {
     try {
       setBtnLoading(true);
@@ -90,6 +93,7 @@ const RestaurantBasicInformationEditForm: React.FC = () => {
             : undefined
         );
 
+        setSelectedRestaurant(data.restaurantName);
         setToastData({
           message: "Basic Restaurant Details Updated successfully",
           type: "success",
