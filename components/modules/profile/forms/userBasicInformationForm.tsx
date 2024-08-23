@@ -7,6 +7,7 @@ import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import React, { useEffect, useState } from "react";
 import { FaExclamationTriangle } from "react-icons/fa";
+import { MdOutlineEdit } from "react-icons/md";
 import { useBasicProfileStore } from "../store/basicProfileInformation";
 
 const UserBasicInformationForm: React.FC = () => {
@@ -72,8 +73,11 @@ const UserBasicInformationForm: React.FC = () => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg space-y-6 w-full border border-gray-300">
+    <div className="bg-white p-5 rounded-lg space-y-6 w-full ">
       <div className="space-y-4">
+        <div className="flex justify-between items-center mb-2 w-full">
+          <h2 className="text-xl font-semibold">User Information</h2>
+        </div>
         <div className="flex justify-between items-center border-b pb-4">
           <div>
             <h2 className="text-md font-semibold text-gray-900">First Name</h2>
@@ -81,15 +85,13 @@ const UserBasicInformationForm: React.FC = () => {
               {firstName ? firstName : "No first name"}
             </p>
           </div>
-          <button
-            className="text-primary hover:underline"
+          <MdOutlineEdit
+            className="text-primary text-2xl cursor-pointer"
             onClick={() => {
               setEditField("firstName");
               setIsModalOpen(true);
             }}
-          >
-            Edit
-          </button>
+          />
         </div>
         <div className="flex justify-between items-center border-b pb-4">
           <div>
@@ -98,15 +100,13 @@ const UserBasicInformationForm: React.FC = () => {
               {lastName ? lastName : "No last name"}
             </p>
           </div>
-          <button
-            className="text-primary hover:underline"
+          <MdOutlineEdit
+            className="text-primary text-2xl cursor-pointer"
             onClick={() => {
               setEditField("lastName");
               setIsModalOpen(true);
             }}
-          >
-            Edit
-          </button>
+          />
         </div>
         <div className="flex justify-between items-center border-b pb-4">
           <div>

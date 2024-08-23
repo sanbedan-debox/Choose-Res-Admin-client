@@ -127,41 +127,39 @@ const BusinessInformationForm: React.FC = () => {
   };
 
   return (
-    <div className="w-full flex flex-col items-start bg-white">
-      <div className="bg-white p-4 rounded-xl space-y-4 w-full ">
-        <div className="flex justify-between items-center bg-white p-4 rounded-xl w-full">
+    <div className="w-full flex rounded-lg flex-col items-start bg-white">
+      <div className="bg-white p-5 rounded-xl space-y-4 w-full ">
+        <div className="flex justify-between items-center bg-white mb-2 rounded-xl w-full">
           <h2 className="text-xl font-semibold">Business Information</h2>
           <MdOutlineEdit
             className="text-primary text-2xl cursor-pointer"
             onClick={handleOpenModal}
           />
         </div>
-        <div className="border rounded-lg p-4">
-          <div className="flex justify-between items-center border-b pb-3">
-            <p>
-              <strong>Business Name:</strong> {businessName}
-            </p>
-          </div>
-          <div className="flex justify-between items-center border-b py-3">
-            <p>
-              <strong>Business Type:</strong>{" "}
-              {formatBusinessTypeEnum(businessType as BusinessTypeEnum)}
-            </p>
-          </div>
-          <div className="flex justify-between items-center border-b py-3">
-            <p>
-              <strong>Staff Count:</strong>{" "}
-              {formatStaffCountEnum(employeeSize as StaffCountEnum)}
-            </p>
-          </div>
-          <div className="flex justify-between items-center py-3">
-            <p>
-              <strong>Estimated Revenue:</strong>{" "}
-              {formatEstimatedRevenueEnum(
-                estimatedRevenue as EstimatedRevenueEnum
-              )}
-            </p>
-          </div>
+        <div className="flex justify-between items-center border-b pb-3">
+          <p>
+            <strong>Business Name:</strong> {businessName}
+          </p>
+        </div>
+        <div className="flex justify-between items-center border-b py-3">
+          <p>
+            <strong>Business Type:</strong>{" "}
+            {formatBusinessTypeEnum(businessType as BusinessTypeEnum)}
+          </p>
+        </div>
+        <div className="flex justify-between items-center border-b py-3">
+          <p>
+            <strong>Staff Count:</strong>{" "}
+            {formatStaffCountEnum(employeeSize as StaffCountEnum)}
+          </p>
+        </div>
+        <div className="flex justify-between items-center py-3">
+          <p>
+            <strong>Estimated Revenue:</strong>{" "}
+            {formatEstimatedRevenueEnum(
+              estimatedRevenue as EstimatedRevenueEnum
+            )}
+          </p>
         </div>
       </div>
 

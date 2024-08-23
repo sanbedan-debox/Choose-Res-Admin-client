@@ -163,52 +163,50 @@ const UserLocationForm: React.FC = () => {
   };
 
   return (
-    <div className="z-10 flex flex-col w-full items-center  text-center bg-white">
-      <div className="flex justify-between w-full px-4 mt-2">
-        <p>Location Details</p>
-        <MdOutlineEdit
-          className="text-primary text-xl cursor-pointer"
-          onClick={() => setIsFullPageModalOpen(true)}
-        />
-      </div>
+    <div className="z-10 flex flex-col w-full items-center  text-center bg-white rounded-lg">
       <div className="bg-white p-4 rounded-xl space-y-4 w-full ">
-        <div className="border rounded-lg p-4">
-          <div className="flex justify-between items-center border-b pb-3">
-            <p>
-              <strong>Address Line 1:</strong> {addressLine1}
-            </p>
-          </div>
-          <div className="flex justify-between items-center border-b py-3">
-            <p>
-              <strong>Address Line 2:</strong> {addressLine2}
-            </p>
-          </div>
-          <div className="flex justify-between items-center border-b py-3">
-            <p>
-              <strong>City:</strong> {city}
-            </p>
-          </div>
-          <div className="flex justify-between items-center py-3 border-b ">
-            <p>
-              <strong>State:</strong> {state?.value}
-            </p>
-          </div>
-          <div className="flex justify-between items-center py-3 border-b ">
-            <p>
-              <strong>Zipcode:</strong> {zipcode}
-            </p>
-          </div>
-          <div className="flex justify-between items-center py-3 border-b ">
-            <p>
-              <strong>Location:</strong> {place?.displayName}
-            </p>
-          </div>
-          <div className="border mt-3 rounded-lg h-64  flex items-center justify-center">
-            <iframe
-              src={`https://maps.google.com/maps?q=${coords[0]}, ${coords[1]}&z=15&output=embed`}
-              className="w-full h-full"
-            ></iframe>
-          </div>
+        <div className="flex justify-between items-center bg-white mb-2 rounded-xl w-full">
+          <h2 className="text-xl font-semibold">Location Details</h2>
+          <MdOutlineEdit
+            className="text-primary text-2xl cursor-pointer"
+            onClick={() => setIsFullPageModalOpen(true)}
+          />
+        </div>
+        <div className="flex justify-between items-center border-b pb-3">
+          <p>
+            <strong>Address Line 1:</strong> {addressLine1}
+          </p>
+        </div>
+        <div className="flex justify-between items-center border-b py-3">
+          <p>
+            <strong>Address Line 2:</strong> {addressLine2}
+          </p>
+        </div>
+        <div className="flex justify-between items-center border-b py-3">
+          <p>
+            <strong>City:</strong> {city}
+          </p>
+        </div>
+        <div className="flex justify-between items-center py-3 border-b ">
+          <p>
+            <strong>State:</strong> {state?.value}
+          </p>
+        </div>
+        <div className="flex justify-between items-center py-3 border-b ">
+          <p>
+            <strong>Zipcode:</strong> {zipcode}
+          </p>
+        </div>
+        <div className="flex justify-between items-center py-3 border-b ">
+          <p>
+            <strong>Location:</strong> {place?.displayName}
+          </p>
+        </div>
+        <div className="border mt-3 rounded-lg h-64  flex items-center justify-center">
+          <iframe
+            src={`https://maps.google.com/maps?q=${coords[0]}, ${coords[1]}&z=15&output=embed`}
+            className="w-full h-full"
+          ></iframe>
         </div>
       </div>
       <FullPageModal

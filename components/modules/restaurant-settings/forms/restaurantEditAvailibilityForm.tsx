@@ -199,16 +199,18 @@ const RestaurantEditAvailabilityForm: React.FC = () => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg space-y-6 w-full border border-gray-300">
-      <div className="flex justify-between w-full px-4 mt-2">
-        <p>Location Details</p>
+    <div className="bg-white p-6 rounded-lg space-y-6 w-full ">
+      <div className="flex justify-between items-center ">
+        <h2 className="text-lg font-semibold text-gray-900">
+          Restaurant Basic Information
+        </h2>
         <MdOutlineEdit
-          className="text-primary text-xl cursor-pointer"
+          className="text-primary text-2xl cursor-pointer"
           onClick={() => setIsFullPageModalOpen(true)}
         />
       </div>
       <div className="space-y-4">
-        <div className="flex justify-between items-center border-b pb-4">
+        <div className="flex justify-between items-center ">
           <div>
             <h2 className="text-lg font-semibold text-gray-900">
               Address Line 1
@@ -219,7 +221,7 @@ const RestaurantEditAvailabilityForm: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex justify-between items-center border-b pb-4">
+        <div className="flex justify-between items-center border-t pt-4">
           <div>
             <h2 className="text-lg font-semibold text-gray-900">
               Address Line 2
@@ -230,7 +232,7 @@ const RestaurantEditAvailabilityForm: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex justify-between items-center border-b pb-4">
+        <div className="flex justify-between items-center border-t pt-4">
           <div>
             <h2 className="text-lg font-semibold text-gray-900">City</h2>
             <p className="text-sm text-gray-600">
@@ -239,7 +241,7 @@ const RestaurantEditAvailabilityForm: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex justify-between items-center border-b pb-4">
+        <div className="flex justify-between items-center border-t pt-4">
           <div>
             <h2 className="text-lg font-semibold text-gray-900">State</h2>
             <p className="text-sm text-gray-600">
@@ -248,7 +250,7 @@ const RestaurantEditAvailabilityForm: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex justify-between items-center border-b pb-4">
+        <div className="flex justify-between items-center border-t pt-4">
           <div>
             <h2 className="text-lg font-semibold text-gray-900">Zipcode</h2>
             <p className="text-sm text-gray-600">
@@ -257,7 +259,7 @@ const RestaurantEditAvailabilityForm: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex justify-between items-center border-b pb-4">
+        <div className="flex justify-between items-center border-t pt-4">
           <div>
             <h2 className="text-lg font-semibold text-gray-900">Place</h2>
             <p className="text-sm text-gray-600">
@@ -266,7 +268,7 @@ const RestaurantEditAvailabilityForm: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex justify-between border-b pb-4 items-center ">
+        <div className="flex justify-between border-t pt-4 items-center ">
           <div>
             <h2 className="text-lg font-semibold text-gray-900">Time Zone</h2>
             <p className="text-sm text-gray-600">
@@ -275,13 +277,13 @@ const RestaurantEditAvailabilityForm: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex justify-between items-center">
+        {/* <div className="flex justify-between items-center">
           <div>
             <h2 className="text-lg font-semibold text-gray-900">
               Availability Hours
             </h2>
           </div>
-        </div>
+        </div> */}
       </div>
 
       <FullPageModal

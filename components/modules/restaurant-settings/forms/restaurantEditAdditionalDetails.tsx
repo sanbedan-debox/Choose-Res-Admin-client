@@ -6,6 +6,7 @@ import useRestaurantEditStore from "@/store/useRestaurantEditStore";
 import { sdk } from "@/utils/graphqlClient";
 import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { MdOutlineEdit } from "react-icons/md";
 import Select from "react-select";
 
 interface IFormInput {
@@ -164,12 +165,10 @@ const RestaurantEditAdditionalDetails: React.FC = () => {
         <h2 className="text-lg font-semibold text-gray-900">
           Additional Restaurant Details
         </h2>
-        <button
+        <MdOutlineEdit
+          className="text-primary text-2xl cursor-pointer"
           onClick={() => setIsEditing(true)}
-          className="text-primary hover:underline"
-        >
-          Edit
-        </button>
+        />
       </div>
 
       <div className="space-y-4">

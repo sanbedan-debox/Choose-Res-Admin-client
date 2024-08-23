@@ -12,6 +12,7 @@ import {
 
 import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { MdOutlineEdit } from "react-icons/md";
 import Select from "react-select";
 
 const RestaurantBasicInformationEditForm: React.FC = () => {
@@ -154,10 +155,7 @@ const RestaurantBasicInformationEditForm: React.FC = () => {
   const handleLogoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     if (file) {
-      // Update state to store the selected file
       setLogoFile(file);
-
-      // Set the preview URL for the selected image
       const objectUrl = URL.createObjectURL(file);
       setPreviewUrl(objectUrl);
     }
@@ -176,21 +174,19 @@ const RestaurantBasicInformationEditForm: React.FC = () => {
   ) as { value: string; label: string }[];
 
   return (
-    <div className="bg-white p-6 rounded-lg space-y-6 w-full border border-gray-300">
-      <div className="flex justify-between items-center border-b pb-4">
+    <div className="bg-white p-5 rounded-lg  w-full ">
+      <div className="flex justify-between items-center ">
         <h2 className="text-lg font-semibold text-gray-900">
           Restaurant Basic Information
         </h2>
-        <button
+        <MdOutlineEdit
+          className="text-primary text-2xl cursor-pointer"
           onClick={() => setEditModalOpen(true)}
-          className="text-primary hover:underline"
-        >
-          Edit
-        </button>
+        />
       </div>
 
       <div className="space-y-4">
-        <div className="flex justify-between items-center border-b pb-4">
+        <div className="flex justify-between items-center pt-4">
           <div>
             <h3 className="text-md font-medium text-gray-700">
               Restaurant Name
@@ -201,7 +197,7 @@ const RestaurantBasicInformationEditForm: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex justify-between items-center border-b pb-4">
+        <div className="flex justify-between items-center border-t  pt-4">
           <div>
             <h3 className="text-md font-medium text-gray-700">
               Restaurant Logo
@@ -226,7 +222,7 @@ const RestaurantBasicInformationEditForm: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex justify-between items-center border-b pb-4">
+        <div className="flex justify-between items-center border-t  pt-4">
           <div>
             <h3 className="text-md font-medium text-gray-700">Website</h3>
             <p className="text-sm text-gray-600">
@@ -235,7 +231,7 @@ const RestaurantBasicInformationEditForm: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex justify-between items-center border-b pb-4">
+        <div className="flex justify-between items-center border-t  pt-4">
           <div>
             <h3 className="text-md font-medium text-gray-700">Type</h3>
             <p className="text-sm text-gray-600">
@@ -246,7 +242,7 @@ const RestaurantBasicInformationEditForm: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex justify-between items-center border-b pb-4">
+        <div className="flex justify-between items-center border-t  pt-4">
           <div>
             <h3 className="text-md font-medium text-gray-700">Category</h3>
             <p className="text-sm text-gray-600">
@@ -261,7 +257,7 @@ const RestaurantBasicInformationEditForm: React.FC = () => {
 
         {restaurantCategory.includes(RestaurantCategory.DineIn) ||
         restaurantCategory.includes(RestaurantCategory.PremiumDineIn) ? (
-          <div className="flex justify-between items-center border-b pb-4">
+          <div className="flex justify-between items-center border-t  pt-4">
             <div>
               <h3 className="text-md font-medium text-gray-700">
                 Dine-in Capacity

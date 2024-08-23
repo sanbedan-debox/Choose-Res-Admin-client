@@ -88,6 +88,9 @@ const IdentityVerificationForm: React.FC = () => {
   return (
     <div className="bg-white p-4 rounded-lg space-y-4 md:space-y-3 w-full">
       <div className="space-y-4">
+        <div className="flex justify-between items-center bg-white mb-2 rounded-xl w-full">
+          <h2 className="text-xl font-semibold">Security</h2>
+        </div>
         {/* <div className="border p-4 rounded-md bg-gray-50">
           <h3 className="text-md font-semibold text-gray-900">
             Personal POS Passcode for {selectedRestaurant}
