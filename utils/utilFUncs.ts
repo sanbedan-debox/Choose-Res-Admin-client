@@ -1,4 +1,3 @@
-// GET CLICKABLE WEBSITE FROM WEBSITE LINK
 
 export const formatWebsiteUrlClickable = (url: string) => {
     if (!url.match(/^https?:\/\//i)) {
@@ -82,3 +81,5 @@ export const hidePhoneNumber = (phone: string) => {
 export const hideEIN = (ein: string) => {
     return ein.replace(/\d{4}$/, '****');
 };
+
+

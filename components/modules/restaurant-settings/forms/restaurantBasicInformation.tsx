@@ -401,7 +401,7 @@ const RestaurantBasicInformationEditForm: React.FC = () => {
                           </svg>
                           <p className="mt-1 text-sm text-gray-500">
                             Drag and drop a logo or{" "}
-                            <span className="text-blue-600">browse file</span>
+                            <span className="text-primary">browse file</span>
                           </p>
                         </div>
                       </label>

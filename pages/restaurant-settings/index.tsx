@@ -61,7 +61,6 @@ const RestaurantSettings: NextPageWithLayout = () => {
     const fetchRestaurantDetails = async () => {
       try {
         const response = await sdk.restaurantDetails();
-
         if (response && response.restaurantDetails) {
           const repo = response.restaurantDetails;
           setbrandingLogo(repo?.brandingLogo as string);

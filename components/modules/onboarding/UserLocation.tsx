@@ -260,7 +260,6 @@ const UserLocation = () => {
                   }))}
                   getOptionLabel={(e) => e.value}
                   getOptionValue={(e) => e.id}
-                  className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
                   classNamePrefix="react-select"
                   placeholder="Select State"
                   value={state}

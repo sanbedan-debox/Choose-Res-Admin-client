@@ -1,0 +1,3 @@
+mutation validateCloverConnection($input: CloverConnectionInput!) {
+  validateCloverConnection(input: $input)
+}

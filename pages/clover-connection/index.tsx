@@ -1,5 +1,7 @@
 import BlockerLayout from "@/components/layouts/blockerLayout";
+import useAggregatorIntegrationStore from "@/store/aggregatorIntegration";
 import useGlobalStore from "@/store/global";
+import { sdk } from "@/utils/graphqlClient";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { FaSpinner } from "react-icons/fa";
@@ -9,63 +11,56 @@ const CloverConnectionVerify = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  const [merchantId, setMerchantId] = useState<string | null>(null);
-  const [employeeId, setEmployeeId] = useState<string | null>(null);
-  const [clientId, setClientId] = useState<string | null>(null);
-  const [code, setCode] = useState<string | null>(null);
   const router = useRouter();
+  const { isComingFromAggregatorPage, setIsComingFromAggregatorPage } =
+    useAggregatorIntegrationStore();
 
   useEffect(() => {
     const connectToClover = async () => {
       try {
         const merchant_id = router.query.merchant_id?.toString() ?? "";
-        const employee_id = router.query.employee_id?.toString() ?? "";
         const client_id = router.query.client_id?.toString() ?? "";
         const code = router.query.code?.toString() ?? "";
 
-        setMerchantId(merchant_id);
-        setEmployeeId(employee_id);
-        setClientId(client_id);
-        setCode(code);
-
-        if (merchant_id && employee_id && client_id && code) {
-          // Commented out API call to push Clover details
-          // const response = await sdk.pushClover({ merchant_id, employee_id, client_id, code });
-
-          // Simulate a 3-second timeout
-          await new Promise((resolve) => setTimeout(resolve, 3000));
-
-          // Commented out API call to get Clover account details
-          // const accountDetails = await sdk.getCloverAccountDetails();
-
-          setSuccess(true);
-          setToastData({
-            type: "success",
-            message: "Clover connection successful",
+        if (merchant_id && client_id) {
+          const response = await sdk.validateCloverConnection({
+            input: {
+              authCode: code,
+              merchantId: merchant_id,
+            },
           });
-          setTimeout(() => {
-            router.push("/menu");
-          }, 2000);
+
+          if (response.validateCloverConnection) {
+            setSuccess(true);
+            setToastData({
+              type: "success",
+              message: "Operation successful",
+            });
+            setTimeout(() => {
+              router.push(isComingFromAggregatorPage ? "/aggregator" : "/menu");
+            }, 2000);
+          } else {
+            throw new Error("Validation failed");
+          }
         } else {
-          setToastData({
-            type: "error",
-            message: "Missing query parameters",
-          });
-          setError("Missing query parameters");
+          throw new Error("Missing query parameters");
         }
-      } catch (error) {
-        console.error("Failed to connect to Clover:", error);
+      } catch (error: any) {
         setToastData({
           type: "error",
-          message: "An error occurred during the connection process",
+          message: "There was an error, please try again later",
         });
-        setError("An error occurred during the connection process.");
+        setError("There was an error, please try again later");
+        setTimeout(() => {
+          router.push(isComingFromAggregatorPage ? "/aggregator" : "/menu");
+        }, 3000);
       } finally {
         setLoading(false);
+        setIsComingFromAggregatorPage(false);
       }
     };
     connectToClover();
-  }, [router]);
+  }, [router, isComingFromAggregatorPage]);
 
   if (loading) {
     return (
@@ -80,20 +75,12 @@ const CloverConnectionVerify = () => {
       {error ? (
         <div className="text-center">
           <p className="text-red-500 mb-4">{error}</p>
-          <p>Merchant ID: {merchantId}</p>
-          <p>Employee ID: {employeeId}</p>
-          <p>Client ID: {clientId}</p>
-          <p>Code: {code}</p>
         </div>
       ) : success ? (
         <div className="text-center">
-          <p className="text-green-500 mb-4">Clover Connection Successful</p>
+          <p className="text-green-500 mb-4">Operation successful</p>
         </div>
-      ) : (
-        <div className="text-center">
-          <p className="text-gray-600">Redirecting...</p>
-        </div>
-      )}
+      ) : null}
     </div>
   );
 };

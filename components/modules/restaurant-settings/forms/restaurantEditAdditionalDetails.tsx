@@ -17,18 +17,18 @@ interface IFormInput {
   meatType?: MeatType;
 }
 
-const formatMeatType = (value: MeatType) => {
+const formatMeatType = (value: MeatType | undefined) => {
   switch (value) {
     case MeatType.Halal:
       return "Halal";
     case MeatType.NonHalal:
       return "Non-Halal";
     default:
-      return "";
+      return "Not specified";
   }
 };
 
-const formatFoodType = (value: FoodType) => {
+const formatFoodType = (value: FoodType | undefined) => {
   switch (value) {
     case FoodType.NonVegetarian:
       return "Non-Vegetarian";
@@ -37,18 +37,18 @@ const formatFoodType = (value: FoodType) => {
     case FoodType.Vegetarian:
       return "Vegetarian";
     default:
-      return "";
+      return "Not specified";
   }
 };
 
-const formatBeverageCategory = (value: BeverageCategory) => {
+const formatBeverageCategory = (value: BeverageCategory | undefined) => {
   switch (value) {
     case BeverageCategory.Alcohol:
       return "Alcohol";
     case BeverageCategory.NonAlcohol:
       return "Non-Alcohol";
     default:
-      return "";
+      return "Not specified";
   }
 };
 
@@ -200,9 +200,7 @@ const RestaurantEditAdditionalDetails: React.FC = () => {
           </h3>
           <p className="text-sm text-gray-600">
             {beverageCategory && beverageCategory.length > 0
-              ? beverageCategory
-                  .map((val) => formatBeverageCategory(val))
-                  .join(", ")
+              ? beverageCategory.map(formatBeverageCategory).join(", ")
               : "No beverage category specified"}
           </p>
         </div>
@@ -211,18 +209,14 @@ const RestaurantEditAdditionalDetails: React.FC = () => {
           <h3 className="text-sm font-medium text-gray-700">Food Type</h3>
           <p className="text-sm text-gray-600">
             {foodType && foodType.length > 0
-              ? foodType.map((val) => formatFoodType(val)).join(", ")
+              ? foodType.map(formatFoodType).join(", ")
               : "No food type specified"}
           </p>
         </div>
 
         <div>
           <h3 className="text-sm font-medium text-gray-700">Meat Type</h3>
-          <p className="text-sm text-gray-600">
-            {meatType
-              ? formatMeatType(meatType as MeatType)
-              : "No meat type specified"}
-          </p>
+          <p className="text-sm text-gray-600">{formatMeatType(meatType)}</p>
         </div>
       </div>
 

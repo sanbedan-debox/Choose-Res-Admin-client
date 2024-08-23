@@ -5,6 +5,10 @@ query userLogout {
   userLogout
 }
 
+query userLogoutFromEverywhere {
+  userLogoutFromEverywhere
+}
+
 # Query to generate OTP for login
 query userLogin($input: String!) {
   userLogin(input: $input)

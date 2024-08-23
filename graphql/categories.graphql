@@ -27,6 +27,7 @@ query getItemsForCategoryDropdown {
     name
     price
     image
+    status
   }
 }
 

@@ -299,6 +299,11 @@ export type CategoryInfo = {
   status: StatusEnum;
 };
 
+export type CloverConnectionInput = {
+  authCode: Scalars['String']['input'];
+  merchantId: Scalars['String']['input'];
+};
+
 export type Config = {
   __typename?: 'Config';
   _id: Scalars['ID']['output'];
@@ -493,20 +498,19 @@ export type Integration = {
   _id: Scalars['ID']['output'];
   connectionStatus: ConnectionStatusEnum;
   createdAt: Scalars['DateTimeISO']['output'];
-  credentials: IntegrationCredentials;
   platform: IntegrationPlatformEnum;
   restaurantId: Restaurant;
-  status: StatusEnum;
   updatedAt: Scalars['DateTimeISO']['output'];
   updatedBy?: Maybe<User>;
   user: User;
 };
 
-export type IntegrationCredentials = {
-  __typename?: 'IntegrationCredentials';
-  accessToke: Scalars['String']['output'];
-  refreshToken: Scalars['String']['output'];
-  storeId: Scalars['String']['output'];
+export type IntegrationInfo = {
+  __typename?: 'IntegrationInfo';
+  _id: Integration;
+  connectionStatus: ConnectionStatusEnum;
+  id: Scalars['String']['output'];
+  platform: IntegrationPlatformEnum;
 };
 
 /** Integration Platform enum type  */
@@ -750,6 +754,7 @@ export type Mutation = {
   updateSubuserRole: Scalars['Boolean']['output'];
   updateTaxRate: Scalars['Boolean']['output'];
   updateTimezoneStatus: Scalars['Boolean']['output'];
+  validateCloverConnection: Scalars['Boolean']['output'];
   verifyTeamEmail: Scalars['Boolean']['output'];
 };
 
@@ -1059,6 +1064,11 @@ export type MutationUpdateTimezoneStatusArgs = {
 };
 
 
+export type MutationValidateCloverConnectionArgs = {
+  input: CloverConnectionInput;
+};
+
+
 export type MutationVerifyTeamEmailArgs = {
   token: Scalars['String']['input'];
 };
@@ -1204,6 +1214,7 @@ export type Query = {
   getWaitListUsers: Array<WaitListUser>;
   me: Admin;
   meUser?: Maybe<User>;
+  pullCloverData: Scalars['Boolean']['output'];
   rejectUserDetails: Scalars['Boolean']['output'];
   restaurantDetails: Restaurant;
   restaurantOnboardingData: Restaurant;
@@ -1216,6 +1227,7 @@ export type Query = {
   userLogin: Scalars['String']['output'];
   userLoginVerification: Scalars['Boolean']['output'];
   userLogout: Scalars['Boolean']['output'];
+  userLogoutFromEverywhere: Scalars['Boolean']['output'];
   userRestaurants: Array<RestaurantInfo>;
   userRestaurantsPending: Array<RestaurantInfo>;
   userSignup: Scalars['String']['output'];
@@ -1426,7 +1438,7 @@ export type Restaurant = {
   createdAt: Scalars['DateTimeISO']['output'];
   dineInCapacity?: Maybe<Scalars['Float']['output']>;
   foodType?: Maybe<Array<FoodType>>;
-  integrations?: Maybe<Array<Integration>>;
+  integrations: Array<IntegrationInfo>;
   meatType?: Maybe<MeatType>;
   menus?: Maybe<Array<MenuInfo>>;
   name: Scalars['String']['output'];
@@ -1863,10 +1875,22 @@ export type WaitListUser = {
   website: Scalars['String']['output'];
 };
 
+export type ValidateCloverConnectionMutationVariables = Exact<{
+  input: CloverConnectionInput;
+}>;
+
+
+export type ValidateCloverConnectionMutation = { __typename?: 'Mutation', validateCloverConnection: boolean };
+
 export type UserLogoutQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type UserLogoutQuery = { __typename?: 'Query', userLogout: boolean };
+
+export type UserLogoutFromEverywhereQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type UserLogoutFromEverywhereQuery = { __typename?: 'Query', userLogoutFromEverywhere: boolean };
 
 export type UserLoginQueryVariables = Exact<{
   input: Scalars['String']['input'];
@@ -1941,7 +1965,7 @@ export type GetCategoriesQuery = { __typename?: 'Query', getCategories: Array<{ 
 export type GetItemsForCategoryDropdownQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetItemsForCategoryDropdownQuery = { __typename?: 'Query', getItems: Array<{ __typename?: 'Item', _id: string, name: string, price: number, image?: string | null }> };
+export type GetItemsForCategoryDropdownQuery = { __typename?: 'Query', getItems: Array<{ __typename?: 'Item', _id: string, name: string, price: number, image?: string | null, status: StatusEnum }> };
 
 export type AddCategoryMutationVariables = Exact<{
   input: AddCategoryInput;
@@ -2391,6 +2415,30 @@ export type UpdateBusinessDetailsMutationVariables = Exact<{
 
 export type UpdateBusinessDetailsMutation = { __typename?: 'Mutation', updateBusinessDetails: boolean };
 
+export type MeUserforProfileQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MeUserforProfileQuery = { __typename?: 'Query', meUser?: { __typename?: 'User', enable2FA: boolean, _id: string, firstName: string, lastName: string, status: UserStatus, email: string, phone: string } | null };
+
+export type Enable2FaQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type Enable2FaQuery = { __typename?: 'Query', enable2FA: string };
+
+export type Disable2FQueryVariables = Exact<{
+  authCode: Scalars['String']['input'];
+}>;
+
+
+export type Disable2FQuery = { __typename?: 'Query', disable2FA: boolean };
+
+export type Verify2FaSetupQueryVariables = Exact<{
+  authCode: Scalars['String']['input'];
+}>;
+
+
+export type Verify2FaSetupQuery = { __typename?: 'Query', verify2FASetup: boolean };
+
 export const AddressInfoFragmentDoc = gql`
     fragment addressInfo on AddressInfo {
   addressLine1
@@ -2410,9 +2458,19 @@ export const AddressInfoFragmentDoc = gql`
   }
 }
     `;
+export const ValidateCloverConnectionDocument = gql`
+    mutation validateCloverConnection($input: CloverConnectionInput!) {
+  validateCloverConnection(input: $input)
+}
+    `;
 export const UserLogoutDocument = gql`
     query userLogout {
   userLogout
+}
+    `;
+export const UserLogoutFromEverywhereDocument = gql`
+    query userLogoutFromEverywhere {
+  userLogoutFromEverywhere
 }
     `;
 export const UserLoginDocument = gql`
@@ -2535,6 +2593,7 @@ export const GetItemsForCategoryDropdownDocument = gql`
     name
     price
     image
+    status
   }
 }
     `;
@@ -3203,6 +3262,34 @@ export const UpdateBusinessDetailsDocument = gql`
   updateBusinessDetails(input: $input)
 }
     `;
+export const MeUserforProfileDocument = gql`
+    query MeUserforProfile {
+  meUser {
+    enable2FA
+    _id
+    firstName
+    lastName
+    status
+    email
+    phone
+  }
+}
+    `;
+export const Enable2FaDocument = gql`
+    query enable2FA {
+  enable2FA
+}
+    `;
+export const Disable2FDocument = gql`
+    query disable2F($authCode: String!) {
+  disable2FA(authCode: $authCode)
+}
+    `;
+export const Verify2FaSetupDocument = gql`
+    query verify2FASetup($authCode: String!) {
+  verify2FASetup(authCode: $authCode)
+}
+    `;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string, variables?: any) => Promise<T>;
 
@@ -3211,8 +3298,14 @@ const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationTy
 
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
+    validateCloverConnection(variables: ValidateCloverConnectionMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<ValidateCloverConnectionMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<ValidateCloverConnectionMutation>(ValidateCloverConnectionDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'validateCloverConnection', 'mutation', variables);
+    },
     userLogout(variables?: UserLogoutQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UserLogoutQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<UserLogoutQuery>(UserLogoutDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'userLogout', 'query', variables);
+    },
+    userLogoutFromEverywhere(variables?: UserLogoutFromEverywhereQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UserLogoutFromEverywhereQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<UserLogoutFromEverywhereQuery>(UserLogoutFromEverywhereDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'userLogoutFromEverywhere', 'query', variables);
     },
     userLogin(variables: UserLoginQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UserLoginQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<UserLoginQuery>(UserLoginDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'userLogin', 'query', variables);
@@ -3456,6 +3549,18 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     updateBusinessDetails(variables: UpdateBusinessDetailsMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UpdateBusinessDetailsMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<UpdateBusinessDetailsMutation>(UpdateBusinessDetailsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'updateBusinessDetails', 'mutation', variables);
+    },
+    MeUserforProfile(variables?: MeUserforProfileQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<MeUserforProfileQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<MeUserforProfileQuery>(MeUserforProfileDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'MeUserforProfile', 'query', variables);
+    },
+    enable2FA(variables?: Enable2FaQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<Enable2FaQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<Enable2FaQuery>(Enable2FaDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'enable2FA', 'query', variables);
+    },
+    disable2F(variables: Disable2FQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<Disable2FQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<Disable2FQuery>(Disable2FDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'disable2F', 'query', variables);
+    },
+    verify2FASetup(variables: Verify2FaSetupQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<Verify2FaSetupQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<Verify2FaSetupQuery>(Verify2FaSetupDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'verify2FASetup', 'query', variables);
     }
   };
 }

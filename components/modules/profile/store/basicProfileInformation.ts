@@ -6,6 +6,7 @@ interface BasicProfileInformation {
     firstName: string;
     lastName: string;
     phone: string;
+    twoFactorAuth: boolean;
     setProfileData: (data: Partial<BasicProfileInformation>) => void;
 }
 
@@ -15,5 +16,6 @@ export const useBasicProfileStore = create<BasicProfileInformation>((set) => ({
     firstName: "",
     lastName: "",
     phone: "",
+    twoFactorAuth: false,
     setProfileData: (data) => set((state) => ({ ...state, ...data })),
 }));

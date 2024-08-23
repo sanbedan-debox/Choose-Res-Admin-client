@@ -40,6 +40,7 @@ interface ItemsDropDownType {
   name: string;
   price: number;
   image: string;
+  status: StatusEnum;
 }
 
 const AddCategoryForm = () => {
@@ -180,6 +181,7 @@ const AddCategoryForm = () => {
             name: el?.name ?? "",
             price: el?.price ?? "",
             image: el?.image ?? "",
+            status: el?.status,
           }));
           setValue("status", status === StatusEnum.Active ? true : false);
           setVisibilities(visibility);
@@ -335,11 +337,13 @@ const AddCategoryForm = () => {
               name: string;
               price: number;
               image?: string | null;
+              status?: StatusEnum;
             }) => ({
               _id: item._id ?? "",
               name: item?.name ?? "",
               price: item?.price ?? 0,
               image: item?.image ?? "",
+              status: item.status ?? StatusEnum.Inactive,
             })
           );
           const filteredItemsList = formattedItemsList.filter(
@@ -387,12 +391,28 @@ const AddCategoryForm = () => {
         setShowConfirmationModal(true);
       }
     } else {
-      setValue("status", !watch("status"));
-      const updatedVisibilities = visibilities.map((vib) => ({
-        menuType: vib.menuType,
-        status: StatusEnum.Inactive,
-      }));
-      setVisibilities(updatedVisibilities);
+      const isAnyItemActive = selectedItems.some(
+        (item) => item.status === StatusEnum.Active
+      );
+      console.log(
+        selectedItems,
+        "Selected Items and isAnyItemActive:",
+        isAnyItemActive
+      );
+      if (isAnyItemActive) {
+        setValue("status", !watch("status"));
+        const updatedVisibilities = visibilities.map((vib) => ({
+          menuType: vib.menuType,
+          status: StatusEnum.Inactive,
+        }));
+        setVisibilities(updatedVisibilities);
+      } else {
+        setToastData({
+          message:
+            "You must have atleast one active item to make this category active",
+          type: "error",
+        });
+      }
     }
   };
 
@@ -423,8 +443,6 @@ const AddCategoryForm = () => {
     setValue("status", !watch("status"));
     setShowConfirmationModal(false);
   };
-
-  // SSSSSSSSSSSSSSSSSSSSSSSSSSSSTTTTTTTTTTTTTTTTTTTTAAAAAAAAAAAA
 
   const renderActions = (rowData: ItemsDropDownType) => (
     <div className="flex space-x-2 justify-center items-center">

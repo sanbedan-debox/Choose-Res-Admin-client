@@ -52,17 +52,21 @@ const Profile: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setSelectedMenu("");
+
     const fetchRestaurantDetails = async () => {
       try {
-        const response = await sdk.MeUser();
+        const response = await sdk.MeUserforProfile();
         if (response && response.meUser) {
-          const { _id, email, firstName, lastName, phone } = response.meUser;
+          const { _id, email, firstName, lastName, phone, enable2FA } =
+            response.meUser;
           useBasicProfileStore.getState().setProfileData({
-            _id: _id || "",
-            email: email || "",
-            firstName: firstName || "",
-            lastName: lastName || "",
-            phone: phone || "",
+            _id: _id ?? "",
+            email: email ?? "",
+            firstName: firstName ?? "",
+            lastName: lastName ?? "",
+            phone: phone ?? "",
+            twoFactorAuth: enable2FA ?? false,
           });
         }
         setLoading(false);

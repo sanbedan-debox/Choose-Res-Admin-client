@@ -241,6 +241,10 @@ const AddModifierGroupForm = () => {
           setRemovingId(rowData?._id);
         }}
       />
+      <MdArrowOutward
+        className="text-primary  cursor-pointer"
+        onClick={() => handleEditItem(rowData?._id)}
+      />
     </div>
   );
   const data = selectedItems.map((item) => ({

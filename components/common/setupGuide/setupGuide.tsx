@@ -103,7 +103,7 @@
 
 //       <div className="relative w-full bg-gray-200 h-2 mb-4">
 //         <div
-//           className="absolute bg-blue-600 h-full"
+//           className="absolute bg-primary h-full"
 //           style={{ width: "7%" }}
 //         ></div>
 //       </div>
