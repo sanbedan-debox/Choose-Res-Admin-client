@@ -47,7 +47,7 @@ const Menu: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
             href={`https://sandbox.dev.clover.com/oauth/v2/authorize?client_id=${
               process.env.NEXT_PUBLIC_CLOVER_APP_ID
             }&redirect_uri=${encodeURIComponent(
-              `${process.env.NEXT_PUBLIC_APP_URL}/clover-connection?redirectUri=false`
+              `${process.env.NEXT_PUBLIC_DOMAIN}/clover-connection?redirectUri=false`
             )}`}
           />
           <ArrowCard

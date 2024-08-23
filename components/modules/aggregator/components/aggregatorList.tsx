@@ -15,9 +15,9 @@ const AggregatorList: React.FC = () => {
       isConnected: false,
       handleConnect: () => {
         const redirectUri = encodeURIComponent(
-          `${process.env.NEXT_PUBLIC_APP_URL}/clover-connection?fromAggregator=true`
+          `${process.env.NEXT_PUBLIC_DOMAIN}/clover-connection?fromAggregator=true`
         );
-        window.location.href = `${process.env.NEXT_PUBLIC_CLOVER_CONNECT_URL}/oauth/v2/authorize?client_id=${process.env.NEXT_PUBLIC_CLOVER_APP_ID}&redirect_uri=${redirectUri}`;
+        window.location.href = `${process.env.NEXT_PUBLIC_CLOVER_BASE_URL}/oauth/v2/authorize?client_id=${process.env.NEXT_PUBLIC_CLOVER_APP_ID}&redirect_uri=${redirectUri}`;
       },
     },
     {
@@ -27,7 +27,7 @@ const AggregatorList: React.FC = () => {
       isConnected: false,
       handleConnect: () => {
         const redirectUri = encodeURIComponent(
-          `${process.env.NEXT_PUBLIC_APP_URL}/ubereats-connection?fromAggregator=true`
+          `${process.env.NEXT_PUBLIC_DOMAIN}/ubereats-connection?fromAggregator=true`
         );
         window.location.href = `${process.env.NEXT_PUBLIC_UBEREATS_CONNECT_URL}/oauth/v2/authorize?client_id=${process.env.NEXT_PUBLIC_UBEREATS_APP_ID}&redirect_uri=${redirectUri}`;
       },
