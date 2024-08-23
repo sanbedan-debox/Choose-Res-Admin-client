@@ -1183,6 +1183,7 @@ export type Query = {
   getAllCuisines: Array<Cuisine>;
   getAllEmailCampaigns: Array<EmailCampaignsObject>;
   getAllEmailTemplates: Array<EmailTemplatesObject>;
+  getAllIntegrations: Array<Integration>;
   getAllItemOptions: Array<ItemOption>;
   getAllMenus: Array<Menu>;
   getAllPermissions: Array<Permission>;
@@ -1882,6 +1883,11 @@ export type ValidateCloverConnectionMutationVariables = Exact<{
 
 export type ValidateCloverConnectionMutation = { __typename?: 'Mutation', validateCloverConnection: boolean };
 
+export type GetAllIntegrationsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllIntegrationsQuery = { __typename?: 'Query', getAllIntegrations: Array<{ __typename?: 'Integration', platform: IntegrationPlatformEnum, connectionStatus: ConnectionStatusEnum, _id: string }> };
+
 export type UserLogoutQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -2461,6 +2467,15 @@ export const AddressInfoFragmentDoc = gql`
 export const ValidateCloverConnectionDocument = gql`
     mutation validateCloverConnection($input: CloverConnectionInput!) {
   validateCloverConnection(input: $input)
+}
+    `;
+export const GetAllIntegrationsDocument = gql`
+    query getAllIntegrations {
+  getAllIntegrations {
+    platform
+    connectionStatus
+    _id
+  }
 }
     `;
 export const UserLogoutDocument = gql`
@@ -3300,6 +3315,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
   return {
     validateCloverConnection(variables: ValidateCloverConnectionMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<ValidateCloverConnectionMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<ValidateCloverConnectionMutation>(ValidateCloverConnectionDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'validateCloverConnection', 'mutation', variables);
+    },
+    getAllIntegrations(variables?: GetAllIntegrationsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetAllIntegrationsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetAllIntegrationsQuery>(GetAllIntegrationsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getAllIntegrations', 'query', variables);
     },
     userLogout(variables?: UserLogoutQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UserLogoutQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<UserLogoutQuery>(UserLogoutDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'userLogout', 'query', variables);

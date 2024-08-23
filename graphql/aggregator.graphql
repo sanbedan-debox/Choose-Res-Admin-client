@@ -1,3 +1,11 @@
 mutation validateCloverConnection($input: CloverConnectionInput!) {
   validateCloverConnection(input: $input)
 }
+
+query getAllIntegrations {
+  getAllIntegrations {
+    platform
+    connectionStatus
+    _id
+  }
+}
