@@ -7,6 +7,7 @@ import { decryptData } from "@/utils/crypto";
 import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import { useRouter } from "next/router";
+import QRCode from "qrcode.react";
 import React, { useState } from "react";
 import { useBasicProfileStore } from "../store/basicProfileInformation";
 
@@ -21,6 +22,9 @@ const IdentityVerificationForm: React.FC = () => {
 
   const [isShowtfaQR, setIsShowtfaQR] = useState(false);
   const [qrCode, setQrCode] = useState<string | null>(null);
+
+  const [authCode, setAuthCode] = useState("");
+  const [isAuthCodeModalOpen, setIsAuthCodeModalOpen] = useState(false);
 
   const handleSignOutEverywhere = async () => {
     try {
@@ -63,12 +67,10 @@ const IdentityVerificationForm: React.FC = () => {
       setIsEnabling2fa(false);
     }
   };
-  const handleDisable2fa = async () => {
+  const handleDisable2faSubmit = async () => {
     setIsDisabling2fa(true);
     try {
-      const response = await sdk.disable2F({
-        authCode: "faef",
-      });
+      const response = await sdk.disable2F({ authCode });
       if (response && response.disable2FA) {
         setToastData({
           message: "Two-factor authentication disabled successfully",
@@ -82,7 +84,11 @@ const IdentityVerificationForm: React.FC = () => {
       });
     } finally {
       setIsDisabling2fa(false);
+      setIsAuthCodeModalOpen(false);
     }
+  };
+  const handleDisable2fa = () => {
+    setIsAuthCodeModalOpen(true);
   };
 
   return (
@@ -247,10 +253,42 @@ const IdentityVerificationForm: React.FC = () => {
           <p className="mb-4 text-md text-gray-600">
             Open your authenticator app and scan the QR code below.
           </p>
-          {qrCode && (
-            <img src={`data:image/png;base64,${qrCode}`} alt="QR Code" />
-          )}{" "}
-          {/* Render QR code */}
+          {qrCode && <QRCode value={qrCode} size={256} />}
+        </div>
+      </ReusableModal>
+      <ReusableModal
+        isOpen={isAuthCodeModalOpen}
+        onClose={() => setIsAuthCodeModalOpen(false)}
+        title="Disable Two-Factor Authentication"
+        width="sm"
+      >
+        <div className="space-y-3">
+          <div>
+            <label className="block text-gray-700">Security Code</label>
+            <input
+              type="text"
+              placeholder="Please Enter Security Code"
+              value={authCode}
+              onChange={(e) => setAuthCode(e.target.value)}
+              className="w-full border p-2 rounded-md"
+            />
+          </div>
+          <div className="text-red-500 text-sm">
+            <p>Warning: Disabling 2FA will reduce your account security.</p>
+            <p>
+              Please ensure you want to proceed before submitting the auth code.
+            </p>
+          </div>
+          <div className="flex justify-end space-x-2 mt-4">
+            <CButton
+              variant={ButtonType.Primary}
+              type="button"
+              onClick={handleDisable2faSubmit}
+              disabled={isDisabling2fa}
+            >
+              Submit
+            </CButton>
+          </div>
         </div>
       </ReusableModal>
     </div>

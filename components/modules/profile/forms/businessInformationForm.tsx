@@ -172,7 +172,7 @@ const BusinessInformationForm: React.FC = () => {
           onClose={handleCloseModal}
           title="Edit Business Information"
         >
-          <div className="space-y-4 w-full max-w-2xl max-h-[80vh] overflow-y-auto">
+          <div className="space-y-4 w-full max-w-2xl max-h-[80vh] mx-auto overflow-y-auto">
             <div className="col-span-2">
               <label
                 htmlFor="employees"
@@ -241,17 +241,17 @@ const BusinessInformationForm: React.FC = () => {
                 placeholder="Select estimated Revenue"
               />
             </div>
-          </div>
-          <div className="flex justify-end mt-4">
-            <CButton
-              type="submit"
-              loading={btnLoading}
-              className="w-full"
-              variant={ButtonType.Primary}
-              onClick={updateBusinessInfo}
-            >
-              Update
-            </CButton>
+            <div className="flex justify-end mt-4">
+              <CButton
+                type="submit"
+                loading={btnLoading}
+                className="w-full"
+                variant={ButtonType.Primary}
+                onClick={updateBusinessInfo}
+              >
+                Update
+              </CButton>
+            </div>
           </div>
         </FullPageModal>
       )}

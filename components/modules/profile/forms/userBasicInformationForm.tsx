@@ -1,6 +1,7 @@
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import FullPageModal from "@/components/common/modal/fullPageModal";
+import useAuthStore from "@/store/auth";
 import useGlobalStore from "@/store/global";
 import useProfileStore from "@/store/profile";
 import { sdk } from "@/utils/graphqlClient";
@@ -39,6 +40,7 @@ const UserBasicInformationForm: React.FC = () => {
     setFormState((prev) => ({ ...prev, [field]: value }));
   };
   const { setToastData } = useGlobalStore();
+  const { setFirstName } = useAuthStore();
 
   const updateUserDetails = async () => {
     try {
@@ -55,6 +57,7 @@ const UserBasicInformationForm: React.FC = () => {
           firstName: formState.firstName,
           lastName: formState.lastName,
         });
+        setFirstName(formState.firstName);
 
         setIsModalOpen(false);
         // Optionally show a success message
