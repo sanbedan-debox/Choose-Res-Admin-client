@@ -26,14 +26,12 @@ type UserRepo = {
 const Menu: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
   const { setSelectedMenu } = useGlobalStore();
 
-  // const [isShowCSVuploadModal, setIsShowCSVuploadModal] = useState(false);
   const { isShowUploadCSV, setisShowUploadCSV } = useMenuPageStore();
 
   useEffect(() => {
     setSelectedMenu("dashboard");
   }, [setSelectedMenu]);
 
-  const redirectURI = "menu/";
   return (
     <div className="w-full flex space-x-5">
       <div className="w-3/4 overflow-y-scroll scrollbar-hide">
@@ -49,7 +47,7 @@ const Menu: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
             href={`https://sandbox.dev.clover.com/oauth/v2/authorize?client_id=${
               process.env.NEXT_PUBLIC_CLOVER_APP_ID
             }&redirect_uri=${encodeURIComponent(
-              "http://localhost:3000/clover-connection"
+              `${process.env.NEXT_PUBLIC_APP_URL}/clover-connection?redirectUri=false`
             )}`}
           />
           <ArrowCard
