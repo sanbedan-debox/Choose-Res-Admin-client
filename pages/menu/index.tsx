@@ -3,11 +3,11 @@ import ReusableModal from "@/components/common/modal/modal";
 import QuickActions from "@/components/common/quickLinks/quickLink";
 import MainLayout from "@/components/layouts/mainBodyLayout";
 import CsvUploadForm from "@/components/modules/menu/forms/csvUploadForm";
-import { PermissionTypeEnum } from "@/generated/graphql";
+import { PermissionTypeEnum, UserStatus } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
 import { sdk } from "@/utils/graphqlClient";
 import { hasAccess } from "@/utils/hasAccess";
-import { redirectForStatus } from "@/utils/redirectForStatus";
+import { redirectPathFromStatus } from "@/utils/redirectPathFromStatus";
 import { GetServerSideProps } from "next";
 import { useEffect } from "react";
 import useMenuPageStore from "../../store/menuStore";
@@ -114,22 +114,20 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           },
         };
       }
-      const redirectResult = redirectForStatus(status);
-
-      if (redirectResult) {
-        return redirectResult;
-      }
-
-      return {
-        props: {
-          repo: {
-            _id,
-
-            firstName,
-            status,
+      if (status === UserStatus.Active) {
+        return {
+          props: {
+            repo: {
+              _id,
+              firstName,
+              status,
+            },
           },
-        },
-      };
+        };
+      }
+      const redirectResult = redirectPathFromStatus(status);
+
+      return redirectResult;
     } else {
       return {
         redirect: {

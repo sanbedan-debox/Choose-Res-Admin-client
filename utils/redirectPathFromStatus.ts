@@ -1,7 +1,7 @@
 import { UserStatus } from '@/generated/graphql';
 import { GetServerSidePropsResult } from 'next';
 
-export const redirectForStatus = (status: UserStatus): GetServerSidePropsResult<any> | undefined => {
+export const redirectPathFromStatus = (status: UserStatus): GetServerSidePropsResult<any> => {
     switch (status) {
         case UserStatus.Blocked:
             return {
@@ -31,6 +31,29 @@ export const redirectForStatus = (status: UserStatus): GetServerSidePropsResult<
                     permanent: false,
                 },
             };
+        case UserStatus.InternalVerificationPending:
+            return {
+                redirect: {
+                    destination: '/account/verification-pending',
+                    permanent: false,
+                },
+            };
+
+        case UserStatus.Active:
+            return {
+                redirect: {
+                    destination: '/',
+                    permanent: false
+                }
+            }
+
+        default: return {
+            redirect: {
+                destination: '/login',
+                permanent: false
+            }
+        }
+
 
     }
 };

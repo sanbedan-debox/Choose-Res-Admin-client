@@ -13,7 +13,7 @@ import Menu from "@/components/modules/menu/menu";
 import ModifiersGroup from "@/components/modules/menu/modifierGroups";
 import Modifiers from "@/components/modules/menu/modifiers";
 import SubCategories from "@/components/modules/menu/subCategories";
-import { PermissionTypeEnum } from "@/generated/graphql";
+import { PermissionTypeEnum, UserStatus } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
 import useMenuCategoryStore from "@/store/menuCategory";
 import useMenuItemsStore from "@/store/menuItems";
@@ -24,7 +24,7 @@ import useModStore from "@/store/modifiers";
 import useSubCategoryStore from "@/store/subCategoryStore";
 import { sdk } from "@/utils/graphqlClient";
 import { hasAccess } from "@/utils/hasAccess";
-import { redirectForStatus } from "@/utils/redirectForStatus";
+import { redirectPathFromStatus } from "@/utils/redirectPathFromStatus";
 
 import { GetServerSideProps } from "next";
 import { useEffect } from "react";
@@ -295,23 +295,23 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           },
         };
       }
-      const redirectResult = redirectForStatus(status);
 
-      if (redirectResult) {
-        return redirectResult;
-      }
+      if (status === UserStatus.Active) {
+        return {
+          props: {
+            repo: {
+              pagePath: context.query["menuRoute"]?.toString() ?? "",
+              _id,
 
-      return {
-        props: {
-          repo: {
-            pagePath: context.query["menuRoute"]?.toString() ?? "",
-            _id,
-
-            firstName,
-            status,
+              firstName,
+              status,
+            },
           },
-        },
-      };
+        };
+      }
+      const redirectResult = redirectPathFromStatus(status);
+
+      return redirectResult;
     } else {
       return {
         redirect: {

@@ -25,7 +25,7 @@ const algorithm = "aes-256-gcm";
 // };
 
 export const decryptData = (encryptedValue: string): string => {
-    const key = process.env.ENCRYPTION_KEY ?? "";
+    const key = process.env.NEXT_PUBLIC_ENCRYPTION_KEY ?? "";
 
     // Split the encrypted data into its components
     const [ivHex, authTagHex, encryptedText] = encryptedValue.split("$$");

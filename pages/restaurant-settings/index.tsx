@@ -12,12 +12,13 @@ import {
   PermissionTypeEnum,
   RestaurantCategory,
   RestaurantType,
+  UserStatus,
 } from "@/generated/graphql";
 import useUserStore from "@/store/user";
 import useRestaurantEditStore from "@/store/useRestaurantEditStore";
 import { sdk } from "@/utils/graphqlClient";
 import { hasAccess } from "@/utils/hasAccess";
-import { redirectForStatus } from "@/utils/redirectForStatus";
+import { redirectPathFromStatus } from "@/utils/redirectPathFromStatus";
 import { GetServerSideProps } from "next"; // Importing GetServerSideProps type
 import React, { useEffect, useState } from "react";
 
@@ -177,11 +178,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
     if (response && response.meUser) {
       const { status, permissions } = response.meUser;
-      const redirectResult = redirectForStatus(status);
 
-      if (redirectResult) {
-        return redirectResult;
-      }
       const canAccessMenu = hasAccess(
         permissions,
         PermissionTypeEnum.UpdateRestaurant
@@ -194,11 +191,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           },
         };
       }
-      return {
-        props: {
-          repo: {},
-        },
-      };
+      if (status === UserStatus.Active) {
+        return {
+          props: {
+            repo: {},
+          },
+        };
+      }
+      const redirectResult = redirectPathFromStatus(status);
+
+      return redirectResult;
     } else {
       return {
         redirect: {

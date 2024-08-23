@@ -12,7 +12,7 @@ import useGlobalStore from "@/store/global";
 import useUserManagementStore from "@/store/userManagement";
 import { sdk } from "@/utils/graphqlClient";
 import { hasAccess } from "@/utils/hasAccess";
-import { redirectForStatus } from "@/utils/redirectForStatus";
+import { redirectPathFromStatus } from "@/utils/redirectPathFromStatus";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import { GetServerSideProps } from "next";
 import React, { useEffect, useState } from "react";
@@ -371,12 +371,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     if (response && response.meUser) {
       const { _id, status, permissions } = response.meUser;
 
-      const redirectResult = redirectForStatus(status);
-
-      if (redirectResult) {
-        return redirectResult;
-      }
-
       const canAccessMenu = hasAccess(
         permissions,
         PermissionTypeEnum.UserManagement
@@ -389,15 +383,19 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           },
         };
       }
-
-      return {
-        props: {
-          repo: {
-            _id,
-            status,
+      if (status === UserStatus.Active) {
+        return {
+          props: {
+            repo: {
+              _id,
+              status,
+            },
           },
-        },
-      };
+        };
+      }
+      const redirectResult = redirectPathFromStatus(status);
+
+      return redirectResult;
     } else {
       return {
         redirect: {

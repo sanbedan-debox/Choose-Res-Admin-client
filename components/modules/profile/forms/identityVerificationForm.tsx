@@ -3,7 +3,7 @@ import { ButtonType } from "@/components/common/button/interface";
 import ReusableModal from "@/components/common/modal/modal";
 import useGlobalStore from "@/store/global";
 import useRestaurantsStore from "@/store/restaurant";
-import { decryptData } from "@/utils/crypto";
+import { decryptData } from "@/utils/crypt";
 import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import { useRouter } from "next/router";

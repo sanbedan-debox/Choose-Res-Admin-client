@@ -1,6 +1,7 @@
 import BlockerLayout from "@/components/layouts/blockerLayout";
+import { UserStatus } from "@/generated/graphql";
 import { sdk } from "@/utils/graphqlClient";
-import { redirectForStatus } from "@/utils/redirectForStatus";
+import { redirectPathFromStatus } from "@/utils/redirectPathFromStatus";
 import { GetServerSideProps } from "next";
 import React from "react";
 
@@ -51,19 +52,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     if (response && response.meUser) {
       const { status } = response.meUser;
 
-      const redirectResult = redirectForStatus(status);
-
-      if (redirectResult) {
-        return redirectResult;
-      }
-
-      return {
-        props: {
-          repo: {
-            status,
+      if (status === UserStatus.Blocked) {
+        return {
+          props: {
+            repo: {
+              status,
+            },
           },
-        },
-      };
+        };
+      }
+      const redirectResult = redirectPathFromStatus(status);
+
+      return redirectResult;
     } else {
       return {
         redirect: {

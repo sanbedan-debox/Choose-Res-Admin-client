@@ -9,18 +9,21 @@ interface AggregatorWithConnect extends Aggregator {
 
 const AggregatorList: React.FC = () => {
   const { setIsComingFromAggregatorPage } = useAggregatorIntegrationStore();
+
   const initialAggregators: AggregatorWithConnect[] = [
     {
       id: "1",
       name: "Clover",
       imageUrl: "/assets/integrators/clover.png",
       isConnected: false,
-      handleConnect: function () {
+      handleConnect: () => {
         setIsComingFromAggregatorPage(true);
-        window.location.href = `https://sandbox.dev.clover.com/oauth/v2/authorize?client_id=${
+        window.location.href = `${
+          process.env.NEXT_PUBLIC_CLOVER_CONNECT_URL
+        }/oauth/v2/authorize?client_id=${
           process.env.NEXT_PUBLIC_CLOVER_APP_ID
         }&redirect_uri=${encodeURIComponent(
-          "http://localhost:3000/clover-connection"
+          `${process.env.NEXT_PUBLIC_APP_URL}/clover-connection`
         )}`;
       },
     },
@@ -29,16 +32,19 @@ const AggregatorList: React.FC = () => {
       name: "UberEats",
       imageUrl: "/assets/integrators/ubereats.png",
       isConnected: false,
-      handleConnect: function () {
+      handleConnect: () => {
         setIsComingFromAggregatorPage(true);
-        window.location.href = `https://sandbox.dev.uber.com/oauth/v2/authorize?client_id=${
+        window.location.href = `${
+          process.env.NEXT_PUBLIC_UBEREATS_CONNECT_URL
+        }/oauth/v2/authorize?client_id=${
           process.env.NEXT_PUBLIC_UBEREATS_APP_ID
         }&redirect_uri=${encodeURIComponent(
-          "http://localhost:3000/ubereats-connection"
+          `${process.env.NEXT_PUBLIC_APP_URL}/ubereats-connection`
         )}`;
       },
     },
   ];
+
   const [aggregators, setAggregators] =
     useState<AggregatorWithConnect[]>(initialAggregators);
 

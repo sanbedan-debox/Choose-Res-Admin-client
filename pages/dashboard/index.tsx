@@ -2,13 +2,13 @@ import QuickActionsDashboard from "@/components/common/quickAction/quickAction";
 import ScrollableQuickActionCard from "@/components/common/ScrollableQuickActionCard/ScrollableQuickActionCard";
 import MainLayout from "@/components/layouts/mainBodyLayout";
 import Loader from "@/components/loader";
-import { PermissionTypeEnum } from "@/generated/graphql";
+import { PermissionTypeEnum, UserStatus } from "@/generated/graphql";
 import useAuthStore from "@/store/auth";
 import useGlobalStore from "@/store/global";
 import useUserStore from "@/store/user";
 import { sdk } from "@/utils/graphqlClient";
 import { hasAccess } from "@/utils/hasAccess";
-import { redirectForStatus } from "@/utils/redirectForStatus";
+import { redirectPathFromStatus } from "@/utils/redirectPathFromStatus";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -225,22 +225,20 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           },
         };
       }
-
-      const redirectResult = redirectForStatus(status);
-
-      if (redirectResult) {
-        return redirectResult;
-      }
-
-      return {
-        props: {
-          repo: {
-            _id,
-            firstName,
-            status,
+      if (status === UserStatus.Active) {
+        return {
+          props: {
+            repo: {
+              _id,
+              firstName,
+              status,
+            },
           },
-        },
-      };
+        };
+      }
+      const redirectResult = redirectPathFromStatus(status);
+
+      return redirectResult;
     } else {
       return {
         redirect: {

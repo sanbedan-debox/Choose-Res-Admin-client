@@ -1,6 +1,7 @@
 import BlockerLayout from "@/components/layouts/blockerLayout";
+import { UserStatus } from "@/generated/graphql";
 import { sdk } from "@/utils/graphqlClient";
-import { redirectForStatus } from "@/utils/redirectForStatus";
+import { redirectPathFromStatus } from "@/utils/redirectPathFromStatus";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -90,18 +91,17 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     if (response && response.meUser) {
       const { status } = response.meUser;
 
-      const redirectResult = redirectForStatus(status);
-
-      if (redirectResult) {
-        return redirectResult;
+      if (status === UserStatus.InternalVerificationPending) {
+        return {
+          props: {
+            status,
+            restaurants: (response?.meUser?.restaurants ?? []).length,
+          },
+        };
       }
 
-      return {
-        props: {
-          status,
-          restaurants: (response?.meUser?.restaurants ?? []).length,
-        },
-      };
+      const redirectResult = redirectPathFromStatus(status);
+      return redirectResult;
     } else {
       return {
         redirect: {

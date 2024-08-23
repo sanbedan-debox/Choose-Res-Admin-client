@@ -6,13 +6,13 @@ import IdentityVerificationForm from "@/components/modules/profile/forms/identit
 import LocationDetailsForm from "@/components/modules/profile/forms/locationDetailsForm";
 import UserBasicInformationForm from "@/components/modules/profile/forms/userBasicInformationForm";
 import { useBasicProfileStore } from "@/components/modules/profile/store/basicProfileInformation";
-import { PermissionTypeEnum } from "@/generated/graphql";
+import { PermissionTypeEnum, UserStatus } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
 import useProfileStore from "@/store/profile";
 import useUserStore from "@/store/user";
 import { sdk } from "@/utils/graphqlClient";
 import { hasAccess } from "@/utils/hasAccess";
-import { redirectForStatus } from "@/utils/redirectForStatus";
+import { redirectPathFromStatus } from "@/utils/redirectPathFromStatus";
 import { GetServerSideProps } from "next";
 import React, { useEffect, useState } from "react";
 
@@ -195,20 +195,19 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
     if (response && response.meUser) {
       const { _id, firstName, status } = response.meUser;
-      const redirectResult = redirectForStatus(status);
-
-      if (redirectResult) {
-        return redirectResult;
-      }
-
-      return {
-        props: {
-          repo: {
-            _id,
-            firstName,
+      if (status === UserStatus.Active) {
+        return {
+          props: {
+            repo: {
+              _id,
+              firstName,
+            },
           },
-        },
-      };
+        };
+      }
+      const redirectResult = redirectPathFromStatus(status);
+
+      return redirectResult;
     } else {
       return {
         redirect: {
