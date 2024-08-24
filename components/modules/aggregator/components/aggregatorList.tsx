@@ -127,6 +127,36 @@ const AggregatorList: React.FC<AggregatorListProps> = ({ integrations }) => {
     setAggregators(finalList);
   }, [disconnectHandler, integrations]);
 
+  useEffect(() => {
+    const fetchIntegrations = async () => {
+      try {
+        const response = await sdk.getAllIntegrations();
+        const integrationData = response?.getAllIntegrations || [];
+
+        // Create a map of integrations for quick lookup
+        const integrationMap = new Map<string, boolean>(
+          integrationData.map(({ platform, connectionStatus }) => [
+            platform,
+            connectionStatus === ConnectionStatusEnum.Connected,
+          ])
+        );
+
+        // Update the aggregator list with the connection status
+        const updatedAggregators = initialAggregators.map((aggregator) => ({
+          ...aggregator,
+          isConnected: integrationMap.get(aggregator.id) || false,
+        }));
+
+        setAggregators(updatedAggregators);
+      } catch (error) {
+        // Handle error (e.g., show a notification)
+        console.error("Error fetching integrations:", error);
+      }
+    };
+
+    fetchIntegrations();
+  }, []);
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
       {aggregators.map((aggregator) => (
