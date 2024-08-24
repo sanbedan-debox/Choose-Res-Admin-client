@@ -212,10 +212,8 @@ const RestaurantEditAvailabilityForm: React.FC = () => {
       <div className="space-y-4">
         <div className="flex justify-between items-center ">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">
-              Address Line 1
-            </h2>
-            <p className="text-sm text-gray-600">
+            <h2 className="text font-medium text-gray-700">Address Line 1</h2>
+            <p className="text-xs text-neutral-500">
               {addressLine1 ? addressLine1 : "No address line 1 specified"}
             </p>
           </div>
@@ -223,10 +221,8 @@ const RestaurantEditAvailabilityForm: React.FC = () => {
 
         <div className="flex justify-between items-center border-t pt-4">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">
-              Address Line 2
-            </h2>
-            <p className="text-sm text-gray-600">
+            <h2 className="text font-medium text-gray-700">Address Line 2</h2>
+            <p className="text-xs text-neutral-500">
               {addressLine2 ? addressLine2 : "No address line 2 specified"}
             </p>
           </div>
@@ -234,8 +230,8 @@ const RestaurantEditAvailabilityForm: React.FC = () => {
 
         <div className="flex justify-between items-center border-t pt-4">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">City</h2>
-            <p className="text-sm text-gray-600">
+            <h2 className="text font-medium text-gray-700">City</h2>
+            <p className="text-xs text-neutral-500">
               {city ? city : "No city specified"}
             </p>
           </div>
@@ -243,8 +239,8 @@ const RestaurantEditAvailabilityForm: React.FC = () => {
 
         <div className="flex justify-between items-center border-t pt-4">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">State</h2>
-            <p className="text-sm text-gray-600">
+            <h2 className="text font-medium text-gray-700">State</h2>
+            <p className="text-xs text-neutral-500">
               {state ? state.value : "No state specified"}
             </p>
           </div>
@@ -252,8 +248,8 @@ const RestaurantEditAvailabilityForm: React.FC = () => {
 
         <div className="flex justify-between items-center border-t pt-4">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">Zipcode</h2>
-            <p className="text-sm text-gray-600">
+            <h2 className="text font-medium text-gray-700">Zipcode</h2>
+            <p className="text-xs text-neutral-500">
               {zipcode ? zipcode : "No zipcode specified"}
             </p>
           </div>
@@ -261,8 +257,8 @@ const RestaurantEditAvailabilityForm: React.FC = () => {
 
         <div className="flex justify-between items-center border-t pt-4">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">Place</h2>
-            <p className="text-sm text-gray-600">
+            <h2 className="text font-medium text-gray-700">Place</h2>
+            <p className="text-xs text-neutral-500">
               {place ? place.displayName : "No place specified"}
             </p>
           </div>
@@ -270,8 +266,8 @@ const RestaurantEditAvailabilityForm: React.FC = () => {
 
         <div className="flex justify-between border-t pt-4 items-center ">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">Time Zone</h2>
-            <p className="text-sm text-gray-600">
+            <h2 className="text font-medium text-gray-700">Time Zone</h2>
+            <p className="text-xs text-neutral-500">
               {timeZone ? timeZone.value : "No time zone specified"}
             </p>
           </div>

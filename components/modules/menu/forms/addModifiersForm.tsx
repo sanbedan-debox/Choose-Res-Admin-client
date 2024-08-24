@@ -152,7 +152,7 @@ const AddModifierForm = () => {
       }
     }
 
-    if (!data.price || data.price < 0) {
+    if ((data.price ?? 0) < 0) {
       setToastData({
         message: "Price cannot be less than zero, please try again!",
         type: "error",

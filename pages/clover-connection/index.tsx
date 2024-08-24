@@ -1,5 +1,6 @@
 import BlockerLayout from "@/components/layouts/blockerLayout";
 import { sdk } from "@/utils/graphqlClient";
+import { extractErrorMessage } from "@/utils/utilFUncs";
 import { GetServerSideProps } from "next";
 import React, { useEffect, useState } from "react";
 
@@ -57,26 +58,41 @@ CloverConnectionVerify.getLayout = function getLayout(page: React.ReactNode) {
 export default CloverConnectionVerify;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
+  const cookieHeader = context.req.headers.cookie ?? "";
+  const tokenExists = cookieHeader.includes("accessToken=");
+
+  if (!tokenExists) {
+    return {
+      redirect: {
+        destination: "/login",
+        permanent: false,
+      },
+    };
+  }
+
   const isComingFromAggregatorPage = context.query.fromAggregator === "true";
   const merchant_id = context.query.merchant_id?.toString() ?? "";
-  const client_id = context.query.client_id?.toString() ?? "";
   const code = context.query.code?.toString() ?? "";
 
   if (!merchant_id || !code) {
     return {
       props: {
+        error: "Something went wrong, please try again later!",
         redirectUrl: isComingFromAggregatorPage ? "/aggregator" : "/menu",
       },
     };
   }
 
   try {
-    const response = await sdk.validateCloverConnection({
-      input: {
-        authCode: code,
-        merchantId: merchant_id,
+    const response = await sdk.validateCloverConnection(
+      {
+        input: {
+          authCode: code,
+          merchantId: merchant_id,
+        },
       },
-    });
+      { cookie: context.req.headers.cookie?.toString() ?? "" }
+    );
 
     if (response.validateCloverConnection) {
       return {
@@ -87,7 +103,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     } else {
       return {
         props: {
-          error: "Validation failed. Please try again.",
+          error:
+            "Clover could not verify your details, please try again or contact Clover!",
           redirectUrl: isComingFromAggregatorPage ? "/aggregator" : "/menu",
         },
       };
@@ -95,8 +112,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   } catch (error) {
     return {
       props: {
-        error:
-          "There was an error processing your request. Please try again later.",
+        error: extractErrorMessage(error),
         redirectUrl: isComingFromAggregatorPage ? "/aggregator" : "/menu",
       },
     };

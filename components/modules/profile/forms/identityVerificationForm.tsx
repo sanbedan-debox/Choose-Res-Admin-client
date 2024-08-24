@@ -2,20 +2,17 @@ import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import ReusableModal from "@/components/common/modal/modal";
 import useGlobalStore from "@/store/global";
-import useRestaurantsStore from "@/store/restaurant";
-import { decryptData } from "@/utils/crypt";
 import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
+import Image from "next/image";
 import { useRouter } from "next/router";
-import QRCode from "qrcode.react";
 import React, { useState } from "react";
 import { useBasicProfileStore } from "../store/basicProfileInformation";
 
 const IdentityVerificationForm: React.FC = () => {
-  const { selectedRestaurant } = useRestaurantsStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
-  const { twoFactorAuth } = useBasicProfileStore();
+  const { twoFactorAuth, setProfileData } = useBasicProfileStore();
   const { setToastData } = useGlobalStore();
   const [isEnabling2fa, setIsEnabling2fa] = useState(false);
   const [isDisabling2fa, setIsDisabling2fa] = useState(false);
@@ -23,7 +20,7 @@ const IdentityVerificationForm: React.FC = () => {
   const [isShowtfaQR, setIsShowtfaQR] = useState(false);
   const [qrCode, setQrCode] = useState<string | null>(null);
 
-  const [authCode, setAuthCode] = useState("");
+  const [authCode, setAuthCode] = useState<string>();
   const [isAuthCodeModalOpen, setIsAuthCodeModalOpen] = useState(false);
 
   const handleSignOutEverywhere = async () => {
@@ -32,10 +29,9 @@ const IdentityVerificationForm: React.FC = () => {
 
       if (response && response.userLogoutFromEverywhere) {
         setToastData({
-          message: "Successfully logged out from every devices",
+          message: "Successfully logged out from every other device",
           type: "success",
         });
-        router.replace("/login");
       }
     } catch (error) {
       setToastData({
@@ -47,16 +43,54 @@ const IdentityVerificationForm: React.FC = () => {
     }
   };
 
+  const handleVerify2fA = async () => {
+    setIsEnabling2fa(true);
+    try {
+      if (authCode?.length !== 6) {
+        setToastData({
+          message: "Please enter a 6-digit code and try again!",
+          type: "error",
+        });
+        return;
+      }
+
+      const response = await sdk.verify2FASetup({ authCode: authCode });
+
+      if (!response.verify2FASetup) {
+        setToastData({
+          message: "Please enter valid code and try again!",
+          type: "error",
+        });
+        return;
+      }
+
+      setToastData({
+        message:
+          "Two factor authentication for your account is verified successfully!",
+        type: "success",
+      });
+      setIsShowtfaQR(false);
+      setAuthCode(undefined);
+      setProfileData({ twoFactorAuth: true });
+    } catch (error) {
+      setToastData({
+        message: extractErrorMessage(error),
+        type: "error",
+      });
+    } finally {
+      setIsEnabling2fa(false);
+    }
+  };
+
   const handleEnable2fa = async () => {
     setIsEnabling2fa(true);
     try {
       const response = await sdk.enable2FA();
       if (response && response.enable2FA) {
         const qrCode = response.enable2FA;
-        const decryptedQRCode = decryptData(qrCode);
 
         setIsShowtfaQR(true);
-        setQrCode(decryptedQRCode);
+        setQrCode(qrCode);
       }
     } catch (error) {
       setToastData({
@@ -67,16 +101,36 @@ const IdentityVerificationForm: React.FC = () => {
       setIsEnabling2fa(false);
     }
   };
+
   const handleDisable2faSubmit = async () => {
     setIsDisabling2fa(true);
     try {
-      const response = await sdk.disable2F({ authCode });
-      if (response && response.disable2FA) {
+      if (authCode?.length !== 6) {
         setToastData({
-          message: "Two-factor authentication disabled successfully",
-          type: "success",
+          message: "Please enter a 6-digit code and try again!",
+          type: "error",
         });
+        return;
       }
+
+      const response = await sdk.disable2F({ authCode: authCode });
+
+      if (!response.disable2FA) {
+        setToastData({
+          message: "Please enter valid code and try again!",
+          type: "error",
+        });
+        return;
+      }
+
+      setToastData({
+        message:
+          "Two factor authentication for your account is disabled successfully!",
+        type: "success",
+      });
+      setIsAuthCodeModalOpen(false);
+      setAuthCode(undefined);
+      setProfileData({ twoFactorAuth: false });
     } catch (error) {
       setToastData({
         message: extractErrorMessage(error),
@@ -84,9 +138,9 @@ const IdentityVerificationForm: React.FC = () => {
       });
     } finally {
       setIsDisabling2fa(false);
-      setIsAuthCodeModalOpen(false);
     }
   };
+
   const handleDisable2fa = () => {
     setIsAuthCodeModalOpen(true);
   };
@@ -111,28 +165,23 @@ const IdentityVerificationForm: React.FC = () => {
           </button>
         </div> */}
 
-        <div className="border p-4 rounded-md bg-gray-50">
+        <div className="border p-4 rounded-md bg-gray-50 space-y-2">
           <h3 className="text-md font-semibold text-gray-900">
             Two-step verification
           </h3>
           <p className="text-md text-gray-600">
-            An extra layer to boost your Choose account security. A verification
-            code will be required in addition to your password each time you
-            sign in.
+            {
+              "An extra layer to boost your account security. A verification code will be required each time you sign in."
+            }
           </p>
           {twoFactorAuth ? (
-            <div className="flex flex-col items-start ">
-              <p className="text-primary">
-                You Have two-factor Authentication turned on
-              </p>
-              <button
-                className="text-red-500 hover:underline text-md"
-                onClick={handleDisable2fa}
-                disabled={isDisabling2fa}
-              >
-                Disable
-              </button>
-            </div>
+            <button
+              className="text-red-500 hover:underline text-md"
+              onClick={handleDisable2fa}
+              disabled={isDisabling2fa}
+            >
+              Disable
+            </button>
           ) : (
             <>
               <button
@@ -146,19 +195,17 @@ const IdentityVerificationForm: React.FC = () => {
           )}
         </div>
 
-        <div className="border p-4 rounded-md bg-gray-50">
-          <h3 className="text-md font-semibold text-red-400">
-            Sign out everywhere
-          </h3>
+        <div className="border p-4 rounded-md bg-gray-50 space-y-2">
+          <h3 className="text-md font-semibold">Sign out everywhere</h3>
           <p className="text-md text-gray-600">
             If you lost a device or left logged in to a public computer, you can
             sign out everywhere except your current browser.
           </p>
           <button
-            className="mt-2 text-red-400 hover:underline text-md"
+            className="mt-2 text-red-500 hover:underline text-md"
             onClick={() => setIsModalOpen(true)}
           >
-            Sign out everywhere
+            Sign out
           </button>
         </div>
 
@@ -186,7 +233,7 @@ const IdentityVerificationForm: React.FC = () => {
           worry, you’ll still be able to process payments during the transfer
           process.
         </p>
-        <p className="text-md text-red-400 font-semibold">
+        <p className="text-md text-red-500 font-semibold">
           NOTE: This feature is not supported when selling a business.
         </p>
         <button className="w-full text-start text-primary hover:underline text-md">
@@ -194,14 +241,14 @@ const IdentityVerificationForm: React.FC = () => {
         </button>
       </div> */}
 
-      <div className="border rounded-lg p-4 space-y-4">
+      <div className="border rounded-lg p-4 space-y-2">
         <h2 className="text-md font-semibold">Deactivate your business</h2>
         <p className="text-md text-gray-600">
           Deactivating your business means that you will be unable to receive or
           recover any of your payment history or account information.
         </p>
-        <button className="w-full text-start text-red-400 hover:underline text-md">
-          Deactivate your business
+        <button className="w-full text-start text-red-500 hover:underline text-md">
+          Deactivate
         </button>
       </div>
       <div className="bg-white  rounded-xl space-y-4 w-full">
@@ -230,7 +277,7 @@ const IdentityVerificationForm: React.FC = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title="Confirm Sign Out"
-        comments="Are you sure you want to sign out from every logged-in device?"
+        comments="Are you sure you want to sign out from every other logged-in device?"
         width="sm"
       >
         <div className="flex justify-end space-x-2">
@@ -245,33 +292,78 @@ const IdentityVerificationForm: React.FC = () => {
       </ReusableModal>
       <ReusableModal
         isOpen={isShowtfaQR}
-        onClose={() => setIsShowtfaQR(false)}
-        title="Scan QR Code"
+        onClose={() => {
+          setAuthCode(undefined);
+          setIsShowtfaQR(false);
+        }}
+        title="Enable 2FA"
         width="sm"
       >
-        <div className="text-center">
-          <p className="mb-4 text-md text-gray-600">
-            Open your authenticator app and scan the QR code below.
+        <div className="text-center flex flex-col justify-center items-start">
+          <p className="mb-4 text-md text-gray-600 text-start">
+            Open Google Authenticator app and scan the QR code given below.
           </p>
-          {qrCode && <QRCode value={qrCode} size={256} />}
+          {qrCode && (
+            <div className="relative w-full h-48">
+              <Image
+                src={qrCode}
+                alt="Authenticator QR Code"
+                fill
+                className="object-contain"
+              />
+            </div>
+          )}
+          <br />
+          <input
+            type="text"
+            value={authCode}
+            onChange={(e) => setAuthCode(e.target.value)}
+            maxLength={6}
+            className="input input-primary mb-1"
+            placeholder="Enter verification code"
+          />
+          <p className="text-gray-500 text-xs mx-1 text-start">
+            Verify the two factor authentication by entering the latest code
+            from the authenticator app.
+          </p>
+          <br />
+          <div className="flex w-full justify-end space-x-2 mt-4">
+            <CButton
+              loading={isEnabling2fa}
+              variant={ButtonType.Primary}
+              disabled={authCode?.length !== 6 || isEnabling2fa}
+              className="btn btn-primary"
+              onClick={handleVerify2fA}
+            >
+              Verify Details
+            </CButton>
+          </div>
         </div>
       </ReusableModal>
       <ReusableModal
         isOpen={isAuthCodeModalOpen}
-        onClose={() => setIsAuthCodeModalOpen(false)}
+        onClose={() => {
+          setAuthCode(undefined);
+          setIsAuthCodeModalOpen(false);
+        }}
         title="Disable Two-Factor Authentication"
-        width="sm"
+        width="ml"
       >
-        <div className="space-y-3">
+        <div className="space-y-4 mt-4">
           <div>
-            <label className="block text-gray-700">Security Code</label>
             <input
               type="text"
-              placeholder="Please Enter Security Code"
               value={authCode}
               onChange={(e) => setAuthCode(e.target.value)}
-              className="w-full border p-2 rounded-md"
+              maxLength={6}
+              className="input input-primary mb-1"
+              placeholder="Enter verification code"
             />
+            <p className="text-gray-500 text-xs mx-1 text-start">
+              {
+                "Verify your details by entering the latest code from the authenticator app."
+              }
+            </p>
           </div>
           <div className="text-red-500 text-sm">
             <p>Warning: Disabling 2FA will reduce your account security.</p>
@@ -284,7 +376,7 @@ const IdentityVerificationForm: React.FC = () => {
               variant={ButtonType.Primary}
               type="button"
               onClick={handleDisable2faSubmit}
-              disabled={isDisabling2fa}
+              disabled={isDisabling2fa || authCode?.length !== 6}
             >
               Submit
             </CButton>

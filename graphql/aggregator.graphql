@@ -1,3 +1,15 @@
 mutation validateCloverConnection($input: CloverConnectionInput!) {
   validateCloverConnection(input: $input)
 }
+
+mutation DisconnectCloverConnection {
+  disconnectCloverConnection
+}
+
+query GetAllIntegrations {
+  getAllIntegrations {
+    _id
+    platform
+    connectionStatus
+  }
+}

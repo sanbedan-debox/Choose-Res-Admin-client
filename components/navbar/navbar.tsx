@@ -109,6 +109,7 @@ const Navbar: React.FC = () => {
   const { setisShowTaxSettings } = useGlobalStore();
 
   const handleShowTaxRate = () => {
+    toggleProfileDropdown();
     setisShowTaxSettings(true);
   };
   const toggleRestaurantDropdown = () => {
@@ -259,12 +260,18 @@ const Navbar: React.FC = () => {
                 <Link
                   href="/profile"
                   className="block px-4 py-2 text-sm text-black hover:text-white hover:bg-primary"
+                  onClick={() => {
+                    toggleProfileDropdown();
+                  }}
                 >
                   My account
                 </Link>
                 <Link
                   href="/restaurant-settings"
                   className="block px-4 py-2 text-sm text-black hover:text-white hover:bg-primary"
+                  onClick={() => {
+                    toggleProfileDropdown();
+                  }}
                 >
                   Restaurant Settings
                 </Link>

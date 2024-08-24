@@ -261,9 +261,20 @@ const AddCategoryForm = () => {
       );
       const isMenuAdded = addedMenuIds.length > 0;
       const statusSub = data.status ? StatusEnum.Active : StatusEnum.Inactive;
-      if (data.status !== (changesMenu?.status === StatusEnum.Active)) {
-        updateInput.status =
-          data.status === true ? StatusEnum.Active : StatusEnum.Inactive;
+      const isAnyItemActive = selectedItems.some(
+        (item) => item.status === StatusEnum.Active
+      );
+      if (statusSub === StatusEnum.Active && !isAnyItemActive) {
+        setToastData({
+          message:
+            "You must have atleast one active item to make this category active",
+          type: "error",
+        });
+        return;
+      }
+      if (statusSub !== changesMenu?.status) {
+        updateInput.status = statusSub;
+        hasChanges = true;
       }
 
       if (!isEditCats) {
@@ -293,6 +304,11 @@ const AddCategoryForm = () => {
         }
       } else {
         // EDIT CATEGORIES
+        isMenuAdded &&
+          (await sdk.addItemsToCategory({
+            itemId: addedMenuIds,
+            categoryId: editCatsId || "",
+          }));
         if (hasChanges) {
           const resupdate = await sdk.updateCategory({
             input: updateInput,
@@ -303,11 +319,6 @@ const AddCategoryForm = () => {
               message: "Category Updated Successfully",
             });
         }
-        isMenuAdded &&
-          (await sdk.addItemsToCategory({
-            itemId: addedMenuIds,
-            categoryId: editCatsId || "",
-          }));
         setBtnLoading(false);
         setisDuplicateCats(false);
         setisEditCats(false);
@@ -394,24 +405,23 @@ const AddCategoryForm = () => {
       const isAnyItemActive = selectedItems.some(
         (item) => item.status === StatusEnum.Active
       );
-      console.log(
-        selectedItems,
-        "Selected Items and isAnyItemActive:",
-        isAnyItemActive
-      );
-      if (isAnyItemActive) {
+      if (watch("status") === true) {
         setValue("status", !watch("status"));
-        const updatedVisibilities = visibilities.map((vib) => ({
-          menuType: vib.menuType,
-          status: StatusEnum.Inactive,
-        }));
-        setVisibilities(updatedVisibilities);
       } else {
-        setToastData({
-          message:
-            "You must have atleast one active item to make this category active",
-          type: "error",
-        });
+        if (isAnyItemActive) {
+          setValue("status", !watch("status"));
+          const updatedVisibilities = visibilities.map((vib) => ({
+            menuType: vib.menuType,
+            status: StatusEnum.Inactive,
+          }));
+          setVisibilities(updatedVisibilities);
+        } else {
+          setToastData({
+            message:
+              "You must have atleast one active item to make this category active",
+            type: "error",
+          });
+        }
       }
     }
   };

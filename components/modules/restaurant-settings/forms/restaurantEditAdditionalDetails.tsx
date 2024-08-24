@@ -173,31 +173,29 @@ const RestaurantEditAdditionalDetails: React.FC = () => {
 
       <div className="space-y-4">
         <div className="border-b pb-4">
-          <h3 className="text-sm font-medium text-gray-700">Instagram Link</h3>
-          <p className="text-sm text-gray-600">
+          <h3 className="text font-medium text-gray-700">Instagram Link</h3>
+          <p className="text-xs text-neutral-500">
             {instagramLink || "No Instagram link specified"}
           </p>
         </div>
 
         <div className="border-b pb-4">
-          <h3 className="text-sm font-medium text-gray-700">Facebook Link</h3>
-          <p className="text-sm text-gray-600">
+          <h3 className="text font-medium text-gray-700">Facebook Link</h3>
+          <p className="text-xs text-neutral-500">
             {facebookLink || "No Facebook link specified"}
           </p>
         </div>
 
         <div className="border-b pb-4">
-          <h3 className="text-sm font-medium text-gray-700">Twitter Link</h3>
-          <p className="text-sm text-gray-600">
+          <h3 className="text font-medium text-gray-700">Twitter Link</h3>
+          <p className="text-xs text-neutral-500">
             {twitterLink || "No Twitter link specified"}
           </p>
         </div>
 
         <div className="border-b pb-4">
-          <h3 className="text-sm font-medium text-gray-700">
-            Beverage Category
-          </h3>
-          <p className="text-sm text-gray-600">
+          <h3 className="text font-medium text-gray-700">Beverage Category</h3>
+          <p className="text-xs text-neutral-500">
             {beverageCategory && beverageCategory.length > 0
               ? beverageCategory.map(formatBeverageCategory).join(", ")
               : "No beverage category specified"}
@@ -205,8 +203,8 @@ const RestaurantEditAdditionalDetails: React.FC = () => {
         </div>
 
         <div className="border-b pb-4">
-          <h3 className="text-sm font-medium text-gray-700">Food Type</h3>
-          <p className="text-sm text-gray-600">
+          <h3 className="text font-medium text-gray-700">Food Type</h3>
+          <p className="text-xs text-neutral-500">
             {foodType && foodType.length > 0
               ? foodType.map(formatFoodType).join(", ")
               : "No food type specified"}
@@ -214,8 +212,8 @@ const RestaurantEditAdditionalDetails: React.FC = () => {
         </div>
 
         <div>
-          <h3 className="text-sm font-medium text-gray-700">Meat Type</h3>
-          <p className="text-sm text-gray-600">{formatMeatType(meatType)}</p>
+          <h3 className="text font-medium text-gray-700">Meat Type</h3>
+          <p className="text-xs text-neutral-500">{formatMeatType(meatType)}</p>
         </div>
       </div>
 

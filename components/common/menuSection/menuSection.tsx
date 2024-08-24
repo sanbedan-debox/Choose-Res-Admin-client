@@ -43,14 +43,14 @@ const MenuSection: React.FC<MenuSectionProps> = ({ contentList }) => {
 
   return (
     <div className="flex  text-black">
-      <aside className="w-1/4 h-full sticky top-0 p-4">
+      <aside className="w-1/5 h-full sticky top-0 py-4">
         <nav>
           <ul>
             {contentList.map((content) => (
-              <li className="mb-1" key={content.id}>
+              <li className="mb-1 text-left w-full" key={content.id}>
                 <a
                   // href={`?section=${content.id}`}
-                  className={`block p-2 text-black text-sm rounded cursor-pointer border border-transparent  hover:text-primary relative ${
+                  className={`block p-2 text-black text-sm text-left rounded cursor-pointer border border-transparent  hover:text-primary relative ${
                     activeId === content.id ? "border-primary text-primary" : ""
                   }`}
                   onClick={() => handleNavLinkClick(content.id)}
@@ -58,14 +58,14 @@ const MenuSection: React.FC<MenuSectionProps> = ({ contentList }) => {
                   {activeId === content.id && (
                     <div className="absolute top-0 left-0 w-1 h-[100%] bg-primary "></div>
                   )}
-                  <span className="pl-3">{content.title}</span>
+                  <span className="">{content.title}</span>
                 </a>
               </li>
             ))}
           </ul>
         </nav>
       </aside>
-      <main className="w-3/4 p-4">
+      <main className="w-4/5 py-4 px-12">
         {contentList.map((content, index) => (
           <>
             <section

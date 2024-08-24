@@ -323,14 +323,6 @@ export enum ConfigTypeEnum {
   TrialDays = 'TrialDays'
 }
 
-/** IntegrationConnection Status enum type  */
-export enum ConnectionStatusEnum {
-  Connected = 'Connected',
-  Error = 'Error',
-  Expired = 'Expired',
-  NotConnected = 'NotConnected'
-}
-
 export type CsvUploadError = {
   __typename?: 'CsvUploadError';
   _id: Scalars['ID']['output'];
@@ -496,7 +488,7 @@ export type HoursInput = {
 export type Integration = {
   __typename?: 'Integration';
   _id: Scalars['ID']['output'];
-  connectionStatus: ConnectionStatusEnum;
+  connectionStatus: IntegrationConnectionStatusEnum;
   createdAt: Scalars['DateTimeISO']['output'];
   platform: IntegrationPlatformEnum;
   restaurantId: Restaurant;
@@ -505,10 +497,18 @@ export type Integration = {
   user: User;
 };
 
+/** IntegrationConnection Status enum type  */
+export enum IntegrationConnectionStatusEnum {
+  Connected = 'Connected',
+  Error = 'Error',
+  Expired = 'Expired',
+  NotConnected = 'NotConnected'
+}
+
 export type IntegrationInfo = {
   __typename?: 'IntegrationInfo';
   _id: Integration;
-  connectionStatus: ConnectionStatusEnum;
+  connectionStatus: IntegrationConnectionStatusEnum;
   id: Scalars['String']['output'];
   platform: IntegrationPlatformEnum;
 };
@@ -729,6 +729,7 @@ export type Mutation = {
   createEmailCampaign: Scalars['Boolean']['output'];
   createEmailTemplate: Scalars['Boolean']['output'];
   deleteEmailTemplate: Scalars['Boolean']['output'];
+  disconnectCloverConnection: Scalars['Boolean']['output'];
   removeCategoryFromMenu: Scalars['Boolean']['output'];
   removeItemFromCategory: Scalars['Boolean']['output'];
   removeModifierFromGroup: Scalars['Boolean']['output'];
@@ -1183,6 +1184,7 @@ export type Query = {
   getAllCuisines: Array<Cuisine>;
   getAllEmailCampaigns: Array<EmailCampaignsObject>;
   getAllEmailTemplates: Array<EmailTemplatesObject>;
+  getAllIntegrations: Array<Integration>;
   getAllItemOptions: Array<ItemOption>;
   getAllMenus: Array<Menu>;
   getAllPermissions: Array<Permission>;
@@ -1882,6 +1884,16 @@ export type ValidateCloverConnectionMutationVariables = Exact<{
 
 export type ValidateCloverConnectionMutation = { __typename?: 'Mutation', validateCloverConnection: boolean };
 
+export type DisconnectCloverConnectionMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type DisconnectCloverConnectionMutation = { __typename?: 'Mutation', disconnectCloverConnection: boolean };
+
+export type GetAllIntegrationsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllIntegrationsQuery = { __typename?: 'Query', getAllIntegrations: Array<{ __typename?: 'Integration', _id: string, platform: IntegrationPlatformEnum, connectionStatus: IntegrationConnectionStatusEnum }> };
+
 export type UserLogoutQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -2461,6 +2473,20 @@ export const AddressInfoFragmentDoc = gql`
 export const ValidateCloverConnectionDocument = gql`
     mutation validateCloverConnection($input: CloverConnectionInput!) {
   validateCloverConnection(input: $input)
+}
+    `;
+export const DisconnectCloverConnectionDocument = gql`
+    mutation DisconnectCloverConnection {
+  disconnectCloverConnection
+}
+    `;
+export const GetAllIntegrationsDocument = gql`
+    query GetAllIntegrations {
+  getAllIntegrations {
+    _id
+    platform
+    connectionStatus
+  }
 }
     `;
 export const UserLogoutDocument = gql`
@@ -3300,6 +3326,12 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
   return {
     validateCloverConnection(variables: ValidateCloverConnectionMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<ValidateCloverConnectionMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<ValidateCloverConnectionMutation>(ValidateCloverConnectionDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'validateCloverConnection', 'mutation', variables);
+    },
+    DisconnectCloverConnection(variables?: DisconnectCloverConnectionMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<DisconnectCloverConnectionMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<DisconnectCloverConnectionMutation>(DisconnectCloverConnectionDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'DisconnectCloverConnection', 'mutation', variables);
+    },
+    GetAllIntegrations(variables?: GetAllIntegrationsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetAllIntegrationsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetAllIntegrationsQuery>(GetAllIntegrationsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'GetAllIntegrations', 'query', variables);
     },
     userLogout(variables?: UserLogoutQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UserLogoutQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<UserLogoutQuery>(UserLogoutDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'userLogout', 'query', variables);

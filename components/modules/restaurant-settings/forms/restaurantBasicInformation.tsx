@@ -192,10 +192,8 @@ const RestaurantBasicInformationEditForm: React.FC = () => {
       <div className="space-y-4">
         <div className="flex justify-between items-center pt-4">
           <div>
-            <h3 className="text-md font-medium text-gray-700">
-              Restaurant Name
-            </h3>
-            <p className="text-sm text-gray-600">
+            <h3 className="text font-medium text-gray-700">Restaurant Name</h3>
+            <p className="text-xs text-neutral-500">
               {restaurantName ? restaurantName : "No restaurant name"}
             </p>
           </div>
@@ -203,10 +201,8 @@ const RestaurantBasicInformationEditForm: React.FC = () => {
 
         <div className="flex justify-between items-center border-t  pt-4">
           <div>
-            <h3 className="text-md font-medium text-gray-700">
-              Restaurant Logo
-            </h3>
-            <p className="text-sm text-gray-600">
+            <h3 className="text font-medium text-gray-700">Restaurant Logo</h3>
+            <p className="text-xs text-neutral-500">
               {previewUrl ? (
                 <img
                   src={previewUrl}
@@ -228,8 +224,8 @@ const RestaurantBasicInformationEditForm: React.FC = () => {
 
         <div className="flex justify-between items-center border-t  pt-4">
           <div>
-            <h3 className="text-md font-medium text-gray-700">Website</h3>
-            <p className="text-sm text-gray-600">
+            <h3 className="text font-medium text-gray-700">Website</h3>
+            <p className="text-xs text-neutral-500">
               {restaurantWebsite ? restaurantWebsite : "No website"}
             </p>
           </div>
@@ -237,8 +233,8 @@ const RestaurantBasicInformationEditForm: React.FC = () => {
 
         <div className="flex justify-between items-center border-t  pt-4">
           <div>
-            <h3 className="text-md font-medium text-gray-700">Type</h3>
-            <p className="text-sm text-gray-600">
+            <h3 className="text font-medium text-gray-700">Type</h3>
+            <p className="text-xs text-neutral-500">
               {restaurantType
                 ? formatRestaurantType(restaurantType as RestaurantType)
                 : "No type specified"}
@@ -248,8 +244,8 @@ const RestaurantBasicInformationEditForm: React.FC = () => {
 
         <div className="flex justify-between items-center border-t  pt-4">
           <div>
-            <h3 className="text-md font-medium text-gray-700">Category</h3>
-            <p className="text-sm text-gray-600">
+            <h3 className="text font-medium text-gray-700">Category</h3>
+            <p className="text-xs text-neutral-500">
               {restaurantCategory && restaurantCategory.length > 0
                 ? restaurantCategory
                     .map((category) => formatRestaurantCategory(category))
@@ -263,10 +259,10 @@ const RestaurantBasicInformationEditForm: React.FC = () => {
         restaurantCategory.includes(RestaurantCategory.PremiumDineIn) ? (
           <div className="flex justify-between items-center border-t  pt-4">
             <div>
-              <h3 className="text-md font-medium text-gray-700">
+              <h3 className="text font-medium text-gray-700">
                 Dine-in Capacity
               </h3>
-              <p className="text-sm text-gray-600">
+              <p className="text-xs text-neutral-500">
                 {dineInCapacity ? dineInCapacity : "No capacity specified"}
               </p>
             </div>

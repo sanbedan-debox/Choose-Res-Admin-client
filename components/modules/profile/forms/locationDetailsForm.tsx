@@ -179,7 +179,8 @@ const UserLocationForm: React.FC = () => {
         </div>
         <div className="flex justify-between items-center border-b py-3">
           <p>
-            <strong>Address Line 2:</strong> {addressLine2}
+            <strong>Address Line 2:</strong>{" "}
+            {addressLine2 === "" || !addressLine2 ? "N/A" : addressLine2}
           </p>
         </div>
         <div className="flex justify-between items-center border-b py-3">

@@ -62,9 +62,11 @@ const Login: FC = () => {
       setBtnLoading(true);
       const response = await sdk.userLogin({ input: email });
 
-      if (response) {
+      if (response.userLogin !== null) {
         setShowModal(true);
-        setToastData({ message: "OTP sent successfully", type: "success" });
+        if (response.userLogin !== "") {
+          setToastData({ message: "OTP sent successfully", type: "success" });
+        }
         setBtnLoading(false);
         setOTPId(response.userLogin);
         setTimer(20);
@@ -114,7 +116,7 @@ const Login: FC = () => {
 
         setShowModal(false);
         setToastData({
-          message: "OTP verification successful",
+          message: "Verification successful!",
           type: "success",
         });
         router.replace("/dashboard");
@@ -236,30 +238,37 @@ const Login: FC = () => {
       <ReusableModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
-        title="Enter OTP"
-        width="sm"
+        title={otpId === "" ? "Enter Authenticator Code" : "Enter OTP"}
+        width={otpId === "" ? "md" : "sm"}
       >
         <form onSubmit={handleSubmit(onSubmitOtp)}>
           <div className="flex flex-col">
-            <div className="flex flex-col mb-6">
+            <div className="flex flex-col mt-3 mb-6">
               <input
                 type="text"
                 value={otp}
+                maxLength={6}
                 onChange={(e) => setOtp(e.target.value)}
                 className="input input-primary mb-1"
-                placeholder="Enter OTP"
+                placeholder="Enter verification code"
               />
-              {showResendButton ? (
-                <button
-                  type="button"
-                  className="text-primary text-start focus:outline-none focus:underline hover:underline text-sm"
-                  onClick={resendOtp}
-                >
-                  Resend OTP
-                </button>
-              ) : (
-                <p className="text-sm text-gray-500">Resend OTP in {timer}s</p>
-              )}
+              {otpId !== "" ? (
+                <>
+                  {showResendButton ? (
+                    <button
+                      type="button"
+                      className="text-primary text-start focus:outline-none focus:underline hover:underline text-sm"
+                      onClick={resendOtp}
+                    >
+                      Resend OTP
+                    </button>
+                  ) : (
+                    <p className="text-sm text-gray-500">
+                      Resend OTP in {timer}s
+                    </p>
+                  )}
+                </>
+              ) : null}
             </div>
 
             <CButton

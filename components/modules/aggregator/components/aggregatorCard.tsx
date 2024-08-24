@@ -1,47 +1,82 @@
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
+import { IntegrationConnectionStatusEnum } from "@/generated/graphql";
+import {
+  Aggregator,
+  formatAggregatorConnection,
+  formatAggregatorPlatform,
+} from "@/utils/aggregators";
+import Image from "next/image";
 import React from "react";
-import { Aggregator } from "../interface/interface";
 
-interface AggregatorCardProps {
-  aggregator: Aggregator;
-  onConnect: (id: string) => void;
-}
-
-const AggregatorCard: React.FC<AggregatorCardProps> = ({
+const AggregatorCard: React.FC<{ aggregator: Aggregator }> = ({
   aggregator,
-  onConnect,
 }) => {
+  const name = formatAggregatorPlatform(aggregator.platform);
+  const connection = formatAggregatorConnection(aggregator.connectionStatus);
   return (
-    <div className="border p-4 rounded-lg shadow-md">
-      <img
-        src={aggregator.imageUrl}
-        alt={aggregator.name}
-        className="w-16 h-16 object-cover mb-2"
-      />
-      <h3 className="text-lg font-semibold">{aggregator.name}</h3>
-      <div className="border-b-2"></div>
-      <div className="flex items-center mt-2">
-        {aggregator.isConnected ? (
-          <div className="flex flex-col">
-            <div className="flex items-center">
-              <span className="text-green-500 mr-2">Connected</span>
-              <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-            </div>
-            <p className="text-xs">
-              Do you want to manage Menu.Then{" "}
-              <span className="text-primary cursor-pointer">Click here</span>
-            </p>
+    <div className="border p-4 rounded-lg bg-white shadow flex flex-col justify-center items-start">
+      <div className="w-full flex justify-between items-start">
+        <div className="flex flex-col justify-center items-start">
+          <div className="w-12 h-12 relative mb-2 rounded-full">
+            <Image
+              src={aggregator.imageUrl}
+              alt={name}
+              fill
+              className="object-cover rounded-full"
+            />
           </div>
-        ) : (
+          <h3 className="text-lg font-semibold">{name}</h3>
+        </div>
+        {aggregator.connectionStatus ===
+        IntegrationConnectionStatusEnum.Connected ? (
           <CButton
-            variant={ButtonType.Primary}
-            onClick={() => onConnect(aggregator.id)}
+            loading={aggregator.loading}
+            disabled={aggregator.loading}
+            variant={ButtonType.Outlined}
+            onClick={() => {
+              aggregator.handleDisconnect();
+            }}
+            className="py-0"
+          >
+            Disconnect
+          </CButton>
+        ) : null}
+        {aggregator.connectionStatus ===
+          IntegrationConnectionStatusEnum.NotConnected ||
+        aggregator.connectionStatus ===
+          IntegrationConnectionStatusEnum.Expired ? (
+          <CButton
+            variant={ButtonType.Outlined}
+            onClick={() => {
+              aggregator.handleConnect();
+            }}
             className="py-0"
           >
             Connect
           </CButton>
-        )}
+        ) : null}
+        {aggregator.connectionStatus ===
+        IntegrationConnectionStatusEnum.Error ? (
+          <CButton
+            variant={ButtonType.Outlined}
+            onClick={() => {
+              aggregator.handleContactSupport();
+            }}
+            className="py-0"
+          >
+            Contact Support
+          </CButton>
+        ) : null}
+      </div>
+      <br />
+      <div className="flex flex-col justify-start items-start">
+        <p className="text-neutral-400 font-medium text-xs">
+          Connection Status
+        </p>
+        <span className="text-black text-opacity-75 font-medium">
+          {connection}
+        </span>
       </div>
     </div>
   );

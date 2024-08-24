@@ -8,13 +8,13 @@ export const modules = [
     icon: "dashboard",
   },
   {
-    name: "Menu Management",
+    name: "Menu",
     access: PermissionTypeEnum.Menu,
     route: "/menu",
     icon: "menu",
   },
   {
-    name: "Aggregator Integrations",
+    name: "Integrations",
     access: PermissionTypeEnum.Integrations,
     route: "/aggregator",
     icon: "aggregator",
