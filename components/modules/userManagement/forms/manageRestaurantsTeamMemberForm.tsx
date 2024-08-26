@@ -75,15 +75,21 @@ const ManageResTeamMemberForm: React.FC = () => {
 
   const handleRemoveRestaurant = async (restaurantId: string) => {
     try {
-      await sdk.removeRestaurantSubuser({
+      const res = await sdk.removeRestaurantSubuser({
         restaurantSubUser: {
           id: isEditTeamMemberId ?? "",
           restaurants: [restaurantId],
         },
       });
-      setUserRestaurants((prev) =>
-        prev.filter((restaurant) => restaurant.id !== restaurantId)
-      );
+      if (res.removeRestaurantSubuser) {
+        setUserRestaurants((prev) =>
+          prev.filter((restaurant) => restaurant.id !== restaurantId)
+        );
+        setToastData({
+          message: "Sub User access Updated successfully",
+          type: "success",
+        });
+      }
     } catch (error) {
       setToastData({
         message: extractErrorMessage(error),
@@ -97,23 +103,29 @@ const ManageResTeamMemberForm: React.FC = () => {
       const selectedIds = selectedRestaurants.map(
         (restaurant) => restaurant.id
       );
-      await sdk.addRestaurantSubuser({
+      const res = await sdk.addRestaurantSubuser({
         restaurantSubUser: {
           id: isEditTeamMemberId ?? "",
           restaurants: selectedIds,
         },
       });
-      setUserRestaurants((prev) => [
-        ...prev,
-        ...selectedRestaurants.map((restaurant) => ({
-          id: restaurant.id,
-          name: restaurant.name,
-          status: "",
-          city: "",
-        })),
-      ]);
-      setSelectedRestaurants([]);
-      setShowAddRestaurantModal(false);
+      if (res.addRestaurantSubuser) {
+        setUserRestaurants((prev) => [
+          ...prev,
+          ...selectedRestaurants.map((restaurant) => ({
+            id: restaurant.id,
+            name: restaurant.name,
+            status: "",
+            city: "",
+          })),
+        ]);
+        setSelectedRestaurants([]);
+        setShowAddRestaurantModal(false);
+        setToastData({
+          message: "Sub User access Updated successfully",
+          type: "success",
+        });
+      }
     } catch (error) {
       setToastData({
         message: extractErrorMessage(error),
@@ -126,23 +138,7 @@ const ManageResTeamMemberForm: React.FC = () => {
     getUser();
   }, [isEditTeamMemberId]);
 
-  const handleEditMemberModalClose = () => {
-    setIsEditTeamMember(false);
-    setIsEditTeamMemberId("");
-    setIsEditTeamRole(false);
-  };
-
   const { setToastData } = useGlobalStore();
-
-  const handlePermissionChange = (type: string) => {
-    setPermissionsList((prevPermissions) =>
-      prevPermissions.map((permission) =>
-        permission.type === (type as PermissionTypeEnum)
-          ? { ...permission, status: !permission.status }
-          : permission
-      )
-    );
-  };
 
   return (
     <form className="space-y-4 w-full">

@@ -175,26 +175,40 @@ const Teams: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
     );
   };
 
-  const renderActions = (rowData: { _id: string }) => (
-    <div className="flex space-x-2 justify-end">
-      <MdDeleteOutline
-        className="text-primary text-lg cursor-pointer"
-        onClick={() => handleDeleteMember(rowData._id)}
-      />
-      <IoSettingsOutline
-        className="text-primary text-lg cursor-pointer"
-        onClick={() => onEditRole(rowData._id)}
-      />
-      <MdOutlineAdminPanelSettings
-        className="text-primary text-lg cursor-pointer"
-        onClick={() => onEditPermissions(rowData._id)}
-      />
-      <CiShop
-        className="text-primary text-lg cursor-pointer"
-        onClick={() => onManageResPermissions(rowData._id)}
-      />
-    </div>
-  );
+  const renderActions = (rowData: {
+    _id: string;
+    onboardingStatus: UserStatus;
+  }) => {
+    const isActive = rowData.onboardingStatus === UserStatus.Active;
+
+    return (
+      <div className="flex space-x-2 justify-end">
+        <MdDeleteOutline
+          className="text-primary text-lg cursor-pointer"
+          onClick={() => handleDeleteMember(rowData._id)}
+        />
+        {isActive && (
+          <IoSettingsOutline
+            className="text-primary text-lg cursor-pointer"
+            onClick={() => onEditRole(rowData._id)}
+          />
+        )}
+        {isActive && (
+          <MdOutlineAdminPanelSettings
+            className="text-primary text-lg cursor-pointer"
+            onClick={() => onEditPermissions(rowData._id)}
+          />
+        )}
+        {isActive && (
+          <CiShop
+            className="text-primary text-lg cursor-pointer"
+            onClick={() => onManageResPermissions(rowData._id)}
+          />
+        )}
+      </div>
+    );
+  };
+
   const headings = [
     { title: "First Name", dataKey: "firstName" },
     { title: "Last Name", dataKey: "lastName" },
@@ -301,41 +315,35 @@ const Teams: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
         </div>
       </ReusableModal>
       <FullPageModal
+        actionButtonLabel=""
+        onActionButtonClick={() => {}}
         isOpen={isAddTeamMemberModalOpen}
         title="Add Team Member"
         onClose={handleAddMemberModalClose}
-        actionButtonLabel="Add Member"
-        // onActionButtonClick={handleAddMenuItemClick}
-        onActionButtonClick={() => {}}
       >
         <div className="flex justify-center">
           <AddTeamMemberForm />
         </div>
       </FullPageModal>
-      <FullPageModal
+      <ReusableModal
+        width="ml"
         isOpen={isEditTeamMember}
         title="Edit Team Member"
         onClose={handleEditMemberModalClose}
-        actionButtonLabel="Edit Member"
-        // onActionButtonClick={handleAddMenuItemClick}
-        onActionButtonClick={() => {}}
       >
         <div className="flex justify-center">
           <EditTeamMemberForm />
         </div>
-      </FullPageModal>
-      <FullPageModal
+      </ReusableModal>
+      <ReusableModal
         isOpen={isEditRestaurantTeamMember}
-        title="Edit Team Member"
+        title="Edit Sub User Access"
         onClose={handleManageteamMemberModalClose}
-        actionButtonLabel="Edit Member"
-        // onActionButtonClick={handleAddMenuItemClick}
-        onActionButtonClick={() => {}}
       >
         <div className="flex justify-center">
           <ManageResTeamMemberForm />
         </div>
-      </FullPageModal>
+      </ReusableModal>
     </div>
   );
 };

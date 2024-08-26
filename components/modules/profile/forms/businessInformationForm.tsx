@@ -137,29 +137,58 @@ const BusinessInformationForm: React.FC = () => {
           />
         </div>
         <div className="flex justify-between items-center border-b pb-3">
-          <p>
-            <strong>Business Name:</strong> {businessName}
-          </p>
+          <div>
+            <h2 className="text-md font-semibold text-gray-900">
+              Business Name
+            </h2>
+            <p className="text-sm text-gray-600">
+              {businessName ? businessName : "No business name"}
+            </p>
+          </div>
         </div>
-        <div className="flex justify-between items-center border-b py-3">
-          <p>
-            <strong>Business Type:</strong>{" "}
-            {formatBusinessTypeEnum(businessType as BusinessTypeEnum)}
-          </p>
+        <div className="flex justify-between items-center border-b pb-3">
+          <div>
+            <h2 className="text-md font-semibold text-gray-900">
+              Business Type
+            </h2>
+            <p className="text-sm text-gray-600">
+              {businessType ? (
+                <>{formatBusinessTypeEnum(businessType as BusinessTypeEnum)}</>
+              ) : (
+                "No Business type"
+              )}
+            </p>
+          </div>
         </div>
-        <div className="flex justify-between items-center border-b py-3">
-          <p>
-            <strong>Staff Count:</strong>{" "}
-            {formatStaffCountEnum(employeeSize as StaffCountEnum)}
-          </p>
+        <div className="flex justify-between items-center border-b pb-3">
+          <div>
+            <h2 className="text-md font-semibold text-gray-900">Staff Count</h2>
+            <p className="text-sm text-gray-600">
+              {employeeSize ? (
+                <>{formatStaffCountEnum(employeeSize as StaffCountEnum)}</>
+              ) : (
+                "No first name"
+              )}
+            </p>
+          </div>
         </div>
-        <div className="flex justify-between items-center py-3">
-          <p>
-            <strong>Estimated Revenue:</strong>{" "}
-            {formatEstimatedRevenueEnum(
-              estimatedRevenue as EstimatedRevenueEnum
-            )}
-          </p>
+        <div className="flex justify-between items-center pb-3">
+          <div>
+            <h2 className="text-md font-semibold text-gray-900">
+              Estimated Revenue
+            </h2>
+            <p className="text-sm text-gray-600">
+              {estimatedRevenue ? (
+                <>
+                  {formatEstimatedRevenueEnum(
+                    estimatedRevenue as EstimatedRevenueEnum
+                  )}
+                </>
+              ) : (
+                "No Estimated Revenue found"
+              )}
+            </p>
+          </div>
         </div>
       </div>
 

@@ -164,7 +164,7 @@ const UserLocationForm: React.FC = () => {
 
   return (
     <div className="z-10 flex flex-col w-full items-center  text-center bg-white rounded-lg">
-      <div className="bg-white p-4 rounded-xl space-y-4 w-full ">
+      <div className="bg-white p-4 text-start rounded-xl space-y-4 w-full ">
         <div className="flex justify-between items-center bg-white mb-2 rounded-xl w-full">
           <h2 className="text-xl font-semibold">Location Details</h2>
           <MdOutlineEdit
@@ -173,35 +173,54 @@ const UserLocationForm: React.FC = () => {
           />
         </div>
         <div className="flex justify-between items-center border-b pb-3">
-          <p>
-            <strong>Address Line 1:</strong> {addressLine1}
-          </p>
+          <div>
+            <h2 className="text-md  font-semibold text-gray-900">
+              Address Line 1
+            </h2>
+            <p className="text-sm text-gray-600">
+              {addressLine1 ? addressLine1 : "No Address Line 1"}
+            </p>
+          </div>
         </div>
-        <div className="flex justify-between items-center border-b py-3">
-          <p>
-            <strong>Address Line 2:</strong>{" "}
-            {addressLine2 === "" || !addressLine2 ? "N/A" : addressLine2}
-          </p>
+        <div className="flex justify-between items-center border-b pb-3">
+          <div>
+            <h2 className="text-md font-semibold text-gray-900">
+              Address Line 2
+            </h2>
+            <p className="text-sm text-gray-600 ">
+              {addressLine2 ? addressLine2 : "No Address Line 2"}
+            </p>
+          </div>
         </div>
-        <div className="flex justify-between items-center border-b py-3">
-          <p>
-            <strong>City:</strong> {city}
-          </p>
+        <div className="flex justify-between items-center border-b pb-3">
+          <div>
+            <h2 className="text-md font-semibold text-gray-900">City</h2>
+            <p className="text-sm text-gray-600">{city ? city : "No city"}</p>
+          </div>
         </div>
-        <div className="flex justify-between items-center py-3 border-b ">
-          <p>
-            <strong>State:</strong> {state?.value}
-          </p>
+        <div className="flex justify-between items-center pb-3 border-b ">
+          <div>
+            <h2 className="text-md font-semibold text-gray-900">State</h2>
+            <p className="text-sm text-gray-600">
+              {state?.value ? state?.value : "No State"}
+            </p>
+          </div>
         </div>
-        <div className="flex justify-between items-center py-3 border-b ">
-          <p>
-            <strong>Zipcode:</strong> {zipcode}
-          </p>
+        <div className="flex justify-between items-center pb-3 border-b ">
+          <div>
+            <h2 className="text-md font-semibold text-gray-900">Zipcode</h2>
+            <p className="text-sm text-gray-600">
+              {zipcode ? zipcode : "No zipcode"}
+            </p>
+          </div>
         </div>
-        <div className="flex justify-between items-center py-3 border-b ">
-          <p>
-            <strong>Location:</strong> {place?.displayName}
-          </p>
+        <div className="flex justify-between items-center pb-3 border-b ">
+          <div>
+            <h2 className="text-md font-semibold text-gray-900">Location</h2>
+            <p className="text-sm text-gray-600">
+              {place?.displayName ? place?.displayName : "No Location"}
+            </p>
+          </div>
         </div>
         <div className="border mt-3 rounded-lg h-64  flex items-center justify-center">
           <iframe

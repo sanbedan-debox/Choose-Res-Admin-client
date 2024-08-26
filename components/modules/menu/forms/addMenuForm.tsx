@@ -44,11 +44,6 @@ const menuTypeOptions: any[] = [
   { value: MenuTypeEnum.DineIn, label: "Dine In" },
   { value: MenuTypeEnum.Catering, label: "Catering" },
 ];
-// const menuTypeOptions: { value: MenuTypeEnum; label: string }[] = [
-//   { value: MenuTypeEnum.OnlineOrdering, label: "Online Ordering" },
-//   { value: MenuTypeEnum.DineIn, label: "Dine In" },
-//   { value: MenuTypeEnum.Catering, label: "Catering" },
-// ];
 
 const AddMenuForm = () => {
   const {
@@ -67,6 +62,12 @@ const AddMenuForm = () => {
   const [prevItemsbfrEdit, setprevItemsbfrEdit] = useState<ItemsDropDownType[]>(
     []
   );
+  interface DataItemFormAddTable {
+    _id: string;
+    [key: string]: any;
+  }
+  const [editedSelectedItems, setEditedSelectedItems] =
+    useState<DataItemFormAddTable[]>();
   const [tempSelectedItems, setTempSelectedItems] = useState<
     ItemsDropDownType[]
   >([]);
@@ -241,12 +242,21 @@ const AddMenuForm = () => {
               name: cats?.name,
             })
           );
+
+          // const updatedSelectedItems = selectedItems.map((selectedItem) => {
+          //   const match = formattedItemsList.find(
+          //     (item) => item._id === selectedItem._id
+          //   );
+          //   return match ? { ...selectedItem, ...match } : selectedItem;
+          // });
+
           const filteredItemsList = formattedItemsList.filter(
             (item) =>
               !selectedItems.some(
                 (selectedItem) => selectedItem._id === item._id
               )
           );
+          // setSelectedItems(updatedSelectedItems);
 
           setItemsOption(filteredItemsList);
         }
@@ -340,7 +350,6 @@ const AddMenuForm = () => {
   ];
 
   const headings = [
-    { title: "Items", dataKey: "items" },
     { title: "Actions", dataKey: "name", render: renderActions },
   ];
 
@@ -407,6 +416,13 @@ const AddMenuForm = () => {
     fetchMenuData();
   }, [editMenuId, setValue, setToastData]);
 
+  // Save Handler for quick Edit
+  const handleSave = (updatedData: DataItemFormAddTable[]) => {
+    // Update the state with the new data
+    setEditedSelectedItems(updatedData);
+    // setSelectedItems(updatedDate);
+    console.log(updatedData);
+  };
   return (
     <motion.div
       className="z-10 w-full min-h-full max-w-4xl flex flex-col items-center space-y-5 text-center"
@@ -501,6 +517,7 @@ const AddMenuForm = () => {
                 emptyMessage="No Categories selected"
                 buttonText="Add Categories"
                 onAddClick={handleAddClick}
+                onSave={handleSave}
               />
               <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
                 Select the categories and items you want to be in this menu.

@@ -37,6 +37,29 @@ interface IFormInput {
 }
 
 const AddModifierGroupForm = () => {
+  const [modifierssOption, setModifiersOption] = useState<any[]>([]);
+  const [confirmationRemoval, setConfirmationRemoval] = useState(false);
+  const [remmovingId, setRemovingId] = useState<string>("");
+  const [btnLoading, setBtnLoading] = useState(false);
+  const { setToastData } = useGlobalStore();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [tempSelectedItems, setTempSelectedItems] = useState<
+    ItemsDropDownType[]
+  >([]);
+  const [selectedItems, setSelectedItems] = useState<any[]>([]);
+  const [changesMenu, setChangesMenu] = useState<any>([]);
+
+  const { setEditModId, setisEditMod } = useModStore();
+
+  const [prevItemsbfrEdit, setprevItemsbfrEdit] = useState<ItemsDropDownType[]>(
+    []
+  );
+  const PricingTypeOptions: any[] = [
+    { value: PriceTypeEnum.FreeOfCharge, label: "Free of Charge" },
+    { value: PriceTypeEnum.IndividualPrice, label: "Individual Price" },
+    { value: PriceTypeEnum.SamePrice, label: "Same Price" },
+  ];
+
   const {
     handleSubmit,
     formState: { errors },
@@ -62,6 +85,7 @@ const AddModifierGroupForm = () => {
     setisAddModifierGroupModalOpen,
     setisAddModifierModalOpen,
   } = useMenuOptionsStore();
+
   const {
     editModGroupId,
     isEditModGroup,
@@ -72,28 +96,6 @@ const AddModifierGroupForm = () => {
     setMinSelectionsCount,
     setModifiersLength,
   } = useModGroupStore();
-  const [modifierssOption, setModifiersOption] = useState<any[]>([]);
-  const [confirmationRemoval, setConfirmationRemoval] = useState(false);
-  const [remmovingId, setRemovingId] = useState<string>("");
-  const [btnLoading, setBtnLoading] = useState(false);
-  const { setToastData } = useGlobalStore();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [tempSelectedItems, setTempSelectedItems] = useState<
-    ItemsDropDownType[]
-  >([]);
-  const [selectedItems, setSelectedItems] = useState<any[]>([]);
-  const [changesMenu, setChangesMenu] = useState<any>([]);
-
-  const { setEditModId, setisEditMod } = useModStore();
-
-  const [prevItemsbfrEdit, setprevItemsbfrEdit] = useState<ItemsDropDownType[]>(
-    []
-  );
-  const PricingTypeOptions: any[] = [
-    { value: PriceTypeEnum.FreeOfCharge, label: "Free of Charge" },
-    { value: PriceTypeEnum.IndividualPrice, label: "Individual Price" },
-    { value: PriceTypeEnum.SamePrice, label: "Same Price" },
-  ];
 
   useEffect(() => {
     if (selectedItems.length > 0) {

@@ -219,7 +219,7 @@ const RestaurantEditAvailabilityForm: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex justify-between items-center border-t pt-4">
+        <div className="flex justify-between items-center border-t pt-3">
           <div>
             <h2 className="text font-medium text-gray-700">Address Line 2</h2>
             <p className="text-xs text-neutral-500">
@@ -228,7 +228,7 @@ const RestaurantEditAvailabilityForm: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex justify-between items-center border-t pt-4">
+        <div className="flex justify-between items-center border-t pt-3">
           <div>
             <h2 className="text font-medium text-gray-700">City</h2>
             <p className="text-xs text-neutral-500">
@@ -237,7 +237,7 @@ const RestaurantEditAvailabilityForm: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex justify-between items-center border-t pt-4">
+        <div className="flex justify-between items-center border-t pt-3">
           <div>
             <h2 className="text font-medium text-gray-700">State</h2>
             <p className="text-xs text-neutral-500">
@@ -246,7 +246,7 @@ const RestaurantEditAvailabilityForm: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex justify-between items-center border-t pt-4">
+        <div className="flex justify-between items-center border-t pt-3">
           <div>
             <h2 className="text font-medium text-gray-700">Zipcode</h2>
             <p className="text-xs text-neutral-500">
@@ -255,7 +255,7 @@ const RestaurantEditAvailabilityForm: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex justify-between items-center border-t pt-4">
+        <div className="flex justify-between items-center border-t pt-3">
           <div>
             <h2 className="text font-medium text-gray-700">Place</h2>
             <p className="text-xs text-neutral-500">
@@ -264,7 +264,7 @@ const RestaurantEditAvailabilityForm: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex justify-between border-t pt-4 items-center ">
+        <div className="flex justify-between border-t pt-3 items-center ">
           <div>
             <h2 className="text font-medium text-gray-700">Time Zone</h2>
             <p className="text-xs text-neutral-500">

@@ -2,8 +2,10 @@ import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import FullPageModal from "@/components/common/modal/fullPageModal";
 import { BeverageCategory, FoodType, MeatType } from "@/generated/graphql";
+import useGlobalStore from "@/store/global";
 import useRestaurantEditStore from "@/store/useRestaurantEditStore";
 import { sdk } from "@/utils/graphqlClient";
+import { extractErrorMessage } from "@/utils/utilFUncs";
 import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { MdOutlineEdit } from "react-icons/md";
@@ -13,9 +15,9 @@ interface IFormInput {
   instagramLink?: string;
   facebookLink?: string;
   twitterLink?: string;
-  beverageCategory?: BeverageCategory[];
-  foodType?: FoodType[];
-  meatType?: MeatType;
+  beverageCategory?: { value: BeverageCategory; label: string }[];
+  foodType?: { value: FoodType; label: string }[];
+  meatType?: { value: MeatType; label: string };
 }
 
 const formatMeatType = (value: MeatType | undefined) => {
@@ -71,23 +73,20 @@ const RestaurantEditAdditionalDetails: React.FC = () => {
 
   const [isEditing, setIsEditing] = useState(false);
   const [btnLoading, setBtnLoading] = useState(false);
-
-  const beverageCategoryOptions: { value: BeverageCategory; label: string }[] =
-    Object.values(BeverageCategory).map((val) => ({
+  const { setToastData } = useGlobalStore();
+  const beverageCategoryOptions = Object.values(BeverageCategory).map(
+    (val) => ({
       value: val,
       label: formatBeverageCategory(val),
-    }));
+    })
+  );
 
-  const foodTypeOptions: { value: FoodType; label: string }[] = Object.values(
-    FoodType
-  ).map((val) => ({
+  const foodTypeOptions = Object.values(FoodType).map((val) => ({
     value: val,
     label: formatFoodType(val),
   }));
 
-  const meatTypeOptions: { value: MeatType; label: string }[] = Object.values(
-    MeatType
-  ).map((val) => ({
+  const meatTypeOptions = Object.values(MeatType).map((val) => ({
     value: val,
     label: formatMeatType(val),
   }));
@@ -95,17 +94,25 @@ const RestaurantEditAdditionalDetails: React.FC = () => {
   const {
     handleSubmit,
     control,
-    register,
     setValue,
     formState: { errors },
+    register,
   } = useForm<IFormInput>({
     defaultValues: {
       instagramLink,
       facebookLink,
       twitterLink,
-      beverageCategory,
-      foodType,
-      meatType,
+      beverageCategory: beverageCategory?.map((value) => ({
+        value,
+        label: formatBeverageCategory(value),
+      })),
+      foodType: foodType?.map((value) => ({
+        value,
+        label: formatFoodType(value),
+      })),
+      meatType: meatType
+        ? { value: meatType, label: formatMeatType(meatType) }
+        : undefined,
     },
   });
 
@@ -113,9 +120,26 @@ const RestaurantEditAdditionalDetails: React.FC = () => {
     setValue("instagramLink", instagramLink);
     setValue("facebookLink", facebookLink);
     setValue("twitterLink", twitterLink);
-    setValue("beverageCategory", beverageCategory);
-    setValue("foodType", foodType);
-    setValue("meatType", meatType as MeatType);
+    setValue(
+      "beverageCategory",
+      beverageCategory?.map((value) => ({
+        value,
+        label: formatBeverageCategory(value),
+      }))
+    );
+    setValue(
+      "foodType",
+      foodType?.map((value) => ({
+        value,
+        label: formatFoodType(value),
+      }))
+    );
+    setValue(
+      "meatType",
+      meatType
+        ? { value: meatType, label: formatMeatType(meatType) }
+        : undefined
+    );
   }, [
     instagramLink,
     facebookLink,
@@ -129,29 +153,40 @@ const RestaurantEditAdditionalDetails: React.FC = () => {
   const onSubmit = async (data: IFormInput) => {
     setBtnLoading(true);
     try {
-      await sdk.updateRestaurantDetails({
+      const res = await sdk.updateRestaurantDetails({
         input: {
           socialInfo: {
             instagram: data.instagramLink,
             facebook: data.facebookLink,
             twitter: data.twitterLink,
           },
-          beverageCategory: data.beverageCategory,
-          foodType: data.foodType,
-          meatType: data.meatType,
+          beverageCategory: data.beverageCategory?.map(
+            (option) => option.value
+          ),
+          foodType: data.foodType?.map((option) => option.value),
+          meatType: data.meatType?.value,
         },
       });
 
-      setInstagramLink(data.instagramLink || "");
-      setFacebookLink(data.facebookLink || "");
-      setTwitterLink(data.twitterLink || "");
-      setBeverageCategory(data.beverageCategory || []);
-      setFoodType(data.foodType || []);
-      setMeatType(data.meatType || MeatType.Halal);
-
-      // Handle success logic here (e.g., show a success message)
+      if (res.updateRestaurantDetails) {
+        setFacebookLink(data.facebookLink || "");
+        setTwitterLink(data.twitterLink || "");
+        setBeverageCategory(
+          data.beverageCategory?.map((option) => option.value) || []
+        );
+        setFoodType(data.foodType?.map((option) => option.value) || []);
+        setMeatType(data.meatType?.value || MeatType.Halal);
+        setInstagramLink(data.instagramLink || "");
+        setToastData({
+          message: "Restaurant Additional Information Updated Successfully",
+          type: "success",
+        });
+      }
     } catch (error) {
-      // Handle error logic here (e.g., show an error message)
+      setToastData({
+        message: extractErrorMessage(error),
+        type: "error",
+      });
       console.error("Error updating restaurant details:", error);
     } finally {
       setBtnLoading(false);
@@ -172,28 +207,28 @@ const RestaurantEditAdditionalDetails: React.FC = () => {
       </div>
 
       <div className="space-y-4">
-        <div className="border-b pb-4">
+        <div className="border-b pb-3">
           <h3 className="text font-medium text-gray-700">Instagram Link</h3>
           <p className="text-xs text-neutral-500">
             {instagramLink || "No Instagram link specified"}
           </p>
         </div>
 
-        <div className="border-b pb-4">
+        <div className="border-b pb-3">
           <h3 className="text font-medium text-gray-700">Facebook Link</h3>
           <p className="text-xs text-neutral-500">
             {facebookLink || "No Facebook link specified"}
           </p>
         </div>
 
-        <div className="border-b pb-4">
+        <div className="border-b pb-3">
           <h3 className="text font-medium text-gray-700">Twitter Link</h3>
           <p className="text-xs text-neutral-500">
             {twitterLink || "No Twitter link specified"}
           </p>
         </div>
 
-        <div className="border-b pb-4">
+        <div className="border-b pb-3">
           <h3 className="text font-medium text-gray-700">Beverage Category</h3>
           <p className="text-xs text-neutral-500">
             {beverageCategory && beverageCategory.length > 0
@@ -202,7 +237,7 @@ const RestaurantEditAdditionalDetails: React.FC = () => {
           </p>
         </div>
 
-        <div className="border-b pb-4">
+        <div className="border-b pb-3">
           <h3 className="text font-medium text-gray-700">Food Type</h3>
           <p className="text-xs text-neutral-500">
             {foodType && foodType.length > 0
@@ -305,9 +340,8 @@ const RestaurantEditAdditionalDetails: React.FC = () => {
                 <Select
                   {...field}
                   isMulti
-                  options={beverageCategoryOptions as any}
-                  placeholder="Select Beverage Category"
-                  className="input-primary"
+                  options={beverageCategoryOptions}
+                  classNamePrefix="react-select"
                 />
               )}
             />
@@ -332,9 +366,8 @@ const RestaurantEditAdditionalDetails: React.FC = () => {
                 <Select
                   {...field}
                   isMulti
-                  options={foodTypeOptions as any}
-                  placeholder="Select Food Type"
-                  className="input-primary"
+                  options={foodTypeOptions}
+                  classNamePrefix="react-select"
                 />
               )}
             />
@@ -356,9 +389,8 @@ const RestaurantEditAdditionalDetails: React.FC = () => {
               render={({ field }) => (
                 <Select
                   {...field}
-                  options={meatTypeOptions as any}
-                  placeholder="Select Meat Type"
-                  className="input-primary"
+                  options={meatTypeOptions}
+                  classNamePrefix="react-select"
                 />
               )}
             />
@@ -367,14 +399,14 @@ const RestaurantEditAdditionalDetails: React.FC = () => {
             )}
           </div>
 
-          <div className="flex justify-end mt-6">
+          <div className="flex justify-end">
             <CButton
               variant={ButtonType.Primary}
+              loading={btnLoading}
               type="submit"
               className="w-full"
-              disabled={btnLoading}
             >
-              {btnLoading ? "Updating..." : "Update Details"}
+              Update
             </CButton>
           </div>
         </form>

@@ -81,7 +81,7 @@ const UserBasicInformationForm: React.FC = () => {
         <div className="flex justify-between items-center mb-2 w-full">
           <h2 className="text-xl font-semibold">User Information</h2>
         </div>
-        <div className="flex justify-between items-center border-b pb-4">
+        <div className="flex justify-between items-center border-b pb-3">
           <div>
             <h2 className="text-md font-semibold text-gray-900">First Name</h2>
             <p className="text-sm text-gray-600">
@@ -96,7 +96,7 @@ const UserBasicInformationForm: React.FC = () => {
             }}
           />
         </div>
-        <div className="flex justify-between items-center border-b pb-4">
+        <div className="flex justify-between items-center border-b pb-3">
           <div>
             <h2 className="text-md font-semibold text-gray-900">Last Name</h2>
             <p className="text-sm text-gray-600">
@@ -111,7 +111,7 @@ const UserBasicInformationForm: React.FC = () => {
             }}
           />
         </div>
-        <div className="flex justify-between items-center border-b pb-4">
+        <div className="flex justify-between items-center border-b pb-3">
           <div>
             <h2 className="text-md font-semibold text-gray-900">Email</h2>
             <p className="text-sm text-gray-600">{email}</p>
@@ -122,7 +122,7 @@ const UserBasicInformationForm: React.FC = () => {
             </button>
           </div>
         </div>
-        <div className="flex justify-between items-center border-b pb-4">
+        <div className="flex justify-between items-center border-b pb-3">
           <div>
             <h2 className="text-md font-semibold text-gray-900">Phone</h2>
             <p className="text-sm text-gray-600">

@@ -130,14 +130,14 @@ const AggregatorList: React.FC<AggregatorListProps> = ({ integrations }) => {
   useEffect(() => {
     const fetchIntegrations = async () => {
       try {
-        const response = await sdk.getAllIntegrations();
+        const response = await sdk.GetAllIntegrations();
         const integrationData = response?.getAllIntegrations || [];
 
         // Create a map of integrations for quick lookup
         const integrationMap = new Map<string, boolean>(
           integrationData.map(({ platform, connectionStatus }) => [
             platform,
-            connectionStatus === ConnectionStatusEnum.Connected,
+            connectionStatus === IntegrationConnectionStatusEnum.Connected,
           ])
         );
 
