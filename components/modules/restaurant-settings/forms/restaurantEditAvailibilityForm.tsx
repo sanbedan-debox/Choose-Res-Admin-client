@@ -149,7 +149,6 @@ const RestaurantEditAvailabilityForm: React.FC = () => {
     try {
       const formattedAvailability = formatAvailability(availability);
       const parseIntZip = parseInt(formState.zipcode.toString());
-
       const response = await sdk.updateRestaurantDetails({
         input: {
           address: {
@@ -165,12 +164,16 @@ const RestaurantEditAvailabilityForm: React.FC = () => {
               displayName: selectedPlace?.label ?? "",
               placeId: selectedPlace?.value ?? "",
             },
+
             coordinate: {
               coordinates: coords,
             },
           },
           availability: formattedAvailability,
-          timezone: data.timeZone,
+          timezone: {
+            timezoneId: data.timeZone?.id,
+            timezoneName: data.timeZone?.value,
+          },
         },
       });
 
