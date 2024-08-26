@@ -240,6 +240,16 @@ const AddModifierGroupForm = () => {
             "An Modifier Group cannot be added without price, please add a numerical value that is greater than zero to save and continue",
           type: "error",
         });
+        return;
+      }
+
+      if (data?.desc?.length <= 60 || data?.desc?.length >= 120) {
+        setToastData({
+          message:
+            "Modifier Group Description should be between 60 to 120 characters",
+          type: "error",
+        });
+        return;
       }
       const parsedMaxSelection =
         parseFloat(data?.maxSelections?.toString()) || 0;

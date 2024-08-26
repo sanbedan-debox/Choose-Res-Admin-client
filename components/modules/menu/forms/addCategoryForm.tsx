@@ -236,6 +236,16 @@ const AddCategoryForm = () => {
           return;
         }
       }
+
+      if (data?.description?.length <= 60 || data?.description?.length >= 120) {
+        setToastData({
+          message:
+            "Modifier Description should be between 60 to 120 characters",
+          type: "error",
+        });
+        return;
+      }
+
       const formattedAvailability = formatAvailability(availability);
 
       const updateInput: any = {

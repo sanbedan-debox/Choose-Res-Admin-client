@@ -8,7 +8,11 @@ import { useForm } from "react-hook-form";
 
 import useMenuOptionsStore from "@/store/menuOptions";
 import useSubCategoryStore from "@/store/subCategoryStore";
-import { extractErrorMessage, generateUniqueName } from "@/utils/utilFUncs";
+import {
+  extractErrorMessage,
+  generateUniqueName,
+  isValidNameAlphabetic,
+} from "@/utils/utilFUncs";
 
 interface IFormInput {
   name: string;
@@ -85,6 +89,22 @@ const AddSubCategoryForm = () => {
       const updateInput: any = {
         id: editSubCategoryId || "",
       };
+      if (!isValidNameAlphabetic(data?.name)) {
+        setToastData({
+          message:
+            "Please use only alphabets and numbers while adding or updating name.",
+          type: "error",
+        });
+        return;
+      }
+      if (data?.desc?.length <= 60 || data?.desc?.length >= 120) {
+        setToastData({
+          message:
+            "Modifier Description should be between 60 to 120 characters",
+          type: "error",
+        });
+        return;
+      }
 
       if (data.name !== changesMenu?.name) {
         updateInput.name = data.name;
