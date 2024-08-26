@@ -50,6 +50,12 @@ interface IFormInput {
   } | null;
 }
 
+type ChangeItem = {
+  _id: string;
+  name?: string;
+  price?: number;
+};
+
 interface IOption {
   type: string;
   _id: string;
@@ -693,7 +699,6 @@ const AddItemForm = () => {
   );
 
   const headings = [
-    { title: "Price", dataKey: "price" },
     { title: "Actions", dataKey: "name", render: renderActions },
   ];
 
@@ -761,6 +766,83 @@ const AddItemForm = () => {
     setisAddModifierGroupModalOpen(true);
     setEditModGroupId(id);
     setisEditModGroup(true);
+  };
+
+  interface DataItemFormAddTable {
+    _id: string;
+    [key: string]: any;
+  }
+  // const handleSave = async (updatedData: DataItemFormAddTable[]) => {
+  //   const formattedData = updatedData.map((item) => ({
+  //     _id: item._id,
+  //     name: item.name,
+  //   }));
+
+  //   try {
+  //     const res = await sdk.bulkUpdateModifierGroups({ input: formattedData });
+  //     if (res && res.bulkUpdateModifierGroups) {
+  //       setSelectedItems(formattedData as ItemsDropDownType[]);
+
+  //       setToastData({
+  //         message: "Modifier groups updated successfully",
+  //         type: "success",
+  //       });
+  //     }
+  //   } catch (error) {
+  //     setToastData({
+  //       message: extractErrorMessage(error),
+  //       type: "error",
+  //     });
+  //   }
+  // };
+  const handleSave = async (updatedData: DataItemFormAddTable[]) => {
+    // Create a map for quick lookup
+    const selectedItemsMap = new Map(
+      selectedItems.map((item) => [item._id, item])
+    );
+
+    // Determine which items have been changed
+    const changedData: ChangeItem[] = updatedData.reduce(
+      (acc: ChangeItem[], item) => {
+        const selectedItem = selectedItemsMap.get(item._id);
+        if (selectedItem) {
+          const changes: ChangeItem = { _id: item._id };
+
+          if (selectedItem.name !== item.name) {
+            changes.name = item.name;
+          }
+          if (Object.keys(changes).length > 1) {
+            acc.push(changes);
+          }
+        }
+        return acc;
+      },
+      []
+    );
+
+    // Log the formatted data
+    console.log("Formatted Data:", changedData);
+
+    // Call the API with the formatted data
+    try {
+      const res = await sdk.bulkUpdateModifierGroups({ input: changedData });
+      if (res && res.bulkUpdateModifierGroups) {
+        // Update the state with the new data
+        setSelectedItems(updatedData as ItemsDropDownType[]);
+
+        // Show success toast
+        setToastData({
+          message: "Modifier groups updated successfully",
+          type: "success",
+        });
+      }
+    } catch (error) {
+      // Show error toast
+      setToastData({
+        message: extractErrorMessage(error),
+        type: "error",
+      });
+    }
   };
 
   const headingsDropdown = [
@@ -1239,6 +1321,7 @@ const AddItemForm = () => {
               emptyMessage="No Modifier Groups available"
               buttonText="Add Modifier Groups"
               onAddClick={handleAddClick}
+              onSave={handleSave}
             />
             <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
               Modifier Groups allow your customer to customize an item

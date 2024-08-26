@@ -321,6 +321,38 @@ const AddMenuForm = () => {
     fetch();
   }, [fetchMenuDatas, setToastData, selectedItems]);
 
+  // useEffect(() => {
+  //   const fetch = async () => {
+  //     try {
+  //       const categories = await sdk.getCategoriesForMenuDropdown();
+  //       if (categories && categories.getCategories) {
+  //         const formattedItemsList = categories.getCategories.map(
+  //           (cats: { name: string; _id: string }) => ({
+  //             _id: cats._id,
+  //             name: cats?.name,
+  //           })
+  //         );
+
+  //         const updatedSelectedItems = selectedItems.map((selectedItem) => {
+  //           const match = formattedItemsList.find(
+  //             (item) => item._id === selectedItem._id
+  //           );
+  //           return match ? { ...selectedItem, ...match } : selectedItem;
+  //         });
+
+  //         setSelectedItems(updatedSelectedItems);
+  //       }
+  //     } catch (error: any) {
+  //       const errorMessage = extractErrorMessage(error);
+  //       setToastData({
+  //         type: "error",
+  //         message: errorMessage,
+  //       });
+  //     }
+  //   };
+  //   fetch();
+  // }, [fetchMenuDatas]);
+
   const handleRemoveCategory = async () => {
     setSelectedItems((prevSelected) =>
       prevSelected.filter((item) => item._id !== removingId)

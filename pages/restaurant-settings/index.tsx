@@ -152,7 +152,7 @@ const RestaurantSettings: NextPageWithLayout = () => {
       {contentList.length > 0 ? (
         <MenuSection contentList={contentList} />
       ) : (
-        <>You don't have access to see and update Restaurant Details</>
+        <>{`You don't have access to see and update Restaurant Details`}</>
       )}
     </div>
   );

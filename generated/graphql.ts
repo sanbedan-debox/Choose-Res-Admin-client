@@ -718,6 +718,8 @@ export type Mutation = {
   adminUserDetailsRejection: Scalars['Boolean']['output'];
   adminUserDetailsVerification: Scalars['Boolean']['output'];
   blockAdmin: Scalars['Boolean']['output'];
+  bulkUpdateModifierGroups: Scalars['Boolean']['output'];
+  bulkUpdateModifiers: Scalars['Boolean']['output'];
   businessOnboarding: Scalars['Boolean']['output'];
   changeCategoryStatus: Scalars['Boolean']['output'];
   changeItemStatus: Scalars['Boolean']['output'];
@@ -885,6 +887,16 @@ export type MutationAdminUserDetailsVerificationArgs = {
 export type MutationBlockAdminArgs = {
   id: Scalars['String']['input'];
   updateStatus: AdminStatus;
+};
+
+
+export type MutationBulkUpdateModifierGroupsArgs = {
+  input: Array<UpdateBulkModifierGroupInput>;
+};
+
+
+export type MutationBulkUpdateModifiersArgs = {
+  input: Array<UpdateBulkModifierInput>;
 };
 
 
@@ -1650,6 +1662,17 @@ export type TimezoneDataInput = {
   timezoneName: Scalars['String']['input'];
 };
 
+export type UpdateBulkModifierGroupInput = {
+  _id: Scalars['String']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateBulkModifierInput = {
+  _id: Scalars['String']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  price?: InputMaybe<Scalars['Float']['input']>;
+};
+
 export type UpdateBusinessDetailsInput = {
   _id: Scalars['ID']['input'];
   address?: InputMaybe<AddressInfoInput>;
@@ -2205,6 +2228,20 @@ export type AddModifierToGroupMutationVariables = Exact<{
 
 
 export type AddModifierToGroupMutation = { __typename?: 'Mutation', addModifierToGroup: boolean };
+
+export type BulkUpdateModifierGroupsMutationVariables = Exact<{
+  input: Array<UpdateBulkModifierGroupInput> | UpdateBulkModifierGroupInput;
+}>;
+
+
+export type BulkUpdateModifierGroupsMutation = { __typename?: 'Mutation', bulkUpdateModifierGroups: boolean };
+
+export type BulkUpdateModifiersMutationVariables = Exact<{
+  input: Array<UpdateBulkModifierInput> | UpdateBulkModifierInput;
+}>;
+
+
+export type BulkUpdateModifiersMutation = { __typename?: 'Mutation', bulkUpdateModifiers: boolean };
 
 export type GetModifiersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2975,6 +3012,16 @@ export const AddModifierToGroupDocument = gql`
   addModifierToGroup(modifierGroupId: $modifierGroupId, modifierIds: $modifierIds)
 }
     `;
+export const BulkUpdateModifierGroupsDocument = gql`
+    mutation bulkUpdateModifierGroups($input: [UpdateBulkModifierGroupInput!]!) {
+  bulkUpdateModifierGroups(input: $input)
+}
+    `;
+export const BulkUpdateModifiersDocument = gql`
+    mutation bulkUpdateModifiers($input: [UpdateBulkModifierInput!]!) {
+  bulkUpdateModifiers(input: $input)
+}
+    `;
 export const GetModifiersDocument = gql`
     query getModifiers {
   getModifiers {
@@ -3476,6 +3523,12 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     addModifierToGroup(variables: AddModifierToGroupMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddModifierToGroupMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<AddModifierToGroupMutation>(AddModifierToGroupDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'addModifierToGroup', 'mutation', variables);
+    },
+    bulkUpdateModifierGroups(variables: BulkUpdateModifierGroupsMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<BulkUpdateModifierGroupsMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<BulkUpdateModifierGroupsMutation>(BulkUpdateModifierGroupsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'bulkUpdateModifierGroups', 'mutation', variables);
+    },
+    bulkUpdateModifiers(variables: BulkUpdateModifiersMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<BulkUpdateModifiersMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<BulkUpdateModifiersMutation>(BulkUpdateModifiersDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'bulkUpdateModifiers', 'mutation', variables);
     },
     getModifiers(variables?: GetModifiersQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetModifiersQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetModifiersQuery>(GetModifiersDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getModifiers', 'query', variables);

@@ -27,7 +27,7 @@ const MenuLayout = ({ children }: Props) => {
     <MainLayout>
       <div className="flex flex-col space-y-2">
         <span
-          className="text-sm flex items-center hover:underline text-primary cursor-pointer"
+          className="text-sm flex items-center hover:underline text-primary cursor-pointer w-28"
           onClick={() => {
             router.push("/menu");
           }}

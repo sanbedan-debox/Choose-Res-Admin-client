@@ -8,6 +8,7 @@ import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import debounce from "lodash.debounce";
 import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { MdOutlineEdit } from "react-icons/md";
 import Select from "react-select";
 import AsyncSelect from "react-select/async";
@@ -41,7 +42,11 @@ const loadOptions = (
 };
 
 const UserLocationForm: React.FC = () => {
-  const { statesOptions } = useMasterStore();
+  const [coords, setCoords] = useState<number[]>([]);
+
+  const [selectedPlace, setSelectedPlace] = useState<PlacesType | null>(null);
+  const debouncedLoadOptions = debounce(loadOptions, 800);
+
   const {
     addressLine1,
     addressLine2,
@@ -51,16 +56,45 @@ const UserLocationForm: React.FC = () => {
     cords,
     place,
     id,
+
     setAddressLine1,
     setAddressLine2,
     setCity,
+    setState,
     setCords,
     setPlace,
+
     setZipcode,
-    setState,
   } = useProfileStore();
 
+  const { timezonesOptions, statesOptions } = useMasterStore();
   const [isFullPageModalOpen, setIsFullPageModalOpen] = useState(false);
+
+  useEffect(() => {
+    setCoords(cords);
+  }, [cords]);
+
+  const {
+    register,
+    handleSubmit,
+    control,
+    setValue,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      addressLine1: addressLine1 || "",
+      addressLine2: addressLine2 || "",
+      city: city || "",
+      state: state || "",
+      zipcode: zipcode || "",
+      cords: cords || "",
+      place: place || "",
+    },
+  });
+  const handleInputChange = (field: keyof IFormInput, value: any) => {
+    setFormState((prev) => ({ ...prev, [field]: value }));
+  };
+  const { setToastData } = useGlobalStore();
   const [formState, setFormState] = useState<IFormInput>({
     addressLine1,
     addressLine2,
@@ -69,44 +103,30 @@ const UserLocationForm: React.FC = () => {
     zipcode,
     location: { label: place?.displayName ?? "", value: place?.placeId ?? "" },
   });
-
-  const debouncedLoadOptions = debounce(loadOptions, 800);
-
-  const handleInputChange = (field: keyof IFormInput, value: any) => {
-    setFormState((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const [selectedPlace, setSelectedPlace] = useState<PlacesType | null>(null);
-
   useEffect(() => {
     setSelectedPlace({
       label: place?.displayName,
       value: place?.placeId,
     });
   }, [place]);
-
-  const { setToastData } = useGlobalStore();
-  const [btnLoading, setBtnLoading] = useState(false);
-  const [coords, setCoords] = useState<number[]>(cords);
-
-  const updateBusinessInfo = async () => {
-    const hasChanges =
-      addressLine1 !== formState.addressLine1 ||
-      addressLine2 !== formState.addressLine2 ||
-      city !== formState.city ||
-      state?.id !== formState.state?.id ||
-      zipcode !== formState.zipcode ||
-      place?.placeId !== selectedPlace?.value ||
-      cords !== coords;
-
-    if (!hasChanges) {
-      setIsFullPageModalOpen(false);
-      return;
+  const onPlaceChange = async (option: PlacesType | null) => {
+    setSelectedPlace(option);
+    setFormState((prev) => ({
+      ...prev,
+      location: option ?? { label: "", value: "" },
+    }));
+    const d = await sdk.PlaceDetails({
+      placeId: option?.value ?? "",
+    });
+    if (d && d.getPlaceDetails) {
+      setCords([d.getPlaceDetails.latitude, d.getPlaceDetails.longitude]);
     }
+  };
 
+  const onSubmit = async (data: any) => {
     try {
-      setBtnLoading(true);
       const parseIntZip = parseInt(formState.zipcode.toString());
+
       const response = await sdk.updateBusinessDetails({
         input: {
           _id: id,
@@ -129,36 +149,30 @@ const UserLocationForm: React.FC = () => {
           },
         },
       });
+
       if (response && response.updateBusinessDetails) {
-        setCoords(coords);
-        setAddressLine1(formState.addressLine1);
-        setAddressLine2(formState.addressLine2);
-        setCity(formState.city);
+        setAddressLine1(data.addressLine1);
+        setAddressLine2(data.addressLine2);
         setState({
-          id: formState.state?.id || "",
-          value: formState.state?.value || "",
+          id: data.state.id ?? "",
+          value: data.state.value ?? "",
         });
-        setPlace({
-          displayName: selectedPlace?.label ?? "",
-          placeId: selectedPlace?.value ?? "",
-        });
-        setZipcode(parseIntZip);
-        setCoords(coords);
+        setCity(data.city);
+        setZipcode(data.zipcode);
+        setCords([coords[0], coords[1]]);
+        setPlace(data.place);
 
         setIsFullPageModalOpen(false);
         setToastData({
-          message: "Business Location updated successfully!",
+          message: "Restaurant Location and Availibility Updated Successfully",
           type: "success",
         });
       }
     } catch (error) {
-      const errorMessage = extractErrorMessage(error);
       setToastData({
+        message: extractErrorMessage(error),
         type: "error",
-        message: errorMessage,
       });
-    } finally {
-      setBtnLoading(false);
     }
   };
 
@@ -234,50 +248,75 @@ const UserLocationForm: React.FC = () => {
         onClose={() => setIsFullPageModalOpen(false)}
         title="Edit Location Details"
         actionButtonLabel="Update"
-        onActionButtonClick={updateBusinessInfo}
+        onActionButtonClick={() => {}}
       >
-        <div className="space-y-4 max-w-4xl mx-auto">
-          <div className="col-span-2">
-            <label className="block mb-2 text-sm font-medium text-left text-gray-700">
+        <form
+          className="space-y-4 md:space-y-3 w-full max-w-3xl mx-auto"
+          onSubmit={handleSubmit(onSubmit)}
+        >
+          <div>
+            <label
+              htmlFor="addressLine1"
+              className="block mb-2 text-sm font-medium text-gray-700"
+            >
               Address Line 1
             </label>
             <input
               type="text"
-              value={formState.addressLine1}
-              onChange={(e) =>
-                handleInputChange("addressLine1", e.target.value)
-              }
+              {...register("addressLine1", {
+                required: "Address line 1 is required",
+              })}
+              id="addressLine1"
               className="input input-primary"
-              placeholder="Enter your Address Line 1"
+              placeholder="Enter address line 1"
             />
+            {errors.addressLine1 && (
+              <p className="text-red-500 text-sm">
+                {errors.addressLine1.message}
+              </p>
+            )}
           </div>
 
-          <div className="col-span-2">
-            <label className="block mb-2 text-sm font-medium text-left text-gray-700">
+          <div>
+            <label
+              htmlFor="addressLine2"
+              className="block mb-2 text-sm font-medium text-gray-700"
+            >
               Address Line 2
             </label>
             <input
               type="text"
-              value={formState.addressLine2}
-              onChange={(e) =>
-                handleInputChange("addressLine2", e.target.value)
-              }
+              {...register("addressLine2", {
+                required: "Address line 2 is required",
+              })}
+              id="addressLine2"
               className="input input-primary"
-              placeholder="Enter your Address Line 2"
+              placeholder="Enter address line 2"
             />
+            {errors.addressLine2 && (
+              <p className="text-red-500 text-sm">
+                {errors.addressLine2.message}
+              </p>
+            )}
           </div>
 
-          <div className="col-span-2">
-            <label className="block mb-2 text-sm font-medium text-left text-gray-700">
+          <div>
+            <label
+              htmlFor="city"
+              className="block mb-2 text-sm font-medium text-gray-700"
+            >
               City
             </label>
             <input
               type="text"
-              value={formState.city}
-              onChange={(e) => handleInputChange("city", e.target.value)}
+              {...register("city", { required: "City is required" })}
+              id="city"
               className="input input-primary"
-              placeholder="City"
+              placeholder="Enter city"
             />
+            {errors.city && (
+              <p className="text-red-500 text-sm">{errors.city.message}</p>
+            )}
           </div>
 
           <div className="col-span-2">
@@ -307,19 +346,24 @@ const UserLocationForm: React.FC = () => {
             />
           </div>
 
-          <div className="col-span-2">
-            <label className="block mb-2 text-sm font-medium text-left text-gray-700">
+          <div>
+            <label
+              htmlFor="zipcode"
+              className="block mb-2 text-sm font-medium text-gray-700"
+            >
               Zipcode
             </label>
             <input
               type="text"
-              value={formState.zipcode}
-              onChange={(e) => handleInputChange("zipcode", e.target.value)}
+              {...register("zipcode", { required: "Zipcode is required" })}
+              id="zipcode"
               className="input input-primary"
-              placeholder="Zipcode"
+              placeholder="Enter zipcode"
             />
+            {errors.zipcode && (
+              <p className="text-red-500 text-sm">{errors.zipcode.message}</p>
+            )}
           </div>
-
           <div className="col-span-2">
             <label className="block mb-2 text-sm font-medium text-left text-gray-700">
               Search Location
@@ -330,26 +374,21 @@ const UserLocationForm: React.FC = () => {
               placeholder="Search location"
               value={selectedPlace}
               menuPlacement="auto"
-              // menuPlacement="auto"
               loadOptions={debouncedLoadOptions}
-              onChange={(option) => {
-                setSelectedPlace(option as PlacesType);
-              }}
+              onChange={onPlaceChange}
             />
           </div>
-          <div className="flex justify-end ">
+
+          <div className="flex justify-end space-x-4">
             <CButton
-              type="submit"
               className="w-full"
               variant={ButtonType.Primary}
-              onClick={() => {
-                updateBusinessInfo();
-              }}
+              onClick={handleSubmit(onSubmit)}
             >
-              Update
+              Save
             </CButton>
           </div>
-        </div>
+        </form>
       </FullPageModal>
     </div>
   );
