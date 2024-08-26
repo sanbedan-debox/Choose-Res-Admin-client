@@ -35,6 +35,11 @@ interface IFormInput {
   commonPrice: number;
   desc: string;
 }
+interface ItemsDropDownType {
+  _id: string;
+  name: string;
+  price: number;
+}
 
 const AddModifierGroupForm = () => {
   const [modifierssOption, setModifiersOption] = useState<any[]>([]);
@@ -48,6 +53,8 @@ const AddModifierGroupForm = () => {
   >([]);
   const [selectedItems, setSelectedItems] = useState<any[]>([]);
   const [changesMenu, setChangesMenu] = useState<any>([]);
+  const [minSelection, setMinSelection] = useState(0);
+  const [maxSelection, setMaxSelection] = useState(1);
 
   const { setEditModId, setisEditMod } = useModStore();
 
@@ -59,25 +66,6 @@ const AddModifierGroupForm = () => {
     { value: PriceTypeEnum.IndividualPrice, label: "Individual Price" },
     { value: PriceTypeEnum.SamePrice, label: "Same Price" },
   ];
-
-  const {
-    handleSubmit,
-    formState: { errors },
-    control,
-    setValue,
-    watch,
-    register,
-  } = useForm<IFormInput>({
-    defaultValues: {
-      maxSelections: 1,
-      minSelections: 0,
-    },
-  });
-  interface ItemsDropDownType {
-    _id: string;
-    name: string;
-    price: number;
-  }
 
   const {
     fetchMenuDatas,
@@ -96,6 +84,20 @@ const AddModifierGroupForm = () => {
     setMinSelectionsCount,
     setModifiersLength,
   } = useModGroupStore();
+
+  const {
+    handleSubmit,
+    formState: { errors },
+    control,
+    setValue,
+    watch,
+    register,
+  } = useForm<IFormInput>({
+    defaultValues: {
+      maxSelections: 1,
+      minSelections: 0,
+    },
+  });
 
   useEffect(() => {
     if (selectedItems.length > 0) {
@@ -139,10 +141,7 @@ const AddModifierGroupForm = () => {
     };
     fetch();
   }, [fetchMenuDatas, setToastData, selectedItems]);
-  const [minSelection, setMinSelection] = useState(0);
-  const [maxSelection, setMaxSelection] = useState(1);
 
-  // const {} = useModGroupStore()
   useEffect(() => {
     const fetchItemData = async () => {
       if (editModGroupId && (isEditModGroup || isDuplicateModifierGroup)) {
@@ -210,89 +209,6 @@ const AddModifierGroupForm = () => {
 
     fetchItemData();
   }, [editModGroupId, setValue, setToastData]);
-
-  const handleAddItem = () => {
-    setisAddModifierModalOpen(true);
-  };
-
-  const handleAddItems = () => {
-    setSelectedItems([]);
-    setSelectedItems(tempSelectedItems);
-    setIsModalOpen(false);
-  };
-
-  const handleItemClick = (item: any) => {
-    setTempSelectedItems((prevSelected) =>
-      prevSelected.some((selectedItem) => selectedItem._id === item._id)
-        ? prevSelected.filter((i) => i._id !== item._id)
-        : [...prevSelected, item]
-    );
-  };
-
-  const handleEditItem = (id: string) => {
-    setisAddModifierModalOpen(true);
-    setEditModId(id);
-    setisEditMod(true);
-  };
-  const renderActions = (rowData: { _id: string }) => (
-    <div className="flex space-x-2 justify-center">
-      <IoIosCloseCircleOutline
-        className="text-red-400 text-lg cursor-pointer"
-        onClick={() => {
-          setConfirmationRemoval(true);
-          setRemovingId(rowData?._id);
-        }}
-      />
-      <MdArrowOutward
-        className="text-primary  cursor-pointer"
-        onClick={() => handleEditItem(rowData?._id)}
-      />
-    </div>
-  );
-  const data = selectedItems.map((item) => ({
-    ...item,
-    actions: renderActions(item),
-  }));
-
-  const headings =
-    watch("pricingType")?.value === PriceTypeEnum.IndividualPrice
-      ? [
-          { title: "Price", dataKey: "price" },
-          { title: "Actions", dataKey: "name", render: renderActions },
-        ]
-      : [{ title: "Actions", dataKey: "name", render: renderActions }];
-
-  const headingsDropdown =
-    watch("pricingType")?.value === PriceTypeEnum.IndividualPrice
-      ? [
-          { title: "Price", dataKey: "price" },
-          {
-            title: "Actions",
-            dataKey: "name",
-            render: (item: { _id: string }) => (
-              <div className="flex space-x-2 justify-center">
-                <MdArrowOutward
-                  className="text-primary cursor-pointer"
-                  onClick={() => handleEditItem(item._id)}
-                />
-              </div>
-            ),
-          },
-        ]
-      : [
-          {
-            title: "Actions",
-            dataKey: "name",
-            render: (item: { _id: string }) => (
-              <div className="flex space-x-2 justify-center">
-                <MdArrowOutward
-                  className="text-primary cursor-pointer"
-                  onClick={() => handleEditItem(item._id)}
-                />
-              </div>
-            ),
-          },
-        ];
 
   const onSubmit = async (data: IFormInput) => {
     try {
@@ -469,6 +385,91 @@ const AddModifierGroupForm = () => {
       setBtnLoading(false);
     }
   };
+
+  const handleAddItem = () => {
+    setisAddModifierModalOpen(true);
+  };
+
+  const handleAddItems = () => {
+    setSelectedItems([]);
+    setSelectedItems(tempSelectedItems);
+    setIsModalOpen(false);
+  };
+
+  const handleItemClick = (item: any) => {
+    setTempSelectedItems((prevSelected) =>
+      prevSelected.some((selectedItem) => selectedItem._id === item._id)
+        ? prevSelected.filter((i) => i._id !== item._id)
+        : [...prevSelected, item]
+    );
+  };
+
+  const handleEditItem = (id: string) => {
+    setisAddModifierModalOpen(true);
+    setEditModId(id);
+    setisEditMod(true);
+  };
+
+  const renderActions = (rowData: { _id: string }) => (
+    <div className="flex space-x-2 justify-center">
+      <IoIosCloseCircleOutline
+        className="text-red-400 text-lg cursor-pointer"
+        onClick={() => {
+          setConfirmationRemoval(true);
+          setRemovingId(rowData?._id);
+        }}
+      />
+      <MdArrowOutward
+        className="text-primary  cursor-pointer"
+        onClick={() => handleEditItem(rowData?._id)}
+      />
+    </div>
+  );
+
+  const data = selectedItems.map((item) => ({
+    ...item,
+    actions: renderActions(item),
+  }));
+
+  const headings =
+    watch("pricingType")?.value === PriceTypeEnum.IndividualPrice
+      ? [
+          { title: "Price", dataKey: "price" },
+          { title: "Actions", dataKey: "name", render: renderActions },
+        ]
+      : [{ title: "Actions", dataKey: "name", render: renderActions }];
+
+  const headingsDropdown =
+    watch("pricingType")?.value === PriceTypeEnum.IndividualPrice
+      ? [
+          { title: "Price", dataKey: "price" },
+          {
+            title: "Actions",
+            dataKey: "name",
+            render: (item: { _id: string }) => (
+              <div className="flex space-x-2 justify-center">
+                <MdArrowOutward
+                  className="text-primary cursor-pointer"
+                  onClick={() => handleEditItem(item._id)}
+                />
+              </div>
+            ),
+          },
+        ]
+      : [
+          {
+            title: "Actions",
+            dataKey: "name",
+            render: (item: { _id: string }) => (
+              <div className="flex space-x-2 justify-center">
+                <MdArrowOutward
+                  className="text-primary cursor-pointer"
+                  onClick={() => handleEditItem(item._id)}
+                />
+              </div>
+            ),
+          },
+        ];
 
   const handleMinCountChange = (count: number) => {
     setValue("minSelections", count);

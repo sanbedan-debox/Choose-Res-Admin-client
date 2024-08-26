@@ -101,25 +101,25 @@ const AddCategoryForm = () => {
   const [useRestaurantTimings, setUseRestaurantTimings] = useState(
     isEditCats ? false : true
   );
-  useEffect(() => {
-    const setTimings = async () => {
-      try {
-        const response = await sdk.restaurantDetails();
-        if (response && response.restaurantDetails) {
-          const { availability } = response.restaurantDetails;
-          if (availability) {
-            const originalAvailability =
-              reverseFormatAvailability(availability);
-            setAvailability(originalAvailability);
-          }
+  const setTimings = async () => {
+    try {
+      const response = await sdk.restaurantDetails();
+      if (response && response.restaurantDetails) {
+        const { availability } = response.restaurantDetails;
+        if (availability) {
+          const originalAvailability = reverseFormatAvailability(availability);
+          setAvailability(originalAvailability);
         }
-      } catch (error) {
-        setToastData({
-          type: "error",
-          message: "Failed to get Restaurant availibility",
-        });
       }
-    };
+    } catch (error) {
+      setToastData({
+        type: "error",
+        message: "Failed to get Restaurant availibility",
+      });
+    }
+  };
+
+  useEffect(() => {
     setTimings();
   }, [useRestaurantTimings]);
 
@@ -160,7 +160,7 @@ const AddCategoryForm = () => {
     }
   };
 
-  const fetchItemData = async () => {
+  const fetchCategoryData = async () => {
     if (editCatsId && (isEditCats || isDuplicateCats)) {
       try {
         const response = await sdk.getCategory({ id: editCatsId });
@@ -205,9 +205,12 @@ const AddCategoryForm = () => {
     }
   };
   useEffect(() => {
-    fetchMenuData();
-
-    fetchItemData();
+    const fetchData = async () => {
+      await setTimings();
+      await fetchMenuData();
+      await fetchCategoryData();
+    };
+    fetchData();
   }, [editCatsId, setValue, setToastData]);
 
   useEffect(() => {

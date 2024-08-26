@@ -153,34 +153,72 @@ const RestaurantEditAdditionalDetails: React.FC = () => {
   const onSubmit = async (data: IFormInput) => {
     setBtnLoading(true);
     try {
-      const res = await sdk.updateRestaurantDetails({
-        input: {
-          socialInfo: {
-            instagram: data.instagramLink,
-            facebook: data.facebookLink,
-            twitter: data.twitterLink,
-          },
-          beverageCategory: data.beverageCategory?.map(
-            (option) => option.value
-          ),
-          foodType: data.foodType?.map((option) => option.value),
-          meatType: data.meatType?.value,
-        },
-      });
+      const updateInput: any = {};
+      let HasChanges = false;
 
-      if (res.updateRestaurantDetails) {
-        setFacebookLink(data.facebookLink || "");
-        setTwitterLink(data.twitterLink || "");
-        setBeverageCategory(
-          data.beverageCategory?.map((option) => option.value) || []
-        );
-        setFoodType(data.foodType?.map((option) => option.value) || []);
-        setMeatType(data.meatType?.value || MeatType.Halal);
-        setInstagramLink(data.instagramLink || "");
-        setToastData({
-          message: "Restaurant Additional Information Updated Successfully",
-          type: "success",
-        });
+      if (facebookLink !== data.facebookLink) {
+        updateInput.socialInfo = {
+          ...updateInput.socialInfo,
+          facebook: data.facebookLink || "",
+        };
+        HasChanges = true;
+      }
+      if (twitterLink !== data.twitterLink) {
+        updateInput.socialInfo = {
+          ...updateInput.socialInfo,
+          twitter: data.twitterLink || "",
+        };
+        HasChanges = true;
+      }
+      if (instagramLink !== data.instagramLink) {
+        updateInput.socialInfo = {
+          ...updateInput.socialInfo,
+          instagram: data.instagramLink || "",
+        };
+        HasChanges = true;
+      }
+      if (
+        JSON.stringify(beverageCategory) !==
+        JSON.stringify(data.beverageCategory?.map((option) => option.value))
+      ) {
+        updateInput.beverageCategory =
+          data.beverageCategory?.map((option) => option.value) || [];
+        HasChanges = true;
+      }
+      if (
+        JSON.stringify(foodType) !==
+        JSON.stringify(data.foodType?.map((option) => option.value))
+      ) {
+        updateInput.foodType =
+          data.foodType?.map((option) => option.value) || [];
+        HasChanges = true;
+      }
+      if (meatType !== data.meatType?.value) {
+        updateInput.meatType = data.meatType?.value || MeatType.Halal;
+        HasChanges = true;
+      }
+
+      if (HasChanges) {
+        const res = await sdk.updateRestaurantDetails({ input: updateInput });
+
+        if (res.updateRestaurantDetails) {
+          setFacebookLink(data.facebookLink || "");
+          setTwitterLink(data.twitterLink || "");
+          setBeverageCategory(
+            data.beverageCategory?.map((option) => option.value) || []
+          );
+          setFoodType(data.foodType?.map((option) => option.value) || []);
+          setMeatType(data.meatType?.value || MeatType.Halal);
+          setInstagramLink(data.instagramLink || "");
+          setToastData({
+            message: "Restaurant Additional Information Updated Successfully",
+            type: "success",
+          });
+
+          setIsEditing(false);
+        }
+      } else {
+        setIsEditing(false);
       }
     } catch (error) {
       setToastData({
@@ -190,7 +228,6 @@ const RestaurantEditAdditionalDetails: React.FC = () => {
       console.error("Error updating restaurant details:", error);
     } finally {
       setBtnLoading(false);
-      setIsEditing(false);
     }
   };
 

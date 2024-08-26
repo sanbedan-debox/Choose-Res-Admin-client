@@ -327,12 +327,17 @@ const AddItemForm = () => {
   };
 
   useEffect(() => {
-    const fetchOptions = async () => {
+    const fetchData = async () => {
       try {
+        await setTimings();
+
         const optsResp = await sdk.getAllItemOptions();
         if (optsResp && optsResp.getAllItemOptions.length > 0) {
           setOptions(formatOptions(optsResp.getAllItemOptions));
         }
+
+        await fetchMenuData();
+        await fetchItemData();
       } catch (error) {
         const errorMessage = extractErrorMessage(error);
         setToastData({
@@ -342,9 +347,7 @@ const AddItemForm = () => {
       }
     };
 
-    fetchOptions();
-    fetchMenuData();
-    fetchItemData();
+    fetchData(); // Call the async function
   }, [editItemId, setValue, setToastData]);
 
   useEffect(() => {
@@ -389,26 +392,24 @@ const AddItemForm = () => {
 
     fetchSubCategories();
   }, []);
-
-  useEffect(() => {
-    const setTimings = async () => {
-      try {
-        const response = await sdk.restaurantDetails();
-        if (response && response.restaurantDetails) {
-          const { availability } = response.restaurantDetails;
-          if (availability) {
-            const originalAvailability =
-              reverseFormatAvailability(availability);
-            setAvailability(originalAvailability);
-          }
+  const setTimings = async () => {
+    try {
+      const response = await sdk.restaurantDetails();
+      if (response && response.restaurantDetails) {
+        const { availability } = response.restaurantDetails;
+        if (availability) {
+          const originalAvailability = reverseFormatAvailability(availability);
+          setAvailability(originalAvailability);
         }
-      } catch (error) {
-        setToastData({
-          type: "error",
-          message: "Failed to get Restaurant availibility",
-        });
       }
-    };
+    } catch (error) {
+      setToastData({
+        type: "error",
+        message: "Failed to get Restaurant availibility",
+      });
+    }
+  };
+  useEffect(() => {
     setTimings();
   }, [useRestaurantTimings]);
 

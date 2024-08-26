@@ -10,7 +10,7 @@ import useGlobalStore from "@/store/global";
 import useProfileStore from "@/store/profile";
 import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { MdOutlineEdit } from "react-icons/md";
 import Select from "react-select";
 
@@ -74,6 +74,16 @@ const BusinessInformationForm: React.FC = () => {
     setestimatedRevenue,
   } = useProfileStore();
 
+  const [initialBType, setInitialBType] = useState<string>();
+  const [initialBrev, setInitialBrev] = useState<string>();
+  const [initialBsize, setInitialBsize] = useState<string>();
+
+  useEffect(() => {
+    setInitialBType(businessType);
+    setInitialBrev(estimatedRevenue);
+    setInitialBsize(employeeSize);
+  }, []);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFormChanged, setIsFormChanged] = useState(false);
 
@@ -93,36 +103,84 @@ const BusinessInformationForm: React.FC = () => {
   const { setToastData } = useGlobalStore();
   const [btnLoading, setBtnLoading] = useState(false);
 
+  // const updateBusinessInfo = async () => {
+  //   if (!isFormChanged) {
+  //     handleCloseModal();
+  //     return;
+  //   }
+  //   try {
+  //     setBtnLoading(true);
+  //     const businessTypeValue = businessType as BusinessTypeEnum;
+  //     const estimatedRevenueValue = estimatedRevenue as EstimatedRevenueEnum;
+  //     const employeeSizeValue = employeeSize as StaffCountEnum;
+  //     await sdk.updateBusinessDetails({
+  //       input: {
+  //         _id: id,
+  //         estimatedRevenue: estimatedRevenueValue,
+  //         employeeSize: employeeSizeValue,
+  //       },
+  //     });
+  //     setToastData({
+  //       message: "Business details updated successfully!",
+  //       type: "success",
+  //     });
+  //     setIsModalOpen(false);
+  //   } catch (error) {
+  //     const errorMessage = extractErrorMessage(error);
+  //     setToastData({
+  //       type: "error",
+  //       message: errorMessage,
+  //     });
+  //   } finally {
+  //     setBtnLoading(false);
+  //   }
+  // };
   const updateBusinessInfo = async () => {
     if (!isFormChanged) {
       handleCloseModal();
       return;
     }
-    try {
-      setBtnLoading(true);
-      const businessTypeValue = businessType as BusinessTypeEnum;
-      const estimatedRevenueValue = estimatedRevenue as EstimatedRevenueEnum;
-      const employeeSizeValue = employeeSize as StaffCountEnum;
-      await sdk.updateBusinessDetails({
-        input: {
-          _id: id,
-          estimatedRevenue: estimatedRevenueValue,
-          employeeSize: employeeSizeValue,
-        },
-      });
-      setToastData({
-        message: "Business details updated successfully!",
-        type: "success",
-      });
-      setIsModalOpen(false);
-    } catch (error) {
-      const errorMessage = extractErrorMessage(error);
-      setToastData({
-        type: "error",
-        message: errorMessage,
-      });
-    } finally {
-      setBtnLoading(false);
+
+    const updateInput: any = {};
+    let HasChanges = false;
+
+    if (initialBrev !== estimatedRevenue) {
+      updateInput.estimatedRevenue = estimatedRevenue as EstimatedRevenueEnum;
+      HasChanges = true;
+    }
+    if (initialBsize !== employeeSize) {
+      updateInput.employeeSize = employeeSize as StaffCountEnum;
+      HasChanges = true;
+    }
+
+    if (HasChanges) {
+      try {
+        setBtnLoading(true);
+
+        const res = await sdk.updateBusinessDetails({
+          input: {
+            _id: id,
+            ...updateInput,
+          },
+        });
+        if (res && res.updateBusinessDetails) {
+          setToastData({
+            message: "Business details updated successfully!",
+            type: "success",
+          });
+          setIsModalOpen(false);
+        }
+      } catch (error) {
+        const errorMessage = extractErrorMessage(error);
+        setToastData({
+          type: "error",
+          message: errorMessage,
+        });
+      } finally {
+        setBtnLoading(false);
+      }
+    } else {
+      handleCloseModal();
     }
   };
 

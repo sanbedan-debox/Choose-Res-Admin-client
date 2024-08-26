@@ -74,7 +74,7 @@ const RestaurantSettings: NextPageWithLayout = () => {
           setFoodType(repo?.foodType as FoodType[]);
           setMeatType(repo?.meatType as MeatType);
           setAddressLine1(repo?.address?.addressLine1 as string);
-          setAddressLine2(repo?.address?.addressLine1 as string);
+          setAddressLine2(repo?.address?.addressLine2 as string);
           setCity(repo.address?.city.toString() ?? "");
           setZipcode(repo.address?.zipcode ?? 0);
           setState({
@@ -82,8 +82,17 @@ const RestaurantSettings: NextPageWithLayout = () => {
             value: repo?.address?.state?.stateName ?? "",
           });
           // setCords(repo?.);
-          setCords(repo?.address?.coordinate?.coordinates ?? [0, 0]);
-          setPlace(repo.address?.place);
+          // setCords(repo?.address?.coordinate?.coordinates ?? [0, 0]);
+          // setPlace(repo.address?.place);
+          const coordinates = repo?.address?.coordinate?.coordinates;
+          setCords(
+            (coordinates && coordinates.length === 2
+              ? coordinates
+              : [0, 0]) as [number, number]
+          );
+
+          setPlace(repo.address?.place ?? { displayName: "", placeId: "" });
+
           setFacebookLink(repo?.socialInfo?.facebook ?? "");
           setInstagramLink(repo?.socialInfo?.instagram ?? "");
           setTimeZone({

@@ -74,6 +74,32 @@ export const timeOptions: TimeOption[] = Array.from(
 //   }));
 // };
 
+// export const reverseFormatAvailability = (
+//   formattedAvailability: FormattedAvailability[]
+// ): Availability[] => {
+//   const timeMap = new Map<string, string>(
+//     timeOptions.map((option) => [
+//       moment(option.value).format("HH:mm"),
+//       option.label,
+//     ])
+//   );
+
+//   return formattedAvailability.map((item) => ({
+//     day: item.day as Day,
+//     hours: item.hours.map((hour) => ({
+//       start: {
+//         label: timeMap.get(moment(hour.start).format("HH:mm")) || "",
+//         value: hour.start,
+//       },
+//       end: {
+//         label: timeMap.get(moment(hour.end).format("HH:mm")) || "",
+//         value: hour.end,
+//       },
+//     })),
+//     active: item.active,
+//   }));
+// };
+
 export const reverseFormatAvailability = (
   formattedAvailability: FormattedAvailability[]
 ): Availability[] => {
@@ -84,22 +110,44 @@ export const reverseFormatAvailability = (
     ])
   );
 
-  return formattedAvailability.map((item) => ({
-    day: item.day as Day,
-    hours: item.hours.map((hour) => ({
-      start: {
-        label: timeMap.get(moment(hour.start).format("HH:mm")) || "",
-        value: hour.start,
-      },
-      end: {
-        label: timeMap.get(moment(hour.end).format("HH:mm")) || "",
-        value: hour.end,
-      },
-    })),
-    active: item.active,
-  }));
-};
+  return formattedAvailability.map((item) => {
+    const today = moment().startOf("day");
 
+    return {
+      day: item.day as Day,
+      hours: item.hours.map((hour) => {
+        const startTime = moment(hour.start);
+        const endTime = moment(hour.end);
+
+        // Combine today's date with the time from the input
+        const startOfDay = today.clone().set({
+          hour: startTime.hour(),
+          minute: startTime.minute(),
+          second: startTime.second(),
+          millisecond: startTime.millisecond(),
+        });
+        const endOfDay = today.clone().set({
+          hour: endTime.hour(),
+          minute: endTime.minute(),
+          second: endTime.second(),
+          millisecond: endTime.millisecond(),
+        });
+
+        return {
+          start: {
+            label: timeMap.get(startTime.format("HH:mm")) || "",
+            value: startOfDay.toISOString(),
+          },
+          end: {
+            label: timeMap.get(endTime.format("HH:mm")) || "",
+            value: endOfDay.toISOString(),
+          },
+        };
+      }),
+      active: item.active,
+    };
+  });
+};
 export interface Availability {
   day: Day;
   hours: {

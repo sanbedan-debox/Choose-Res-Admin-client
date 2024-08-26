@@ -102,27 +102,77 @@ const AddMenuForm = () => {
     { day: Day.Saturday, hours: [], active: false },
   ]);
   const [useRestaurantTimings, setUseRestaurantTimings] = useState(true);
-  useEffect(() => {
-    const setTimings = async () => {
+  const setTimings = async () => {
+    try {
+      const response = await sdk.restaurantDetails();
+      if (response && response.restaurantDetails) {
+        const { availability } = response.restaurantDetails;
+        if (availability) {
+          const originalAvailability = reverseFormatAvailability(availability);
+          setAvailability(originalAvailability);
+        }
+      }
+    } catch (error) {
+      setToastData({
+        type: "error",
+        message: "Failed to get Restaurant availibility",
+      });
+    }
+  };
+  const fetchMenuData = async () => {
+    if (editMenuId && (isEditMenu || isDuplicateMenu)) {
       try {
-        const response = await sdk.restaurantDetails();
-        if (response && response.restaurantDetails) {
-          const { availability } = response.restaurantDetails;
-          if (availability) {
-            const originalAvailability =
-              reverseFormatAvailability(availability);
+        const response = await sdk.getMenu({ id: editMenuId });
+        if (response && response.getMenu) {
+          const menu = response.getMenu;
+          setChangesMenu(response.getMenu);
+          const nameDup = generateUniqueName(menu?.name);
+          setValue("name", menu.name);
+          if (isDuplicateMenu) {
+            setValue("name", nameDup);
+          }
+          const selectedMenuType = menuTypeOptions.find(
+            (option) => option.value === menu?.type
+          );
+          setValue("type", selectedMenuType);
+
+          const formateditemlist = menu?.categories.map((el) => ({
+            _id: el._id._id,
+            name: el?.name ?? "",
+            length: 0,
+          }));
+          if (menu?.availability) {
+            const originalAvailability = reverseFormatAvailability(
+              menu?.availability
+            );
             setAvailability(originalAvailability);
           }
+          setSelectedItems(formateditemlist);
+          setTempSelectedItems(formateditemlist);
+          setprevItemsbfrEdit(formateditemlist);
+          setIncomingTaxId(menu?.taxes?._id || "");
         }
       } catch (error) {
+        const errorMessage = extractErrorMessage(error);
         setToastData({
           type: "error",
-          message: "Failed to get Restaurant availibility",
+          message: errorMessage,
         });
       }
-    };
+    }
+  };
+  useEffect(() => {
     setTimings();
   }, [useRestaurantTimings]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await setTimings();
+      await fetchMenuData();
+    };
+
+    fetchData();
+  }, [editMenuId, setValue, setToastData]);
 
   const onSubmit = async (data: IFormInput) => {
     try {
@@ -369,52 +419,6 @@ const AddMenuForm = () => {
     setisAddCategoryModalOpen(true);
   };
   const [incomingTaxId, setIncomingTaxId] = useState("");
-  useEffect(() => {
-    const fetchMenuData = async () => {
-      if (editMenuId && (isEditMenu || isDuplicateMenu)) {
-        try {
-          const response = await sdk.getMenu({ id: editMenuId });
-          if (response && response.getMenu) {
-            const menu = response.getMenu;
-            setChangesMenu(response.getMenu);
-            const nameDup = generateUniqueName(menu?.name);
-            setValue("name", menu.name);
-            if (isDuplicateMenu) {
-              setValue("name", nameDup);
-            }
-            const selectedMenuType = menuTypeOptions.find(
-              (option) => option.value === menu?.type
-            );
-            setValue("type", selectedMenuType);
-
-            const formateditemlist = menu?.categories.map((el) => ({
-              _id: el._id._id,
-              name: el?.name ?? "",
-              length: 0,
-            }));
-            if (menu?.availability) {
-              const originalAvailability = reverseFormatAvailability(
-                menu?.availability
-              );
-              setAvailability(originalAvailability);
-            }
-            setSelectedItems(formateditemlist);
-            setTempSelectedItems(formateditemlist);
-            setprevItemsbfrEdit(formateditemlist);
-            setIncomingTaxId(menu?.taxes?._id || "");
-          }
-        } catch (error) {
-          const errorMessage = extractErrorMessage(error);
-          setToastData({
-            type: "error",
-            message: errorMessage,
-          });
-        }
-      }
-    };
-
-    fetchMenuData();
-  }, [editMenuId, setValue, setToastData]);
 
   // Save Handler for quick Edit
   const handleSave = (updatedData: DataItemFormAddTable[]) => {

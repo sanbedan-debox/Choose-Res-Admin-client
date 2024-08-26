@@ -67,37 +67,65 @@ const RestaurantBasicInformationEditForm: React.FC = () => {
         data.restaurantWebsite
       );
       const imgUrl = await handleLogoUpload();
+      const updateInput: any = {};
+      let HasChanges = false;
+      if (restaurantName !== data.restaurantName) {
+        updateInput.name = data.restaurantName;
+        HasChanges = true;
+      }
+      if (restaurantWebsite !== formattedWebsite) {
+        updateInput.website = formattedWebsite;
+        HasChanges = true;
+      }
+      if (restaurantType !== data.restaurantType) {
+        updateInput.type = data.restaurantType as RestaurantType;
+        HasChanges = true;
+      }
+      if (
+        JSON.stringify(restaurantCategory) !==
+        JSON.stringify(data.restaurantCategory)
+      ) {
+        updateInput.category = data.restaurantCategory || [];
+        HasChanges = true;
+      }
+      if (brandingLogo !== imgUrl && imgUrl && imgUrl.trim() !== "") {
+        updateInput.brandingLogo = imgUrl;
+        HasChanges = true;
+      }
+      if (
+        (restaurantCategory.includes(RestaurantCategory.DineIn) ||
+          restaurantCategory.includes(RestaurantCategory.PremiumDineIn)) &&
+        dineInCapacity !== data.dineInCapacity
+      ) {
+        updateInput.dineInCapacity =
+          parseInt(data.dineInCapacity.toString()) || 0;
+        HasChanges = true;
+      }
 
-      const input = {
-        name: data.restaurantName,
-        website: formattedWebsite,
-        type: data.restaurantType as RestaurantType,
-        category: data.restaurantCategory || [],
-        brandingLogo: imgUrl && imgUrl.trim() !== "" ? imgUrl : null,
-        dineInCapacity:
-          data.restaurantCategory.includes(RestaurantCategory.DineIn) ||
-          data.restaurantCategory.includes(RestaurantCategory.PremiumDineIn)
-            ? parseInt(data.dineInCapacity.toString()) || 0
-            : undefined,
-      };
-      const response = await sdk.updateRestaurantDetails({ input });
-      if (response && response.updateRestaurantDetails) {
-        setRestaurantName(data.restaurantName);
-        setRestaurantWebsite(formattedWebsite);
-        setRestaurantType(data.restaurantType);
-        setRestaurantCategory(data.restaurantCategory);
-        setDineInCapacity(
-          data.restaurantCategory.includes(RestaurantCategory.DineIn) ||
-            data.restaurantCategory.includes(RestaurantCategory.PremiumDineIn)
-            ? data.dineInCapacity || 0
-            : undefined
-        );
-
-        setSelectedRestaurant(data.restaurantName);
-        setToastData({
-          message: "Basic Restaurant Details Updated successfully",
-          type: "success",
+      if (HasChanges) {
+        const response = await sdk.updateRestaurantDetails({
+          input: updateInput,
         });
+        if (response && response.updateRestaurantDetails) {
+          setRestaurantName(data.restaurantName);
+          setRestaurantWebsite(formattedWebsite);
+          setRestaurantType(data.restaurantType);
+          setRestaurantCategory(data.restaurantCategory);
+          setDineInCapacity(
+            data.restaurantCategory.includes(RestaurantCategory.DineIn) ||
+              data.restaurantCategory.includes(RestaurantCategory.PremiumDineIn)
+              ? data.dineInCapacity || 0
+              : undefined
+          );
+
+          setSelectedRestaurant(data.restaurantName);
+          setToastData({
+            message: "Basic Restaurant Details Updated successfully",
+            type: "success",
+          });
+          setEditModalOpen(false);
+        }
+      } else {
         setEditModalOpen(false);
       }
     } catch (error) {

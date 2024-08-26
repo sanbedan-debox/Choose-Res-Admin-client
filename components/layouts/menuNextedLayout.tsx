@@ -2,6 +2,7 @@ import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import { ReactNode } from "react";
 
+import { IoChevronBackOutline } from "react-icons/io5";
 import MainLayout from "./mainBodyLayout";
 
 type Props = {
@@ -24,7 +25,17 @@ const MenuLayout = ({ children }: Props) => {
 
   return (
     <MainLayout>
-      <div>
+      <div className="flex flex-col space-y-2">
+        <span
+          className="text-sm flex items-center hover:underline text-primary cursor-pointer"
+          onClick={() => {
+            router.push("/menu");
+          }}
+        >
+          <IoChevronBackOutline />
+          Menu Builder
+        </span>
+
         <div className="flex space-x-2 border-b">
           {items.map((item, index) => (
             <button

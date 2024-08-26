@@ -131,29 +131,36 @@ const RestaurantEditAvailabilityForm: React.FC = () => {
       value: place?.placeId,
     });
   }, [place]);
-  const onPlaceChange = (option: PlacesType | null) => {
+  const onPlaceChange = async (option: PlacesType | null) => {
     setSelectedPlace(option);
     setFormState((prev) => ({
       ...prev,
       location: option ?? { label: "", value: "" },
     }));
+    const d = await sdk.PlaceDetails({
+      placeId: option?.value ?? "",
+    });
+    if (d && d.getPlaceDetails) {
+      setCords([d.getPlaceDetails.latitude, d.getPlaceDetails.longitude]);
+    }
   };
 
   const onSubmit = async (data: any) => {
     try {
       const formattedAvailability = formatAvailability(availability);
+      const parseIntZip = parseInt(formState.zipcode.toString());
 
       const response = await sdk.updateRestaurantDetails({
         input: {
           address: {
-            addressLine1: data?.addressLine1,
-            addressLine2: data?.addressLine2 ? data?.addressLine2 : "",
-            city: data.city,
+            addressLine1: formState.addressLine1,
+            addressLine2: formState.addressLine2 ? formState.addressLine2 : "",
+            city: formState.city,
             state: {
-              stateId: data.state?.id || "",
-              stateName: data.state?.value || "",
+              stateId: formState.state?.id || "",
+              stateName: formState.state?.value || "",
             },
-            zipcode: parseInt(data.zipcode.toString()),
+            zipcode: parseIntZip,
             place: {
               displayName: selectedPlace?.label ?? "",
               placeId: selectedPlace?.value ?? "",
@@ -162,11 +169,8 @@ const RestaurantEditAvailabilityForm: React.FC = () => {
               coordinates: coords,
             },
           },
-          timezone: {
-            timezoneId: data.timeZone.id,
-            timezoneName: data.timeZone.value,
-          },
           availability: formattedAvailability,
+          timezone: data.timeZone,
         },
       });
 
@@ -202,7 +206,7 @@ const RestaurantEditAvailabilityForm: React.FC = () => {
     <div className="bg-white p-6 rounded-lg space-y-6 w-full ">
       <div className="flex justify-between items-center ">
         <h2 className="text-lg font-semibold text-gray-900">
-          Restaurant Basic Information
+          Restaurant Availibility Settings
         </h2>
         <MdOutlineEdit
           className="text-primary text-2xl cursor-pointer"

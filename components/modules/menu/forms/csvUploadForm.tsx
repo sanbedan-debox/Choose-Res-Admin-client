@@ -150,7 +150,9 @@ const CsvUploadForm = () => {
 
       const items: {
         category: string;
+        categoryDesc: string;
         subCategory: string | null;
+        subCategoryDesc: string | null;
         itemName: string;
         itemDesc: string;
         price: string;
@@ -174,7 +176,9 @@ const CsvUploadForm = () => {
       data.forEach((row) => {
         const {
           Category,
+          "Category Desc": categoryDesc,
           "Sub Category": subCategory,
+          "Sub Category Desc": subCategoryDesc,
           "Item Name": itemName,
           "Item Desc": itemDesc,
           "Item Price": price,
@@ -199,8 +203,19 @@ const CsvUploadForm = () => {
           issues.add("Category contains invalid characters.");
           rowError = true;
         }
+        if (invalidStringCellValue(categoryDesc.toString())) {
+          issues.add("Category Description contains invalid characters.");
+          rowError = true;
+        }
         if (subCategory && invalidStringCellValue(subCategory.toString())) {
           issues.add("Sub Category contains invalid characters.");
+          rowError = true;
+        }
+        if (
+          subCategoryDesc &&
+          invalidStringCellValue(subCategoryDesc.toString())
+        ) {
+          issues.add("Sub Category Description contains invalid characters.");
           rowError = true;
         }
         if (invalidStringCellValue(itemName.toString())) {
@@ -277,6 +292,18 @@ const CsvUploadForm = () => {
           issues.add("Item Description must be between 40 and 160 characters.");
           rowError = true;
         }
+        if (invalidItemDescLimit(categoryDesc.toString())) {
+          issues.add(
+            "Category Description must be between 40 and 160 characters."
+          );
+          rowError = true;
+        }
+        if (invalidItemDescLimit(subCategoryDesc.toString())) {
+          issues.add(
+            "Sub Category Description must be between 40 and 160 characters."
+          );
+          rowError = true;
+        }
 
         // Sanitized data
         const categorySanitized = sanitizeCellValue(
@@ -292,6 +319,14 @@ const CsvUploadForm = () => {
         );
         const itemDescSanitized = sanitizeCellValue(
           itemDesc.toString(),
+          "string"
+        );
+        const categoryDescSanitized = sanitizeCellValue(
+          categoryDesc.toString(),
+          "string"
+        );
+        const subCategoryDescSanitized = sanitizeCellValue(
+          subCategoryDesc.toString(),
           "string"
         );
         const itemPriceSanitized = sanitizeCellValue(
@@ -360,6 +395,8 @@ const CsvUploadForm = () => {
         if (!rowError) {
           items.push({
             category: categorySanitized as string,
+            categoryDesc: categoryDesc as string,
+            subCategoryDesc: subCategoryDesc as string,
             subCategory: subCategorySanitized,
             itemName: itemNameSanitized as string,
             price: itemPriceSanitized as string,

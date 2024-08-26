@@ -183,7 +183,7 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
       {validationErrors && (
         <div className="text-red-500 mb-2">{validationErrors}</div>
       )}
-      {availability.map((day, index) => (
+      {availability?.map((day, index) => (
         <div key={index} className="mb-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center" style={{ width: "270px" }}>

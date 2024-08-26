@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { SectionContent } from "./interface";
 
 type MenuSectionProps = {
@@ -9,30 +9,29 @@ const MenuSection: React.FC<MenuSectionProps> = ({ contentList }) => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const sectionRefs = useRef<HTMLElement[]>([]);
 
-  // useEffect(() => {
-  //   const handleScroll = (entries: IntersectionObserverEntry[]) => {
-  //     entries.forEach((entry) => {
-  //       if (entry.isIntersecting) {
-  //         setActiveId(entry.target.id);
-  //         window.history.replaceState(null, "", `?section=${entry.target.id}`);
-  //       }
-  //     });
-  //   };
+  useEffect(() => {
+    const handleScroll = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveId(entry.target.id);
+        }
+      });
+    };
 
-  //   const observer = new IntersectionObserver(handleScroll, {
-  //     root: null,
-  //     rootMargin: "0px",
-  //     threshold: 0.6,
-  //   });
+    const observer = new IntersectionObserver(handleScroll, {
+      root: null,
+      rootMargin: "0px",
+      threshold: 0.6,
+    });
 
-  //   sectionRefs.current.forEach((section) => {
-  //     observer.observe(section);
-  //   });
+    sectionRefs.current.forEach((section) => {
+      observer.observe(section);
+    });
 
-  //   return () => {
-  //     observer.disconnect();
-  //   };
-  // }, []);
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
 
   const handleNavLinkClick = (id: string) => {
     const targetSection = document.getElementById(id);
