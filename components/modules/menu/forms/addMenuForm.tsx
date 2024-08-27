@@ -1,11 +1,11 @@
 import AddFormDropdown from "@/components/common/addFormDropDown/addFormDropdown";
+import { DataItemFormAddTable } from "@/components/common/addFormDropDown/interface";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import ReusableModal from "@/components/common/modal/modal";
 import FormAddTable from "@/components/common/table/formTable";
 import {
   Availability,
-  formatAvailability,
   reverseFormatAvailability,
 } from "@/components/common/timingAvailibility/interface";
 import AvailabilityComponent from "@/components/common/timingAvailibility/timingAvailibility";
@@ -16,11 +16,7 @@ import useMenuCategoryStore from "@/store/menuCategory";
 import useMenuMenuStore from "@/store/menumenu";
 import useMenuOptionsStore from "@/store/menuOptions";
 import { sdk } from "@/utils/graphqlClient";
-import {
-  extractErrorMessage,
-  generateUniqueName,
-  isValidNameAlphabetic,
-} from "@/utils/utilFUncs";
+import { extractErrorMessage, generateUniqueName } from "@/utils/utilFUncs";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -34,55 +30,57 @@ interface IFormInput {
   name: string;
 }
 
-interface ItemsDropDownType {
+interface ListType {
   _id: string;
   name: string;
 }
 
+interface IModalState {
+  showDeleteConfirmation: boolean;
+  showAddNewModal: boolean;
+  selectedId: string;
+}
+
+// TODO: move it to common file
+const formatMenuType = (type: MenuTypeEnum) => {
+  switch (type) {
+    case MenuTypeEnum.OnlineOrdering:
+      return "Online Ordering";
+    case MenuTypeEnum.DineIn:
+      return "Dine In";
+    case MenuTypeEnum.Catering:
+      return "Catering";
+    default:
+      return "";
+  }
+};
+
+// TODO: move it to common file
 const menuTypeOptions: any[] = [
-  { value: MenuTypeEnum.OnlineOrdering, label: "Online Ordering" },
-  { value: MenuTypeEnum.DineIn, label: "Dine In" },
-  { value: MenuTypeEnum.Catering, label: "Catering" },
+  {
+    value: MenuTypeEnum.OnlineOrdering,
+    label: formatMenuType(MenuTypeEnum.OnlineOrdering),
+  },
+  { value: MenuTypeEnum.DineIn, label: formatMenuType(MenuTypeEnum.DineIn) },
+  {
+    value: MenuTypeEnum.Catering,
+    label: formatMenuType(MenuTypeEnum.Catering),
+  },
+];
+
+// TODO: move it to a common file
+const initAvailability: Availability[] = [
+  { day: Day.Sunday, hours: [], active: false },
+  { day: Day.Monday, hours: [], active: false },
+  { day: Day.Tuesday, hours: [], active: false },
+  { day: Day.Wednesday, hours: [], active: false },
+  { day: Day.Thursday, hours: [], active: false },
+  { day: Day.Friday, hours: [], active: false },
+  { day: Day.Saturday, hours: [], active: false },
 ];
 
 const AddMenuForm = () => {
-  const {
-    fetchMenuDatas,
-    setfetchMenuDatas,
-    setisAddMenuModalOpen,
-    isFromUploadCSV,
-  } = useMenuOptionsStore();
-  const [confirmationRemoval, setConfirmationRemoval] = useState(false);
-  const [removingId, setRemovingId] = useState<string>("");
-  const [btnLoading, setBtnLoading] = useState(false);
-  const { setToastData } = useGlobalStore();
-  const [itemsOption, setItemsOption] = useState<ItemsDropDownType[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedItems, setSelectedItems] = useState<ItemsDropDownType[]>([]);
-  const [prevItemsbfrEdit, setprevItemsbfrEdit] = useState<ItemsDropDownType[]>(
-    []
-  );
-  interface DataItemFormAddTable {
-    _id: string;
-    [key: string]: any;
-  }
-  const [editedSelectedItems, setEditedSelectedItems] =
-    useState<DataItemFormAddTable[]>();
-  const [tempSelectedItems, setTempSelectedItems] = useState<
-    ItemsDropDownType[]
-  >([]);
-  const [changesMenu, setChangesMenu] = useState<any>([]);
-  const {
-    editMenuId,
-    isEditMenu,
-    isDuplicateMenu,
-    setEditMenuId,
-    setisDuplicateMenu,
-    setisEditMenu,
-  } = useMenuMenuStore();
-  const { seteditCatsId, setisEditCats } = useMenuCategoryStore();
-  const { setisAddCategoryModalOpen } = useMenuOptionsStore();
-  const { setisShowTaxSettings } = useGlobalStore();
+  // Configs
   const {
     handleSubmit,
     formState: { errors },
@@ -91,20 +89,171 @@ const AddMenuForm = () => {
     register,
     clearErrors,
   } = useForm<IFormInput>();
+
+  // Global states
+  const {
+    fetchMenuDatas,
+    setfetchMenuDatas,
+    setisAddMenuModalOpen,
+    isFromUploadCSV,
+    setisAddCategoryModalOpen,
+  } = useMenuOptionsStore();
+  const { editMenuId, isEditMenu, isDuplicateMenu, setisDuplicateMenu } =
+    useMenuMenuStore();
+  const { setToastData, setisShowTaxSettings } = useGlobalStore();
+  const { seteditCatsId, setisEditCats } = useMenuCategoryStore();
   const { taxRate } = useAuthStore();
-  const [availability, setAvailability] = useState<Availability[]>([
-    { day: Day.Sunday, hours: [], active: false },
-    { day: Day.Monday, hours: [], active: false },
-    { day: Day.Tuesday, hours: [], active: false },
-    { day: Day.Wednesday, hours: [], active: false },
-    { day: Day.Thursday, hours: [], active: false },
-    { day: Day.Friday, hours: [], active: false },
-    { day: Day.Saturday, hours: [], active: false },
-  ]);
-  const [useRestaurantTimings, setUseRestaurantTimings] = useState(true);
-  const setTimings = async () => {
+
+  // Modal states
+  const initModalState: IModalState = {
+    showDeleteConfirmation: false,
+    showAddNewModal: false,
+    selectedId: "",
+  };
+  const [modalStates, setModalStates] = useState<IModalState>(initModalState);
+
+  // Loading states
+  const [loading, setLoading] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
+
+  // Add Form states
+  const [selectedList, setSelectedList] = useState<ListType[]>([]);
+  const [masterList, setMasterList] = useState<ListType[]>([]);
+  const [newList, setNewList] = useState<string[]>([]);
+
+  // Edit states
+  const [menuData, setMenuData] = useState<{
+    _id: string;
+    name: string;
+    type: { label: string; value: string };
+    availability: Availability[];
+  } | null>(null);
+
+  // Availability
+  const [availability, setAvailability] =
+    useState<Availability[]>(initAvailability);
+
+  // API Calls
+  useEffect(() => {
+    // Fetch all the categories for this restaurant
+    const fetch = async () => {
+      setLoading(true);
+      try {
+        const response = await sdk.getCategoriesForMenuDropdown();
+        if (!response || !response.getCategories) {
+          setToastData({
+            message:
+              "Something went wrong while fetching the menu details, please try again!",
+            type: "error",
+          });
+          return;
+        }
+
+        const categories: ListType[] = response.getCategories.map((el) => ({
+          _id: el._id.toString(),
+          name: el.name.toString(),
+        }));
+        setMasterList(categories);
+
+        // Update selected list
+        let sl = [...selectedList];
+        for (let i = 0; i < categories.length; i++) {
+          const category = categories[i];
+          let idx = selectedList.findIndex((e) => e._id === category._id);
+          if (idx >= 0) {
+            sl[idx].name = category.name;
+          }
+        }
+        setSelectedList(sl);
+      } catch (error) {
+        const errMsg = extractErrorMessage(error);
+        setToastData({ message: errMsg, type: "error" });
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetch();
+
+    // TODO: change dependency variable name
+  }, [fetchMenuDatas]);
+
+  useEffect(() => {
+    // Fetch menu details from id and set in the form
+    const fetch = async () => {
+      setLoading(true);
+      try {
+        const response = await sdk.getMenu({ id: editMenuId ?? "" });
+        if (!response || !response.getMenu) {
+          setToastData({
+            message:
+              "Something went wrong while fetching the menu details, please try again!",
+            type: "error",
+          });
+          return;
+        }
+
+        const menu = response.getMenu;
+
+        // Format availability
+        const formattedAvailability =
+          (menu.availability?.length ?? 0) > 0
+            ? reverseFormatAvailability(menu.availability ?? [])
+            : initAvailability;
+
+        setAvailability(formattedAvailability);
+
+        // Set menu data if editing
+        if (isEditMenu) {
+          setMenuData({
+            _id: menu._id.toString() ?? "",
+            availability: formattedAvailability,
+            name: menu.name,
+            type: {
+              label: formatMenuType(menu.type),
+              value: menu.type,
+            },
+          });
+        }
+
+        // Set form values
+        setValue(
+          "name",
+          isDuplicateMenu ? generateUniqueName(menu.name) : menu.name
+        );
+        setValue("type", {
+          label: formatMenuType(menu.type),
+          value: menu.type,
+        });
+
+        // Set selected list
+        let selectedIds = menu.categories.map((e) => e._id._id.toString());
+        let selected = masterList.filter((e) =>
+          selectedIds.includes(e._id.toString())
+        );
+
+        setSelectedList(selected);
+      } catch (error) {
+        const errMsg = extractErrorMessage(error);
+        setToastData({ message: errMsg, type: "error" });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (
+      (isEditMenu || isDuplicateMenu) &&
+      (editMenuId !== null || editMenuId !== "") &&
+      masterList.length > 0
+    ) {
+      fetch();
+    }
+  }, [isEditMenu, editMenuId, isDuplicateMenu, masterList]);
+
+  // Helper functions
+  const fetchRestoTiming = async () => {
+    setLoading(true);
     try {
-      const response = await sdk.restaurantDetails();
+      const response = await sdk.restaurantTimings();
       if (response && response.restaurantDetails) {
         const { availability } = response.restaurantDetails;
         if (availability) {
@@ -117,267 +266,117 @@ const AddMenuForm = () => {
         type: "error",
         message: "Failed to get Restaurant availibility",
       });
+    } finally {
+      setLoading(false);
     }
   };
-  const fetchMenuData = async () => {
-    if (editMenuId && (isEditMenu || isDuplicateMenu)) {
-      try {
-        const response = await sdk.getMenu({ id: editMenuId });
-        if (response && response.getMenu) {
-          const menu = response.getMenu;
-          setChangesMenu(response.getMenu);
-          const nameDup = generateUniqueName(menu?.name);
-          setValue("name", menu.name);
-          if (isDuplicateMenu) {
-            setValue("name", nameDup);
-          }
-          const selectedMenuType = menuTypeOptions.find(
-            (option) => option.value === menu?.type
-          );
-          setValue("type", selectedMenuType);
 
-          const formateditemlist = menu?.categories.map((el) => ({
-            _id: el._id._id,
-            name: el?.name ?? "",
-            length: 0,
-          }));
-          if (menu?.availability) {
-            const originalAvailability = reverseFormatAvailability(
-              menu?.availability
-            );
-            setAvailability(originalAvailability);
-          }
-          setSelectedItems(formateditemlist);
-          setTempSelectedItems(formateditemlist);
-          setprevItemsbfrEdit(formateditemlist);
-          setIncomingTaxId(menu?.taxes?._id || "");
-        }
-      } catch (error) {
-        const errorMessage = extractErrorMessage(error);
-        setToastData({
-          type: "error",
-          message: errorMessage,
-        });
-      }
-    }
-  };
-  useEffect(() => {
-    setTimings();
-  }, [useRestaurantTimings]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      await setTimings();
-      await fetchMenuData();
-    };
-
-    fetchData();
-  }, [editMenuId, setValue, setToastData]);
-
+  // Handler functions
   const onSubmit = async (data: IFormInput) => {
-    try {
-      if (!isDuplicateMenu) {
-        if (!isValidNameAlphabetic(data.name)) {
-          setToastData({
-            message:
-              "Please use only alphabets and numbers while adding or updating name.",
-            type: "error",
-          });
-          return;
-        }
-      }
-
-      setBtnLoading(true);
-      const prevSelectedMenuIds = prevItemsbfrEdit.map((item) => item._id);
-      const selectedItemsIds = selectedItems.map((item) => item._id);
-
-      const addedMenuIds = selectedItemsIds.filter(
-        (id) => !prevSelectedMenuIds.includes(id)
-      );
-      const isMenuAdded = addedMenuIds.length > 0;
-      const formattedAvailability = formatAvailability(availability);
-
-      const updateInput: any = {
-        _id: editMenuId || "",
-        availability: formattedAvailability,
-      };
-
-      if (incomingTaxId !== taxRate?.id) {
-        updateInput.taxRateId = taxRate?.id;
-      }
-      const selectedMenuType = menuTypeOptions.find(
-        (option) => option.value === changesMenu?.type
-      );
-      if (data.type.value !== selectedMenuType?.value) {
-        updateInput.type = data.type.value as MenuTypeEnum;
-      }
-
-      if (data.name !== changesMenu?.name) {
-        updateInput.name = data.name;
-      }
-
-      if (!isEditMenu) {
-        await sdk.addMenu({
-          input: {
-            type: data.type.value as MenuTypeEnum,
-            name: data.name,
-            categories: selectedItemsIds,
-            taxRateId: taxRate?.id || "",
-            availability: formattedAvailability,
-          },
-        });
-
-        setToastData({
-          type: "success",
-          message: "Menu Added Successfully",
-        });
-      } else {
-        await sdk.updateMenu({
-          input: updateInput,
-        });
-
-        isMenuAdded &&
-          (await sdk.addCategoriesToMenu({
-            categoryId: addedMenuIds,
-            menuId: editMenuId || "",
-          }));
-
-        setToastData({
-          type: "success",
-          message: "Category Added Successfully",
-        });
-        setisAddMenuModalOpen(false);
-        setBtnLoading(false);
-      }
-
-      setToastData({
-        type: "success",
-        message: "Menu Updated Successfully",
-      });
-      setBtnLoading(false);
-      setisAddMenuModalOpen(false);
-      setfetchMenuDatas(!fetchMenuDatas);
-      setisDuplicateMenu(false);
-      setisEditCats(false);
-      seteditCatsId(null);
-    } catch (error: any) {
-      setBtnLoading(false);
-      const errorMessage = extractErrorMessage(error);
-      setToastData({
-        type: "error",
-        message: errorMessage,
-      });
-    }
+    // try {
+    //   if (!isDuplicateMenu) {
+    //     if (!isValidNameAlphabetic(data.name)) {
+    //       setToastData({
+    //         message:
+    //           "Please use only alphabets and numbers while adding or updating name.",
+    //         type: "error",
+    //       });
+    //       return;
+    //     }
+    //   }
+    //   setActionLoading(true);
+    //   const prevSelectedMenuIds = prevItemsbfrEdit.map((item) => item._id);
+    //   const selectedItemsIds = selectedItems.map((item) => item._id);
+    //   const addedMenuIds = selectedItemsIds.filter(
+    //     (id) => !prevSelectedMenuIds.includes(id)
+    //   );
+    //   const isMenuAdded = addedMenuIds.length > 0;
+    //   const formattedAvailability = formatAvailability(availability);
+    //   const updateInput: any = {
+    //     _id: editMenuId || "",
+    //     availability: formattedAvailability,
+    //   };
+    //   const selectedMenuType = menuTypeOptions.find(
+    //     (option) => option.value === changesMenu?.type
+    //   );
+    //   if (data.type.value !== selectedMenuType?.value) {
+    //     updateInput.type = data.type.value as MenuTypeEnum;
+    //   }
+    //   if (data.name !== changesMenu?.name) {
+    //     updateInput.name = data.name;
+    //   }
+    //   if (!isEditMenu) {
+    //     await sdk.addMenu({
+    //       input: {
+    //         type: data.type.value as MenuTypeEnum,
+    //         name: data.name,
+    //         categories: selectedItemsIds,
+    //         taxRateId: taxRate?.id || "",
+    //         availability: formattedAvailability,
+    //       },
+    //     });
+    //     setToastData({
+    //       type: "success",
+    //       message: "Menu Added Successfully",
+    //     });
+    //   } else {
+    //     await sdk.updateMenu({
+    //       input: updateInput,
+    //     });
+    //     isMenuAdded &&
+    //       (await sdk.addCategoriesToMenu({
+    //         categoryId: addedMenuIds,
+    //         menuId: editMenuId || "",
+    //       }));
+    //     setToastData({
+    //       type: "success",
+    //       message: "Category Added Successfully",
+    //     });
+    //     setisAddMenuModalOpen(false);
+    //     setBtnLoading(false);
+    //   }
+    //   setToastData({
+    //     type: "success",
+    //     message: "Menu Updated Successfully",
+    //   });
+    //   setBtnLoading(false);
+    //   setisAddMenuModalOpen(false);
+    //   setfetchMenuDatas(!fetchMenuDatas);
+    //   setisDuplicateMenu(false);
+    //   setisEditCats(false);
+    //   seteditCatsId(null);
+    // } catch (error: any) {
+    //   setBtnLoading(false);
+    //   const errorMessage = extractErrorMessage(error);
+    //   setToastData({
+    //     type: "error",
+    //     message: errorMessage,
+    //   });
+    // }
   };
-
-  useEffect(() => {
-    if (selectedItems.length > 0) {
-      setItemsOption((prevItemsOption) =>
-        prevItemsOption.filter(
-          (item) =>
-            !selectedItems.some((selectedItem) => selectedItem._id === item._id)
-        )
-      );
-    }
-  }, [isModalOpen, selectedItems, fetchMenuDatas, tempSelectedItems]);
-
-  useEffect(() => {
-    const fetch = async () => {
-      try {
-        const categories = await sdk.getCategoriesForMenuDropdown();
-        if (categories && categories.getCategories) {
-          const formattedItemsList = categories.getCategories.map(
-            (cats: { name: string; _id: string }) => ({
-              _id: cats._id,
-              name: cats?.name,
-            })
-          );
-
-          // const updatedSelectedItems = selectedItems.map((selectedItem) => {
-          //   const match = formattedItemsList.find(
-          //     (item) => item._id === selectedItem._id
-          //   );
-          //   return match ? { ...selectedItem, ...match } : selectedItem;
-          // });
-
-          const filteredItemsList = formattedItemsList.filter(
-            (item) =>
-              !selectedItems.some(
-                (selectedItem) => selectedItem._id === item._id
-              )
-          );
-          // setSelectedItems(updatedSelectedItems);
-
-          setItemsOption(filteredItemsList);
-        }
-      } catch (error: any) {
-        const errorMessage = extractErrorMessage(error);
-        setToastData({
-          type: "error",
-          message: errorMessage,
-        });
-      }
-    };
-    fetch();
-  }, [fetchMenuDatas, setToastData, selectedItems]);
-
-  // useEffect(() => {
-  //   const fetch = async () => {
-  //     try {
-  //       const categories = await sdk.getCategoriesForMenuDropdown();
-  //       if (categories && categories.getCategories) {
-  //         const formattedItemsList = categories.getCategories.map(
-  //           (cats: { name: string; _id: string }) => ({
-  //             _id: cats._id,
-  //             name: cats?.name,
-  //           })
-  //         );
-
-  //         const updatedSelectedItems = selectedItems.map((selectedItem) => {
-  //           const match = formattedItemsList.find(
-  //             (item) => item._id === selectedItem._id
-  //           );
-  //           return match ? { ...selectedItem, ...match } : selectedItem;
-  //         });
-
-  //         setSelectedItems(updatedSelectedItems);
-  //       }
-  //     } catch (error: any) {
-  //       const errorMessage = extractErrorMessage(error);
-  //       setToastData({
-  //         type: "error",
-  //         message: errorMessage,
-  //       });
-  //     }
-  //   };
-  //   fetch();
-  // }, [fetchMenuDatas]);
 
   const handleRemoveCategory = async () => {
-    setSelectedItems((prevSelected) =>
-      prevSelected.filter((item) => item._id !== removingId)
-    );
-
-    setTempSelectedItems((prevSelected) =>
-      prevSelected.filter((item) => item._id !== removingId)
-    );
-
-    const isPresentInPrevItems = prevItemsbfrEdit.some(
-      (item) => item._id === removingId
-    );
-
-    if (isEditMenu && isPresentInPrevItems) {
-      const res = await sdk.removeCategoryFromMenu({
-        categoryId: removingId,
-        menuId: editMenuId || "",
-      });
-      if (res) {
-        setprevItemsbfrEdit((prevSelected) =>
-          prevSelected.filter((item) => item._id !== removingId)
-        );
-      }
-    }
-    setConfirmationRemoval(false);
+    // setSelectedItems((prevSelected) =>
+    //   prevSelected.filter((item) => item._id !== removingId)
+    // );
+    // setTempSelectedItems((prevSelected) =>
+    //   prevSelected.filter((item) => item._id !== removingId)
+    // );
+    // const isPresentInPrevItems = prevItemsbfrEdit.some(
+    //   (item) => item._id === removingId
+    // );
+    // if (isEditMenu && isPresentInPrevItems) {
+    //   const res = await sdk.removeCategoryFromMenu({
+    //     categoryId: removingId,
+    //     menuId: editMenuId || "",
+    //   });
+    //   if (res) {
+    //     setprevItemsbfrEdit((prevSelected) =>
+    //       prevSelected.filter((item) => item._id !== removingId)
+    //     );
+    //   }
+    // }
+    // setConfirmationRemoval(false);
   };
 
   const handleEditCategory = (id: string) => {
@@ -386,79 +385,75 @@ const AddMenuForm = () => {
     seteditCatsId(id);
   };
 
-  const renderActions = (rowData: ItemsDropDownType) => (
-    <div className="flex space-x-2 justify-center">
-      <IoIosCloseCircleOutline
-        className="text-red-400 text-lg cursor-pointer"
-        onClick={() => {
-          setConfirmationRemoval(true);
-          setRemovingId(rowData?._id);
-        }}
-      />
-      <MdArrowOutward
-        className="text-primary cursor-pointer"
-        onClick={() => {
-          handleEditCategory(rowData?._id);
-        }}
-      />
-    </div>
-  );
+  const handleAddItems = (idsList: string[]) => {
+    // Set selected list
+    if (masterList.length > 0) {
+      let newSelections = masterList.filter((e) =>
+        idsList.includes(e._id.toString())
+      );
 
-  const data = selectedItems.map((item) => ({
-    _id: item._id,
-    name: item.name,
-    actions: renderActions(item),
-  }));
-
-  const handleAddItems = () => {
-    setSelectedItems([]);
-    setSelectedItems(tempSelectedItems);
-    setIsModalOpen(false);
-  };
-
-  const headingsDropdown = [
-    {
-      title: "Actions",
-      dataKey: "name",
-      render: (item: { _id: string }) => (
-        <div className="flex space-x-2 justify-center">
-          <MdArrowOutward
-            className="text-primary cursor-pointer"
-            onClick={() => handleEditCategory(item._id)}
-          />
-        </div>
-      ),
-    },
-  ];
-
-  const headings = [
-    { title: "Actions", dataKey: "name", render: renderActions },
-  ];
-
-  const handleAddClick = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleItemClick = (item: any) => {
-    setTempSelectedItems((prevSelected) =>
-      prevSelected.some((selectedItem) => selectedItem._id === item._id)
-        ? prevSelected.filter((i) => i._id !== item._id)
-        : [...prevSelected, item]
-    );
+      setSelectedList((prev) => [...prev, ...newSelections]);
+    }
   };
 
   const handelCreateCategory = () => {
     setisAddCategoryModalOpen(true);
   };
-  const [incomingTaxId, setIncomingTaxId] = useState("");
 
-  // Save Handler for quick Edit
   const handleSave = (updatedData: DataItemFormAddTable[]) => {
-    // Update the state with the new data
-    setEditedSelectedItems(updatedData);
-    // setSelectedItems(updatedDate);
-    console.log(updatedData);
+    // // Update the state with the new data
+    // setEditedSelectedItems(updatedData);
+    // // setSelectedItems(updatedDate);
+    // console.log(updatedData);
   };
+
+  // Table configs
+  const listHeadings = [
+    {
+      title: "Actions",
+      dataKey: "name",
+      render: (row: ListType) => {
+        return (
+          <div className="flex space-x-2 justify-center">
+            <IoIosCloseCircleOutline
+              className="text-red-400 text-lg cursor-pointer"
+              onClick={() => {
+                setModalStates((prev) => ({
+                  ...prev,
+                  showDeleteConfirmation: true,
+                  selectedId: row._id,
+                }));
+              }}
+            />
+            <MdArrowOutward
+              className="text-primary cursor-pointer"
+              onClick={() => {
+                handleEditCategory(row._id);
+              }}
+            />
+          </div>
+        );
+      },
+    },
+  ];
+
+  const masterListHeadings = [
+    {
+      title: "Actions",
+      dataKey: "name",
+      render: (row: ListType) => {
+        return (
+          <div className="flex space-x-2 justify-center">
+            <MdArrowOutward
+              className="text-primary cursor-pointer"
+              onClick={() => handleEditCategory(row._id)}
+            />
+          </div>
+        );
+      },
+    },
+  ];
+
   return (
     <motion.div
       className="z-10 w-full min-h-full max-w-4xl flex flex-col items-center space-y-5 text-center"
@@ -546,19 +541,22 @@ const AddMenuForm = () => {
             <br />
             <div>
               <FormAddTable
-                data={data}
-                headings={headings}
+                data={selectedList}
+                headings={listHeadings}
                 title="Categories"
                 emptyCaption="Add Categories to your menu"
                 emptyMessage="No Categories selected"
                 buttonText="Add Categories"
-                onAddClick={handleAddClick}
+                onAddClick={() =>
+                  setModalStates((prev) => ({ ...prev, showAddNewModal: true }))
+                }
                 onSave={handleSave}
               />
               <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
                 Select the categories and items you want to be in this menu.
               </p>
             </div>
+            <br />
           </>
         ) : null}
 
@@ -570,7 +568,7 @@ const AddMenuForm = () => {
             type="button"
             className="text-sm text-primary flex items-center cursor-pointer"
             onClick={async () => {
-              setUseRestaurantTimings(!useRestaurantTimings);
+              await fetchRestoTiming();
             }}
           >
             <span className=" hover:underline">
@@ -598,7 +596,7 @@ const AddMenuForm = () => {
                   </div>
                   <div>
                     <CButton
-                      loading={btnLoading}
+                      loading={actionLoading}
                       variant={ButtonType.Outlined}
                       type="button"
                       onClick={() => setisShowTaxSettings(true)}
@@ -643,7 +641,7 @@ const AddMenuForm = () => {
         ) : null}
 
         <CButton
-          loading={btnLoading}
+          loading={actionLoading}
           variant={ButtonType.Primary}
           type="submit"
           className="w-full"
@@ -660,30 +658,34 @@ const AddMenuForm = () => {
       </form>
       <AddFormDropdown
         title="Add Categories"
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        data={itemsOption}
-        tempSelectedItems={tempSelectedItems}
-        handleItemClick={handleItemClick}
-        handleAddItems={handleAddItems}
-        headings={headingsDropdown}
-        renderActions={renderActions}
-        createNewItemButtonLabel="Create new category"
-        addSelectedItemsButtonLabel="Add selected categories"
-        onClickCreatebtn={handelCreateCategory}
+        isOpen={modalStates.showAddNewModal}
+        onClose={() =>
+          setModalStates((prev) => ({ ...prev, showAddNewModal: false }))
+        }
+        data={masterList.filter(
+          (e) => !selectedList.map((el) => el._id).includes(e._id)
+        )}
+        headings={masterListHeadings}
+        createLabel="Create new category"
+        addLabel="Add selected categories"
+        createClickHandler={handelCreateCategory}
+        addHandler={handleAddItems}
       />
       <ReusableModal
-        isOpen={confirmationRemoval}
+        isOpen={modalStates.showDeleteConfirmation}
         onClose={() => {
-          setConfirmationRemoval(false);
-          setRemovingId("");
+          setModalStates((prev) => ({
+            ...prev,
+            showDeleteConfirmation: false,
+            selectedId: "",
+          }));
         }}
         title="Are you sure?"
         comments="By clicking yes the selected category / categories will be removed from this menu. This action cannot be undone."
       >
         <div className="flex justify-end space-x-4">
           <CButton
-            loading={btnLoading}
+            loading={actionLoading}
             variant={ButtonType.Primary}
             onClick={() => handleRemoveCategory()}
           >

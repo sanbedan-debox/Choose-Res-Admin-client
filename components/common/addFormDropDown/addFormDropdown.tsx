@@ -1,51 +1,65 @@
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import ReusableModal from "@/components/common/modal/modal";
-import { useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { BsArrowUpRightCircle } from "react-icons/bs";
 import { IoIosAddCircleOutline } from "react-icons/io";
+import { Heading } from "../table/formTable";
 
 interface Props {
   title: string;
+  createLabel: string;
+  addLabel: string;
+  data: any[];
+  headings: Heading[] | any[];
   isOpen: boolean;
   onClose: () => void;
-  data: any[];
-  tempSelectedItems: any[];
-  handleItemClick: (item: any) => void;
-  handleAddItems: () => void;
-  headings: {
-    title: string;
-    dataKey: string;
-    render?: (item: any) => React.ReactNode;
-  }[];
-  renderActions?: (item: any) => React.ReactNode;
-  createNewItemButtonLabel?: string;
-  addSelectedItemsButtonLabel?: string;
-  onClickCreatebtn?: () => void;
+  addHandler: (idsList: string[]) => void;
+  createClickHandler: () => void;
 }
 
 const AddFormDropdown: React.FC<Props> = ({
   title,
+  createLabel,
+  addLabel,
+  data,
+  headings,
   isOpen,
   onClose,
-  data,
-  tempSelectedItems,
-  handleItemClick,
-  handleAddItems,
-  headings,
-  renderActions,
-  createNewItemButtonLabel = "Create New Item",
-  onClickCreatebtn,
-  addSelectedItemsButtonLabel = "Add Selected Items",
+  addHandler,
+  createClickHandler,
 }) => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const handleSearch = (event: any) => {
-    setSearchTerm(event.target.value);
+  const [filteredItems, setFilteredItems] = useState<any[]>([]);
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+
+  const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
+    let searchVal = event.target.value.toString().toLowerCase().trim();
+    let arr = [...data];
+    if (searchVal !== "") {
+      setFilteredItems(
+        arr?.filter((item) =>
+          item.name.toLowerCase().includes(searchVal.toLowerCase().trim())
+        )
+      );
+    } else {
+      setFilteredItems(arr);
+    }
   };
 
-  const filteredItems = data?.filter((item) =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const selectItemHandler = (id: string) => {
+    // TODO: Can use refs for getting checked state of checkbox
+    const idx = selectedItems.findIndex((e) => e === id);
+
+    if (idx >= 0) {
+      setSelectedItems((prev) => prev.filter((e) => e !== id));
+    } else {
+      setSelectedItems((prev) => [...prev, id]);
+    }
+  };
+
+  useEffect(() => {
+    setFilteredItems(data);
+  }, [data]);
 
   return (
     <ReusableModal title={title} isOpen={isOpen} onClose={onClose}>
@@ -53,7 +67,6 @@ const AddFormDropdown: React.FC<Props> = ({
         <input
           type="text"
           placeholder="Search items..."
-          value={searchTerm}
           onChange={handleSearch}
           className="input input-primary w-full"
         />
@@ -63,24 +76,20 @@ const AddFormDropdown: React.FC<Props> = ({
               <input
                 aria-label="Add item"
                 type="checkbox"
-                checked={tempSelectedItems.some(
-                  (selectedItem) => selectedItem._id === item._id
+                checked={selectedItems.some(
+                  (selectedItem) => selectedItem === item._id
                 )}
-                onChange={() => handleItemClick(item)}
+                onChange={(e) => {
+                  selectItemHandler(item._id);
+                }}
                 className="mr-2"
               />
-              {/* <CustomSwitch
-                checked={tempSelectedItems.some(
-                  (selectedItem) => selectedItem._id === item._id
-                )}
-                onChange={() => handleItemClick(item)}
-                label="Add item"
-                className="mr-2"
-              /> */}
               <div className="flex flex-1 justify-between">
                 <span
                   className="cursor-pointer"
-                  onClick={() => handleItemClick(item)}
+                  onClick={() => {
+                    selectItemHandler(item._id);
+                  }}
                 >
                   {item.name}
                 </span>
@@ -99,16 +108,21 @@ const AddFormDropdown: React.FC<Props> = ({
           ))}
         </ul>
         <div className="flex space-x-2 justify-end">
-          <CButton onClick={onClickCreatebtn} variant={ButtonType.Outlined}>
+          <CButton onClick={createClickHandler} variant={ButtonType.Outlined}>
             <div className="flex justify-center items-center">
-              {createNewItemButtonLabel}
+              {createLabel}
 
               <BsArrowUpRightCircle className="text-xl ml-1" />
             </div>
           </CButton>
-          <CButton onClick={handleAddItems} variant={ButtonType.Primary}>
+          <CButton
+            onClick={() => {
+              addHandler(selectedItems);
+            }}
+            variant={ButtonType.Primary}
+          >
             <div className="flex justify-center items-center">
-              {addSelectedItemsButtonLabel}
+              {addLabel}
 
               <IoIosAddCircleOutline className="text-xl ml-1" />
             </div>

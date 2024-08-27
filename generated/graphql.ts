@@ -718,8 +718,12 @@ export type Mutation = {
   adminUserDetailsRejection: Scalars['Boolean']['output'];
   adminUserDetailsVerification: Scalars['Boolean']['output'];
   blockAdmin: Scalars['Boolean']['output'];
+  bulkUpdateCategory: Scalars['Boolean']['output'];
+  bulkUpdateItem: Scalars['Boolean']['output'];
+  bulkUpdateMenu: Scalars['Boolean']['output'];
   bulkUpdateModifierGroups: Scalars['Boolean']['output'];
   bulkUpdateModifiers: Scalars['Boolean']['output'];
+  bulkUpdateSubCategory: Scalars['Boolean']['output'];
   businessOnboarding: Scalars['Boolean']['output'];
   changeCategoryStatus: Scalars['Boolean']['output'];
   changeItemStatus: Scalars['Boolean']['output'];
@@ -890,6 +894,21 @@ export type MutationBlockAdminArgs = {
 };
 
 
+export type MutationBulkUpdateCategoryArgs = {
+  input: Array<UpdateBulkCategoryInput>;
+};
+
+
+export type MutationBulkUpdateItemArgs = {
+  input: Array<UpdateBulkItemInput>;
+};
+
+
+export type MutationBulkUpdateMenuArgs = {
+  input: Array<UpdateBulkMenuInput>;
+};
+
+
 export type MutationBulkUpdateModifierGroupsArgs = {
   input: Array<UpdateBulkModifierGroupInput>;
 };
@@ -897,6 +916,11 @@ export type MutationBulkUpdateModifierGroupsArgs = {
 
 export type MutationBulkUpdateModifiersArgs = {
   input: Array<UpdateBulkModifierInput>;
+};
+
+
+export type MutationBulkUpdateSubCategoryArgs = {
+  input: Array<UpdateBulkSubCategoryInput>;
 };
 
 
@@ -1662,6 +1686,23 @@ export type TimezoneDataInput = {
   timezoneName: Scalars['String']['input'];
 };
 
+export type UpdateBulkCategoryInput = {
+  _id: Scalars['String']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<StatusEnum>;
+};
+
+export type UpdateBulkItemInput = {
+  _id: Scalars['String']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<StatusEnum>;
+};
+
+export type UpdateBulkMenuInput = {
+  _id: Scalars['String']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type UpdateBulkModifierGroupInput = {
   _id: Scalars['String']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
@@ -1671,6 +1712,12 @@ export type UpdateBulkModifierInput = {
   _id: Scalars['String']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
   price?: InputMaybe<Scalars['Float']['input']>;
+};
+
+export type UpdateBulkSubCategoryInput = {
+  desc?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['String']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateBusinessDetailsInput = {
@@ -2137,7 +2184,7 @@ export type AddMenuMutation = { __typename?: 'Mutation', addMenu: boolean };
 export type GetCategoriesForMenuDropdownQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCategoriesForMenuDropdownQuery = { __typename?: 'Query', getCategories: Array<{ __typename?: 'Category', _id: string, name: string, desc: string, status: StatusEnum }> };
+export type GetCategoriesForMenuDropdownQuery = { __typename?: 'Query', getCategories: Array<{ __typename?: 'Category', _id: string, name: string }> };
 
 export type ChangeMenuStatusMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -2179,7 +2226,7 @@ export type GetMenuQueryVariables = Exact<{
 }>;
 
 
-export type GetMenuQuery = { __typename?: 'Query', getMenu: { __typename?: 'Menu', _id: string, name: string, status: StatusEnum, createdAt: any, updatedAt: any, type: MenuTypeEnum, availability?: Array<{ __typename?: 'Availability', day: string, active: boolean, hours: Array<{ __typename?: 'Hours', start: any, end: any }> }> | null, taxes?: { __typename?: 'TaxRateInfo', _id: string, salesTax: number, name: string } | null, categories: Array<{ __typename?: 'CategoryInfo', name?: string | null, status: StatusEnum, _id: { __typename?: 'Category', _id: string } }> } };
+export type GetMenuQuery = { __typename?: 'Query', getMenu: { __typename?: 'Menu', _id: string, name: string, type: MenuTypeEnum, availability?: Array<{ __typename?: 'Availability', day: string, active: boolean, hours: Array<{ __typename?: 'Hours', start: any, end: any }> }> | null, categories: Array<{ __typename?: 'CategoryInfo', name?: string | null, _id: { __typename?: 'Category', _id: string } }> } };
 
 export type GetModifierGroupsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2338,6 +2385,11 @@ export type RestaurantDetailsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type RestaurantDetailsQuery = { __typename?: 'Query', restaurantDetails: { __typename?: 'Restaurant', name: string, _id: string, brandingLogo?: string | null, website?: string | null, category?: Array<RestaurantCategory> | null, beverageCategory?: Array<BeverageCategory> | null, foodType?: Array<FoodType> | null, meatType?: MeatType | null, type?: RestaurantType | null, dineInCapacity?: number | null, taxRates?: Array<{ __typename?: 'TaxRateInfo', _id: string, name: string, salesTax: number }> | null, address?: { __typename?: 'AddressInfo', addressLine1: string, addressLine2?: string | null, city: string, zipcode: number, state: { __typename?: 'StateData', stateId: string, stateName: string }, coordinate?: { __typename?: 'LocationCommon', coordinates: Array<number> } | null, place?: { __typename?: 'Places', displayName: string, placeId: string } | null } | null, socialInfo?: { __typename?: 'SocialInfo', facebook?: string | null, instagram?: string | null, twitter?: string | null } | null, availability?: Array<{ __typename?: 'Availability', day: string, active: boolean, hours: Array<{ __typename?: 'Hours', start: any, end: any }> }> | null, timezone?: { __typename?: 'TimezoneData', timezoneId: string, timezoneName: string } | null } };
+
+export type RestaurantTimingsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type RestaurantTimingsQuery = { __typename?: 'Query', restaurantDetails: { __typename?: 'Restaurant', _id: string, availability?: Array<{ __typename?: 'Availability', day: string, active: boolean, hours: Array<{ __typename?: 'Hours', start: any, end: any }> }> | null } };
 
 export type AddTaxRateMutationVariables = Exact<{
   input: TaxRateInput;
@@ -2880,8 +2932,6 @@ export const GetCategoriesForMenuDropdownDocument = gql`
   getCategories {
     _id
     name
-    desc
-    status
   }
 }
     `;
@@ -2925,9 +2975,6 @@ export const GetMenuDocument = gql`
   getMenu(id: $id) {
     _id
     name
-    status
-    createdAt
-    updatedAt
     type
     availability {
       day
@@ -2937,14 +2984,8 @@ export const GetMenuDocument = gql`
       }
       active
     }
-    taxes {
-      _id
-      salesTax
-      name
-    }
     categories {
       name
-      status
       _id {
         _id
       }
@@ -3200,6 +3241,21 @@ export const RestaurantDetailsDocument = gql`
   }
 }
     ${AddressInfoFragmentDoc}`;
+export const RestaurantTimingsDocument = gql`
+    query restaurantTimings {
+  restaurantDetails {
+    _id
+    availability {
+      day
+      hours {
+        start
+        end
+      }
+      active
+    }
+  }
+}
+    `;
 export const AddTaxRateDocument = gql`
     mutation addTaxRate($input: TaxRateInput!) {
   addTaxRate(input: $input)
@@ -3577,6 +3633,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     restaurantDetails(variables?: RestaurantDetailsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<RestaurantDetailsQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<RestaurantDetailsQuery>(RestaurantDetailsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'restaurantDetails', 'query', variables);
+    },
+    restaurantTimings(variables?: RestaurantTimingsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<RestaurantTimingsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<RestaurantTimingsQuery>(RestaurantTimingsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'restaurantTimings', 'query', variables);
     },
     addTaxRate(variables: AddTaxRateMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddTaxRateMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<AddTaxRateMutation>(AddTaxRateDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'addTaxRate', 'mutation', variables);

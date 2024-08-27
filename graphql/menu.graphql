@@ -6,8 +6,6 @@ query getCategoriesForMenuDropdown {
   getCategories {
     _id
     name
-    desc
-    status
   }
 }
 
@@ -46,9 +44,6 @@ query getMenu($id: String!) {
   getMenu(id: $id) {
     _id
     name
-    status
-    createdAt
-    updatedAt
     type
     availability {
       day
@@ -58,15 +53,8 @@ query getMenu($id: String!) {
       }
       active
     }
-    taxes {
-      _id
-      salesTax
-      name
-    }
     categories {
       name
-      status
-
       _id {
         _id
       }

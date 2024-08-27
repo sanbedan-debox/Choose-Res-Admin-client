@@ -51,6 +51,20 @@ query restaurantDetails {
   }
 }
 
+query restaurantTimings {
+  restaurantDetails {
+    _id
+    availability {
+      day
+      hours {
+        start
+        end
+      }
+      active
+    }
+  }
+}
+
 mutation addTaxRate($input: TaxRateInput!) {
   addTaxRate(input: $input)
 }

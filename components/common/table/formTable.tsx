@@ -6,7 +6,7 @@ import Select from "react-select";
 import CButton from "../button/button";
 import { ButtonType } from "../button/interface";
 
-interface Heading {
+export interface Heading {
   title: string;
   dataKey: string;
   render?: (rowData: DataItemFormAddTable) => React.ReactNode;
