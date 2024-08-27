@@ -19,7 +19,8 @@ const Categories: React.FC = () => {
     { name: string; desc: string; items: number; _id: string; status: string }[]
   >([]);
   const { setToastData } = useGlobalStore();
-  const { setisAddCategoryModalOpen, fetchMenuDatas } = useMenuOptionsStore();
+  const { setisAddCategoryModalOpen, refreshMenuBuilderData } =
+    useMenuOptionsStore();
 
   const [tableLoading, setTableLoading] = useState(false);
   const fetchCategories = async () => {
@@ -63,7 +64,7 @@ const Categories: React.FC = () => {
   };
   useEffect(() => {
     fetchCategories();
-  }, [fetchMenuDatas, setToastData]);
+  }, [refreshMenuBuilderData, setToastData]);
   const [showStatusConfirmationModal, setShowStatusConfirmationModal] =
     useState(false);
   const [selectedItemId, setSelectedItemId] = useState<string>("");

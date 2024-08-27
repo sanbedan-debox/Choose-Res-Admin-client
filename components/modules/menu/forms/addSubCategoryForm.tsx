@@ -48,8 +48,8 @@ const AddSubCategoryForm = () => {
   const {
     isAddSubCategoryModalOpen,
     setisAddSubCategoryModalOpen,
-    setfetchMenuDatas,
-    fetchMenuDatas,
+    setrefreshMenuBuilderData,
+    refreshMenuBuilderData,
   } = useMenuOptionsStore();
   const [changesSubCat, setChangesSubCat] = useState({});
 
@@ -136,7 +136,7 @@ const AddSubCategoryForm = () => {
       }
 
       setBtnLoading(false);
-      setfetchMenuDatas(!fetchMenuDatas);
+      setrefreshMenuBuilderData(!refreshMenuBuilderData);
       setisDuplicateSubCategory(false);
       setisEditSubCategory(false);
 

@@ -92,14 +92,14 @@ const CsvUploadForm = () => {
   const {
     setisAddMenuModalOpen,
     isAddMenuModalOpen,
-    setfetchMenuDatas,
-    fetchMenuDatas,
+    setrefreshMenuBuilderData,
+    refreshMenuBuilderData,
     setIsFromUploadCSV,
   } = useMenuOptionsStore();
 
   const handleAddMenuClose = () => {
     setisAddMenuModalOpen(false);
-    setfetchMenuDatas(!fetchMenuDatas);
+    setrefreshMenuBuilderData(!refreshMenuBuilderData);
   };
 
   useEffect(() => {
@@ -120,7 +120,7 @@ const CsvUploadForm = () => {
     };
 
     fetchMenus();
-  }, [fetchMenuDatas]);
+  }, [refreshMenuBuilderData]);
 
   //OPEN FULL PAGE MODAL FOR PREVIEW OF DATA
   const handlePreview = () => {

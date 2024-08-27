@@ -43,8 +43,8 @@ const MenuPage = ({ repo }: { repo?: UserRepo }) => {
     isAddMenuModalOpen,
     setisAddCategoryModalOpen,
     setisAddMenuModalOpen,
-    fetchMenuDatas,
-    setfetchMenuDatas,
+    refreshMenuBuilderData,
+    setrefreshMenuBuilderData,
     isAddModifierGroupModalOpen,
     setisAddModifierGroupModalOpen,
     isAddModifierModalOpen,
@@ -66,41 +66,41 @@ const MenuPage = ({ repo }: { repo?: UserRepo }) => {
     useMenuItemsStore();
   const handleAddMenuItemClose = () => {
     setisAddItemModalOpen(false);
-    setfetchMenuDatas(!fetchMenuDatas);
+    setrefreshMenuBuilderData(!refreshMenuBuilderData);
     setisEditItem(false);
     setEditItemId(null);
     setisDuplicateItem(false);
   };
   const handleAddSubCategoryModalclose = () => {
     setisAddSubCategoryModalOpen(false);
-    setfetchMenuDatas(!fetchMenuDatas);
+    setrefreshMenuBuilderData(!refreshMenuBuilderData);
     setisEditSubCategory(false);
     seteditSubCategoryId(null);
   };
   const handleAddMenuCategoryClose = () => {
     setisAddCategoryModalOpen(false);
-    setfetchMenuDatas(!fetchMenuDatas);
+    setrefreshMenuBuilderData(!refreshMenuBuilderData);
     setisEditCats(false);
     seteditCatsId(null);
     setisDuplicateCats(false);
   };
   const handleAddMenuClose = () => {
     setisAddMenuModalOpen(false);
-    setfetchMenuDatas(!fetchMenuDatas);
+    setrefreshMenuBuilderData(!refreshMenuBuilderData);
     setisEditMenu(false);
     setisDuplicateMenu(false);
     setEditMenuId(null);
   };
   const handleAddModifierGroupClose = () => {
     setisAddModifierGroupModalOpen(false);
-    setfetchMenuDatas(!fetchMenuDatas);
+    setrefreshMenuBuilderData(!refreshMenuBuilderData);
     setisEditModGroup(false);
     setisDuplicateModifierGroup(false);
     setEditModGroupId(null);
   };
   const handleAddModifierClose = () => {
     setisAddModifierModalOpen(false);
-    setfetchMenuDatas(!fetchMenuDatas);
+    setrefreshMenuBuilderData(!refreshMenuBuilderData);
     setisEditMod(false);
     setisDuplicateMods(false);
     setEditModId(null);
@@ -220,14 +220,14 @@ const MenuPage = ({ repo }: { repo?: UserRepo }) => {
               });
             } else {
               setisAddModifierGroupModalOpen(false);
-              setfetchMenuDatas(!fetchMenuDatas);
+              setrefreshMenuBuilderData(!refreshMenuBuilderData);
               setisEditModGroup(false);
               setisDuplicateModifierGroup(false);
               setEditModGroupId(null);
             }
           } else {
             setisAddModifierGroupModalOpen(false);
-            setfetchMenuDatas(!fetchMenuDatas);
+            setrefreshMenuBuilderData(!refreshMenuBuilderData);
             setisEditModGroup(false);
             setisDuplicateModifierGroup(false);
             setEditModGroupId(null);

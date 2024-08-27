@@ -23,7 +23,7 @@ const Menu: React.FC = () => {
       _id: string;
     }[]
   >([]);
-  const { setisAddMenuModalOpen, fetchMenuDatas, setIsFromUploadCSV } =
+  const { setisAddMenuModalOpen, refreshMenuBuilderData, setIsFromUploadCSV } =
     useMenuOptionsStore();
   const [showStatusConfirmationModal, setShowStatusConfirmationModal] =
     useState(false);
@@ -72,7 +72,7 @@ const Menu: React.FC = () => {
   };
   useEffect(() => {
     fetchAllMenus();
-  }, [fetchMenuDatas, setToastData]);
+  }, [refreshMenuBuilderData, setToastData]);
 
   const handleEditMenu = (_id: string) => {
     setisAddMenuModalOpen(true);

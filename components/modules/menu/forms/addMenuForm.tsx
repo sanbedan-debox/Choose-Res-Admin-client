@@ -6,17 +6,24 @@ import ReusableModal from "@/components/common/modal/modal";
 import FormAddTable from "@/components/common/table/formTable";
 import {
   Availability,
+  formatAvailability,
   reverseFormatAvailability,
 } from "@/components/common/timingAvailibility/interface";
 import AvailabilityComponent from "@/components/common/timingAvailibility/timingAvailibility";
-import { Day, MenuTypeEnum } from "@/generated/graphql";
+import { MenuTypeEnum } from "@/generated/graphql";
+import { initAvailability } from "@/lib/commonConstants";
+import { formatMenuType, menuTypeOptions } from "@/lib/menuBuilderConstants";
 import useAuthStore from "@/store/auth";
 import useGlobalStore from "@/store/global";
 import useMenuCategoryStore from "@/store/menuCategory";
 import useMenuMenuStore from "@/store/menumenu";
 import useMenuOptionsStore from "@/store/menuOptions";
 import { sdk } from "@/utils/graphqlClient";
-import { extractErrorMessage, generateUniqueName } from "@/utils/utilFUncs";
+import {
+  extractErrorMessage,
+  generateUniqueName,
+  isValidNameAlphabetic,
+} from "@/utils/utilFUncs";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -41,44 +48,6 @@ interface IModalState {
   selectedId: string;
 }
 
-// TODO: move it to common file
-const formatMenuType = (type: MenuTypeEnum) => {
-  switch (type) {
-    case MenuTypeEnum.OnlineOrdering:
-      return "Online Ordering";
-    case MenuTypeEnum.DineIn:
-      return "Dine In";
-    case MenuTypeEnum.Catering:
-      return "Catering";
-    default:
-      return "";
-  }
-};
-
-// TODO: move it to common file
-const menuTypeOptions: any[] = [
-  {
-    value: MenuTypeEnum.OnlineOrdering,
-    label: formatMenuType(MenuTypeEnum.OnlineOrdering),
-  },
-  { value: MenuTypeEnum.DineIn, label: formatMenuType(MenuTypeEnum.DineIn) },
-  {
-    value: MenuTypeEnum.Catering,
-    label: formatMenuType(MenuTypeEnum.Catering),
-  },
-];
-
-// TODO: move it to a common file
-const initAvailability: Availability[] = [
-  { day: Day.Sunday, hours: [], active: false },
-  { day: Day.Monday, hours: [], active: false },
-  { day: Day.Tuesday, hours: [], active: false },
-  { day: Day.Wednesday, hours: [], active: false },
-  { day: Day.Thursday, hours: [], active: false },
-  { day: Day.Friday, hours: [], active: false },
-  { day: Day.Saturday, hours: [], active: false },
-];
-
 const AddMenuForm = () => {
   // Configs
   const {
@@ -92,8 +61,8 @@ const AddMenuForm = () => {
 
   // Global states
   const {
-    fetchMenuDatas,
-    setfetchMenuDatas,
+    refreshMenuBuilderData,
+    setrefreshMenuBuilderData,
     setisAddMenuModalOpen,
     isFromUploadCSV,
     setisAddCategoryModalOpen,
@@ -119,7 +88,6 @@ const AddMenuForm = () => {
   // Add Form states
   const [selectedList, setSelectedList] = useState<ListType[]>([]);
   const [masterList, setMasterList] = useState<ListType[]>([]);
-  const [newList, setNewList] = useState<string[]>([]);
 
   // Edit states
   const [menuData, setMenuData] = useState<{
@@ -127,6 +95,7 @@ const AddMenuForm = () => {
     name: string;
     type: { label: string; value: string };
     availability: Availability[];
+    categories: { _id: string; name: string }[];
   } | null>(null);
 
   // Availability
@@ -173,9 +142,7 @@ const AddMenuForm = () => {
       }
     };
     fetch();
-
-    // TODO: change dependency variable name
-  }, [fetchMenuDatas]);
+  }, [refreshMenuBuilderData]);
 
   useEffect(() => {
     // Fetch menu details from id and set in the form
@@ -202,19 +169,6 @@ const AddMenuForm = () => {
 
         setAvailability(formattedAvailability);
 
-        // Set menu data if editing
-        if (isEditMenu) {
-          setMenuData({
-            _id: menu._id.toString() ?? "",
-            availability: formattedAvailability,
-            name: menu.name,
-            type: {
-              label: formatMenuType(menu.type),
-              value: menu.type,
-            },
-          });
-        }
-
         // Set form values
         setValue(
           "name",
@@ -232,6 +186,19 @@ const AddMenuForm = () => {
         );
 
         setSelectedList(selected);
+        // Set menu data if editing
+        if (isEditMenu) {
+          setMenuData({
+            _id: menu._id.toString() ?? "",
+            availability: formattedAvailability,
+            name: menu.name,
+            type: {
+              label: formatMenuType(menu.type),
+              value: menu.type,
+            },
+            categories: selected,
+          });
+        }
       } catch (error) {
         const errMsg = extractErrorMessage(error);
         setToastData({ message: errMsg, type: "error" });
@@ -273,110 +240,112 @@ const AddMenuForm = () => {
 
   // Handler functions
   const onSubmit = async (data: IFormInput) => {
-    // try {
-    //   if (!isDuplicateMenu) {
-    //     if (!isValidNameAlphabetic(data.name)) {
-    //       setToastData({
-    //         message:
-    //           "Please use only alphabets and numbers while adding or updating name.",
-    //         type: "error",
-    //       });
-    //       return;
-    //     }
-    //   }
-    //   setActionLoading(true);
-    //   const prevSelectedMenuIds = prevItemsbfrEdit.map((item) => item._id);
-    //   const selectedItemsIds = selectedItems.map((item) => item._id);
-    //   const addedMenuIds = selectedItemsIds.filter(
-    //     (id) => !prevSelectedMenuIds.includes(id)
-    //   );
-    //   const isMenuAdded = addedMenuIds.length > 0;
-    //   const formattedAvailability = formatAvailability(availability);
-    //   const updateInput: any = {
-    //     _id: editMenuId || "",
-    //     availability: formattedAvailability,
-    //   };
-    //   const selectedMenuType = menuTypeOptions.find(
-    //     (option) => option.value === changesMenu?.type
-    //   );
-    //   if (data.type.value !== selectedMenuType?.value) {
-    //     updateInput.type = data.type.value as MenuTypeEnum;
-    //   }
-    //   if (data.name !== changesMenu?.name) {
-    //     updateInput.name = data.name;
-    //   }
-    //   if (!isEditMenu) {
-    //     await sdk.addMenu({
-    //       input: {
-    //         type: data.type.value as MenuTypeEnum,
-    //         name: data.name,
-    //         categories: selectedItemsIds,
-    //         taxRateId: taxRate?.id || "",
-    //         availability: formattedAvailability,
-    //       },
-    //     });
-    //     setToastData({
-    //       type: "success",
-    //       message: "Menu Added Successfully",
-    //     });
-    //   } else {
-    //     await sdk.updateMenu({
-    //       input: updateInput,
-    //     });
-    //     isMenuAdded &&
-    //       (await sdk.addCategoriesToMenu({
-    //         categoryId: addedMenuIds,
-    //         menuId: editMenuId || "",
-    //       }));
-    //     setToastData({
-    //       type: "success",
-    //       message: "Category Added Successfully",
-    //     });
-    //     setisAddMenuModalOpen(false);
-    //     setBtnLoading(false);
-    //   }
-    //   setToastData({
-    //     type: "success",
-    //     message: "Menu Updated Successfully",
-    //   });
-    //   setBtnLoading(false);
-    //   setisAddMenuModalOpen(false);
-    //   setfetchMenuDatas(!fetchMenuDatas);
-    //   setisDuplicateMenu(false);
-    //   setisEditCats(false);
-    //   seteditCatsId(null);
-    // } catch (error: any) {
-    //   setBtnLoading(false);
-    //   const errorMessage = extractErrorMessage(error);
-    //   setToastData({
-    //     type: "error",
-    //     message: errorMessage,
-    //   });
-    // }
+    try {
+      if (!isDuplicateMenu) {
+        if (!isValidNameAlphabetic(data.name)) {
+          setToastData({
+            message:
+              "Please use only alphabets and numbers while adding or updating name.",
+            type: "error",
+          });
+          return;
+        }
+      }
+      setActionLoading(true);
+      const prevSelectedMenuIds = menuData?.categories?.map((item) => item._id);
+      const selectedItemsIds = selectedList.map((item) => item._id);
+      const isMenuAdded = selectedItemsIds.filter(
+        (id) => !prevSelectedMenuIds?.includes(id)
+      );
+      const formattedAvailability = formatAvailability(availability);
+      const updateInput: any = {
+        _id: editMenuId || "",
+        availability: formattedAvailability,
+      };
+      const selectedMenuType = menuTypeOptions.find(
+        (option) => option.value === menuData?.type
+      );
+      if (data.type.value !== selectedMenuType?.value) {
+        updateInput.type = data.type.value as MenuTypeEnum;
+      }
+      if (data.name !== menuData?.name) {
+        updateInput.name = data.name;
+      }
+      if (!isEditMenu) {
+        await sdk.addMenu({
+          input: {
+            type: data.type.value as MenuTypeEnum,
+            name: data.name,
+            categories: selectedItemsIds,
+            taxRateId: taxRate?.id || "",
+            availability: formattedAvailability,
+          },
+        });
+        setToastData({
+          type: "success",
+          message: "Menu Added Successfully",
+        });
+      } else {
+        await sdk.updateMenu({
+          input: updateInput,
+        });
+        isMenuAdded.length > 0 &&
+          (await sdk.addCategoriesToMenu({
+            categoryId: isMenuAdded,
+            menuId: editMenuId || "",
+          }));
+        setToastData({
+          type: "success",
+          message: "Category Added Successfully",
+        });
+        setisAddMenuModalOpen(false);
+        setActionLoading(false);
+      }
+      setToastData({
+        type: "success",
+        message: "Menu Updated Successfully",
+      });
+      setActionLoading(false);
+      setisAddMenuModalOpen(false);
+      setrefreshMenuBuilderData(!refreshMenuBuilderData);
+      setisDuplicateMenu(false);
+      setisEditCats(false);
+      seteditCatsId(null);
+    } catch (error: any) {
+      setActionLoading(false);
+      const errorMessage = extractErrorMessage(error);
+      setToastData({
+        type: "error",
+        message: errorMessage,
+      });
+    }
   };
 
   const handleRemoveCategory = async () => {
-    // setSelectedItems((prevSelected) =>
-    //   prevSelected.filter((item) => item._id !== removingId)
-    // );
-    // setTempSelectedItems((prevSelected) =>
-    //   prevSelected.filter((item) => item._id !== removingId)
-    // );
-    // const isPresentInPrevItems = prevItemsbfrEdit.some(
-    //   (item) => item._id === removingId
-    // );
-    // if (isEditMenu && isPresentInPrevItems) {
-    //   const res = await sdk.removeCategoryFromMenu({
-    //     categoryId: removingId,
-    //     menuId: editMenuId || "",
-    //   });
-    //   if (res) {
-    //     setprevItemsbfrEdit((prevSelected) =>
-    //       prevSelected.filter((item) => item._id !== removingId)
-    //     );
-    //   }
-    // }
-    // setConfirmationRemoval(false);
+    setSelectedList((prevSelected) =>
+      prevSelected.filter((item) => item._id !== modalStates.selectedId)
+    );
+
+    const isPresentInPrevItems = menuData?.categories?.some(
+      (item) => item._id === modalStates.selectedId
+    );
+    if (isEditMenu && isPresentInPrevItems) {
+      const res = await sdk.removeCategoryFromMenu({
+        categoryId: modalStates.selectedId,
+        menuId: editMenuId || "",
+      });
+      // if (res) {
+      //   setprevItemsbfrEdit((prevSelected) =>
+      //     prevSelected.filter((item) => item._id !== removingId)
+      //   );
+      // }
+    }
+    setModalStates((prev) => ({
+      ...prev,
+      showDeleteConfirmation: false,
+      selectedId: "",
+    }));
+    // modalStates.showDeleteConfirmation(false);
   };
 
   const handleEditCategory = (id: string) => {
@@ -385,7 +354,7 @@ const AddMenuForm = () => {
     seteditCatsId(id);
   };
 
-  const handleAddItems = (idsList: string[]) => {
+  const handleAddCategoriesToMenu = (idsList: string[]) => {
     // Set selected list
     if (masterList.length > 0) {
       let newSelections = masterList.filter((e) =>
@@ -394,10 +363,6 @@ const AddMenuForm = () => {
 
       setSelectedList((prev) => [...prev, ...newSelections]);
     }
-  };
-
-  const handelCreateCategory = () => {
-    setisAddCategoryModalOpen(true);
   };
 
   const handleSave = (updatedData: DataItemFormAddTable[]) => {
@@ -668,8 +633,10 @@ const AddMenuForm = () => {
         headings={masterListHeadings}
         createLabel="Create new category"
         addLabel="Add selected categories"
-        createClickHandler={handelCreateCategory}
-        addHandler={handleAddItems}
+        createClickHandler={() => {
+          setisAddCategoryModalOpen(true);
+        }}
+        addHandler={handleAddCategoriesToMenu}
       />
       <ReusableModal
         isOpen={modalStates.showDeleteConfirmation}

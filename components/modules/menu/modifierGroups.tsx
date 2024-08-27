@@ -18,7 +18,7 @@ const Modifiers: React.FC = () => {
     }[]
   >();
   const { setToastData } = useGlobalStore();
-  const { setisAddModifierGroupModalOpen, fetchMenuDatas } =
+  const { setisAddModifierGroupModalOpen, refreshMenuBuilderData } =
     useMenuOptionsStore();
   const [tableLoading, setTableLoading] = useState(false);
   const [showStatusConfirmationModal, setShowStatusConfirmationModal] =
@@ -50,7 +50,7 @@ const Modifiers: React.FC = () => {
 
   useEffect(() => {
     fetchModifierGroups();
-  }, [fetchMenuDatas]);
+  }, [refreshMenuBuilderData]);
 
   const { setEditModGroupId, setisEditModGroup, setisDuplicateModifierGroup } =
     useModGroupStore();

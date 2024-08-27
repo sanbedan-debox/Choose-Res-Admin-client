@@ -13,7 +13,7 @@ const SubCategories: React.FC = () => {
     { name: string; desc: string; _id: string }[]
   >([]);
   const { setToastData } = useGlobalStore();
-  const { setisAddSubCategoryModalOpen, fetchMenuDatas } =
+  const { setisAddSubCategoryModalOpen, refreshMenuBuilderData } =
     useMenuOptionsStore();
   const [tableLoading, setTableLoading] = useState(false);
   const { setisEditSubCategory, seteditSubCategoryId } = useSubCategoryStore();
@@ -45,7 +45,7 @@ const SubCategories: React.FC = () => {
 
   useEffect(() => {
     fetchCategories();
-  }, [fetchMenuDatas, setToastData]);
+  }, [refreshMenuBuilderData, setToastData]);
 
   const handleEditSubCategory = async (_id: string) => {
     setisEditSubCategory(true);

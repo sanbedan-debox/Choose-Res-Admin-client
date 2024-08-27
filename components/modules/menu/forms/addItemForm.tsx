@@ -10,14 +10,8 @@ import {
   reverseFormatAvailability,
 } from "@/components/common/timingAvailibility/interface";
 import AvailabilityComponent from "@/components/common/timingAvailibility/timingAvailibility";
-import {
-  Day,
-  ItemOptionsEnum,
-  MenuTypeEnum,
-  PriceTypeEnum,
-  StatusEnum,
-} from "@/generated/graphql";
-import useAuthStore from "@/store/auth";
+import { ItemOptionsEnum, MenuTypeEnum, StatusEnum } from "@/generated/graphql";
+import { initAvailability } from "@/lib/commonConstants";
 import useGlobalStore from "@/store/global";
 import useMenuItemsStore from "@/store/menuItems";
 import useMenuOptionsStore from "@/store/menuOptions";
@@ -74,9 +68,20 @@ interface ItemsDropDownType {
   name: string;
 }
 
-const AddItemForm = () => {
-  const { setisShowTaxSettings } = useGlobalStore();
+interface ListType {
+  _id: string;
+  name: string;
+}
 
+interface IModalState {
+  showDeleteConfirmation: boolean;
+  showAddNewModal: boolean;
+  selectedId: string;
+  showConfirmationModal: boolean;
+}
+
+const AddItemForm = () => {
+  // Config
   const {
     handleSubmit,
     formState: { errors },
@@ -96,12 +101,6 @@ const AddItemForm = () => {
     // getValues,
   } = useForm<IFormSubCatInput>({});
 
-  const [changesMenu, setChangesMenu] = useState<any>([]);
-  const { taxRate } = useAuthStore();
-  const [showAddsubCategory, setisShowAddsubCategory] =
-    useState<boolean>(false);
-  const [options, setOptions] = useState<IOption[]>([]);
-
   const formatOptions = (
     opts: {
       type: string;
@@ -119,9 +118,10 @@ const AddItemForm = () => {
     }));
   };
 
+  // Global States
   const {
-    fetchMenuDatas,
-    setfetchMenuDatas,
+    refreshMenuBuilderData,
+    setrefreshMenuBuilderData,
     setisAddItemModalOpen,
     setisAddModifierGroupModalOpen,
   } = useMenuOptionsStore();
@@ -133,16 +133,39 @@ const AddItemForm = () => {
     setisEditItem,
     isDuplicateItem,
   } = useMenuItemsStore();
-  const [confirmationRemoval, setConfirmationRemoval] = useState(false);
-  const [remmovingId, setRemovingId] = useState<string>("");
-  const { setEditModGroupId, setisEditModGroup } = useModGroupStore();
-  const [btnLoading, setBtnLoading] = useState(false);
+
   const { setToastData } = useGlobalStore();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedItems, setSelectedItems] = useState<ItemsDropDownType[]>([]);
-  const [prevItemsbfrEdit, setprevItemsbfrEdit] = useState<ItemsDropDownType[]>(
-    []
+
+  const { setEditModGroupId, setisEditModGroup } = useModGroupStore();
+
+  // Modal States
+  const initModalState: IModalState = {
+    showDeleteConfirmation: false,
+    showAddNewModal: false,
+    selectedId: "",
+    showConfirmationModal: false,
+  };
+
+  const [modalStates, setModalStates] = useState<IModalState>(initModalState);
+
+  // Add Form States
+  const [selectedList, setSelectedList] = useState<ListType[]>([]);
+  const [masterList, setMasterList] = useState<ListType[]>([]);
+
+  // Local States
+
+  const [itemData, setItemData] = useState<any>([]);
+  const [showAddsubCategory, setisShowAddsubCategory] =
+    useState<boolean>(false);
+  const [options, setOptions] = useState<IOption[]>([]);
+
+  const [useRestaurantTimings, setUseRestaurantTimings] = useState(
+    isEditItem ? false : true
   );
+
+  const [loading, setLoading] = useState(false);
+  const [actionLoading, setActionloading] = useState(false);
+
   const [itemsOption, setItemsOption] = useState<ItemsDropDownType[]>([]);
 
   const [tempSelectedItems, setTempSelectedItems] = useState<
@@ -152,28 +175,9 @@ const AddItemForm = () => {
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  const [availability, setAvailability] = useState<Availability[]>([
-    { day: Day.Sunday, hours: [], active: false },
-    { day: Day.Monday, hours: [], active: false },
-    { day: Day.Tuesday, hours: [], active: false },
-    { day: Day.Wednesday, hours: [], active: false },
-    { day: Day.Thursday, hours: [], active: false },
-    { day: Day.Friday, hours: [], active: false },
-    { day: Day.Saturday, hours: [], active: false },
-  ]);
-
-  const [visibilities, setVisibilities] = useState<
-    {
-      menuType: MenuTypeEnum;
-      status: StatusEnum;
-    }[]
-  >([]);
-  const [pricingOptions, setPricingOptions] = useState<
-    {
-      menuType: MenuTypeEnum;
-      price: number;
-    }[]
-  >([]);
+  // Availability
+  const [availability, setAvailability] =
+    useState<Availability[]>(initAvailability);
 
   const [subCategories, setSubCategories] = useState<
     {
@@ -194,53 +198,22 @@ const AddItemForm = () => {
     desc: string;
   } | null>(null);
 
-  const fetchMenuData = async () => {
-    try {
-      const response = await sdk.getAllMenus();
-      if (response && response.getAllMenus) {
-        const menuItems = response.getAllMenus.map(
-          (menu: { name: string; type: MenuTypeEnum }) => ({
-            name: menu.name,
-            type: menu.type,
-          })
-        );
+  // Visibility & PricingOption States
 
-        let uniqueType = new Set<MenuTypeEnum>();
+  const [visibilities, setVisibilities] = useState<
+    {
+      menuType: MenuTypeEnum;
+      status: StatusEnum;
+    }[]
+  >([]);
+  const [pricingOptions, setPricingOptions] = useState<
+    {
+      menuType: MenuTypeEnum;
+      price: number;
+    }[]
+  >([]);
 
-        menuItems.map((e) => uniqueType.add(e.type));
-
-        setVisibilities(
-          Array.from(uniqueType).map((e) => ({
-            menuType: e,
-            status: StatusEnum.Inactive,
-          }))
-        );
-
-        setPricingOptions(
-          Array.from(uniqueType).map((e) => ({
-            menuType: e,
-            price: parseFloat(watch("price").toString()),
-          }))
-        );
-      }
-    } catch (error) {
-      console.error("Error fetching menu data:", error);
-    }
-  };
-
-  useEffect(() => {
-    if (!isEditItem) {
-      if (pricingOptions.length > 0) {
-        setPricingOptions((prevPricingOptions) =>
-          prevPricingOptions.map((option) => ({
-            ...option,
-            price: parseFloat(watch("price").toString()),
-          }))
-        );
-      }
-    }
-  }, [watch("price")]);
-
+  // API calls
   const fetchItemData = async () => {
     if (editItemId && (isEditItem || isDuplicateItem)) {
       try {
@@ -260,7 +233,7 @@ const AddItemForm = () => {
             options,
             subCategory,
           } = response.getItem;
-          setChangesMenu(response.getItem);
+          setItemData(response.getItem);
           const nameDup = generateUniqueName(name);
           setValue("name", name);
           if (isDuplicateItem) {
@@ -277,15 +250,17 @@ const AddItemForm = () => {
           setVisibilities(visibility);
           setPricingOptions(priceOptions);
 
-          const formateditemlist = modifierGroup.map(
-            (el: { name: string; pricingType: PriceTypeEnum; id: string }) => ({
-              _id: el?.id,
-              name: el?.name ?? "",
-            })
+          // const formateditemlist = modifierGroup.map(
+          //   (el: { name: string; pricingType: PriceTypeEnum; id: string }) => ({
+          //     _id: el?.id,
+          //     name: el?.name ?? "",
+          //   })
+          // );
+          let selectedIds = modifierGroup.map((e) => e.id.toString());
+          let selected = masterList.filter((e) =>
+            selectedIds.includes(e._id.toString())
           );
-          setSelectedItems(formateditemlist);
-          setTempSelectedItems(formateditemlist);
-          setprevItemsbfrEdit(formateditemlist);
+          setSelectedList(selected);
 
           setPreviewUrl(image || "");
           if (availability) {
@@ -332,10 +307,44 @@ const AddItemForm = () => {
     }
   };
 
+  const fetchMenuData = async () => {
+    try {
+      const response = await sdk.getAllMenus();
+      if (response && response.getAllMenus) {
+        const menuItems = response.getAllMenus.map(
+          (menu: { name: string; type: MenuTypeEnum }) => ({
+            name: menu.name,
+            type: menu.type,
+          })
+        );
+
+        let uniqueType = new Set<MenuTypeEnum>();
+
+        menuItems.map((e) => uniqueType.add(e.type));
+
+        setVisibilities(
+          Array.from(uniqueType).map((e) => ({
+            menuType: e,
+            status: StatusEnum.Inactive,
+          }))
+        );
+
+        setPricingOptions(
+          Array.from(uniqueType).map((e) => ({
+            menuType: e,
+            price: parseFloat(watch("price").toString()),
+          }))
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching menu data:", error);
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await setTimings();
+        await setRestroTimings();
 
         const optsResp = await sdk.getAllItemOptions();
         if (optsResp && optsResp.getAllItemOptions.length > 0) {
@@ -355,21 +364,6 @@ const AddItemForm = () => {
 
     fetchData(); // Call the async function
   }, [editItemId, setValue, setToastData]);
-
-  useEffect(() => {
-    if (selectedItems.length > 0) {
-      setItemsOption((prevItemsOption) =>
-        prevItemsOption.filter(
-          (item) =>
-            !selectedItems.some((selectedItem) => selectedItem._id === item._id)
-        )
-      );
-    }
-  }, [isModalOpen, selectedItems, fetchMenuDatas, tempSelectedItems]);
-  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [useRestaurantTimings, setUseRestaurantTimings] = useState(
-    isEditItem ? false : true
-  );
 
   useEffect(() => {
     const fetchSubCategories = async () => {
@@ -398,7 +392,50 @@ const AddItemForm = () => {
 
     fetchSubCategories();
   }, []);
-  const setTimings = async () => {
+
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        const items = await sdk.getModifierGroupsforItemsDropDown();
+        if (items && items.getModifierGroups) {
+          const formattedItemsList = items.getModifierGroups.map(
+            (item: { _id: string; name: string }) => ({
+              _id: item._id || "",
+              name: item?.name || "",
+            })
+          );
+          const filteredItemsList = formattedItemsList.filter(
+            (item) =>
+              !selectedList.some(
+                (selectedItem) => selectedItem._id === item._id
+              )
+          );
+
+          setItemsOption(filteredItemsList);
+        }
+      } catch (error) {
+        const errorMessage = extractErrorMessage(error);
+        setToastData({
+          type: "error",
+          message: errorMessage,
+        });
+      }
+    };
+    fetch();
+  }, [refreshMenuBuilderData, setToastData, selectedList]);
+
+  useEffect(() => {
+    if (visibilities.length === 1) {
+      const updatedVisibilities = visibilities.map((vib) => ({
+        menuType: vib.menuType,
+        status: watch("status") ? StatusEnum.Active : StatusEnum.Inactive,
+      }));
+      setVisibilities(updatedVisibilities);
+    }
+  }, [watch("status")]);
+
+  // Helper functions
+  const setRestroTimings = async () => {
     try {
       const response = await sdk.restaurantDetails();
       if (response && response.restaurantDetails) {
@@ -415,13 +452,28 @@ const AddItemForm = () => {
       });
     }
   };
-  useEffect(() => {
-    setTimings();
-  }, [useRestaurantTimings]);
 
+  useEffect(() => {
+    if (!isEditItem) {
+      if (pricingOptions.length > 0) {
+        setPricingOptions((prevPricingOptions) =>
+          prevPricingOptions.map((option) => ({
+            ...option,
+            price: parseFloat(watch("price").toString()),
+          }))
+        );
+      }
+    }
+  }, [watch("price")]);
+
+  useEffect(() => {
+    setRestroTimings();
+  }, []);
+
+  // Handler Functions
   const onSubmit = async (data: IFormInput) => {
     try {
-      setBtnLoading(true);
+      setActionloading(true);
       if (!isDuplicateItem) {
         if (!isValidNameAlphabetic(data?.name)) {
           setToastData({
@@ -456,7 +508,7 @@ const AddItemForm = () => {
       }
       if (data?.desc?.length <= 20 || data?.desc?.length >= 120) {
         setToastData({
-          message: "Item Description should be between 60 to 120 characters",
+          message: "Item Description should be between 20 to 120 characters",
           type: "error",
         });
         return;
@@ -478,40 +530,41 @@ const AddItemForm = () => {
       let hasChanges = false;
       const imgUrl = await handleLogoUpload();
 
-      if (data.name !== changesMenu?.name) {
+      if (data.name !== itemData?.name) {
         updateInput.name = data.name;
         hasChanges = true;
       }
 
-      if (data.desc !== changesMenu?.desc) {
+      if (data.desc !== itemData?.desc) {
         updateInput.desc = data.desc;
         hasChanges = true;
       }
 
-      if (data.price !== changesMenu?.price) {
+      if (data.price !== itemData?.price) {
         updateInput.price = parsedPrice;
         hasChanges = true;
       }
-      if (data.limit !== changesMenu?.orderLimit) {
+      if (data.limit !== itemData?.orderLimit) {
         // addChange("orderLimit", parsedLimit);
         updateInput.orderLimit = parsedLimit;
       }
 
-      if (data.status !== (changesMenu?.status === StatusEnum.Active)) {
+      if (data.status !== (itemData?.status === StatusEnum.Active)) {
         updateInput.status = data.status
           ? StatusEnum.Active
           : StatusEnum.Inactive;
         hasChanges = true;
       }
 
-      const prevSelectedMenuIds = prevItemsbfrEdit.map((item) => item._id);
-      const selectedItemsIds = selectedItems.map((item) => item._id);
-      const addedMenuIds = selectedItemsIds.filter(
-        (id) => !prevSelectedMenuIds.includes(id)
+      const prevSelectedMenuIds = itemData?.modifierGroup?.map(
+        (item: any) => item._id
       );
-      const isMenuAdded = addedMenuIds.length > 0;
+      const selectedItemsIds = selectedList.map((item) => item._id);
+      const isModAdded = selectedItemsIds.filter(
+        (id) => !prevSelectedMenuIds?.includes(id)
+      );
 
-      setBtnLoading(true);
+      setActionloading(true);
       if (!isEditItem) {
         const imgUrl = await handleLogoUpload();
 
@@ -538,10 +591,10 @@ const AddItemForm = () => {
           },
           modifierGroups: selectedItemsIds,
         });
-        setBtnLoading(false);
+        setActionloading(false);
         setisAddItemModalOpen(false);
         setisDuplicateItem(false);
-        setfetchMenuDatas(!fetchMenuDatas);
+        setrefreshMenuBuilderData(!refreshMenuBuilderData);
         setEditItemId(null);
         setToastData({
           type: "success",
@@ -552,15 +605,15 @@ const AddItemForm = () => {
         await sdk.updateItem({
           input: updateInput,
         });
-        isMenuAdded &&
+        isModAdded &&
           (await sdk.addModifierGroupsToItem({
-            modifierGroupId: addedMenuIds,
+            modifierGroupId: isModAdded,
             itemId: editItemId || "",
           }));
 
-        setBtnLoading(false);
+        setActionloading(false);
         setisAddItemModalOpen(false);
-        setfetchMenuDatas(!fetchMenuDatas);
+        setrefreshMenuBuilderData(!refreshMenuBuilderData);
         setisEditItem(false);
         setEditItemId(null);
         setisDuplicateItem(false);
@@ -578,7 +631,7 @@ const AddItemForm = () => {
         message: errorMessage,
       });
     } finally {
-      setBtnLoading(false);
+      setActionloading(false);
     }
   };
   const onSubSubmit = async (data: IFormSubCatInput) => {
@@ -632,36 +685,6 @@ const AddItemForm = () => {
     }
   };
 
-  useEffect(() => {
-    const fetch = async () => {
-      try {
-        const items = await sdk.getModifierGroupsforItemsDropDown();
-        if (items && items.getModifierGroups) {
-          const formattedItemsList = items.getModifierGroups.map(
-            (item: { _id: string; name: string }) => ({
-              _id: item._id || "",
-              name: item?.name || "",
-            })
-          );
-          const filteredItemsList = formattedItemsList.filter(
-            (item) =>
-              !selectedItems.some(
-                (selectedItem) => selectedItem._id === item._id
-              )
-          );
-
-          setItemsOption(filteredItemsList);
-        }
-      } catch (error) {
-        const errorMessage = extractErrorMessage(error);
-        setToastData({
-          type: "error",
-          message: errorMessage,
-        });
-      }
-    };
-    fetch();
-  }, [fetchMenuDatas, setToastData, selectedItems]);
   const handleLogoUpload = async () => {
     if (logoFile) {
       const formData = new FormData();
@@ -679,6 +702,7 @@ const AddItemForm = () => {
       return cloudinaryUrl;
     }
   };
+
   const handleLogoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     if (file) {
@@ -688,84 +712,79 @@ const AddItemForm = () => {
       setPreviewUrl(objectUrl);
     }
   };
-  const renderActions = (rowData: { _id: string }) => (
-    <div className="flex space-x-2 justify-center">
-      <IoIosCloseCircleOutline
-        className="text-red-400 text-lg cursor-pointer"
-        onClick={() => {
-          setConfirmationRemoval(true);
-          setRemovingId(rowData?._id);
-        }}
-      />
-      <MdArrowOutward
-        className="text-primary  cursor-pointer"
-        onClick={() => handleEditItem(rowData?._id)}
-      />
-    </div>
-  );
 
-  const headings = [
-    { title: "Actions", dataKey: "name", render: renderActions },
-  ];
+  const handleConfirmation = async () => {
+    setValue("status", !watch("status"));
+    const updatedVisibilities = visibilities.map((vib) => ({
+      menuType: vib.menuType,
+      status: watch("status") ? StatusEnum.Active : StatusEnum.Inactive,
+    }));
+    setVisibilities(updatedVisibilities);
+    setModalStates((prev) => ({
+      ...prev,
+      showConfirmationModal: false,
+    }));
+  };
+  const handleRejection = async () => {
+    setValue("status", !watch("status"));
+    setModalStates((prev) => ({
+      ...prev,
+      showConfirmationModal: false,
+      selectedId: "",
+    }));
+  };
 
-  const data = selectedItems.map((item) => ({
-    ...item,
-    actions: renderActions(item),
-  }));
+  const handlePriceChange = (newPrice: string, index: number) => {
+    const updatedPricingOptions = [...pricingOptions];
+    updatedPricingOptions[index].price = roundOffPrice(
+      parseFloat(newPrice.toString())
+    );
+    setPricingOptions(updatedPricingOptions);
+  };
+
+  const resetToBasePrice = () => {
+    const updatedOptions = pricingOptions.map((option) => ({
+      ...option,
+      price: getValues("price"),
+    }));
+    setPricingOptions(updatedOptions);
+  };
 
   const handleRemoveCategory = async () => {
-    setSelectedItems((prevSelected) =>
-      prevSelected.filter((item) => item._id !== remmovingId)
+    setSelectedList((prevSelected) =>
+      prevSelected.filter((item) => item._id !== modalStates.selectedId)
     );
 
-    setTempSelectedItems((prevSelected) =>
-      prevSelected.filter((item) => item._id !== remmovingId)
+    const isPresentInPrevItems = itemData?.categories?.some(
+      (item: any) => item._id === modalStates.selectedId
     );
-
-    const isPresentInPrevItems = prevItemsbfrEdit.some(
-      (item) => item._id === remmovingId
-    );
-
     if (isEditItem && isPresentInPrevItems) {
-      try {
-        await sdk.removeModifierGroupFromItem({
-          modifierGroupId: remmovingId,
-          itemId: editItemId || "",
-        });
-
-        setprevItemsbfrEdit((prevSelected) =>
-          prevSelected.filter((item) => item._id !== remmovingId)
-        );
-      } catch (error) {
-        const errorMessage = extractErrorMessage(error);
-        setToastData({
-          type: "error",
-          message: errorMessage,
-        });
-      }
+      const res = await sdk.removeModifierGroupFromItem({
+        itemId: editItemId || "",
+        modifierGroupId: modalStates.selectedId,
+      });
+      // if (res) {
+      //   setprevItemsbfrEdit((prevSelected) =>
+      //     prevSelected.filter((item) => item._id !== removingId)
+      //   );
+      // }
     }
-    setConfirmationRemoval(false);
+    setModalStates((prev) => ({
+      ...prev,
+      showDeleteConfirmation: false,
+      selectedId: "",
+    }));
+    // modalStates.showDeleteConfirmation(false);
   };
 
-  const handleAddClick = () => {
-    setIsModalOpen(true);
-  };
+  const handleAddModifierGroups = (idsList: string[]) => {
+    if (masterList.length > 0) {
+      let newSelections = masterList.filter((e) =>
+        idsList.includes(e._id.toString())
+      );
 
-  const handleItemClick = (item: ItemsDropDownType) => {
-    setTempSelectedItems((prevSelected) =>
-      prevSelected.some((selectedItem) => selectedItem._id === item._id)
-        ? prevSelected.filter((i) => i._id !== item._id)
-        : [...prevSelected, item]
-    );
-  };
-
-  const handleAddItems = () => {
-    setSelectedItems([]);
-    setSelectedItems(tempSelectedItems);
-    setIsModalOpen(false);
-  };
-  const handleCreateModifierGroup = () => {
-    setisAddModifierGroupModalOpen(true);
+      setSelectedList((prev) => [...prev, ...newSelections]);
+    }
   };
 
   const handleEditItem = (id: string) => {
@@ -774,84 +793,35 @@ const AddItemForm = () => {
     setisEditModGroup(true);
   };
 
-  interface DataItemFormAddTable {
-    _id: string;
-    [key: string]: any;
-  }
-  // const handleSave = async (updatedData: DataItemFormAddTable[]) => {
-  //   const formattedData = updatedData.map((item) => ({
-  //     _id: item._id,
-  //     name: item.name,
-  //   }));
-
-  //   try {
-  //     const res = await sdk.bulkUpdateModifierGroups({ input: formattedData });
-  //     if (res && res.bulkUpdateModifierGroups) {
-  //       setSelectedItems(formattedData as ItemsDropDownType[]);
-
-  //       setToastData({
-  //         message: "Modifier groups updated successfully",
-  //         type: "success",
-  //       });
-  //     }
-  //   } catch (error) {
-  //     setToastData({
-  //       message: extractErrorMessage(error),
-  //       type: "error",
-  //     });
-  //   }
-  // };
-  const handleSave = async (updatedData: DataItemFormAddTable[]) => {
-    // Create a map for quick lookup
-    const selectedItemsMap = new Map(
-      selectedItems.map((item) => [item._id, item])
-    );
-
-    // Determine which items have been changed
-    const changedData: ChangeItem[] = updatedData.reduce(
-      (acc: ChangeItem[], item) => {
-        const selectedItem = selectedItemsMap.get(item._id);
-        if (selectedItem) {
-          const changes: ChangeItem = { _id: item._id };
-
-          if (selectedItem.name !== item.name) {
-            changes.name = item.name;
-          }
-          if (Object.keys(changes).length > 1) {
-            acc.push(changes);
-          }
-        }
-        return acc;
+  // Table Configs
+  const listHeadings = [
+    {
+      title: "Actions",
+      dataKey: "name",
+      render: (rowData: ListType) => {
+        return (
+          <div className="flex space-x-2 justify-center">
+            <IoIosCloseCircleOutline
+              className="text-red-400 text-lg cursor-pointer"
+              onClick={() => {
+                setModalStates((prev) => ({
+                  ...prev,
+                  showConfirmationModal: true,
+                  selectedId: rowData?._id,
+                }));
+              }}
+            />
+            <MdArrowOutward
+              className="text-primary  cursor-pointer"
+              onClick={() => handleEditItem(rowData?._id)}
+            />
+          </div>
+        );
       },
-      []
-    );
+    },
+  ];
 
-    // Log the formatted data
-    console.log("Formatted Data:", changedData);
-
-    // Call the API with the formatted data
-    try {
-      const res = await sdk.bulkUpdateModifierGroups({ input: changedData });
-      if (res && res.bulkUpdateModifierGroups) {
-        // Update the state with the new data
-        setSelectedItems(updatedData as ItemsDropDownType[]);
-
-        // Show success toast
-        setToastData({
-          message: "Modifier groups updated successfully",
-          type: "success",
-        });
-      }
-    } catch (error) {
-      // Show error toast
-      setToastData({
-        message: extractErrorMessage(error),
-        type: "error",
-      });
-    }
-  };
-
-  const headingsDropdown = [
+  const masterListHeadings = [
     { title: "Price", dataKey: "price" },
     {
       title: "Actions",
@@ -869,12 +839,7 @@ const AddItemForm = () => {
 
   const handleToggleSwitch = () => {
     if (visibilities.length > 1) {
-      if (watch("status")) {
-        // setValue("status", !watch("status"));
-        setShowConfirmationModal(true);
-      } else {
-        setShowConfirmationModal(true);
-      }
+      setModalStates((prev) => ({ ...prev, showConfirmationModal: true }));
     } else {
       setValue("status", !watch("status"));
       const updatedVisibilities = visibilities.map((vib) => ({
@@ -883,49 +848,6 @@ const AddItemForm = () => {
       }));
       setVisibilities(updatedVisibilities);
     }
-  };
-  const handleCloseConfirmationModal = () => {
-    setShowConfirmationModal(false);
-  };
-
-  useEffect(() => {
-    if (visibilities.length === 1) {
-      const updatedVisibilities = visibilities.map((vib) => ({
-        menuType: vib.menuType,
-        status: watch("status") ? StatusEnum.Active : StatusEnum.Inactive,
-      }));
-      setVisibilities(updatedVisibilities);
-    }
-  }, [watch("status")]);
-
-  const handleConfirmation = async () => {
-    setValue("status", !watch("status"));
-    const updatedVisibilities = visibilities.map((vib) => ({
-      menuType: vib.menuType,
-      status: watch("status") ? StatusEnum.Active : StatusEnum.Inactive,
-    }));
-    setVisibilities(updatedVisibilities);
-    setShowConfirmationModal(false);
-  };
-  const handleRejection = async () => {
-    setValue("status", !watch("status"));
-    setShowConfirmationModal(false);
-  };
-
-  const handlePriceChange = (newPrice: string, index: number) => {
-    const updatedPricingOptions = [...pricingOptions];
-    updatedPricingOptions[index].price = roundOffPrice(
-      parseFloat(newPrice.toString())
-    );
-    setPricingOptions(updatedPricingOptions);
-  };
-
-  const resetToBasePrice = () => {
-    const updatedOptions = pricingOptions.map((option) => ({
-      ...option,
-      price: getValues("price"),
-    }));
-    setPricingOptions(updatedOptions);
   };
 
   return (
@@ -1320,14 +1242,15 @@ const AddItemForm = () => {
           </div>
           <div>
             <FormAddTable
-              data={data}
-              headings={headings}
+              data={selectedList}
+              headings={listHeadings}
               title="Modifier Groups"
               emptyCaption="You can add Modifier Group for items here"
               emptyMessage="No Modifier Groups available"
               buttonText="Add Modifier Groups"
-              onAddClick={handleAddClick}
-              onSave={handleSave}
+              onAddClick={() =>
+                setModalStates((prev) => ({ ...prev, showAddNewModal: true }))
+              }
             />
             <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
               Modifier Groups allow your customer to customize an item
@@ -1360,7 +1283,7 @@ const AddItemForm = () => {
           </div>
 
           <CButton
-            loading={btnLoading}
+            loading={actionLoading}
             variant={ButtonType.Primary}
             type="submit"
           >
@@ -1377,30 +1300,38 @@ const AddItemForm = () => {
       </form>
       <AddFormDropdown
         title="Add Modifier Groups"
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        data={itemsOption}
-        tempSelectedItems={tempSelectedItems}
-        handleItemClick={handleItemClick}
-        handleAddItems={handleAddItems}
-        createNewItemButtonLabel="Create New Modifier group"
-        addSelectedItemsButtonLabel="Add Selected Modifier Groups"
-        headings={headingsDropdown}
-        renderActions={renderActions}
-        onClickCreatebtn={handleCreateModifierGroup}
+        isOpen={modalStates.showAddNewModal}
+        onClose={() =>
+          setModalStates((prev) => ({ ...prev, showAddNewModal: false }))
+        }
+        data={masterList.filter(
+          (e) => !selectedList.map((el) => el._id).includes(e._id)
+        )}
+        createLabel="Create New Modifier group"
+        addLabel="Add Selected Modifier Groups"
+        headings={masterListHeadings}
+        createClickHandler={() => {
+          setisAddModifierGroupModalOpen(true);
+        }}
+        addHandler={handleAddModifierGroups}
       />
+
+      {/* Confirmation removal Modal */}
       <ReusableModal
-        isOpen={confirmationRemoval}
+        isOpen={modalStates.showDeleteConfirmation}
         onClose={() => {
-          setConfirmationRemoval(false);
-          setRemovingId("");
+          setModalStates((prev) => ({
+            ...prev,
+            showDeleteConfirmation: false,
+            selectedId: "",
+          }));
         }}
         title="Are you sure?"
         comments="By clicking yes the selected Modifier Group / modifier Groups will be removed from this Item. This action cannot be undone."
       >
         <div className="flex justify-end space-x-4">
           <CButton
-            loading={btnLoading}
+            loading={actionLoading}
             variant={ButtonType.Primary}
             onClick={() => handleRemoveCategory()}
           >
@@ -1408,23 +1339,27 @@ const AddItemForm = () => {
           </CButton>
         </div>
       </ReusableModal>
+
+      {/* Status Change Modal */}
       <ReusableModal
         title="Confirm Status Change"
         comments="Do you want to change the visibility for All the menus"
-        isOpen={showConfirmationModal}
-        onClose={handleCloseConfirmationModal}
+        isOpen={modalStates.showConfirmationModal}
+        onClose={() =>
+          setModalStates((prev) => ({ ...prev, showConfirmationModal: false }))
+        }
         width="md"
       >
         <div className="flex justify-end mt-4 space-x-4">
           <CButton
-            loading={btnLoading}
+            loading={actionLoading}
             variant={ButtonType.Outlined}
             onClick={handleRejection}
           >
             No
           </CButton>
           <CButton
-            loading={btnLoading}
+            loading={actionLoading}
             variant={ButtonType.Primary}
             onClick={handleConfirmation}
           >
@@ -1432,6 +1367,8 @@ const AddItemForm = () => {
           </CButton>
         </div>
       </ReusableModal>
+
+      {/* AddSubCategory Modal */}
       <ReusableModal
         title="Add Sub Category"
         isOpen={showAddsubCategory}

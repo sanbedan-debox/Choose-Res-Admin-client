@@ -12,7 +12,8 @@ const Modifiers: React.FC = () => {
   const [modifier, setModifier] =
     useState<{ _id: string; name: string; price: number }[]>();
   const { setToastData } = useGlobalStore();
-  const { setisAddModifierModalOpen, fetchMenuDatas } = useMenuOptionsStore();
+  const { setisAddModifierModalOpen, refreshMenuBuilderData } =
+    useMenuOptionsStore();
   const [tableLoading, setTableLoading] = useState(false);
   const { setEditModId, setisEditMod, setisDuplicateMods } = useModStore();
 
@@ -44,7 +45,7 @@ const Modifiers: React.FC = () => {
 
   useEffect(() => {
     fetchModifiers();
-  }, [fetchMenuDatas]);
+  }, [refreshMenuBuilderData]);
 
   const [selectedItemId, setSelectedItemId] = useState<string>("");
   const [availableCaption, setAvailableCaption] = useState(

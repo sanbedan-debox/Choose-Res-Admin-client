@@ -51,8 +51,11 @@ const AddModifierForm = () => {
   } = useForm<IFormInput>({ defaultValues: { preSelect: false } });
   const [changesModifiers, setChangesModifiers] = useState<any | null>(null);
 
-  const { fetchMenuDatas, setfetchMenuDatas, setisAddModifierModalOpen } =
-    useMenuOptionsStore();
+  const {
+    refreshMenuBuilderData,
+    setrefreshMenuBuilderData,
+    setisAddModifierModalOpen,
+  } = useMenuOptionsStore();
   const {
     editModId,
     isEditMod,
@@ -225,7 +228,7 @@ const AddModifierForm = () => {
       }
 
       setisAddModifierModalOpen(false);
-      setfetchMenuDatas(!fetchMenuDatas);
+      setrefreshMenuBuilderData(!refreshMenuBuilderData);
       setisEditMod(false);
       setEditModId(null);
       setisDuplicateMods(false);

@@ -118,6 +118,7 @@ const AddFormDropdown: React.FC<Props> = ({
           <CButton
             onClick={() => {
               addHandler(selectedItems);
+              setSelectedItems([]);
             }}
             variant={ButtonType.Primary}
           >

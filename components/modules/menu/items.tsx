@@ -26,7 +26,8 @@ const Items: React.FC = () => {
   );
 
   const { setToastData } = useGlobalStore();
-  const { setisAddItemModalOpen, fetchMenuDatas } = useMenuOptionsStore();
+  const { setisAddItemModalOpen, refreshMenuBuilderData } =
+    useMenuOptionsStore();
   const [selectedItemId, setSelectedItemId] = useState<string>("");
   const [tableLoading, setTableLoading] = useState(false);
 
@@ -83,7 +84,7 @@ const Items: React.FC = () => {
 
   useEffect(() => {
     fetchMenuItems();
-  }, [fetchMenuDatas, setToastData]);
+  }, [refreshMenuBuilderData, setToastData]);
 
   const renderActions = (rowData: { _id: string }) => (
     <div className="flex space-x-2 justify-end">

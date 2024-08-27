@@ -74,8 +74,8 @@ const AddModifierGroupForm = () => {
   ];
 
   const {
-    fetchMenuDatas,
-    setfetchMenuDatas,
+    refreshMenuBuilderData,
+    setrefreshMenuBuilderData,
     setisAddModifierGroupModalOpen,
     setisAddModifierModalOpen,
   } = useMenuOptionsStore();
@@ -114,7 +114,7 @@ const AddModifierGroupForm = () => {
         )
       );
     }
-  }, [isModalOpen, selectedItems, fetchMenuDatas, tempSelectedItems]);
+  }, [isModalOpen, selectedItems, refreshMenuBuilderData, tempSelectedItems]);
 
   useEffect(() => {
     const fetch = async () => {
@@ -146,7 +146,7 @@ const AddModifierGroupForm = () => {
       }
     };
     fetch();
-  }, [fetchMenuDatas, setToastData, selectedItems]);
+  }, [refreshMenuBuilderData, setToastData, selectedItems]);
 
   useEffect(() => {
     const fetchItemData = async () => {
@@ -382,7 +382,7 @@ const AddModifierGroupForm = () => {
       }
       setBtnLoading(false);
       setisAddModifierGroupModalOpen(false);
-      setfetchMenuDatas(!fetchMenuDatas);
+      setrefreshMenuBuilderData(!refreshMenuBuilderData);
 
       setisEditModGroup(false);
       setEditModGroupId(null);
@@ -538,7 +538,7 @@ const AddModifierGroupForm = () => {
         )
       );
     }
-  }, [isModalOpen, selectedItems, fetchMenuDatas]);
+  }, [isModalOpen, selectedItems, refreshMenuBuilderData]);
   const handleSave = async (updatedData: DataItemFormAddTable[]) => {
     const selectedItemsMap = new Map(
       selectedItems.map((item) => [item._id, item])
