@@ -454,7 +454,7 @@ const AddItemForm = () => {
           type: "error",
         });
       }
-      if (data?.desc?.length <= 60 || data?.desc?.length >= 120) {
+      if (data?.desc?.length <= 20 || data?.desc?.length >= 120) {
         setToastData({
           message: "Item Description should be between 60 to 120 characters",
           type: "error",

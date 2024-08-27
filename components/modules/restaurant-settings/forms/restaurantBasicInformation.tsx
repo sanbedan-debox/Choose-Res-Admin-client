@@ -93,8 +93,8 @@ const RestaurantBasicInformationEditForm: React.FC = () => {
         HasChanges = true;
       }
       if (
-        (restaurantCategory.includes(RestaurantCategory.DineIn) ||
-          restaurantCategory.includes(RestaurantCategory.PremiumDineIn)) &&
+        (data.restaurantCategory.includes(RestaurantCategory.DineIn) ||
+          data.restaurantCategory.includes(RestaurantCategory.PremiumDineIn)) &&
         dineInCapacity !== data.dineInCapacity
       ) {
         updateInput.dineInCapacity =
@@ -520,7 +520,7 @@ const RestaurantBasicInformationEditForm: React.FC = () => {
               )}
             </div>
 
-            {getValues("restaurantCategory").includes(
+            {/* {getValues("restaurantCategory").includes(
               RestaurantCategory.DineIn
             ) ||
             getValues("restaurantCategory").includes(
@@ -551,6 +551,38 @@ const RestaurantBasicInformationEditForm: React.FC = () => {
                     {errors.dineInCapacity.message}
                   </p>
                 )}
+              </div>
+            ) : null} */}
+
+            {restaurantCategory.includes(RestaurantCategory.DineIn) ||
+            restaurantCategory.includes(RestaurantCategory.PremiumDineIn) ? (
+              <div className="col-span-2">
+                <label
+                  htmlFor="dineInCapacity"
+                  className="block mb-2 text-sm font-medium text-left text-gray-700"
+                >
+                  Dine-In Capacity
+                </label>
+                <input
+                  type="number"
+                  {...register("dineInCapacity")}
+                  id="dineInCapacity"
+                  className="input input-primary"
+                  placeholder="Enter dine-in capacity"
+                  value={dineInCapacity}
+                  style={{
+                    appearance: "textfield",
+                  }}
+                  inputMode="decimal"
+                  step="0.01"
+                  onWheel={(e) => e.preventDefault()}
+                  onKeyDown={(e) => {
+                    if (e.key === "e" || e.key === "-" || e.key === "+") {
+                      e.preventDefault();
+                    }
+                  }}
+                  onChange={(e) => setDineInCapacity(e.target.value)}
+                />
               </div>
             ) : null}
 

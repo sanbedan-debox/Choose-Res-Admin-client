@@ -259,7 +259,7 @@ const BusinessInformationForm: React.FC = () => {
           onClose={handleCloseModal}
           title="Edit Business Information"
         >
-          <div className="space-y-4 w-full max-w-2xl max-h-[80vh] mx-auto overflow-y-auto">
+          <div className="space-y-4 w-full  max-w-2xl h-full mx-auto overflow-y-auto">
             <div className="col-span-2">
               <label
                 htmlFor="employees"

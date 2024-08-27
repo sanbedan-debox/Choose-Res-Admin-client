@@ -237,7 +237,7 @@ const AddCategoryForm = () => {
         }
       }
 
-      if (data?.description?.length <= 60 || data?.description?.length >= 120) {
+      if (data?.description?.length <= 20 || data?.description?.length >= 120) {
         setToastData({
           message:
             "Modifier Description should be between 60 to 120 characters",
