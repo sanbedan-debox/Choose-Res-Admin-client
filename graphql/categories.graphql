@@ -75,3 +75,7 @@ mutation updateCategory($input: UpdateCategoryInput!) {
 mutation removeItemFromCategory($itemId: String!, $categoryId: String!) {
   removeItemFromCategory(categoryId: $categoryId, itemId: $itemId)
 }
+
+mutation bulkUpdateCategory($input: [UpdateBulkCategoryInput!]!) {
+  bulkUpdateCategory(input: $input)
+}

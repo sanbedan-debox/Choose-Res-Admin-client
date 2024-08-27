@@ -718,8 +718,12 @@ export type Mutation = {
   adminUserDetailsRejection: Scalars['Boolean']['output'];
   adminUserDetailsVerification: Scalars['Boolean']['output'];
   blockAdmin: Scalars['Boolean']['output'];
+  bulkUpdateCategory: Scalars['Boolean']['output'];
+  bulkUpdateItem: Scalars['Boolean']['output'];
+  bulkUpdateMenu: Scalars['Boolean']['output'];
   bulkUpdateModifierGroups: Scalars['Boolean']['output'];
   bulkUpdateModifiers: Scalars['Boolean']['output'];
+  bulkUpdateSubCategory: Scalars['Boolean']['output'];
   businessOnboarding: Scalars['Boolean']['output'];
   changeCategoryStatus: Scalars['Boolean']['output'];
   changeItemStatus: Scalars['Boolean']['output'];
@@ -890,6 +894,21 @@ export type MutationBlockAdminArgs = {
 };
 
 
+export type MutationBulkUpdateCategoryArgs = {
+  input: Array<UpdateBulkCategoryInput>;
+};
+
+
+export type MutationBulkUpdateItemArgs = {
+  input: Array<UpdateBulkItemInput>;
+};
+
+
+export type MutationBulkUpdateMenuArgs = {
+  input: Array<UpdateBulkMenuInput>;
+};
+
+
 export type MutationBulkUpdateModifierGroupsArgs = {
   input: Array<UpdateBulkModifierGroupInput>;
 };
@@ -897,6 +916,11 @@ export type MutationBulkUpdateModifierGroupsArgs = {
 
 export type MutationBulkUpdateModifiersArgs = {
   input: Array<UpdateBulkModifierInput>;
+};
+
+
+export type MutationBulkUpdateSubCategoryArgs = {
+  input: Array<UpdateBulkSubCategoryInput>;
 };
 
 
@@ -1662,6 +1686,23 @@ export type TimezoneDataInput = {
   timezoneName: Scalars['String']['input'];
 };
 
+export type UpdateBulkCategoryInput = {
+  _id: Scalars['String']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<StatusEnum>;
+};
+
+export type UpdateBulkItemInput = {
+  _id: Scalars['String']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<StatusEnum>;
+};
+
+export type UpdateBulkMenuInput = {
+  _id: Scalars['String']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type UpdateBulkModifierGroupInput = {
   _id: Scalars['String']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
@@ -1671,6 +1712,12 @@ export type UpdateBulkModifierInput = {
   _id: Scalars['String']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
   price?: InputMaybe<Scalars['Float']['input']>;
+};
+
+export type UpdateBulkSubCategoryInput = {
+  desc?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['String']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateBusinessDetailsInput = {
@@ -2031,6 +2078,13 @@ export type RemoveItemFromCategoryMutationVariables = Exact<{
 
 export type RemoveItemFromCategoryMutation = { __typename?: 'Mutation', removeItemFromCategory: boolean };
 
+export type BulkUpdateCategoryMutationVariables = Exact<{
+  input: Array<UpdateBulkCategoryInput> | UpdateBulkCategoryInput;
+}>;
+
+
+export type BulkUpdateCategoryMutation = { __typename?: 'Mutation', bulkUpdateCategory: boolean };
+
 export type GetCsvHeadersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -2117,6 +2171,13 @@ export type GetAllItemOptionsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetAllItemOptionsQuery = { __typename?: 'Query', getAllItemOptions: Array<{ __typename?: 'ItemOption', type: ItemOptionsEnum, displayName: string, desc: string, _id: string }> };
 
+export type BulkUpdateItemMutationVariables = Exact<{
+  input: Array<UpdateBulkItemInput> | UpdateBulkItemInput;
+}>;
+
+
+export type BulkUpdateItemMutation = { __typename?: 'Mutation', bulkUpdateItem: boolean };
+
 export type GetActiveStatesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -2180,6 +2241,13 @@ export type GetMenuQueryVariables = Exact<{
 
 
 export type GetMenuQuery = { __typename?: 'Query', getMenu: { __typename?: 'Menu', _id: string, name: string, status: StatusEnum, createdAt: any, updatedAt: any, type: MenuTypeEnum, availability?: Array<{ __typename?: 'Availability', day: string, active: boolean, hours: Array<{ __typename?: 'Hours', start: any, end: any }> }> | null, taxes?: { __typename?: 'TaxRateInfo', _id: string, salesTax: number, name: string } | null, categories: Array<{ __typename?: 'CategoryInfo', name?: string | null, status: StatusEnum, _id: { __typename?: 'Category', _id: string } }> } };
+
+export type BulkUpdateMenuMutationVariables = Exact<{
+  input: Array<UpdateBulkMenuInput> | UpdateBulkMenuInput;
+}>;
+
+
+export type BulkUpdateMenuMutation = { __typename?: 'Mutation', bulkUpdateMenu: boolean };
 
 export type GetModifierGroupsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2383,6 +2451,13 @@ export type UpdateSubCategoryMutationVariables = Exact<{
 
 
 export type UpdateSubCategoryMutation = { __typename?: 'Mutation', updateSubCategory: boolean };
+
+export type BulkUpdateSubCategoryMutationVariables = Exact<{
+  input: Array<UpdateBulkSubCategoryInput> | UpdateBulkSubCategoryInput;
+}>;
+
+
+export type BulkUpdateSubCategoryMutation = { __typename?: 'Mutation', bulkUpdateSubCategory: boolean };
 
 export type AddTeamMemberMutationVariables = Exact<{
   AddTeamMemberInput: AddTeamMemberInput;
@@ -2710,6 +2785,11 @@ export const RemoveItemFromCategoryDocument = gql`
   removeItemFromCategory(categoryId: $categoryId, itemId: $itemId)
 }
     `;
+export const BulkUpdateCategoryDocument = gql`
+    mutation bulkUpdateCategory($input: [UpdateBulkCategoryInput!]!) {
+  bulkUpdateCategory(input: $input)
+}
+    `;
 export const GetCsvHeadersDocument = gql`
     query getCSVHeaders {
   getCsvHeaders
@@ -2852,6 +2932,11 @@ export const GetAllItemOptionsDocument = gql`
   }
 }
     `;
+export const BulkUpdateItemDocument = gql`
+    mutation bulkUpdateItem($input: [UpdateBulkItemInput!]!) {
+  bulkUpdateItem(input: $input)
+}
+    `;
 export const GetActiveStatesDocument = gql`
     query getActiveStates {
   getActiveStates {
@@ -2950,6 +3035,11 @@ export const GetMenuDocument = gql`
       }
     }
   }
+}
+    `;
+export const BulkUpdateMenuDocument = gql`
+    mutation bulkUpdateMenu($input: [UpdateBulkMenuInput!]!) {
+  bulkUpdateMenu(input: $input)
 }
     `;
 export const GetModifierGroupsDocument = gql`
@@ -3246,6 +3336,11 @@ export const UpdateSubCategoryDocument = gql`
   updateSubCategory(input: $input)
 }
     `;
+export const BulkUpdateSubCategoryDocument = gql`
+    mutation bulkUpdateSubCategory($input: [UpdateBulkSubCategoryInput!]!) {
+  bulkUpdateSubCategory(input: $input)
+}
+    `;
 export const AddTeamMemberDocument = gql`
     mutation addTeamMember($AddTeamMemberInput: AddTeamMemberInput!) {
   addTeamMember(input: $AddTeamMemberInput)
@@ -3434,6 +3529,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     removeItemFromCategory(variables: RemoveItemFromCategoryMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<RemoveItemFromCategoryMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<RemoveItemFromCategoryMutation>(RemoveItemFromCategoryDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'removeItemFromCategory', 'mutation', variables);
     },
+    bulkUpdateCategory(variables: BulkUpdateCategoryMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<BulkUpdateCategoryMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<BulkUpdateCategoryMutation>(BulkUpdateCategoryDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'bulkUpdateCategory', 'mutation', variables);
+    },
     getCSVHeaders(variables?: GetCsvHeadersQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetCsvHeadersQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetCsvHeadersQuery>(GetCsvHeadersDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getCSVHeaders', 'query', variables);
     },
@@ -3473,6 +3571,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     getAllItemOptions(variables?: GetAllItemOptionsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetAllItemOptionsQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetAllItemOptionsQuery>(GetAllItemOptionsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getAllItemOptions', 'query', variables);
     },
+    bulkUpdateItem(variables: BulkUpdateItemMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<BulkUpdateItemMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<BulkUpdateItemMutation>(BulkUpdateItemDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'bulkUpdateItem', 'mutation', variables);
+    },
     getActiveStates(variables?: GetActiveStatesQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetActiveStatesQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetActiveStatesQuery>(GetActiveStatesDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getActiveStates', 'query', variables);
     },
@@ -3502,6 +3603,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     getMenu(variables: GetMenuQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetMenuQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetMenuQuery>(GetMenuDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getMenu', 'query', variables);
+    },
+    bulkUpdateMenu(variables: BulkUpdateMenuMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<BulkUpdateMenuMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<BulkUpdateMenuMutation>(BulkUpdateMenuDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'bulkUpdateMenu', 'mutation', variables);
     },
     getModifierGroups(variables?: GetModifierGroupsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetModifierGroupsQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetModifierGroupsQuery>(GetModifierGroupsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getModifierGroups', 'query', variables);
@@ -3598,6 +3702,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     UpdateSubCategory(variables: UpdateSubCategoryMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UpdateSubCategoryMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<UpdateSubCategoryMutation>(UpdateSubCategoryDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'UpdateSubCategory', 'mutation', variables);
+    },
+    bulkUpdateSubCategory(variables: BulkUpdateSubCategoryMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<BulkUpdateSubCategoryMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<BulkUpdateSubCategoryMutation>(BulkUpdateSubCategoryDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'bulkUpdateSubCategory', 'mutation', variables);
     },
     addTeamMember(variables: AddTeamMemberMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AddTeamMemberMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<AddTeamMemberMutation>(AddTeamMemberDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'addTeamMember', 'mutation', variables);

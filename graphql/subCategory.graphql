@@ -21,3 +21,7 @@ mutation AddSubCategory($input: AddSubCategoryInput!) {
 mutation UpdateSubCategory($input: UpdateSubCategoryInput!) {
   updateSubCategory(input: $input)
 }
+
+mutation bulkUpdateSubCategory($input: [UpdateBulkSubCategoryInput!]!) {
+  bulkUpdateSubCategory(input: $input)
+}

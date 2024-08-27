@@ -73,3 +73,7 @@ query getMenu($id: String!) {
     }
   }
 }
+
+mutation bulkUpdateMenu($input: [UpdateBulkMenuInput!]!) {
+  bulkUpdateMenu(input: $input)
+}

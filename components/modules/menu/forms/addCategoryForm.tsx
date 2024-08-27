@@ -1,4 +1,5 @@
 import AddFormDropdown from "@/components/common/addFormDropDown/addFormDropdown";
+import { DataItemFormAddTable } from "@/components/common/addFormDropDown/interface";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import CustomSwitchCard from "@/components/common/customSwitchCard/customSwitchCard";
@@ -20,6 +21,7 @@ import {
   extractErrorMessage,
   generateUniqueName,
   isValidNameAlphabetic,
+  roundOffPrice,
 } from "@/utils/utilFUncs";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -42,6 +44,12 @@ interface ItemsDropDownType {
   image: string;
   status: StatusEnum;
 }
+
+type ChangeItem = {
+  _id: string;
+  name?: string;
+  price?: number;
+};
 
 const AddCategoryForm = () => {
   const [btnLoading, setBtnLoading] = useState(false);
@@ -557,6 +565,56 @@ const AddCategoryForm = () => {
     }
   };
 
+  const handleSave = async (updatedData: DataItemFormAddTable[]) => {
+    const selectedItemsMap = new Map(
+      selectedItems.map((item) => [item._id, item])
+    );
+
+    const changedData: ChangeItem[] = updatedData.reduce(
+      (acc: ChangeItem[], item) => {
+        const selectedItem = selectedItemsMap.get(item._id);
+        if (selectedItem) {
+          // Check for changes in price or name
+          const changes: ChangeItem = { _id: item._id };
+          if (selectedItem.price !== item.price) {
+            changes.price = roundOffPrice(parseFloat(item.price.toString()));
+          }
+          if (selectedItem.name !== item.name) {
+            changes.name = item.name;
+          }
+          if (Object.keys(changes).length > 1) {
+            acc.push(changes);
+          }
+        }
+        return acc;
+      },
+      []
+    );
+    // Log the formatted data
+    console.log("Formatted Data:", changedData);
+
+    // Call the API with the formatted data
+    try {
+      const res = await sdk.bulkUpdateItem({ input: changedData });
+      if (res && res.bulkUpdateItem) {
+        // Update the state with the new data
+        setSelectedItems(updatedData as ItemsDropDownType[]);
+
+        // Show success toast
+        setToastData({
+          message: "Modifier groups updated successfully",
+          type: "success",
+        });
+      }
+    } catch (error) {
+      // Show error toast
+      setToastData({
+        message: extractErrorMessage(error),
+        type: "error",
+      });
+    }
+  };
+
   return (
     <motion.div
       className="z-10 w-full min-h-full max-w-4xl flex flex-col items-center space-y-5 text-center"
@@ -624,6 +682,7 @@ const AddCategoryForm = () => {
             emptyMessage="No items available"
             buttonText="Add Items"
             onAddClick={handleAddClick}
+            onSave={handleSave}
           />
           <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
             The Items on your category (eg. Pizza,Burger,Chocolate Cake).
