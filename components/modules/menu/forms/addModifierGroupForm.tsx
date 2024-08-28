@@ -70,7 +70,7 @@ const AddModifierGroupForm = () => {
   const {
     refreshMenuBuilderData,
     setRefreshMenuBuilderData,
-    setisAddModifierGroupModalOpen,
+    setIsAddModifierGroupModalOpen,
     setisAddModifierModalOpen,
   } = useMenuOptionsStore();
 
@@ -408,7 +408,7 @@ const AddModifierGroupForm = () => {
         //   }));
       }
       setActionLoading(false);
-      setisAddModifierGroupModalOpen(false);
+      setIsAddModifierGroupModalOpen(false);
       setRefreshMenuBuilderData(!refreshMenuBuilderData);
 
       setisEditModGroup(false);

@@ -1,4 +1,5 @@
 import AddFormDropdown from "@/components/common/addFormDropDown/addFormDropdown";
+import { DataItemFormAddTable } from "@/components/common/addFormDropDown/interface";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import CustomSwitchCard from "@/components/common/customSwitchCard/customSwitchCard";
@@ -75,6 +76,10 @@ interface IModalState {
   selectedId: string;
   showConfirmationModal: boolean;
 }
+type ChangeItem = {
+  _id: string;
+  name?: string;
+};
 
 const AddItemForm = () => {
   // Config
@@ -119,13 +124,13 @@ const AddItemForm = () => {
     refreshMenuBuilderData,
     setRefreshMenuBuilderData,
     setIsAddItemModalOpen,
-    setisAddModifierGroupModalOpen,
+    setIsAddModifierGroupModalOpen,
   } = useMenuOptionsStore();
   const {
     editItemId,
     isEditItem,
     setEditItemId,
-    setisDuplicateItem,
+    setIsDuplicateItem,
     setIsEditItem,
     isDuplicateItem,
   } = useMenuItemsStore();
@@ -163,7 +168,7 @@ const AddItemForm = () => {
     }[];
   } | null>(null);
 
-  const [showAddsubCategory, setisShowAddsubCategory] =
+  const [showAddsubCategory, setIsShowAddsubCategory] =
     useState<boolean>(false);
   const [options, setOptions] = useState<IOption[]>([]);
 
@@ -243,18 +248,20 @@ const AddItemForm = () => {
             orderLimit: orderLimit ?? 0,
             modifierGroup,
           });
-          const nameDup = generateUniqueName(name);
-          setValue("name", name);
-          if (isDuplicateItem) {
-            setValue("name", nameDup);
-          }
-          setValue("desc", desc);
-          setValue("status", status === StatusEnum.Active ? true : false);
-          setValue("price", price);
 
+          setValue("name", isDuplicateItem ? generateUniqueName(name) : name);
           if (orderLimit) {
             setValue("limit", orderLimit);
           }
+          if (availability) {
+            const originalAvailability =
+              reverseFormatAvailability(availability);
+            setAvailability(originalAvailability);
+          }
+
+          setValue("desc", desc);
+          setValue("status", status === StatusEnum.Active ? true : false);
+          setValue("price", price);
 
           setVisibilities(visibility);
           setPricingOptions(priceOptions);
@@ -269,11 +276,6 @@ const AddItemForm = () => {
           setSelectedList(selected);
 
           setPreviewUrl(image || "");
-          if (availability) {
-            const originalAvailability =
-              reverseFormatAvailability(availability);
-            setAvailability(originalAvailability);
-          }
           const formattedOptions: IOption[] = options.map(
             (it: {
               _id: string;
@@ -343,7 +345,10 @@ const AddItemForm = () => {
         );
       }
     } catch (error) {
-      console.error("Error fetching menu data:", error);
+      setToastData({
+        type: "error",
+        message: extractErrorMessage(error),
+      });
     }
   };
 
@@ -360,10 +365,9 @@ const AddItemForm = () => {
         await fetchMenuData();
         await fetchItemData();
       } catch (error) {
-        const errorMessage = extractErrorMessage(error);
         setToastData({
           type: "error",
-          message: errorMessage,
+          message: extractErrorMessage(error),
         });
       }
     };
@@ -392,7 +396,10 @@ const AddItemForm = () => {
           setSubCategories(formattedSubCategories);
         }
       } catch (error) {
-        console.error("Failed to fetch subcategories:", error);
+        setToastData({
+          type: "error",
+          message: extractErrorMessage(error),
+        });
       }
     };
 
@@ -453,7 +460,7 @@ const AddItemForm = () => {
     } catch (error) {
       setToastData({
         type: "error",
-        message: "Failed to get Restaurant availibility",
+        message: extractErrorMessage(error),
       });
     }
   };
@@ -477,17 +484,15 @@ const AddItemForm = () => {
 
   // Handler Functions
   const onSubmit = async (data: IFormInput) => {
+    setActionloading(true);
     try {
-      setActionloading(true);
-      if (!isDuplicateItem) {
-        if (!isValidNameAlphabetic(data?.name)) {
-          setToastData({
-            message:
-              "Please use only alphabets and numbers while adding or updating name.",
-            type: "error",
-          });
-          return;
-        }
+      if (!isValidNameAlphabetic(data?.name)) {
+        setToastData({
+          message:
+            "Please use only alphabets and numbers while adding or updating name.",
+          type: "error",
+        });
+        return;
       }
       const isHalal = options.some(
         (option) => option.type === ItemOptionsEnum.IsHalal && option.status
@@ -621,7 +626,7 @@ const AddItemForm = () => {
         });
         setActionloading(false);
         setIsAddItemModalOpen(false);
-        setisDuplicateItem(false);
+        setIsDuplicateItem(false);
         setRefreshMenuBuilderData(!refreshMenuBuilderData);
         setEditItemId(null);
         setToastData({
@@ -644,7 +649,7 @@ const AddItemForm = () => {
         setRefreshMenuBuilderData(!refreshMenuBuilderData);
         setIsEditItem(false);
         setEditItemId(null);
-        setisDuplicateItem(false);
+        setIsDuplicateItem(false);
         setEditItemId(null);
 
         setToastData({
@@ -703,7 +708,7 @@ const AddItemForm = () => {
         { _id: null, category: null, name: data.name, desc: data.desc },
       ]);
 
-      setisShowAddsubCategory(false);
+      setIsShowAddsubCategory(false);
     } catch (error) {
       setToastData({
         type: "error",
@@ -830,9 +835,59 @@ const AddItemForm = () => {
   };
 
   const handleEditItem = (id: string) => {
-    setisAddModifierGroupModalOpen(true);
+    setIsAddModifierGroupModalOpen(true);
     setEditModGroupId(id);
     setisEditModGroup(true);
+  };
+
+  const handleSave = async (updatedData: DataItemFormAddTable[]) => {
+    // Create a map for quick lookup
+    const selectedItemsMap = new Map(
+      selectedList.map((item) => [item._id, item])
+    );
+
+    // Determine which items have been changed
+    const changedData: ChangeItem[] = updatedData.reduce(
+      (acc: ChangeItem[], item) => {
+        const selectedItem = selectedItemsMap.get(item._id);
+        if (selectedItem) {
+          const changes: ChangeItem = { _id: item._id };
+
+          if (selectedItem.name !== item.name) {
+            changes.name = item.name;
+          }
+          if (Object.keys(changes).length > 1) {
+            acc.push(changes);
+          }
+        }
+        return acc;
+      },
+      []
+    );
+
+    // Log the formatted data
+    console.log("Formatted Data:", changedData);
+
+    // Call the API with the formatted data
+    try {
+      const res = await sdk.bulkUpdateModifierGroups({ input: changedData });
+      if (res && res.bulkUpdateModifierGroups) {
+        // Update the state with the new data
+        setSelectedList(updatedData as ListType[]);
+
+        // Show success toast
+        setToastData({
+          message: "Modifier groups updated successfully",
+          type: "success",
+        });
+      }
+    } catch (error) {
+      // Show error toast
+      setToastData({
+        message: extractErrorMessage(error),
+        type: "error",
+      });
+    }
   };
 
   // Table Configs
@@ -1275,7 +1330,7 @@ const AddItemForm = () => {
             <p className="text-gray-500 mt-1 text-xs text-start">
               To add a new sub-category click{" "}
               <span
-                onClick={() => setisShowAddsubCategory(true)}
+                onClick={() => setIsShowAddsubCategory(true)}
                 className="text-primary cursor-pointer"
               >
                 here
@@ -1293,6 +1348,7 @@ const AddItemForm = () => {
               onAddClick={() =>
                 setModalStates((prev) => ({ ...prev, showAddNewModal: true }))
               }
+              onSave={handleSave}
             />
             <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
               Modifier Groups allow your customer to customize an item
@@ -1353,7 +1409,7 @@ const AddItemForm = () => {
         addLabel="Add Selected Modifier Groups"
         headings={masterListHeadings}
         createClickHandler={() => {
-          setisAddModifierGroupModalOpen(true);
+          setIsAddModifierGroupModalOpen(true);
         }}
         addHandler={handleAddModifierGroups}
       />
@@ -1414,7 +1470,7 @@ const AddItemForm = () => {
       <ReusableModal
         title="Add Sub Category"
         isOpen={showAddsubCategory}
-        onClose={() => setisShowAddsubCategory(false)}
+        onClose={() => setIsShowAddsubCategory(false)}
       >
         <form onSubmit={handleAddSubSubmit(onSubSubmit)}>
           <div className="mb-1">

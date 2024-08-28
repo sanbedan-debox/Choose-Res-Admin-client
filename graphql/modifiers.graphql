@@ -24,3 +24,11 @@ query getModifier($id: String!) {
 mutation updateModifier($input: UpdateModifierInput!) {
   updateModifier(input: $input)
 }
+
+mutation bulkUpdateModifierGroups($input: [UpdateBulkModifierGroupInput!]!) {
+  bulkUpdateModifierGroups(input: $input)
+}
+
+mutation bulkUpdateModifiers($input: [UpdateBulkModifierInput!]!) {
+  bulkUpdateModifiers(input: $input)
+}

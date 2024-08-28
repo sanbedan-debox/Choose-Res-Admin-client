@@ -18,7 +18,7 @@ const Modifiers: React.FC = () => {
     }[]
   >();
   const { setToastData } = useGlobalStore();
-  const { setisAddModifierGroupModalOpen, refreshMenuBuilderData } =
+  const { setIsAddModifierGroupModalOpen, refreshMenuBuilderData } =
     useMenuOptionsStore();
   const [tableLoading, setTableLoading] = useState(false);
   const [showStatusConfirmationModal, setShowStatusConfirmationModal] =
@@ -61,14 +61,14 @@ const Modifiers: React.FC = () => {
   );
 
   const handleEditItem = (_id: string) => {
-    setisAddModifierGroupModalOpen(true);
+    setIsAddModifierGroupModalOpen(true);
     setEditModGroupId(_id);
     setisEditModGroup(true);
     setisDuplicateModifierGroup(false);
   };
 
   const handleDuplcateCategory = (_id: string) => {
-    setisAddModifierGroupModalOpen(true);
+    setIsAddModifierGroupModalOpen(true);
     setEditModGroupId(_id);
     setisDuplicateModifierGroup(true);
     setisEditModGroup(false);
@@ -119,7 +119,7 @@ const Modifiers: React.FC = () => {
   const mainActions = [
     {
       label: "Add Modifiers Groups",
-      onClick: () => setisAddModifierGroupModalOpen(true),
+      onClick: () => setIsAddModifierGroupModalOpen(true),
     },
   ];
 

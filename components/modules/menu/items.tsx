@@ -65,20 +65,20 @@ const Items: React.FC = () => {
     }
   };
 
-  const { setEditItemId, setIsEditItem, setisDuplicateItem } =
+  const { setEditItemId, setIsEditItem, setIsDuplicateItem } =
     useMenuItemsStore();
 
   const handleEditItem = (_id: string) => {
     setIsAddItemModalOpen(true);
     setEditItemId(_id);
     setIsEditItem(true);
-    setisDuplicateItem(false);
+    setIsDuplicateItem(false);
   };
 
   const handleDuplcateCategory = (_id: string) => {
     setIsAddItemModalOpen(true);
     setEditItemId(_id);
-    setisDuplicateItem(true);
+    setIsDuplicateItem(true);
     setIsEditItem(false);
   };
 

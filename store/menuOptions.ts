@@ -4,7 +4,7 @@ type MenuOptionsState = {
   isAddModifierModalOpen: boolean;
   setisAddModifierModalOpen: (open: boolean) => void;
   isAddModifierGroupModalOpen: boolean;
-  setisAddModifierGroupModalOpen: (open: boolean) => void;
+  setIsAddModifierGroupModalOpen: (open: boolean) => void;
   isAddItemModalOpen: boolean;
   setIsAddItemModalOpen: (open: boolean) => void;
   isAddCategoryModalOpen: boolean;
@@ -24,7 +24,7 @@ const useMenuOptionsStore = create<MenuOptionsState>((set) => ({
   setisAddModifierModalOpen: (open: boolean) =>
     set({ isAddModifierModalOpen: open }),
   isAddModifierGroupModalOpen: false,
-  setisAddModifierGroupModalOpen: (open: boolean) =>
+  setIsAddModifierGroupModalOpen: (open: boolean) =>
     set({ isAddModifierGroupModalOpen: open }),
   isAddItemModalOpen: false,
   setIsAddItemModalOpen: (open: boolean) => set({ isAddItemModalOpen: open }),
