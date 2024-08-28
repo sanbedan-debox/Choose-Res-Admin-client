@@ -1,10 +1,12 @@
 import AddFormDropdown from "@/components/common/addFormDropDown/addFormDropdown";
+import { DataItemFormAddTable } from "@/components/common/addFormDropDown/interface";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import CountSelector from "@/components/common/countSelector/countSelector";
 import CustomSwitchCard from "@/components/common/customSwitchCard/customSwitchCard";
 import ReusableModal from "@/components/common/modal/modal";
 import FormAddTable from "@/components/common/table/formTable";
+import Loader from "@/components/loader";
 import { PriceTypeEnum } from "@/generated/graphql";
 import { PricingTypeOptions } from "@/lib/menuBuilderConstants";
 import useGlobalStore from "@/store/global";
@@ -40,8 +42,13 @@ interface ListType {
   _id: string;
   name: string;
   price: number;
-  image: string;
 }
+
+type ChangeItem = {
+  _id: string;
+  name?: string;
+  price?: number;
+};
 
 interface IModalState {
   showDeleteConfirmation: boolean;
@@ -71,14 +78,14 @@ const AddModifierGroupForm = () => {
     refreshMenuBuilderData,
     setRefreshMenuBuilderData,
     setIsAddModifierGroupModalOpen,
-    setisAddModifierModalOpen,
+    setIsAddModifierModalOpen,
   } = useMenuOptionsStore();
 
   const {
     editModGroupId,
     isEditModGroup,
     setEditModGroupId,
-    setisEditModGroup,
+    setIsEditModGroup,
     isDuplicateModifierGroup,
     setMaxSelectionsCount,
     setMinSelectionsCount,
@@ -87,7 +94,7 @@ const AddModifierGroupForm = () => {
 
   const { setToastData } = useGlobalStore();
 
-  const { setEditModId, setisEditMod } = useModStore();
+  const { setEditModId, setIsEditMod } = useModStore();
 
   // Modal States
   const initModalState: IModalState = {
@@ -143,7 +150,6 @@ const AddModifierGroupForm = () => {
           _id: el._id.toString(),
           name: el.name.toString(),
           price: el.price,
-          image: "",
         }));
 
         setMasterList(categories);
@@ -257,18 +263,16 @@ const AddModifierGroupForm = () => {
   // Handler Functions
 
   const onSubmit = async (data: IFormInput) => {
-    try {
-      setActionLoading(true);
+    setActionLoading(true);
 
-      if (!isDuplicateModifierGroup) {
-        if (!isValidNameAlphabetic(data.name)) {
-          setToastData({
-            message:
-              "Please use only alphabets and numbers while adding or updating name.",
-            type: "error",
-          });
-          return;
-        }
+    try {
+      if (!isValidNameAlphabetic(data.name)) {
+        setToastData({
+          message:
+            "Please use only alphabets and numbers while adding or updating name.",
+          type: "error",
+        });
+        return;
       }
 
       if (
@@ -302,10 +306,6 @@ const AddModifierGroupForm = () => {
       const prevSelectedMenuIds = modifierData?.modifiers?.map(
         (item) => item.id
       );
-      const selectedItemsIds = selectedList.map((item) => item._id);
-      const isMenuAdded = selectedItemsIds.filter(
-        (id) => !prevSelectedMenuIds?.includes(id)
-      );
 
       if (parsedMaxSelection < parsedMinSelection) {
         setToastData({
@@ -315,7 +315,11 @@ const AddModifierGroupForm = () => {
         return;
       }
 
-      setActionLoading(true);
+      const selectedItemsIds = selectedList.map((item) => item._id);
+      const isMenuAdded = selectedItemsIds.filter(
+        (id) => !prevSelectedMenuIds?.includes(id)
+      );
+
       if (selectedItemsIds.length === 0) {
         setToastData({
           type: "error",
@@ -392,27 +396,39 @@ const AddModifierGroupForm = () => {
           message: "Modifier Groups Added Successfully",
         });
       } else {
-        isMenuAdded &&
-          (await sdk.addModifierToGroup({
+        if (isMenuAdded) {
+          const res = await sdk.addModifierToGroup({
             modifierIds: isMenuAdded,
             modifierGroupId: editModGroupId || "",
-          }));
-        await sdk.updateModifierGroup({
+          });
+          if (res && res.addModifierToGroup) {
+            setToastData({
+              message: "Modifers Added Successfully",
+              type: "success",
+            });
+            setIsAddModifierGroupModalOpen(false);
+            setRefreshMenuBuilderData(!refreshMenuBuilderData);
+
+            setIsEditModGroup(false);
+            setEditModGroupId(null);
+          }
+        }
+
+        const res = await sdk.updateModifierGroup({
           input: updateInput,
         });
+        if (res && res.updateModifierGroup) {
+          setToastData({
+            message: "Modifer Groups Updated succesfully",
+            type: "success",
+          });
+          setIsAddModifierGroupModalOpen(false);
+          setRefreshMenuBuilderData(!refreshMenuBuilderData);
 
-        // isMenuAdded &&
-        //   (await sdk.addModifierToModifierGroup({
-        //     modifiers: addedMenuItems,
-        //     modifierGroupId: editModGroupId || "",
-        //   }));
+          setIsEditModGroup(false);
+          setEditModGroupId(null);
+        }
       }
-      setActionLoading(false);
-      setIsAddModifierGroupModalOpen(false);
-      setRefreshMenuBuilderData(!refreshMenuBuilderData);
-
-      setisEditModGroup(false);
-      setEditModGroupId(null);
 
       setToastData({
         type: "success",
@@ -442,9 +458,9 @@ const AddModifierGroupForm = () => {
   };
 
   const handleEditItem = (id: string) => {
-    setisAddModifierModalOpen(true);
+    setIsAddModifierModalOpen(true);
     setEditModId(id);
-    setisEditMod(true);
+    setIsEditMod(true);
   };
 
   const handleMinCountChange = (count: number) => {
@@ -458,38 +474,103 @@ const AddModifierGroupForm = () => {
   };
 
   const handleRemoveModifiers = async () => {
-    setSelectedList((prevSelected) =>
-      prevSelected.filter((item) => item._id !== modalStates.selectedId)
+    try {
+      const isPresentInPrevItems = modifierData?.modifiers?.some(
+        (item) => item.id === modalStates.selectedId
+      );
+      if (isEditModGroup && isPresentInPrevItems) {
+        const res = await sdk.removeModifierFromGroup({
+          modifierGroupId: editModGroupId ?? "",
+          modifierId: modalStates.selectedId,
+        });
+        if (res && res.removeModifierFromGroup) {
+          // Update modifierData by removing the modifier with selectedId
+          setModifierData((prevModifierData) =>
+            prevModifierData
+              ? {
+                  ...prevModifierData,
+                  modifiers: prevModifierData.modifiers.filter(
+                    (item) => item.id !== modalStates.selectedId
+                  ),
+                }
+              : prevModifierData
+          );
+          setSelectedList((prevSelected) =>
+            prevSelected.filter((item) => item._id !== modalStates.selectedId)
+          );
+          setModalStates((prev) => ({
+            ...prev,
+            showDeleteConfirmation: false,
+            selectedId: "",
+          }));
+        }
+      } else {
+        setSelectedList((prevSelected) =>
+          prevSelected.filter((item) => item._id !== modalStates.selectedId)
+        );
+        setModalStates((prev) => ({
+          ...prev,
+          showDeleteConfirmation: false,
+          selectedId: "",
+        }));
+      }
+    } catch (error) {
+      setToastData({
+        type: "error",
+        message: extractErrorMessage(error),
+      });
+    }
+  };
+
+  const handleSave = async (updatedData: DataItemFormAddTable[]) => {
+    const selectedItemsMap = new Map(
+      selectedList.map((item) => [item._id, item])
     );
 
-    const isPresentInPrevItems = modifierData?.modifiers?.some(
-      (item) => item.id === modalStates.selectedId
+    const changedData: ChangeItem[] = updatedData.reduce(
+      (acc: ChangeItem[], item) => {
+        const selectedItem = selectedItemsMap.get(item._id);
+        if (selectedItem) {
+          // Check for changes in price or name
+          const changes: ChangeItem = { _id: item._id };
+          if (selectedItem.price !== item.price) {
+            changes.price = roundOffPrice(parseFloat(item.price.toString()));
+          }
+          if (selectedItem.name !== item.name) {
+            changes.name = item.name;
+          }
+          if (Object.keys(changes).length > 1) {
+            acc.push(changes);
+          }
+        }
+        return acc;
+      },
+      []
     );
-    if (isEditModGroup && isPresentInPrevItems) {
-      const res = await sdk.removeModifierFromGroup({
-        modifierGroupId: editModGroupId ?? "",
-        modifierId: modalStates.selectedId,
-      });
-      if (res) {
-        // Update modifierData by removing the modifier with selectedId
-        setModifierData((prevModifierData) =>
-          prevModifierData
-            ? {
-                ...prevModifierData,
-                modifiers: prevModifierData.modifiers.filter(
-                  (item) => item.id !== modalStates.selectedId
-                ),
-              }
-            : prevModifierData
-        );
+
+    // Log the formatted data
+    console.log("Formatted Data:", changedData);
+
+    // Call the API with the formatted data
+    try {
+      const res = await sdk.bulkUpdateModifiers({ input: changedData });
+      if (res && res.bulkUpdateModifiers) {
+        // Update the state with the new data
+        setSelectedList(updatedData as ListType[]);
+
+        // Show success toast
+        setToastData({
+          message: "Modifiers updated successfully",
+          type: "success",
+        });
       }
+    } catch (error) {
+      // Show error toast
+      setToastData({
+        message: extractErrorMessage(error),
+        type: "error",
+      });
     }
-    setModalStates((prev) => ({
-      ...prev,
-      showDeleteConfirmation: false,
-      selectedId: "",
-    }));
-    // modalStates.showDeleteConfirmation(false);
   };
 
   // Table Configs
@@ -561,6 +642,8 @@ const AddModifierGroupForm = () => {
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.3 }}
     >
+      {loading && <Loader />}
+
       <form
         onSubmit={handleSubmit(onSubmit)}
         className=" mx-auto p-6 w-full bg-white rounded-md "
@@ -732,7 +815,6 @@ const AddModifierGroupForm = () => {
             <FormAddTable
               data={selectedList}
               headings={listHeadings}
-              isShowImage
               title="Modifiers"
               emptyCaption="No Modifiers added,Add Now"
               emptyMessage="No Modifiers available"
@@ -740,6 +822,7 @@ const AddModifierGroupForm = () => {
               onAddClick={() =>
                 setModalStates((prev) => ({ ...prev, showAddNewModal: true }))
               }
+              onSave={handleSave}
             />
             <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
               Modifiers allow customers to customize an item (eg. Pepperoni,No
@@ -776,7 +859,7 @@ const AddModifierGroupForm = () => {
             addHandler={handleAddModifiers}
             headings={masterListHeadings}
             createClickHandler={() => {
-              setisAddModifierModalOpen(true);
+              setIsAddModifierModalOpen(true);
             }}
           />
         </div>

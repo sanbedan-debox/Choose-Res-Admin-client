@@ -12,10 +12,10 @@ const Modifiers: React.FC = () => {
   const [modifier, setModifier] =
     useState<{ _id: string; name: string; price: number }[]>();
   const { setToastData } = useGlobalStore();
-  const { setisAddModifierModalOpen, refreshMenuBuilderData } =
+  const { setIsAddModifierModalOpen, refreshMenuBuilderData } =
     useMenuOptionsStore();
   const [tableLoading, setTableLoading] = useState(false);
-  const { setEditModId, setisEditMod, setisDuplicateMods } = useModStore();
+  const { setEditModId, setIsEditMod, setisDuplicateMods } = useModStore();
 
   const fetchModifiers = async () => {
     setTableLoading(true);
@@ -53,17 +53,17 @@ const Modifiers: React.FC = () => {
   );
 
   const handleEditItem = (_id: string) => {
-    setisAddModifierModalOpen(true);
+    setIsAddModifierModalOpen(true);
     setEditModId(_id);
-    setisEditMod(true);
+    setIsEditMod(true);
     setisDuplicateMods(false);
   };
 
   const handleDuplcateCategory = (_id: string) => {
-    setisAddModifierModalOpen(true);
+    setIsAddModifierModalOpen(true);
     setEditModId(_id);
     setisDuplicateMods(true);
-    setisEditMod(false);
+    setIsEditMod(false);
   };
 
   const renderActions = (rowData: { _id: string }) => (
@@ -89,7 +89,7 @@ const Modifiers: React.FC = () => {
   const mainActions = [
     {
       label: "Add Modifiers",
-      onClick: () => setisAddModifierModalOpen(true),
+      onClick: () => setIsAddModifierModalOpen(true),
     },
   ];
 

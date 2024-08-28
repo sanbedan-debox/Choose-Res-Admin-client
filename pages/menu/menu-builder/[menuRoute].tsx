@@ -48,17 +48,17 @@ const MenuPage = ({ repo }: { repo?: UserRepo }) => {
     isAddModifierGroupModalOpen,
     setIsAddModifierGroupModalOpen,
     isAddModifierModalOpen,
-    setisAddModifierModalOpen,
+    setIsAddModifierModalOpen,
     isAddSubCategoryModalOpen,
     setisAddSubCategoryModalOpen,
   } = useMenuOptionsStore();
-  const { setEditModGroupId, setisEditModGroup, setisDuplicateModifierGroup } =
+  const { setEditModGroupId, setIsEditModGroup, setisDuplicateModifierGroup } =
     useModGroupStore();
   const { seteditSubCategoryId, setisEditSubCategory } = useSubCategoryStore();
 
   const { setEditCatsId, setIsEditCats, setIsDuplicateCats } =
     useMenuCategoryStore();
-  const { setEditModId, setisEditMod, setisDuplicateMods } = useModStore();
+  const { setEditModId, setIsEditMod, setisDuplicateMods } = useModStore();
   const { setEditMenuId, setisEditMenu, setIsDuplicateMenu } =
     useMenuMenuStore();
 
@@ -94,14 +94,14 @@ const MenuPage = ({ repo }: { repo?: UserRepo }) => {
   const handleAddModifierGroupClose = () => {
     setIsAddModifierGroupModalOpen(false);
     setRefreshMenuBuilderData(!refreshMenuBuilderData);
-    setisEditModGroup(false);
+    setIsEditModGroup(false);
     setisDuplicateModifierGroup(false);
     setEditModGroupId(null);
   };
   const handleAddModifierClose = () => {
-    setisAddModifierModalOpen(false);
+    setIsAddModifierModalOpen(false);
     setRefreshMenuBuilderData(!refreshMenuBuilderData);
-    setisEditMod(false);
+    setIsEditMod(false);
     setisDuplicateMods(false);
     setEditModId(null);
   };
@@ -221,14 +221,14 @@ const MenuPage = ({ repo }: { repo?: UserRepo }) => {
             } else {
               setIsAddModifierGroupModalOpen(false);
               setRefreshMenuBuilderData(!refreshMenuBuilderData);
-              setisEditModGroup(false);
+              setIsEditModGroup(false);
               setisDuplicateModifierGroup(false);
               setEditModGroupId(null);
             }
           } else {
             setIsAddModifierGroupModalOpen(false);
             setRefreshMenuBuilderData(!refreshMenuBuilderData);
-            setisEditModGroup(false);
+            setIsEditModGroup(false);
             setisDuplicateModifierGroup(false);
             setEditModGroupId(null);
           }

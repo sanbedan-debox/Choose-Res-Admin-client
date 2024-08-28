@@ -29,7 +29,6 @@ interface IFormInput {
   desc: string;
   minSelections: number;
   price: number;
-  image: string;
 }
 
 interface ItemOption {
@@ -58,14 +57,14 @@ const AddModifierForm = () => {
   const {
     refreshMenuBuilderData,
     setRefreshMenuBuilderData,
-    setisAddModifierModalOpen,
+    setIsAddModifierModalOpen,
   } = useMenuOptionsStore();
 
   const {
     editModId,
     isEditMod,
     setEditModId,
-    setisEditMod,
+    setIsEditMod,
     setisDuplicateMods,
     isDuplicateMods,
   } = useModStore();
@@ -88,49 +87,11 @@ const AddModifierForm = () => {
     preSelect: boolean;
   } | null>(null);
 
-  const [logoFile, setLogoFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-
   const [isItemFromMenu, setIsItemFromMenu] = useState(false);
   const [itemOptions, setItemOptions] = useState<ItemOption[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   // Edit States
   // API Callls
-  // Helper Functions
-  // Handler Functions
-
-  // const [items, setItems] = useState([]);
-
-  const fetchItems = async () => {
-    try {
-      const response = await sdk.getItems();
-      const formattedItems = response.getItems.map(
-        (item: {
-          _id: string;
-          name: string;
-          desc: string;
-          price: number;
-          priceOptions: {
-            price: number;
-            menuType: MenuTypeEnum;
-          }[];
-        }) => ({
-          _id: item._id,
-          name: item.name,
-          desc: item.desc,
-          price: item.price,
-          priceOptions: item.priceOptions,
-        })
-      );
-      setItemOptions(formattedItems);
-    } catch (error) {
-      const errorMessage = extractErrorMessage(error);
-      setToastData({
-        type: "error",
-        message: errorMessage,
-      });
-    }
-  };
 
   const fetchModData = async () => {
     if (editModId && (isEditMod || isDuplicateMods)) {
@@ -164,21 +125,52 @@ const AddModifierForm = () => {
     }
   };
 
+  const fetchItems = async () => {
+    try {
+      const response = await sdk.getItems();
+      const formattedItems = response.getItems.map(
+        (item: {
+          _id: string;
+          name: string;
+          desc: string;
+          price: number;
+          priceOptions: {
+            price: number;
+            menuType: MenuTypeEnum;
+          }[];
+        }) => ({
+          _id: item._id,
+          name: item.name,
+          desc: item.desc,
+          price: item.price,
+          priceOptions: item.priceOptions,
+        })
+      );
+      setItemOptions(formattedItems);
+    } catch (error) {
+      const errorMessage = extractErrorMessage(error);
+      setToastData({
+        type: "error",
+        message: errorMessage,
+      });
+    }
+  };
+
   useEffect(() => {
     fetchItems();
     fetchModData();
   }, [editModId, setValue, setToastData]);
 
+  // Helper Functions
+  // Handler Functions
   const onSubmit = async (data: IFormInput) => {
-    if (!isDuplicateMods) {
-      if (!isValidNameAlphabetic(data.name)) {
-        setToastData({
-          message:
-            "Please use only alphabets and numbers while adding or updating name.",
-          type: "error",
-        });
-        return;
-      }
+    if (!isValidNameAlphabetic(data.name)) {
+      setToastData({
+        message:
+          "Please use only alphabets and numbers while adding or updating name.",
+        type: "error",
+      });
+      return;
     }
 
     if ((data.price ?? 0) < 0) {
@@ -226,7 +218,6 @@ const AddModifierForm = () => {
 
     try {
       setActionLoading(true);
-      const imgUrl = await handleLogoUpload();
 
       if (!isEditMod) {
         // ADD ITEM API
@@ -256,9 +247,9 @@ const AddModifierForm = () => {
         }
       }
 
-      setisAddModifierModalOpen(false);
+      setIsAddModifierModalOpen(false);
       setRefreshMenuBuilderData(!refreshMenuBuilderData);
-      setisEditMod(false);
+      setIsEditMod(false);
       setEditModId(null);
       setisDuplicateMods(false);
       setEditModId(null);
@@ -270,33 +261,6 @@ const AddModifierForm = () => {
       });
     } finally {
       setActionLoading(false);
-    }
-  };
-
-  const handleLogoUpload = async () => {
-    if (logoFile) {
-      const formData = new FormData();
-      formData.append("file", logoFile);
-      formData.append("upload_preset", "modifier-images");
-
-      const response = await fetch(
-        "https://api.cloudinary.com/v1_1/choose-pos/raw/upload",
-        { method: "POST", body: formData }
-      ).then((r) => r.json());
-
-      const cloudinaryUrl = response?.secure_url;
-      setPreviewUrl(cloudinaryUrl);
-
-      return cloudinaryUrl;
-    }
-  };
-  const handleLogoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null;
-    if (file) {
-      setLogoFile(file);
-
-      const objectUrl = URL.createObjectURL(file);
-      setPreviewUrl(objectUrl);
     }
   };
 
@@ -419,83 +383,7 @@ const AddModifierForm = () => {
               </p>
             )}
           </div>
-          <div className="col-span-1">
-            <label className="block mb-2 text-lg font-medium text-left text-gray-700">
-              Photo
-            </label>
-            <div className="mb-4">
-              {previewUrl ? (
-                <div className="flex items-center justify-between hover:bg-primary hover:bg-opacity-5 px-4 rounded-md">
-                  <img
-                    src={previewUrl}
-                    alt="Preview"
-                    className="w-16 h-16 rounded-lg object-cover"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setLogoFile(null);
-                      setPreviewUrl(null);
-                    }}
-                    className="text-gray-500 hover:text-red-500 focus:outline-none"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      className="w-6 h-6"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
-                </div>
-              ) : (
-                <label className="block  text-sm font-medium text-left text-gray-700">
-                  Item Picture (Optional)
-                  <div className="border-2 border-dashed border-gray-300 p-6 text-center rounded-lg cursor-pointer hover:bg-gray-100 relative">
-                    <input
-                      type="file"
-                      {...register("image")}
-                      onChange={handleLogoChange}
-                      className="hidden"
-                      id="logo-upload"
-                    />
-                    <label htmlFor="logo-upload" className="cursor-pointer">
-                      <div className="text-gray-500">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          className="w-6 h-6 mx-auto"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M3 7l3-3m0 0l3 3M6 4v12M21 11v7a2 2 0 01-2 2H5a2 2 0 01-2-2v-7M16 8l-3-3m0 0l-3 3m3-3v12"
-                          />
-                        </svg>
-                        <p className="mt-1 text-sm text-gray-500">
-                          Drag and drop a logo or{" "}
-                          <span className="text-primary">browse file</span>
-                        </p>
-                      </div>
-                    </label>
-                  </div>
-                </label>
-              )}
-              <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
-                This is the image your customer will see
-              </p>
-            </div>
-          </div>
+
           <div className="">
             <CustomSwitchCard
               label="Pre Select"

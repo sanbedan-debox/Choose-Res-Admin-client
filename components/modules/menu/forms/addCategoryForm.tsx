@@ -584,6 +584,15 @@ const AddCategoryForm = () => {
             selectedId: "",
           }));
         }
+      } else {
+        setSelectedList((prevSelected) =>
+          prevSelected.filter((item) => item._id !== modalStates.selectedId)
+        );
+        setModalStates((prev) => ({
+          ...prev,
+          showDeleteConfirmation: false,
+          selectedId: "",
+        }));
       }
     } catch (error) {
       setToastData({

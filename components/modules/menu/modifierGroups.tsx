@@ -52,7 +52,7 @@ const Modifiers: React.FC = () => {
     fetchModifierGroups();
   }, [refreshMenuBuilderData]);
 
-  const { setEditModGroupId, setisEditModGroup, setisDuplicateModifierGroup } =
+  const { setEditModGroupId, setIsEditModGroup, setisDuplicateModifierGroup } =
     useModGroupStore();
 
   const [selectedItemId, setSelectedItemId] = useState<string>("");
@@ -63,7 +63,7 @@ const Modifiers: React.FC = () => {
   const handleEditItem = (_id: string) => {
     setIsAddModifierGroupModalOpen(true);
     setEditModGroupId(_id);
-    setisEditModGroup(true);
+    setIsEditModGroup(true);
     setisDuplicateModifierGroup(false);
   };
 
@@ -71,7 +71,7 @@ const Modifiers: React.FC = () => {
     setIsAddModifierGroupModalOpen(true);
     setEditModGroupId(_id);
     setisDuplicateModifierGroup(true);
-    setisEditModGroup(false);
+    setIsEditModGroup(false);
   };
 
   const renderActions = (rowData: { _id: string }) => (

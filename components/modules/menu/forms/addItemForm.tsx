@@ -11,6 +11,7 @@ import {
   reverseFormatAvailability,
 } from "@/components/common/timingAvailibility/interface";
 import AvailabilityComponent from "@/components/common/timingAvailibility/timingAvailibility";
+import Loader from "@/components/loader";
 import {
   AvailabilityInput,
   ItemOptionsEnum,
@@ -137,7 +138,7 @@ const AddItemForm = () => {
 
   const { setToastData } = useGlobalStore();
 
-  const { setEditModGroupId, setisEditModGroup } = useModGroupStore();
+  const { setEditModGroupId, setIsEditModGroup } = useModGroupStore();
 
   // Modal States
   const initModalState: IModalState = {
@@ -796,11 +797,7 @@ const AddItemForm = () => {
         itemId: editItemId || "",
         modifierGroupId: modalStates.selectedId,
       });
-      // if (res) {
-      //   setprevItemsbfrEdit((prevSelected) =>
-      //     prevSelected.filter((item) => item._id !== removingId)
-      //   );
-      // }
+
       if (res) {
         // Update itemData by removing the modifier group with selectedId
         setItemData((prevItemData) =>
@@ -814,6 +811,15 @@ const AddItemForm = () => {
             : prevItemData
         );
       }
+    } else {
+      setSelectedList((prevSelected) =>
+        prevSelected.filter((item) => item._id !== modalStates.selectedId)
+      );
+      setModalStates((prev) => ({
+        ...prev,
+        showDeleteConfirmation: false,
+        selectedId: "",
+      }));
     }
     setModalStates((prev) => ({
       ...prev,
@@ -837,7 +843,7 @@ const AddItemForm = () => {
   const handleEditItem = (id: string) => {
     setIsAddModifierGroupModalOpen(true);
     setEditModGroupId(id);
-    setisEditModGroup(true);
+    setIsEditModGroup(true);
   };
 
   const handleSave = async (updatedData: DataItemFormAddTable[]) => {
@@ -955,6 +961,7 @@ const AddItemForm = () => {
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.3 }}
     >
+      {loading && <Loader />}
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="max-w-full mx-auto p-6 w-full bg-white rounded-md "

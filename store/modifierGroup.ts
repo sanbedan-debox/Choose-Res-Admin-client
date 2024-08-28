@@ -4,7 +4,7 @@ type ModifierGroupState = {
   editModGroupId: string | null;
   setEditModGroupId: (open: string | null) => void;
   isEditModGroup: boolean;
-  setisEditModGroup: (open: boolean) => void;
+  setIsEditModGroup: (open: boolean) => void;
   isDuplicateModifierGroup: boolean;
   setisDuplicateModifierGroup: (open: boolean) => void;
   modifiersLength: number
@@ -19,7 +19,7 @@ const useModGroupStore = create<ModifierGroupState>((set) => ({
   editModGroupId: null,
   setEditModGroupId: (open: string | null) => set({ editModGroupId: open }),
   isEditModGroup: false,
-  setisEditModGroup: (open: boolean) => set({ isEditModGroup: open }),
+  setIsEditModGroup: (open: boolean) => set({ isEditModGroup: open }),
   isDuplicateModifierGroup: false,
   setisDuplicateModifierGroup: (open: boolean) => set({ isDuplicateModifierGroup: open }),
   modifiersLength: 0,

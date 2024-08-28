@@ -376,6 +376,15 @@ const AddMenuForm = () => {
           message: "Something went wrong,Please try again later",
         });
       }
+    } else {
+      setSelectedList((prevSelected) =>
+        prevSelected.filter((item) => item._id !== modalStates.selectedId)
+      );
+      setModalStates((prev) => ({
+        ...prev,
+        showDeleteConfirmation: false,
+        selectedId: "",
+      }));
     }
   };
 
