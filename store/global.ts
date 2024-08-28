@@ -10,7 +10,7 @@ type ToastData = {
 
 type MenuState = {
   isShowTaxSettings: boolean;
-  setisShowTaxSettings: (isExpanded: boolean) => void;
+  setIsShowTaxSettings: (isExpanded: boolean) => void;
 
   selectedMenu: string;
   isSidebarExpanded: boolean;
@@ -26,7 +26,7 @@ type MenuState = {
 
 const useGlobalStore = create<MenuState>((set) => ({
   isShowTaxSettings: false,
-  setisShowTaxSettings: (show: boolean) =>
+  setIsShowTaxSettings: (show: boolean) =>
     set({ isShowTaxSettings: show }),
 
   selectedMenu: "dashboard",

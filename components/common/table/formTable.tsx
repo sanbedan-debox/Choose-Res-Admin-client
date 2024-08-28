@@ -231,24 +231,6 @@ const FormAddTable: React.FC<FormAddTableProps> = ({
               <div className="flex items-center space-x-4">
                 {headings.map((heading) => (
                   <span key={heading.dataKey}>
-                    {/* {editMode && heading.title !== "Actions" ? (
-                      <input
-                        type="text"
-                        value={editableData[item._id]?.[heading.dataKey] || ""}
-                        onChange={(e) =>
-                          handleInputChange(
-                            item._id,
-                            heading.dataKey,
-                            e.target.value
-                          )
-                        }
-                        className="p-1 border rounded"
-                      />
-                    ) : heading.render ? (
-                      heading.render(item)
-                    ) : (
-                      item[heading.dataKey] || item[heading.dataKey]
-                    )} */}
                     {editMode && heading.title !== "Actions" ? (
                       <input
                         type={
@@ -266,7 +248,9 @@ const FormAddTable: React.FC<FormAddTableProps> = ({
                             e.target.value
                           )
                         }
-                        className="p-1 border rounded"
+                        // className="p-1 border rounded"
+                        // className="input input-primary"
+                        className="p-2 border border-gray-500 rounded-md w-1/3 max-h-8 placeholder-gray-400 focus:border-primary focus:ring-1 focus:ring-primary"
                       />
                     ) : heading.render ? (
                       heading.render(item)

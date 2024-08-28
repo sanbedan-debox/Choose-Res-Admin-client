@@ -214,7 +214,7 @@ const RestaurantAvailability = () => {
         type: "success",
       });
       router.push("/onboarding-restaurant/restaurant-additional-info");
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage = extractErrorMessage(error);
       setToastData({
         type: "error",

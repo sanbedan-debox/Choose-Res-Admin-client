@@ -45,7 +45,7 @@ const AddSubCategoryForm = () => {
 
   const {
     setisAddSubCategoryModalOpen,
-    setrefreshMenuBuilderData,
+    setRefreshMenuBuilderData,
     refreshMenuBuilderData,
   } = useMenuOptionsStore();
 
@@ -96,7 +96,11 @@ const AddSubCategoryForm = () => {
   const onSubmit = async (data: IFormInput) => {
     try {
       setActionLoading(true);
-      const updateInput: any = {
+      const updateInput: {
+        id: string;
+        name?: string;
+        desc?: string;
+      } = {
         id: editSubCategoryId || "",
       };
       if (!isValidNameAlphabetic(data?.name)) {
@@ -146,7 +150,7 @@ const AddSubCategoryForm = () => {
       }
 
       setActionLoading(false);
-      setrefreshMenuBuilderData(!refreshMenuBuilderData);
+      setRefreshMenuBuilderData(!refreshMenuBuilderData);
       setisDuplicateSubCategory(false);
       setisEditSubCategory(false);
 

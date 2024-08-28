@@ -77,7 +77,7 @@
 //       router.push("/onboarding-restaurant/restaurant-basic-information");
 //     }
 //   };
-//   const { isShowTaxSettings, setisShowTaxSettings } = useGlobalStore();
+//   const { isShowTaxSettings, setIsShowTaxSettings } = useGlobalStore();
 
 //   return (
 //     <div className="bg-white p-4 rounded shadow-md">
@@ -110,7 +110,7 @@
 //       {!taxRate.salesTax && (
 //         <div
 //           className="flex cursor-pointer hover:bg-primary hover:bg-opacity-10 items-center bg-primary bg-opacity-5 p-4 rounded-md mb-4"
-//           onClick={() => setisShowTaxSettings(true)}
+//           onClick={() => setIsShowTaxSettings(true)}
 //         >
 //           <div className="flex flex-col">
 //             <span className="text-lg font-semibold">No Tax rate found</span>

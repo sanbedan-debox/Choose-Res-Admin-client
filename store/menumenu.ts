@@ -6,7 +6,7 @@ type MenuItemsState = {
   isEditMenu: boolean;
   setisEditMenu: (open: boolean) => void;
   isDuplicateMenu: boolean;
-  setisDuplicateMenu: (open: boolean) => void;
+  setIsDuplicateMenu: (open: boolean) => void;
 };
 
 const useMenuMenuStore = create<MenuItemsState>((set) => ({
@@ -15,7 +15,7 @@ const useMenuMenuStore = create<MenuItemsState>((set) => ({
   isEditMenu: false,
   setisEditMenu: (open: boolean) => set({ isEditMenu: open }),
   isDuplicateMenu: false,
-  setisDuplicateMenu: (open: boolean) => set({ isDuplicateMenu: open }),
+  setIsDuplicateMenu: (open: boolean) => set({ isDuplicateMenu: open }),
 }));
 
 export default useMenuMenuStore;

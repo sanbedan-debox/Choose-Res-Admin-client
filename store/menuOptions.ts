@@ -8,13 +8,13 @@ type MenuOptionsState = {
   isAddItemModalOpen: boolean;
   setisAddItemModalOpen: (open: boolean) => void;
   isAddCategoryModalOpen: boolean;
-  setisAddCategoryModalOpen: (open: boolean) => void;
+  setIsAddCategoryModalOpen: (open: boolean) => void;
   isAddSubCategoryModalOpen: boolean;
   setisAddSubCategoryModalOpen: (open: boolean) => void;
   isAddMenuModalOpen: boolean;
-  setisAddMenuModalOpen: (open: boolean) => void;
+  setIsAddMenuModalOpen: (open: boolean) => void;
   refreshMenuBuilderData: boolean;
-  setrefreshMenuBuilderData: (open: boolean) => void;
+  setRefreshMenuBuilderData: (open: boolean) => void;
   isFromUploadCSV: boolean;
   setIsFromUploadCSV: (open: boolean) => void;
 };
@@ -29,15 +29,15 @@ const useMenuOptionsStore = create<MenuOptionsState>((set) => ({
   isAddItemModalOpen: false,
   setisAddItemModalOpen: (open: boolean) => set({ isAddItemModalOpen: open }),
   isAddCategoryModalOpen: false,
-  setisAddCategoryModalOpen: (open: boolean) =>
+  setIsAddCategoryModalOpen: (open: boolean) =>
     set({ isAddCategoryModalOpen: open }),
   isAddSubCategoryModalOpen: false,
   setisAddSubCategoryModalOpen: (open: boolean) =>
     set({ isAddSubCategoryModalOpen: open }),
   isAddMenuModalOpen: false,
-  setisAddMenuModalOpen: (open: boolean) => set({ isAddMenuModalOpen: open }),
+  setIsAddMenuModalOpen: (open: boolean) => set({ isAddMenuModalOpen: open }),
   refreshMenuBuilderData: false,
-  setrefreshMenuBuilderData: (fetch: boolean) => set({ refreshMenuBuilderData: fetch }),
+  setRefreshMenuBuilderData: (fetch: boolean) => set({ refreshMenuBuilderData: fetch }),
   isFromUploadCSV: false,
   setIsFromUploadCSV: (fetch: boolean) => set({ isFromUploadCSV: fetch }),
 }));

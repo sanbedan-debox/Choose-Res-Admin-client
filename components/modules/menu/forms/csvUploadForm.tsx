@@ -90,16 +90,16 @@ const CsvUploadForm = () => {
   >([]);
 
   const {
-    setisAddMenuModalOpen,
+    setIsAddMenuModalOpen,
     isAddMenuModalOpen,
-    setrefreshMenuBuilderData,
+    setRefreshMenuBuilderData,
     refreshMenuBuilderData,
     setIsFromUploadCSV,
   } = useMenuOptionsStore();
 
   const handleAddMenuClose = () => {
-    setisAddMenuModalOpen(false);
-    setrefreshMenuBuilderData(!refreshMenuBuilderData);
+    setIsAddMenuModalOpen(false);
+    setRefreshMenuBuilderData(!refreshMenuBuilderData);
   };
 
   useEffect(() => {
@@ -725,7 +725,7 @@ const CsvUploadForm = () => {
                 : "Do you want to create a new menu? Click"}{" "}
               <span
                 onClick={() => {
-                  setisAddMenuModalOpen(true);
+                  setIsAddMenuModalOpen(true);
                   setIsFromUploadCSV(true);
                 }}
                 className="text-primary cursor-pointer"

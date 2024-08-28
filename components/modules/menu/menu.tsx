@@ -23,7 +23,7 @@ const Menu: React.FC = () => {
       _id: string;
     }[]
   >([]);
-  const { setisAddMenuModalOpen, refreshMenuBuilderData, setIsFromUploadCSV } =
+  const { setIsAddMenuModalOpen, refreshMenuBuilderData, setIsFromUploadCSV } =
     useMenuOptionsStore();
   const [showStatusConfirmationModal, setShowStatusConfirmationModal] =
     useState(false);
@@ -32,7 +32,7 @@ const Menu: React.FC = () => {
 
   const { setToastData } = useGlobalStore();
   const [tableLoading, setTableLoading] = useState(false);
-  const { setEditMenuId, setisEditMenu, setisDuplicateMenu } =
+  const { setEditMenuId, setisEditMenu, setIsDuplicateMenu } =
     useMenuMenuStore();
 
   const fetchAllMenus = async () => {
@@ -75,18 +75,18 @@ const Menu: React.FC = () => {
   }, [refreshMenuBuilderData, setToastData]);
 
   const handleEditMenu = (_id: string) => {
-    setisAddMenuModalOpen(true);
+    setIsAddMenuModalOpen(true);
     setIsFromUploadCSV(false);
     setEditMenuId(_id);
     setisEditMenu(true);
-    setisDuplicateMenu(false);
+    setIsDuplicateMenu(false);
   };
 
   const handleDuplcateMenu = (_id: string) => {
-    setisAddMenuModalOpen(true);
+    setIsAddMenuModalOpen(true);
     setIsFromUploadCSV(false);
     setEditMenuId(_id);
-    setisDuplicateMenu(true);
+    setIsDuplicateMenu(true);
     setisEditMenu(false);
   };
 
@@ -156,7 +156,7 @@ const Menu: React.FC = () => {
     {
       label: "Add Menu",
       onClick: () => {
-        setisAddMenuModalOpen(true);
+        setIsAddMenuModalOpen(true);
         setIsFromUploadCSV(false);
       },
     },

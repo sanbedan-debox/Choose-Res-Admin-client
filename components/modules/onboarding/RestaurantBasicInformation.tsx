@@ -1,6 +1,10 @@
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
-import { RestaurantCategory, RestaurantType } from "@/generated/graphql";
+import {
+  RestaurantCategory,
+  RestaurantDetailsInput,
+  RestaurantType,
+} from "@/generated/graphql";
 import { STAGGER_CHILD_VARIANTS } from "@/lib/constants";
 import useGlobalStore from "@/store/global";
 import RestaurantOnboardingStore from "@/store/restaurantOnboarding";
@@ -146,7 +150,14 @@ const RestaurantBasicInformation = () => {
       );
       const imgUrl = await handleLogoUpload();
 
-      const input: any = {
+      const input: {
+        name: string;
+        website: string;
+        type: RestaurantType;
+        category: string[];
+        brandingLogo: string;
+        dineInCapacity?: number;
+      } = {
         name: data.restaurantName,
 
         website: formattedWebsite,
@@ -163,7 +174,7 @@ const RestaurantBasicInformation = () => {
           : 0;
       }
       const response = await sdk.restaurantOnboarding({
-        input: input,
+        input: input as RestaurantDetailsInput,
       });
 
       setToastData({

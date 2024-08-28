@@ -106,11 +106,11 @@ const Navbar: React.FC = () => {
       });
     }
   };
-  const { setisShowTaxSettings } = useGlobalStore();
+  const { setIsShowTaxSettings } = useGlobalStore();
 
   const handleShowTaxRate = () => {
     toggleProfileDropdown();
-    setisShowTaxSettings(true);
+    setIsShowTaxSettings(true);
   };
   const toggleRestaurantDropdown = () => {
     setIsRestaurantDropdownOpen(!isRestaurantDropdownOpen);

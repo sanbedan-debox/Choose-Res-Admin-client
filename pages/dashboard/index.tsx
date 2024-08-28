@@ -124,7 +124,7 @@ const Dashboard: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
     fetchPendingCsvUploads();
   }, []);
 
-  const { setisShowTaxSettings } = useGlobalStore();
+  const { setIsShowTaxSettings } = useGlobalStore();
   const { taxRate } = useAuthStore();
 
   canEditTaxRate;
@@ -133,7 +133,7 @@ const Dashboard: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
         {
           name: taxRate?.salesTax ? "Update tax rate" : "Set Tax Rate",
           link: "#",
-          onClick: () => setisShowTaxSettings(true),
+          onClick: () => setIsShowTaxSettings(true),
         },
       ]
     : [];

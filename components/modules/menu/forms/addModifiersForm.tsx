@@ -37,7 +37,10 @@ interface ItemOption {
   name: string;
   price: number;
   desc: string;
-  priceOptions: any[];
+  priceOptions: {
+    price: number;
+    menuType: MenuTypeEnum;
+  }[];
 }
 
 const AddModifierForm = () => {
@@ -54,7 +57,7 @@ const AddModifierForm = () => {
   // Global States
   const {
     refreshMenuBuilderData,
-    setrefreshMenuBuilderData,
+    setRefreshMenuBuilderData,
     setisAddModifierModalOpen,
   } = useMenuOptionsStore();
 
@@ -193,7 +196,13 @@ const AddModifierForm = () => {
       return;
     }
     const parsedPrice = roundOffPrice(parseFloat(data.price.toString()));
-    let updateInput: any = { _id: editModId || "" };
+    let updateInput: {
+      _id: string;
+      name?: string;
+      price?: number;
+      desc?: string;
+      preSelect?: boolean;
+    } = { _id: editModId || "" };
     let hasChanges = false;
 
     if (data.name !== modifierData?.name) {
@@ -225,12 +234,9 @@ const AddModifierForm = () => {
         await sdk.addModifier({
           input: {
             desc: data.desc,
-
             isItem: isItemFromMenu,
             name: data.name,
-
             price: parsedPrice,
-
             preSelect: data.preSelect,
           },
         });
@@ -251,7 +257,7 @@ const AddModifierForm = () => {
       }
 
       setisAddModifierModalOpen(false);
-      setrefreshMenuBuilderData(!refreshMenuBuilderData);
+      setRefreshMenuBuilderData(!refreshMenuBuilderData);
       setisEditMod(false);
       setEditModId(null);
       setisDuplicateMods(false);
@@ -551,7 +557,7 @@ const AddModifierForm = () => {
                   onClick={() => {
                     const onlineOrderingPrice = item.priceOptions.find(
                       (option) => option.menuType === "OnlineOrdering"
-                    )?.price.value;
+                    )?.price;
 
                     const selectedPrice = onlineOrderingPrice ?? item.price;
 

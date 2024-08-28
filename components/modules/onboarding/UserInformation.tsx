@@ -21,8 +21,6 @@ interface IFormInput {
   businessName: string;
   employees: string;
   revenue: string;
-  // establishedAt: any;
-  // dob: string;
 }
 
 const formatBusinessTypeEnum = (value: BusinessTypeEnum) => {

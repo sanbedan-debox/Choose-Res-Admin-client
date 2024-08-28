@@ -11,10 +11,12 @@ import {
 } from "@/components/common/timingAvailibility/interface";
 import AvailabilityComponent from "@/components/common/timingAvailibility/timingAvailibility";
 import {
+  AvailabilityInput,
   ItemOptionsEnum,
   MenuTypeEnum,
   PriceTypeEnum,
   StatusEnum,
+  UpdateItemInput,
 } from "@/generated/graphql";
 import { initAvailability } from "@/lib/commonConstants";
 import useGlobalStore from "@/store/global";
@@ -115,7 +117,7 @@ const AddItemForm = () => {
   // Global States
   const {
     refreshMenuBuilderData,
-    setrefreshMenuBuilderData,
+    setRefreshMenuBuilderData,
     setisAddItemModalOpen,
     setisAddModifierGroupModalOpen,
   } = useMenuOptionsStore();
@@ -199,7 +201,6 @@ const AddItemForm = () => {
   } | null>(null);
 
   // Visibility & PricingOption States
-
   const [visibilities, setVisibilities] = useState<
     {
       menuType: MenuTypeEnum;
@@ -258,16 +259,13 @@ const AddItemForm = () => {
           setVisibilities(visibility);
           setPricingOptions(priceOptions);
 
-          // const formateditemlist = modifierGroup.map(
-          //   (el: { name: string; pricingType: PriceTypeEnum; id: string }) => ({
-          //     _id: el?.id,
-          //     name: el?.name ?? "",
-          //   })
-          // );
           let selectedIds = modifierGroup.map((e) => e.id.toString());
+          console.log(selectedIds);
+          console.log(masterList);
           let selected = masterList.filter((e) =>
             selectedIds.includes(e._id.toString())
           );
+          console.log(selected);
           setSelectedList(selected);
 
           setPreviewUrl(image || "");
@@ -444,7 +442,7 @@ const AddItemForm = () => {
   // Helper functions
   const setRestroTimings = async () => {
     try {
-      const response = await sdk.restaurantDetails();
+      const response = await sdk.restaurantTimings();
       if (response && response.restaurantDetails) {
         const { availability } = response.restaurantDetails;
         if (availability) {
@@ -525,7 +523,30 @@ const AddItemForm = () => {
       const parsedPrice = roundOffPrice(parseFloat(data.price.toString()));
       const parsedLimit = parseFloat(data.limit.toString());
 
-      let updateInput: any = {
+      let updateInput: {
+        _id: string;
+        options: IOption[];
+        priceOptions: {
+          menuType: MenuTypeEnum;
+          price: number;
+        }[];
+        subCategory: {
+          id: string | null;
+          name: string;
+          desc: string;
+        } | null;
+
+        visibility: {
+          menuType: MenuTypeEnum;
+          status: StatusEnum;
+        }[];
+        availability: AvailabilityInput[];
+        name?: string;
+        desc?: string;
+        price?: number;
+        orderLimit?: number;
+        status?: StatusEnum;
+      } = {
         _id: editItemId || "",
         options: options,
         priceOptions: pricingOptions,
@@ -601,7 +622,7 @@ const AddItemForm = () => {
         setActionloading(false);
         setisAddItemModalOpen(false);
         setisDuplicateItem(false);
-        setrefreshMenuBuilderData(!refreshMenuBuilderData);
+        setRefreshMenuBuilderData(!refreshMenuBuilderData);
         setEditItemId(null);
         setToastData({
           type: "success",
@@ -610,7 +631,7 @@ const AddItemForm = () => {
       } else {
         // EDIT/UPDATE ITEM API
         await sdk.updateItem({
-          input: updateInput,
+          input: updateInput as UpdateItemInput,
         });
         isModAdded &&
           (await sdk.addModifierGroupsToItem({
@@ -620,7 +641,7 @@ const AddItemForm = () => {
 
         setActionloading(false);
         setisAddItemModalOpen(false);
-        setrefreshMenuBuilderData(!refreshMenuBuilderData);
+        setRefreshMenuBuilderData(!refreshMenuBuilderData);
         setisEditItem(false);
         setEditItemId(null);
         setisDuplicateItem(false);
@@ -1441,11 +1462,11 @@ const AddItemForm = () => {
 
           <div className="flex items-center justify-end">
             <CButton
+              className="w-full"
               variant={ButtonType.Primary}
               type="submit"
-              // disabled={!isSaveButtonEnabled}
             >
-              Save
+              Add
             </CButton>
           </div>
         </form>

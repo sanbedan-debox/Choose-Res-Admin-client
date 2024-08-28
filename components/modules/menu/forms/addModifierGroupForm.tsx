@@ -69,7 +69,7 @@ const AddModifierGroupForm = () => {
   // Global States
   const {
     refreshMenuBuilderData,
-    setrefreshMenuBuilderData,
+    setRefreshMenuBuilderData,
     setisAddModifierGroupModalOpen,
     setisAddModifierModalOpen,
   } = useMenuOptionsStore();
@@ -328,7 +328,17 @@ const AddModifierGroupForm = () => {
         parseFloat(data?.commonPrice?.toString())
       );
 
-      const updateInput: any = {
+      const updateInput: {
+        _id: string;
+        desc: string;
+        pricingType: PriceTypeEnum;
+        price: number;
+        minSelections: number;
+        maxSelections: number;
+        optional?: boolean;
+        multiSelect?: boolean;
+        name?: string;
+      } = {
         _id: editModGroupId || "",
         desc: data.desc || "",
 
@@ -399,7 +409,7 @@ const AddModifierGroupForm = () => {
       }
       setActionLoading(false);
       setisAddModifierGroupModalOpen(false);
-      setrefreshMenuBuilderData(!refreshMenuBuilderData);
+      setRefreshMenuBuilderData(!refreshMenuBuilderData);
 
       setisEditModGroup(false);
       setEditModGroupId(null);

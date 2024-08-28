@@ -10,7 +10,12 @@ import {
   reverseFormatAvailability,
 } from "@/components/common/timingAvailibility/interface";
 import AvailabilityComponent from "@/components/common/timingAvailibility/timingAvailibility";
-import { MenuTypeEnum, StatusEnum } from "@/generated/graphql";
+import {
+  AvailabilityInput,
+  MenuTypeEnum,
+  StatusEnum,
+  UpdateCategoryInput,
+} from "@/generated/graphql";
 import { initAvailability } from "@/lib/commonConstants";
 import useGlobalStore from "@/store/global";
 import useMenuCategoryStore from "@/store/menuCategory";
@@ -65,8 +70,8 @@ const AddCategoryForm = () => {
   // Global States
   const {
     refreshMenuBuilderData,
-    setrefreshMenuBuilderData,
-    setisAddCategoryModalOpen,
+    setRefreshMenuBuilderData,
+    setIsAddCategoryModalOpen,
     setisAddItemModalOpen,
   } = useMenuOptionsStore();
 
@@ -75,7 +80,7 @@ const AddCategoryForm = () => {
     isEditCats,
     isDuplicateCats,
     setisDuplicateCats,
-    setisEditCats,
+    setIsEditCats,
   } = useMenuCategoryStore();
 
   const { setEditItemId, setisEditItem } = useMenuItemsStore();
@@ -322,7 +327,17 @@ const AddCategoryForm = () => {
 
       const formattedAvailability = formatAvailability(availability);
 
-      const updateInput: any = {
+      const updateInput: {
+        _id: string;
+        availability?: AvailabilityInput[];
+        visibility?: {
+          menuType: MenuTypeEnum;
+          status: StatusEnum;
+        }[];
+        name?: string;
+        desc?: String;
+        status?: StatusEnum;
+      } = {
         _id: editCatsId || "",
         availability: formattedAvailability,
         visibility: visibilities,
@@ -386,10 +401,10 @@ const AddCategoryForm = () => {
             message: "Category Added Successfully",
           });
           setActionLoading(false);
-          setisAddCategoryModalOpen(false);
-          setrefreshMenuBuilderData(!refreshMenuBuilderData);
+          setIsAddCategoryModalOpen(false);
+          setRefreshMenuBuilderData(!refreshMenuBuilderData);
           setisDuplicateCats(false);
-          setisEditCats(false);
+          setIsEditCats(false);
           setEditItemId(null);
         }
       } else {
@@ -401,7 +416,7 @@ const AddCategoryForm = () => {
           }));
         if (hasChanges) {
           const resupdate = await sdk.updateCategory({
-            input: updateInput,
+            input: updateInput as UpdateCategoryInput,
           });
           if (resupdate.updateCategory)
             setToastData({
@@ -411,9 +426,9 @@ const AddCategoryForm = () => {
         }
         setActionLoading(false);
         setisDuplicateCats(false);
-        setisEditCats(false);
-        setisAddCategoryModalOpen(false);
-        setrefreshMenuBuilderData(!refreshMenuBuilderData);
+        setIsEditCats(false);
+        setIsAddCategoryModalOpen(false);
+        setRefreshMenuBuilderData(!refreshMenuBuilderData);
         setEditItemId(null);
       }
     } catch (error) {

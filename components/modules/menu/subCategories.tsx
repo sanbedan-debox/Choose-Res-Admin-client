@@ -98,7 +98,7 @@ const SubCategories: React.FC = () => {
   //       message: errorMessage,
   //     });
   //   } finally {
-  //     setisAddCategoryModalOpen(false);
+  //     setIsAddCategoryModalOpen(false);
   //   }
   // };
 
@@ -183,7 +183,7 @@ const SubCategories: React.FC = () => {
      
       {/* <ReusableModal
         isOpen={isAddCategoryModalOpen}
-        onClose={() => setisAddCategoryModalOpen(false)}
+        onClose={() => setIsAddCategoryModalOpen(false)}
         title={isEdit ? "Edit SubCategory" : "Add SubCategory"}
       >
         <div className="space-y-4">

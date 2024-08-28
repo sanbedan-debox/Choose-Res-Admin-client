@@ -42,7 +42,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
     fetchData();
   }, []);
-  const { isShowTaxSettings, setisShowTaxSettings } = useGlobalStore();
+  const { isShowTaxSettings, setIsShowTaxSettings } = useGlobalStore();
 
   const {
     setRestaurants,
@@ -53,7 +53,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   } = useRestaurantsStore();
   const [loading, setLoading] = useState(true);
   const handleCloseTaxSettings = () => {
-    setisShowTaxSettings(false);
+    setIsShowTaxSettings(false);
   };
 
   const { setTaxRate, taxRate } = useAuthStore();
@@ -69,14 +69,11 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   }) => {
     try {
       const currentFormValues = getValues();
-      const changedData: any = { _id: existingTaxRateId };
-
-      if (currentFormValues.name !== initialFormValues.name)
-        changedData.name = currentFormValues.name;
-
-      if (currentFormValues.salesTax !== initialFormValues.salesTax) {
-        changedData.salesTax = parseFloat(currentFormValues.salesTax);
-      }
+      const changedData: any = {
+        _id: existingTaxRateId,
+        name: currentFormValues.name,
+        salesTax: parseFloat(currentFormValues.salesTax),
+      };
       const hasChanges = Object.keys(changedData).length > 1;
 
       if (existingTaxRateId && hasChanges) {
@@ -103,7 +100,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         });
       }
       fetchUserRestaurants();
-      setisShowTaxSettings(false);
+      setIsShowTaxSettings(false);
     } catch (error) {
       console.error("Error submitting tax rate:", error);
       setToastData({ message: extractErrorMessage(error), type: "error" });

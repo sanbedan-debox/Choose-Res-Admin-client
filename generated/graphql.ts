@@ -2078,6 +2078,13 @@ export type RemoveItemFromCategoryMutationVariables = Exact<{
 
 export type RemoveItemFromCategoryMutation = { __typename?: 'Mutation', removeItemFromCategory: boolean };
 
+export type BulkUpdateCategoryMutationVariables = Exact<{
+  input: Array<UpdateBulkCategoryInput> | UpdateBulkCategoryInput;
+}>;
+
+
+export type BulkUpdateCategoryMutation = { __typename?: 'Mutation', bulkUpdateCategory: boolean };
+
 export type GetCsvHeadersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -2760,6 +2767,11 @@ export const UpdateCategoryDocument = gql`
 export const RemoveItemFromCategoryDocument = gql`
     mutation removeItemFromCategory($itemId: String!, $categoryId: String!) {
   removeItemFromCategory(categoryId: $categoryId, itemId: $itemId)
+}
+    `;
+export const BulkUpdateCategoryDocument = gql`
+    mutation bulkUpdateCategory($input: [UpdateBulkCategoryInput!]!) {
+  bulkUpdateCategory(input: $input)
 }
     `;
 export const GetCsvHeadersDocument = gql`
@@ -3489,6 +3501,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     removeItemFromCategory(variables: RemoveItemFromCategoryMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<RemoveItemFromCategoryMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<RemoveItemFromCategoryMutation>(RemoveItemFromCategoryDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'removeItemFromCategory', 'mutation', variables);
+    },
+    bulkUpdateCategory(variables: BulkUpdateCategoryMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<BulkUpdateCategoryMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<BulkUpdateCategoryMutation>(BulkUpdateCategoryDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'bulkUpdateCategory', 'mutation', variables);
     },
     getCSVHeaders(variables?: GetCsvHeadersQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetCsvHeadersQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetCsvHeadersQuery>(GetCsvHeadersDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getCSVHeaders', 'query', variables);

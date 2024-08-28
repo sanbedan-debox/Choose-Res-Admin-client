@@ -41,10 +41,10 @@ const MenuPage = ({ repo }: { repo?: UserRepo }) => {
     setisAddItemModalOpen,
     isAddCategoryModalOpen,
     isAddMenuModalOpen,
-    setisAddCategoryModalOpen,
-    setisAddMenuModalOpen,
+    setIsAddCategoryModalOpen,
+    setIsAddMenuModalOpen,
     refreshMenuBuilderData,
-    setrefreshMenuBuilderData,
+    setRefreshMenuBuilderData,
     isAddModifierGroupModalOpen,
     setisAddModifierGroupModalOpen,
     isAddModifierModalOpen,
@@ -56,51 +56,51 @@ const MenuPage = ({ repo }: { repo?: UserRepo }) => {
     useModGroupStore();
   const { seteditSubCategoryId, setisEditSubCategory } = useSubCategoryStore();
 
-  const { seteditCatsId, setisEditCats, setisDuplicateCats } =
+  const { setEditCatsId, setIsEditCats, setisDuplicateCats } =
     useMenuCategoryStore();
   const { setEditModId, setisEditMod, setisDuplicateMods } = useModStore();
-  const { setEditMenuId, setisEditMenu, setisDuplicateMenu } =
+  const { setEditMenuId, setisEditMenu, setIsDuplicateMenu } =
     useMenuMenuStore();
 
   const { setEditItemId, setisEditItem, setisDuplicateItem } =
     useMenuItemsStore();
   const handleAddMenuItemClose = () => {
     setisAddItemModalOpen(false);
-    setrefreshMenuBuilderData(!refreshMenuBuilderData);
+    setRefreshMenuBuilderData(!refreshMenuBuilderData);
     setisEditItem(false);
     setEditItemId(null);
     setisDuplicateItem(false);
   };
   const handleAddSubCategoryModalclose = () => {
     setisAddSubCategoryModalOpen(false);
-    setrefreshMenuBuilderData(!refreshMenuBuilderData);
+    setRefreshMenuBuilderData(!refreshMenuBuilderData);
     setisEditSubCategory(false);
     seteditSubCategoryId(null);
   };
   const handleAddMenuCategoryClose = () => {
-    setisAddCategoryModalOpen(false);
-    setrefreshMenuBuilderData(!refreshMenuBuilderData);
-    setisEditCats(false);
-    seteditCatsId(null);
+    setIsAddCategoryModalOpen(false);
+    setRefreshMenuBuilderData(!refreshMenuBuilderData);
+    setIsEditCats(false);
+    setEditCatsId(null);
     setisDuplicateCats(false);
   };
   const handleAddMenuClose = () => {
-    setisAddMenuModalOpen(false);
-    setrefreshMenuBuilderData(!refreshMenuBuilderData);
+    setIsAddMenuModalOpen(false);
+    setRefreshMenuBuilderData(!refreshMenuBuilderData);
     setisEditMenu(false);
-    setisDuplicateMenu(false);
+    setIsDuplicateMenu(false);
     setEditMenuId(null);
   };
   const handleAddModifierGroupClose = () => {
     setisAddModifierGroupModalOpen(false);
-    setrefreshMenuBuilderData(!refreshMenuBuilderData);
+    setRefreshMenuBuilderData(!refreshMenuBuilderData);
     setisEditModGroup(false);
     setisDuplicateModifierGroup(false);
     setEditModGroupId(null);
   };
   const handleAddModifierClose = () => {
     setisAddModifierModalOpen(false);
-    setrefreshMenuBuilderData(!refreshMenuBuilderData);
+    setRefreshMenuBuilderData(!refreshMenuBuilderData);
     setisEditMod(false);
     setisDuplicateMods(false);
     setEditModId(null);
@@ -220,14 +220,14 @@ const MenuPage = ({ repo }: { repo?: UserRepo }) => {
               });
             } else {
               setisAddModifierGroupModalOpen(false);
-              setrefreshMenuBuilderData(!refreshMenuBuilderData);
+              setRefreshMenuBuilderData(!refreshMenuBuilderData);
               setisEditModGroup(false);
               setisDuplicateModifierGroup(false);
               setEditModGroupId(null);
             }
           } else {
             setisAddModifierGroupModalOpen(false);
-            setrefreshMenuBuilderData(!refreshMenuBuilderData);
+            setRefreshMenuBuilderData(!refreshMenuBuilderData);
             setisEditModGroup(false);
             setisDuplicateModifierGroup(false);
             setEditModGroupId(null);

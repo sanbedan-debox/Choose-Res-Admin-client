@@ -19,7 +19,7 @@ const Categories: React.FC = () => {
     { name: string; desc: string; items: number; _id: string; status: string }[]
   >([]);
   const { setToastData } = useGlobalStore();
-  const { setisAddCategoryModalOpen, refreshMenuBuilderData } =
+  const { setIsAddCategoryModalOpen, refreshMenuBuilderData } =
     useMenuOptionsStore();
 
   const [tableLoading, setTableLoading] = useState(false);
@@ -91,21 +91,21 @@ const Categories: React.FC = () => {
     </div>
   );
 
-  const { seteditCatsId, setisEditCats, setisDuplicateCats } =
+  const { setEditCatsId, setIsEditCats, setisDuplicateCats } =
     useMenuCategoryStore();
 
   const handleEditCategory = (_id: string) => {
-    setisAddCategoryModalOpen(true);
-    seteditCatsId(_id);
-    setisEditCats(true);
+    setIsAddCategoryModalOpen(true);
+    setEditCatsId(_id);
+    setIsEditCats(true);
     setisDuplicateCats(false);
   };
 
   const handleDuplcateCategory = (_id: string) => {
-    setisAddCategoryModalOpen(true);
-    seteditCatsId(_id);
+    setIsAddCategoryModalOpen(true);
+    setEditCatsId(_id);
     setisDuplicateCats(true);
-    setisEditCats(false);
+    setIsEditCats(false);
   };
 
   const renderActions = (rowData: { _id: string }) => (
@@ -134,7 +134,7 @@ const Categories: React.FC = () => {
   const mainActions = [
     {
       label: "Add Category",
-      onClick: () => setisAddCategoryModalOpen(true),
+      onClick: () => setIsAddCategoryModalOpen(true),
     },
   ];
   const handleStatusCloseConfirmationModal = () => {
