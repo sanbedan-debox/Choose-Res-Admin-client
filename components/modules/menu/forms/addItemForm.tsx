@@ -636,14 +636,21 @@ const AddItemForm = () => {
         });
       } else {
         // EDIT/UPDATE ITEM API
-        await sdk.updateItem({
-          input: updateInput as UpdateItemInput,
-        });
-        isModAdded &&
-          (await sdk.addModifierGroupsToItem({
+        if (isModAdded.length > 0) {
+          const res = await sdk.addModifierGroupsToItem({
             modifierGroupId: isModAdded,
             itemId: editItemId || "",
-          }));
+          });
+          if (res && res.addModifierGroupsToItem) {
+            setToastData({
+              type: "success",
+              message: "Modifier Groups Added Successfully",
+            });
+          }
+        }
+        const res = await sdk.updateItem({
+          input: updateInput as UpdateItemInput,
+        });
 
         setActionloading(false);
         setIsAddItemModalOpen(false);

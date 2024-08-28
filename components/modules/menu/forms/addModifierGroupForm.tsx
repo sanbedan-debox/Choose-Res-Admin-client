@@ -396,7 +396,7 @@ const AddModifierGroupForm = () => {
           message: "Modifier Groups Added Successfully",
         });
       } else {
-        if (isMenuAdded) {
+        if (isMenuAdded.length > 0) {
           const res = await sdk.addModifierToGroup({
             modifierIds: isMenuAdded,
             modifierGroupId: editModGroupId || "",
@@ -406,11 +406,6 @@ const AddModifierGroupForm = () => {
               message: "Modifers Added Successfully",
               type: "success",
             });
-            setIsAddModifierGroupModalOpen(false);
-            setRefreshMenuBuilderData(!refreshMenuBuilderData);
-
-            setIsEditModGroup(false);
-            setEditModGroupId(null);
           }
         }
 
@@ -422,11 +417,6 @@ const AddModifierGroupForm = () => {
             message: "Modifer Groups Updated succesfully",
             type: "success",
           });
-          setIsAddModifierGroupModalOpen(false);
-          setRefreshMenuBuilderData(!refreshMenuBuilderData);
-
-          setIsEditModGroup(false);
-          setEditModGroupId(null);
         }
       }
 
@@ -434,6 +424,11 @@ const AddModifierGroupForm = () => {
         type: "success",
         message: "Modifier Groups Updated Successfully",
       });
+      setIsAddModifierGroupModalOpen(false);
+      setRefreshMenuBuilderData(!refreshMenuBuilderData);
+
+      setIsEditModGroup(false);
+      setEditModGroupId(null);
     } catch (error) {
       const errorMessage = extractErrorMessage(error);
       setToastData({
