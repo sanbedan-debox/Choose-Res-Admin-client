@@ -38,7 +38,7 @@ type UserRepo = {
 const MenuPage = ({ repo }: { repo?: UserRepo }) => {
   const {
     isAddItemModalOpen,
-    setisAddItemModalOpen,
+    setIsAddItemModalOpen,
     isAddCategoryModalOpen,
     isAddMenuModalOpen,
     setIsAddCategoryModalOpen,
@@ -56,18 +56,18 @@ const MenuPage = ({ repo }: { repo?: UserRepo }) => {
     useModGroupStore();
   const { seteditSubCategoryId, setisEditSubCategory } = useSubCategoryStore();
 
-  const { setEditCatsId, setIsEditCats, setisDuplicateCats } =
+  const { setEditCatsId, setIsEditCats, setIsDuplicateCats } =
     useMenuCategoryStore();
   const { setEditModId, setisEditMod, setisDuplicateMods } = useModStore();
   const { setEditMenuId, setisEditMenu, setIsDuplicateMenu } =
     useMenuMenuStore();
 
-  const { setEditItemId, setisEditItem, setisDuplicateItem } =
+  const { setEditItemId, setIsEditItem, setisDuplicateItem } =
     useMenuItemsStore();
   const handleAddMenuItemClose = () => {
-    setisAddItemModalOpen(false);
+    setIsAddItemModalOpen(false);
     setRefreshMenuBuilderData(!refreshMenuBuilderData);
-    setisEditItem(false);
+    setIsEditItem(false);
     setEditItemId(null);
     setisDuplicateItem(false);
   };
@@ -82,7 +82,7 @@ const MenuPage = ({ repo }: { repo?: UserRepo }) => {
     setRefreshMenuBuilderData(!refreshMenuBuilderData);
     setIsEditCats(false);
     setEditCatsId(null);
-    setisDuplicateCats(false);
+    setIsDuplicateCats(false);
   };
   const handleAddMenuClose = () => {
     setIsAddMenuModalOpen(false);

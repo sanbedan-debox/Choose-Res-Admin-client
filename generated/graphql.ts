@@ -2171,6 +2171,13 @@ export type GetAllItemOptionsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetAllItemOptionsQuery = { __typename?: 'Query', getAllItemOptions: Array<{ __typename?: 'ItemOption', type: ItemOptionsEnum, displayName: string, desc: string, _id: string }> };
 
+export type BulkUpdateItemMutationVariables = Exact<{
+  input: Array<UpdateBulkItemInput> | UpdateBulkItemInput;
+}>;
+
+
+export type BulkUpdateItemMutation = { __typename?: 'Mutation', bulkUpdateItem: boolean };
+
 export type GetActiveStatesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -2916,6 +2923,11 @@ export const GetAllItemOptionsDocument = gql`
   }
 }
     `;
+export const BulkUpdateItemDocument = gql`
+    mutation bulkUpdateItem($input: [UpdateBulkItemInput!]!) {
+  bulkUpdateItem(input: $input)
+}
+    `;
 export const GetActiveStatesDocument = gql`
     query getActiveStates {
   getActiveStates {
@@ -3543,6 +3555,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     getAllItemOptions(variables?: GetAllItemOptionsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetAllItemOptionsQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetAllItemOptionsQuery>(GetAllItemOptionsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getAllItemOptions', 'query', variables);
+    },
+    bulkUpdateItem(variables: BulkUpdateItemMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<BulkUpdateItemMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<BulkUpdateItemMutation>(BulkUpdateItemDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'bulkUpdateItem', 'mutation', variables);
     },
     getActiveStates(variables?: GetActiveStatesQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetActiveStatesQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetActiveStatesQuery>(GetActiveStatesDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getActiveStates', 'query', variables);

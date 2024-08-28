@@ -111,3 +111,7 @@ query getAllItemOptions {
     _id
   }
 }
+
+mutation bulkUpdateItem($input: [UpdateBulkItemInput!]!) {
+  bulkUpdateItem(input: $input)
+}

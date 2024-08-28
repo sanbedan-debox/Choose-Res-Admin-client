@@ -6,7 +6,7 @@ type MenuCatsState = {
   isEditCats: boolean;
   setIsEditCats: (open: boolean) => void;
   isDuplicateCats: boolean;
-  setisDuplicateCats: (open: boolean) => void;
+  setIsDuplicateCats: (open: boolean) => void;
 };
 
 const useMenuCategoryStore = create<MenuCatsState>((set) => ({
@@ -15,7 +15,7 @@ const useMenuCategoryStore = create<MenuCatsState>((set) => ({
   isEditCats: false,
   setIsEditCats: (open: boolean) => set({ isEditCats: open }),
   isDuplicateCats: false,
-  setisDuplicateCats: (open: boolean) => set({ isDuplicateCats: open }),
+  setIsDuplicateCats: (open: boolean) => set({ isDuplicateCats: open }),
 }));
 
 export default useMenuCategoryStore;

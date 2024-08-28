@@ -91,20 +91,20 @@ const Categories: React.FC = () => {
     </div>
   );
 
-  const { setEditCatsId, setIsEditCats, setisDuplicateCats } =
+  const { setEditCatsId, setIsEditCats, setIsDuplicateCats } =
     useMenuCategoryStore();
 
   const handleEditCategory = (_id: string) => {
     setIsAddCategoryModalOpen(true);
     setEditCatsId(_id);
     setIsEditCats(true);
-    setisDuplicateCats(false);
+    setIsDuplicateCats(false);
   };
 
   const handleDuplcateCategory = (_id: string) => {
     setIsAddCategoryModalOpen(true);
     setEditCatsId(_id);
-    setisDuplicateCats(true);
+    setIsDuplicateCats(true);
     setIsEditCats(false);
   };
 

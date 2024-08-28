@@ -118,7 +118,7 @@ const AddItemForm = () => {
   const {
     refreshMenuBuilderData,
     setRefreshMenuBuilderData,
-    setisAddItemModalOpen,
+    setIsAddItemModalOpen,
     setisAddModifierGroupModalOpen,
   } = useMenuOptionsStore();
   const {
@@ -126,7 +126,7 @@ const AddItemForm = () => {
     isEditItem,
     setEditItemId,
     setisDuplicateItem,
-    setisEditItem,
+    setIsEditItem,
     isDuplicateItem,
   } = useMenuItemsStore();
 
@@ -620,7 +620,7 @@ const AddItemForm = () => {
           modifierGroups: selectedItemsIds,
         });
         setActionloading(false);
-        setisAddItemModalOpen(false);
+        setIsAddItemModalOpen(false);
         setisDuplicateItem(false);
         setRefreshMenuBuilderData(!refreshMenuBuilderData);
         setEditItemId(null);
@@ -640,9 +640,9 @@ const AddItemForm = () => {
           }));
 
         setActionloading(false);
-        setisAddItemModalOpen(false);
+        setIsAddItemModalOpen(false);
         setRefreshMenuBuilderData(!refreshMenuBuilderData);
-        setisEditItem(false);
+        setIsEditItem(false);
         setEditItemId(null);
         setisDuplicateItem(false);
         setEditItemId(null);

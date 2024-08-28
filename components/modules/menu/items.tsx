@@ -26,7 +26,7 @@ const Items: React.FC = () => {
   );
 
   const { setToastData } = useGlobalStore();
-  const { setisAddItemModalOpen, refreshMenuBuilderData } =
+  const { setIsAddItemModalOpen, refreshMenuBuilderData } =
     useMenuOptionsStore();
   const [selectedItemId, setSelectedItemId] = useState<string>("");
   const [tableLoading, setTableLoading] = useState(false);
@@ -65,21 +65,21 @@ const Items: React.FC = () => {
     }
   };
 
-  const { setEditItemId, setisEditItem, setisDuplicateItem } =
+  const { setEditItemId, setIsEditItem, setisDuplicateItem } =
     useMenuItemsStore();
 
   const handleEditItem = (_id: string) => {
-    setisAddItemModalOpen(true);
+    setIsAddItemModalOpen(true);
     setEditItemId(_id);
-    setisEditItem(true);
+    setIsEditItem(true);
     setisDuplicateItem(false);
   };
 
   const handleDuplcateCategory = (_id: string) => {
-    setisAddItemModalOpen(true);
+    setIsAddItemModalOpen(true);
     setEditItemId(_id);
     setisDuplicateItem(true);
-    setisEditItem(false);
+    setIsEditItem(false);
   };
 
   useEffect(() => {
@@ -138,7 +138,7 @@ const Items: React.FC = () => {
   const mainActions = [
     {
       label: "Add Item",
-      onClick: () => setisAddItemModalOpen(true),
+      onClick: () => setIsAddItemModalOpen(true),
     },
   ];
   const [btnLoading, setBtnLoading] = useState(false);

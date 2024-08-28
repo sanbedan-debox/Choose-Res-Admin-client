@@ -1,4 +1,5 @@
 import AddFormDropdown from "@/components/common/addFormDropDown/addFormDropdown";
+import { DataItemFormAddTable } from "@/components/common/addFormDropDown/interface";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import CustomSwitchCard from "@/components/common/customSwitchCard/customSwitchCard";
@@ -10,6 +11,7 @@ import {
   reverseFormatAvailability,
 } from "@/components/common/timingAvailibility/interface";
 import AvailabilityComponent from "@/components/common/timingAvailibility/timingAvailibility";
+import Loader from "@/components/loader";
 import {
   AvailabilityInput,
   MenuTypeEnum,
@@ -26,6 +28,7 @@ import {
   extractErrorMessage,
   generateUniqueName,
   isValidNameAlphabetic,
+  roundOffPrice,
 } from "@/utils/utilFUncs";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -48,6 +51,11 @@ interface ListType {
   image: string;
   status: StatusEnum;
 }
+type ChangeItem = {
+  _id: string;
+  name?: string;
+  price?: number;
+};
 
 interface IModalState {
   showDeleteConfirmation: boolean;
@@ -72,18 +80,18 @@ const AddCategoryForm = () => {
     refreshMenuBuilderData,
     setRefreshMenuBuilderData,
     setIsAddCategoryModalOpen,
-    setisAddItemModalOpen,
+    setIsAddItemModalOpen,
   } = useMenuOptionsStore();
 
   const {
     editCatsId,
     isEditCats,
     isDuplicateCats,
-    setisDuplicateCats,
+    setIsDuplicateCats,
     setIsEditCats,
   } = useMenuCategoryStore();
 
-  const { setEditItemId, setisEditItem } = useMenuItemsStore();
+  const { setEditItemId, setIsEditItem } = useMenuItemsStore();
 
   const { setToastData } = useGlobalStore();
 
@@ -131,10 +139,6 @@ const AddCategoryForm = () => {
     }[]
   >([]);
 
-  const [useRestaurantTimings, setUseRestaurantTimings] = useState(
-    isEditCats ? false : true
-  );
-
   // API calls
   useEffect(() => {
     const fetchData = async () => {
@@ -147,7 +151,6 @@ const AddCategoryForm = () => {
 
   useEffect(() => {
     // Fetch all the items for this restaurant
-
     const fetch = async () => {
       setLoading(true);
       try {
@@ -160,6 +163,7 @@ const AddCategoryForm = () => {
           });
           return;
         }
+
         const items: ListType[] = response.getItems.map((el) => ({
           _id: el._id.toString(),
           name: el.name.toString(),
@@ -218,7 +222,10 @@ const AddCategoryForm = () => {
         );
       }
     } catch (error) {
-      console.error("Error fetching menu data:", error);
+      setToastData({
+        type: "error",
+        message: extractErrorMessage(error),
+      });
     }
   };
 
@@ -228,6 +235,7 @@ const AddCategoryForm = () => {
       setLoading(true);
       try {
         const response = await sdk.getCategory({ id: editCatsId });
+
         if (!response || !response.getCategory) {
           setToastData({
             message:
@@ -236,6 +244,7 @@ const AddCategoryForm = () => {
           });
           return;
         }
+
         const category = response.getCategory;
 
         const formattedAvailability =
@@ -270,10 +279,9 @@ const AddCategoryForm = () => {
           items: selected,
         });
       } catch (error) {
-        const errorMessage = extractErrorMessage(error);
         setToastData({
           type: "error",
-          message: errorMessage,
+          message: extractErrorMessage(error),
         });
       } finally {
         setLoading(false);
@@ -304,16 +312,15 @@ const AddCategoryForm = () => {
   };
 
   const onSubmit = async (data: IFormInput) => {
+    setActionLoading(true);
     try {
-      if (!isDuplicateCats) {
-        if (!isValidNameAlphabetic(data.name)) {
-          setToastData({
-            message:
-              "Please use only alphabets and numbers while adding or updating name.",
-            type: "error",
-          });
-          return;
-        }
+      if (!isValidNameAlphabetic(data.name)) {
+        setToastData({
+          message:
+            "Please use only alphabets and numbers while adding or updating name.",
+          type: "error",
+        });
+        return;
       }
 
       if (data?.description?.length <= 20 || data?.description?.length >= 120) {
@@ -377,6 +384,7 @@ const AddCategoryForm = () => {
         });
         return;
       }
+
       if (statusSub !== categoryData?.status) {
         updateInput.status = statusSub;
         hasChanges = true;
@@ -403,29 +411,38 @@ const AddCategoryForm = () => {
           setActionLoading(false);
           setIsAddCategoryModalOpen(false);
           setRefreshMenuBuilderData(!refreshMenuBuilderData);
-          setisDuplicateCats(false);
+          setIsDuplicateCats(false);
           setIsEditCats(false);
           setEditItemId(null);
         }
       } else {
         // EDIT CATEGORIES
-        addedItemsList &&
-          (await sdk.addItemsToCategory({
+        if (addedItemsList.length > 0) {
+          const res = await sdk.addItemsToCategory({
             itemId: addedItemsList,
             categoryId: editCatsId || "",
-          }));
+          });
+          if (res && res.addItemsToCategory) {
+            setToastData({
+              type: "success",
+              message: "Item Added Succesfully",
+            });
+          }
+        }
+
         if (hasChanges) {
           const resupdate = await sdk.updateCategory({
             input: updateInput as UpdateCategoryInput,
           });
-          if (resupdate.updateCategory)
+
+          if (resupdate && resupdate.updateCategory)
             setToastData({
               type: "success",
               message: "Category Updated Successfully",
             });
         }
         setActionLoading(false);
-        setisDuplicateCats(false);
+        setIsDuplicateCats(false);
         setIsEditCats(false);
         setIsAddCategoryModalOpen(false);
         setRefreshMenuBuilderData(!refreshMenuBuilderData);
@@ -530,43 +547,97 @@ const AddCategoryForm = () => {
   };
 
   const handleEditItem = (id: string) => {
-    setisAddItemModalOpen(true);
+    setIsAddItemModalOpen(true);
     setEditItemId(id);
-    setisEditItem(true);
+    setIsEditItem(true);
   };
 
   const handleRemoveCategory = async () => {
-    setSelectedList((prevSelected) =>
-      prevSelected.filter((item) => item._id !== modalStates.selectedId)
-    );
+    try {
+      const isPresentInPrevItems = categoryData?.items?.some(
+        (item) => item._id === modalStates.selectedId
+      );
 
-    const isPresentInPrevItems = categoryData?.items?.some(
-      (item) => item._id === modalStates.selectedId
-    );
-    if (isEditCats && isPresentInPrevItems) {
-      const res = await sdk.removeItemFromCategory({
-        itemId: modalStates.selectedId,
-        categoryId: editCatsId ?? "",
-      });
-      if (res) {
-        setCategoryData((prevCategoryData) =>
-          prevCategoryData
-            ? {
-                ...prevCategoryData,
-                items: prevCategoryData.items.filter(
-                  (item) => item._id !== modalStates.selectedId
-                ),
-              }
-            : prevCategoryData
-        );
+      if (isEditCats && isPresentInPrevItems) {
+        const res = await sdk.removeItemFromCategory({
+          itemId: modalStates.selectedId,
+          categoryId: editCatsId ?? "",
+        });
+        if (res && res.removeItemFromCategory) {
+          setSelectedList((prevSelected) =>
+            prevSelected.filter((item) => item._id !== modalStates.selectedId)
+          );
+
+          setCategoryData((prevCategoryData) =>
+            prevCategoryData
+              ? {
+                  ...prevCategoryData,
+                  items: prevCategoryData.items.filter(
+                    (item) => item._id !== modalStates.selectedId
+                  ),
+                }
+              : prevCategoryData
+          );
+          setModalStates((prev) => ({
+            ...prev,
+            showDeleteConfirmation: false,
+            selectedId: "",
+          }));
+        }
       }
+    } catch (error) {
+      setToastData({
+        type: "error",
+        message: extractErrorMessage(error),
+      });
     }
+  };
 
-    setModalStates((prev) => ({
-      ...prev,
-      showDeleteConfirmation: false,
-      selectedId: "",
-    }));
+  const handleSave = async (updatedData: DataItemFormAddTable[]) => {
+    const selectedItemsMap = new Map(
+      selectedList.map((item) => [item._id, item])
+    );
+
+    const changedData: ChangeItem[] = updatedData.reduce(
+      (acc: ChangeItem[], item) => {
+        const selectedItem = selectedItemsMap.get(item._id);
+        if (selectedItem) {
+          // Check for changes in price or name
+          const changes: ChangeItem = { _id: item._id };
+          if (selectedItem.price !== item.price) {
+            changes.price = roundOffPrice(parseFloat(item.price.toString()));
+          }
+          if (selectedItem.name !== item.name) {
+            changes.name = item.name;
+          }
+          if (Object.keys(changes).length > 1) {
+            acc.push(changes);
+          }
+        }
+        return acc;
+      },
+      []
+    );
+
+    try {
+      const res = await sdk.bulkUpdateItem({ input: changedData });
+      if (res && res.bulkUpdateItem) {
+        // Update the state with the new data
+        setSelectedList(updatedData as ListType[]);
+
+        // Show success toast
+        setToastData({
+          message: "Modifier groups updated successfully",
+          type: "success",
+        });
+      }
+    } catch (error) {
+      // Show error toast
+      setToastData({
+        message: extractErrorMessage(error),
+        type: "error",
+      });
+    }
   };
 
   // Table Configs
@@ -623,6 +694,7 @@ const AddCategoryForm = () => {
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.3 }}
     >
+      {loading && <Loader />}
       <form
         className="space-y-4 md:space-y-3 w-full "
         onSubmit={handleSubmit(onSubmit)}
@@ -682,6 +754,7 @@ const AddCategoryForm = () => {
             emptyMessage="No items available"
             buttonText="Add Items"
             onAddClick={handleAddClick}
+            onSave={handleSave}
           />
           <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
             The Items on your category (eg. Pizza,Burger,Chocolate Cake).
@@ -746,7 +819,7 @@ const AddCategoryForm = () => {
             type="button"
             className="text-sm text-primary flex items-center cursor-pointer"
             onClick={async () => {
-              setUseRestaurantTimings(!useRestaurantTimings);
+              fetchRestoTiming();
             }}
           >
             <span className=" hover:underline">
@@ -788,7 +861,7 @@ const AddCategoryForm = () => {
         createLabel="Create new category"
         addLabel="Add selected categories"
         createClickHandler={() => {
-          setisAddItemModalOpen(true);
+          setIsAddItemModalOpen(true);
         }}
         addHandler={handleAddItems}
       />

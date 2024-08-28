@@ -298,10 +298,7 @@ const AddMenuForm = () => {
           });
         }
       } else {
-        const res = await sdk.updateMenu({
-          input: updateInput,
-        });
-        if (res && res.updateMenu && isMenuAdded.length > 0) {
+        if (isMenuAdded.length > 0) {
           const res = await sdk.addCategoriesToMenu({
             categoryId: isMenuAdded,
             menuId: editMenuId || "",
@@ -312,7 +309,12 @@ const AddMenuForm = () => {
               message: "Category Added Successfully",
             });
           }
-        } else {
+        }
+
+        const res = await sdk.updateMenu({
+          input: updateInput,
+        });
+        if (res && res.updateMenu) {
           setToastData({
             type: "success",
             message: "Menu Updated Successfully",
