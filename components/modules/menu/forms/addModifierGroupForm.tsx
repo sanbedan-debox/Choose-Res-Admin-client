@@ -428,6 +428,7 @@ const AddModifierGroupForm = () => {
 
       setSelectedList((prev) => [...prev, ...newSelections]);
     }
+    setModalStates((prev) => ({ ...prev, showAddNewModal: false }));
   };
 
   const handleEditItem = (id: string) => {
@@ -459,11 +460,19 @@ const AddModifierGroupForm = () => {
         modifierGroupId: editModGroupId ?? "",
         modifierId: modalStates.selectedId,
       });
-      // if (res) {
-      //   setprevItemsbfrEdit((prevSelected) =>
-      //     prevSelected.filter((item) => item._id !== removingId)
-      //   );
-      // }
+      if (res) {
+        // Update modifierData by removing the modifier with selectedId
+        setModifierData((prevModifierData) =>
+          prevModifierData
+            ? {
+                ...prevModifierData,
+                modifiers: prevModifierData.modifiers.filter(
+                  (item) => item.id !== modalStates.selectedId
+                ),
+              }
+            : prevModifierData
+        );
+      }
     }
     setModalStates((prev) => ({
       ...prev,

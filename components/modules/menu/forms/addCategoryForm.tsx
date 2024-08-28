@@ -437,6 +437,7 @@ const AddCategoryForm = () => {
 
       setSelectedList((prev) => [...prev, ...newSelections]);
     }
+    setModalStates((prev) => ({ ...prev, showAddNewModal: false }));
   };
 
   const handleToggleSwitch = () => {
@@ -533,15 +534,19 @@ const AddCategoryForm = () => {
         categoryId: editCatsId ?? "",
       });
       if (res) {
-        const oldItems = categoryData?.items.filter(
-          (item) => item._id !== modalStates.selectedId
+        setCategoryData((prevCategoryData) =>
+          prevCategoryData
+            ? {
+                ...prevCategoryData,
+                items: prevCategoryData.items.filter(
+                  (item) => item._id !== modalStates.selectedId
+                ),
+              }
+            : prevCategoryData
         );
-
-        // setprevItemsbfrEdit((prevSelected) =>
-        //   prevSelected.filter((item) => item._id !== removingId)
-        // );
       }
     }
+
     setModalStates((prev) => ({
       ...prev,
       showDeleteConfirmation: false,

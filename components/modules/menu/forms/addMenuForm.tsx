@@ -334,18 +334,27 @@ const AddMenuForm = () => {
         categoryId: modalStates.selectedId,
         menuId: editMenuId || "",
       });
-      // if (res) {
-      //   setprevItemsbfrEdit((prevSelected) =>
-      //     prevSelected.filter((item) => item._id !== removingId)
-      //   );
-      // }
     }
+
+    // Removed from menu data
+    if (isPresentInPrevItems) {
+      setMenuData((prevMenuData) =>
+        prevMenuData
+          ? {
+              ...prevMenuData,
+              categories: prevMenuData.categories.filter(
+                (item) => item._id !== modalStates.selectedId
+              ),
+            }
+          : prevMenuData
+      );
+    }
+
     setModalStates((prev) => ({
       ...prev,
       showDeleteConfirmation: false,
       selectedId: "",
     }));
-    // modalStates.showDeleteConfirmation(false);
   };
 
   const handleEditCategory = (id: string) => {
@@ -363,6 +372,8 @@ const AddMenuForm = () => {
 
       setSelectedList((prev) => [...prev, ...newSelections]);
     }
+    setModalStates((prev) => ({ ...prev, showAddNewModal: false }));
+
   };
 
   const handleSave = (updatedData: DataItemFormAddTable[]) => {

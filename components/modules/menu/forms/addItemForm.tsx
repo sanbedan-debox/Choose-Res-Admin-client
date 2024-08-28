@@ -10,7 +10,12 @@ import {
   reverseFormatAvailability,
 } from "@/components/common/timingAvailibility/interface";
 import AvailabilityComponent from "@/components/common/timingAvailibility/timingAvailibility";
-import { ItemOptionsEnum, MenuTypeEnum, StatusEnum } from "@/generated/graphql";
+import {
+  ItemOptionsEnum,
+  MenuTypeEnum,
+  PriceTypeEnum,
+  StatusEnum,
+} from "@/generated/graphql";
 import { initAvailability } from "@/lib/commonConstants";
 import useGlobalStore from "@/store/global";
 import useMenuItemsStore from "@/store/menuItems";
@@ -142,8 +147,20 @@ const AddItemForm = () => {
   const [masterList, setMasterList] = useState<ListType[]>([]);
 
   // Local States
+  const [itemData, setItemData] = useState<{
+    _id: string;
+    name: string;
+    desc: string;
+    price: number;
+    orderLimit: number;
+    status: string;
+    modifierGroup: {
+      id: string;
+      name: string;
+      pricingType: PriceTypeEnum;
+    }[];
+  } | null>(null);
 
-  const [itemData, setItemData] = useState<any>([]);
   const [showAddsubCategory, setisShowAddsubCategory] =
     useState<boolean>(false);
   const [options, setOptions] = useState<IOption[]>([]);
@@ -216,7 +233,15 @@ const AddItemForm = () => {
             options,
             subCategory,
           } = response.getItem;
-          setItemData(response.getItem);
+          setItemData({
+            _id: editItemId ?? "",
+            name,
+            desc,
+            price,
+            status,
+            orderLimit: orderLimit ?? 0,
+            modifierGroup,
+          });
           const nameDup = generateUniqueName(name);
           setValue("name", name);
           if (isDuplicateItem) {
@@ -737,7 +762,7 @@ const AddItemForm = () => {
       prevSelected.filter((item) => item._id !== modalStates.selectedId)
     );
 
-    const isPresentInPrevItems = itemData?.categories?.some(
+    const isPresentInPrevItems = itemData?.modifierGroup?.some(
       (item: any) => item._id === modalStates.selectedId
     );
     if (isEditItem && isPresentInPrevItems) {
@@ -750,6 +775,19 @@ const AddItemForm = () => {
       //     prevSelected.filter((item) => item._id !== removingId)
       //   );
       // }
+      if (res) {
+        // Update itemData by removing the modifier group with selectedId
+        setItemData((prevItemData) =>
+          prevItemData
+            ? {
+                ...prevItemData,
+                modifierGroup: prevItemData.modifierGroup.filter(
+                  (item) => item.id !== modalStates.selectedId
+                ),
+              }
+            : prevItemData
+        );
+      }
     }
     setModalStates((prev) => ({
       ...prev,
@@ -767,6 +805,7 @@ const AddItemForm = () => {
 
       setSelectedList((prev) => [...prev, ...newSelections]);
     }
+    setModalStates((prev) => ({ ...prev, showAddNewModal: false }));
   };
 
   const handleEditItem = (id: string) => {

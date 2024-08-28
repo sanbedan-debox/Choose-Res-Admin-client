@@ -25,19 +25,7 @@ interface CategoryType {
 }
 
 const AddSubCategoryForm = () => {
-  const { setToastData } = useGlobalStore();
-
-  const [categoriesOption, setCategoryOptions] = useState<CategoryType[]>([]);
-
-  const [btnLoading, setBtnLoading] = useState(false);
-  const {
-    isEditSubCategory,
-    seteditSubCategoryId,
-    editSubCategoryId,
-    setisDuplicateSubCategory,
-    setisEditSubCategory,
-    isDuplicateSubCategory,
-  } = useSubCategoryStore();
+  // Config
   const {
     handleSubmit,
     formState: { errors },
@@ -45,14 +33,37 @@ const AddSubCategoryForm = () => {
     setValue,
     register,
   } = useForm<IFormInput>();
+
+  // Global State
   const {
-    isAddSubCategoryModalOpen,
+    isEditSubCategory,
+    editSubCategoryId,
+    setisDuplicateSubCategory,
+    setisEditSubCategory,
+    isDuplicateSubCategory,
+  } = useSubCategoryStore();
+
+  const {
     setisAddSubCategoryModalOpen,
     setrefreshMenuBuilderData,
     refreshMenuBuilderData,
   } = useMenuOptionsStore();
-  const [changesSubCat, setChangesSubCat] = useState({});
 
+  const { setToastData } = useGlobalStore();
+
+  // Loading states
+  const [actionLoading, setActionLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  // Edit states
+
+  const [subCategoryData, setSubCategoryData] = useState<{
+    _id: string;
+    name: string;
+    desc: string;
+  } | null>(null);
+
+  // API Calls
   useEffect(() => {
     const fetchSubCategory = async () => {
       if (editSubCategoryId) {
@@ -60,7 +71,6 @@ const AddSubCategoryForm = () => {
           const response = await sdk.getSubCategory({ id: editSubCategoryId });
           if (response && response.getSubCategory) {
             const { name, desc } = response.getSubCategory;
-            setChangesSubCat(response.getSubCategory);
 
             const nameDup = generateUniqueName(name);
             setValue("name", name);
@@ -68,7 +78,7 @@ const AddSubCategoryForm = () => {
               setValue("name", nameDup);
             }
             setValue("desc", desc);
-            setChangesMenu(response.getSubCategory);
+            setSubCategoryData(response.getSubCategory);
           }
         } catch (error) {
           const errorMessage = extractErrorMessage(error);
@@ -80,12 +90,12 @@ const AddSubCategoryForm = () => {
       }
     };
     fetchSubCategory();
-  }, [editSubCategoryId, setValue, setToastData, categoriesOption]);
-  const [changesMenu, setChangesMenu] = useState<any>({});
+  }, [editSubCategoryId, setValue, setToastData]);
 
+  // Handler functions
   const onSubmit = async (data: IFormInput) => {
     try {
-      setBtnLoading(true);
+      setActionLoading(true);
       const updateInput: any = {
         id: editSubCategoryId || "",
       };
@@ -106,10 +116,10 @@ const AddSubCategoryForm = () => {
         return;
       }
 
-      if (data.name !== changesMenu?.name) {
+      if (data.name !== subCategoryData?.name) {
         updateInput.name = data.name;
       }
-      if (data.desc !== changesMenu?.desc) {
+      if (data.desc !== subCategoryData?.desc) {
         updateInput.desc = data.desc;
       }
       if (!isEditSubCategory) {
@@ -132,17 +142,17 @@ const AddSubCategoryForm = () => {
           message: "Sub-Category Updated Successfully",
         });
         setisAddSubCategoryModalOpen(false);
-        setBtnLoading(false);
+        setActionLoading(false);
       }
 
-      setBtnLoading(false);
+      setActionLoading(false);
       setrefreshMenuBuilderData(!refreshMenuBuilderData);
       setisDuplicateSubCategory(false);
       setisEditSubCategory(false);
 
       setisAddSubCategoryModalOpen(false);
     } catch (error) {
-      setBtnLoading(false);
+      setActionLoading(false);
       const errorMessage = extractErrorMessage(error);
       setToastData({
         type: "error",
@@ -201,7 +211,7 @@ const AddSubCategoryForm = () => {
         </div>
 
         <CButton
-          loading={btnLoading}
+          loading={actionLoading}
           variant={ButtonType.Primary}
           type="submit"
           className="w-full mt-8"
