@@ -453,6 +453,7 @@ const CsvUploadForm = () => {
           subCategories,
           items,
         });
+        console.log({ categories, subCategories, items });
       }
       setisLoading(false);
     } catch (error) {

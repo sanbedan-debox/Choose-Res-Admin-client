@@ -97,8 +97,6 @@ const AddItemForm = () => {
   const {
     handleSubmit: handleAddSubSubmit,
     formState: { errors: subCateErrors },
-    control: subCateControl,
-    setValue: setSubCateValue,
     register: subCateRegister,
     // getValues,
   } = useForm<IFormSubCatInput>({});
@@ -240,6 +238,7 @@ const AddItemForm = () => {
             options,
             subCategory,
           } = response.getItem;
+
           setItemData({
             _id: editItemId ?? "",
             name,
@@ -266,15 +265,6 @@ const AddItemForm = () => {
 
           setVisibilities(visibility);
           setPricingOptions(priceOptions);
-
-          let selectedIds = modifierGroup.map((e) => e.id.toString());
-          console.log(selectedIds);
-          console.log(masterList);
-          let selected = masterList.filter((e) =>
-            selectedIds.includes(e._id.toString())
-          );
-          console.log(selected);
-          setSelectedList(selected);
 
           setPreviewUrl(image || "");
           const formattedOptions: IOption[] = options.map(
@@ -305,6 +295,14 @@ const AddItemForm = () => {
               value: subCategory?.name ?? "",
             });
           }
+          let selectedIds = modifierGroup.map((e) => e.id.toString());
+          console.log("Selected", selectedIds);
+          console.log("Master List", masterList);
+          let selected = masterList.filter((e) =>
+            selectedIds.includes(e._id.toString())
+          );
+          console.log(selected);
+          setSelectedList(selected);
         }
       } catch (error) {
         const errorMessage = extractErrorMessage(error);
@@ -352,6 +350,10 @@ const AddItemForm = () => {
       });
     }
   };
+
+  useEffect(() => {
+    console.log("MastersList Changed", masterList);
+  }, [masterList]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -425,6 +427,7 @@ const AddItemForm = () => {
               )
           );
           setMasterList(filteredItemsList);
+          console.log("Masters Fetched", filteredItemsList);
         }
       } catch (error) {
         const errorMessage = extractErrorMessage(error);
@@ -435,7 +438,7 @@ const AddItemForm = () => {
       }
     };
     fetch();
-  }, [refreshMenuBuilderData, setToastData, selectedList]);
+  }, [refreshMenuBuilderData]);
 
   useEffect(() => {
     if (visibilities.length === 1) {
@@ -1532,7 +1535,7 @@ const AddItemForm = () => {
 
           <div className="flex items-center justify-end">
             <CButton
-              className="w-full"
+              className="w-full mt-2"
               variant={ButtonType.Primary}
               type="submit"
             >

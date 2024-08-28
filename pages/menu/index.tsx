@@ -2,6 +2,7 @@ import ArrowCard from "@/components/common/arrowCard/arrowCard";
 import ReusableModal from "@/components/common/modal/modal";
 import QuickActions from "@/components/common/quickLinks/quickLink";
 import MainLayout from "@/components/layouts/mainBodyLayout";
+import CloverPullForm from "@/components/modules/aggregator/clover/forms/cloverPullForm";
 import CsvUploadForm from "@/components/modules/menu/forms/csvUploadForm";
 import { PermissionTypeEnum, UserStatus } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
@@ -9,7 +10,7 @@ import { sdk } from "@/utils/graphqlClient";
 import { hasAccess } from "@/utils/hasAccess";
 import { redirectPathFromStatus } from "@/utils/redirectPathFromStatus";
 import { GetServerSideProps } from "next";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useMenuPageStore from "../../store/menuStore";
 
 type NextPageWithLayout = React.FC & {
@@ -25,8 +26,11 @@ type UserRepo = {
 
 const Menu: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
   const { setSelectedMenu } = useGlobalStore();
-
+  // const { isCloverConnected } = useAuthStore();
+  const isCloverConnected = true;
   const { isShowUploadCSV, setisShowUploadCSV } = useMenuPageStore();
+
+  const [isShowCloverModal, setIsShowCloverModal] = useState(false);
 
   useEffect(() => {
     setSelectedMenu("dashboard");
@@ -44,11 +48,18 @@ const Menu: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
           <ArrowCard
             title="Have Clover?"
             caption="Pull your menu from Clover!"
-            href={`https://sandbox.dev.clover.com/oauth/v2/authorize?client_id=${
-              process.env.NEXT_PUBLIC_CLOVER_APP_ID
-            }&redirect_uri=${encodeURIComponent(
-              `${process.env.NEXT_PUBLIC_DOMAIN}/clover-connection?redirectUri=false`
-            )}`}
+            onClick={
+              isCloverConnected ? () => setIsShowCloverModal(true) : undefined
+            }
+            href={
+              !isCloverConnected
+                ? `https://sandbox.dev.clover.com/oauth/v2/authorize?client_id=${
+                    process.env.NEXT_PUBLIC_CLOVER_APP_ID
+                  }&redirect_uri=${encodeURIComponent(
+                    `${process.env.NEXT_PUBLIC_DOMAIN}/clover-connection?redirectUri=false`
+                  )}`
+                : undefined
+            }
           />
           <ArrowCard
             title="Upload CSV"
@@ -67,6 +78,14 @@ const Menu: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
         title="Upload CSV"
       >
         <CsvUploadForm />
+      </ReusableModal>
+      <ReusableModal
+        width="md"
+        isOpen={isShowCloverModal}
+        onClose={() => setIsShowCloverModal(false)}
+        title="Clover Menu Pull"
+      >
+        <CloverPullForm />
       </ReusableModal>
     </div>
   );
