@@ -1,5 +1,4 @@
 import AddFormDropdown from "@/components/common/addFormDropDown/addFormDropdown";
-import { DataItemFormAddTable } from "@/components/common/addFormDropDown/interface";
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import CountSelector from "@/components/common/countSelector/countSelector";
@@ -7,6 +6,7 @@ import CustomSwitchCard from "@/components/common/customSwitchCard/customSwitchC
 import ReusableModal from "@/components/common/modal/modal";
 import FormAddTable from "@/components/common/table/formTable";
 import { PriceTypeEnum } from "@/generated/graphql";
+import { PricingTypeOptions } from "@/lib/menuBuilderConstants";
 import useGlobalStore from "@/store/global";
 import useMenuOptionsStore from "@/store/menuOptions";
 import useModGroupStore from "@/store/modifierGroup";
@@ -36,43 +36,37 @@ interface IFormInput {
   commonPrice: number;
   desc: string;
 }
-interface ItemsDropDownType {
+interface ListType {
   _id: string;
   name: string;
   price: number;
+  image: string;
 }
-type ChangeItem = {
-  _id: string;
-  name?: string;
-  price?: number;
-};
+
+interface IModalState {
+  showDeleteConfirmation: boolean;
+  showAddNewModal: boolean;
+  selectedId: string;
+  showConfirmationModal: boolean;
+}
 
 const AddModifierGroupForm = () => {
-  const [modifierssOption, setModifiersOption] = useState<any[]>([]);
-  const [confirmationRemoval, setConfirmationRemoval] = useState(false);
-  const [remmovingId, setRemovingId] = useState<string>("");
-  const [btnLoading, setBtnLoading] = useState(false);
-  const { setToastData } = useGlobalStore();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [tempSelectedItems, setTempSelectedItems] = useState<
-    ItemsDropDownType[]
-  >([]);
-  const [selectedItems, setSelectedItems] = useState<any[]>([]);
-  const [changesMenu, setChangesMenu] = useState<any>([]);
-  const [minSelection, setMinSelection] = useState(0);
-  const [maxSelection, setMaxSelection] = useState(1);
+  // Config
+  const {
+    handleSubmit,
+    formState: { errors },
+    control,
+    setValue,
+    watch,
+    register,
+  } = useForm<IFormInput>({
+    defaultValues: {
+      maxSelections: 1,
+      minSelections: 0,
+    },
+  });
 
-  const { setEditModId, setisEditMod } = useModStore();
-
-  const [prevItemsbfrEdit, setprevItemsbfrEdit] = useState<ItemsDropDownType[]>(
-    []
-  );
-  const PricingTypeOptions: any[] = [
-    { value: PriceTypeEnum.FreeOfCharge, label: "Free of Charge" },
-    { value: PriceTypeEnum.IndividualPrice, label: "Individual Price" },
-    { value: PriceTypeEnum.SamePrice, label: "Same Price" },
-  ];
-
+  // Global States
   const {
     refreshMenuBuilderData,
     setrefreshMenuBuilderData,
@@ -91,62 +85,91 @@ const AddModifierGroupForm = () => {
     setModifiersLength,
   } = useModGroupStore();
 
-  const {
-    handleSubmit,
-    formState: { errors },
-    control,
-    setValue,
-    watch,
-    register,
-  } = useForm<IFormInput>({
-    defaultValues: {
-      maxSelections: 1,
-      minSelections: 0,
-    },
-  });
+  const { setToastData } = useGlobalStore();
 
-  useEffect(() => {
-    if (selectedItems.length > 0) {
-      setModifiersOption((prevItemsOption) =>
-        prevItemsOption.filter(
-          (item) =>
-            !selectedItems.some((selectedItem) => selectedItem._id === item._id)
-        )
-      );
-    }
-  }, [isModalOpen, selectedItems, refreshMenuBuilderData, tempSelectedItems]);
+  const { setEditModId, setisEditMod } = useModStore();
 
+  // Modal States
+  const initModalState: IModalState = {
+    showDeleteConfirmation: false,
+    showAddNewModal: false,
+    selectedId: "",
+    showConfirmationModal: false,
+  };
+
+  const [modalStates, setModalStates] = useState<IModalState>(initModalState);
+
+  // Local States
+  const [masterList, setMasterList] = useState<ListType[]>([]);
+  const [selectedList, setSelectedList] = useState<ListType[]>([]);
+
+  // Loading States
+  const [loading, setLoading] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
+
+  const [modifierData, setModifierData] = useState<{
+    _id: string;
+    name: string;
+    price: number;
+    modifiers: { id: string; name: string; price: number }[];
+    maxSelections: number;
+    minSelections: number;
+    desc: string;
+    pricingType: PriceTypeEnum;
+    optional: boolean;
+    multiSelect: boolean;
+  } | null>(null);
+
+  const [minSelection, setMinSelection] = useState(0);
+  const [maxSelection, setMaxSelection] = useState(1);
+
+  // Api Call
   useEffect(() => {
     const fetch = async () => {
-      try {
-        const items = await sdk.getModifiersforGroupDropDown();
-        if (items && items.getModifiers) {
-          const formattedItemsList = items.getModifiers.map(
-            (item: { _id: string; name: string; price: number }) => ({
-              _id: item?._id,
-              name: item?.name,
-              price: item?.price,
-            })
-          );
-          const filteredItemsList = formattedItemsList.filter(
-            (item: { _id: string }) =>
-              !selectedItems.some(
-                (selectedItem) => selectedItem._id === item._id
-              )
-          );
+      setLoading(true);
 
-          setModifiersOption(filteredItemsList);
+      try {
+        const response = await sdk.getModifiersforGroupDropDown();
+        if (!response || !response.getModifiers) {
+          setToastData({
+            message:
+              "Something went wrong while fetching the menu details, please try again!",
+            type: "error",
+          });
+          return;
         }
+
+        const categories: ListType[] = response.getModifiers.map((el) => ({
+          _id: el._id.toString(),
+          name: el.name.toString(),
+          price: el.price,
+          image: "",
+        }));
+
+        setMasterList(categories);
+
+        // Update selected list
+        let sl = [...selectedList];
+        for (let i = 0; i < categories.length; i++) {
+          const category = categories[i];
+          let idx = selectedList.findIndex((e) => e._id === category._id);
+          if (idx >= 0) {
+            sl[idx].name = category.name;
+          }
+        }
+        setSelectedList(sl);
       } catch (error) {
         const errorMessage = extractErrorMessage(error);
         setToastData({
           type: "error",
           message: errorMessage,
         });
+      } finally {
+        setLoading(false);
       }
     };
     fetch();
-  }, [refreshMenuBuilderData, setToastData, selectedItems]);
+  }, [refreshMenuBuilderData]);
 
   useEffect(() => {
     const fetchItemData = async () => {
@@ -165,13 +188,24 @@ const AddModifierGroupForm = () => {
               optional,
               multiSelect,
             } = response.getModifierGroup;
-            setChangesMenu(response.getModifierGroup);
 
-            setValue("name", name);
-            const nameDup = generateUniqueName(name);
-            if (isDuplicateModifierGroup) {
-              setValue("name", nameDup);
-            }
+            setModifierData({
+              _id: editModGroupId,
+              name,
+              maxSelections,
+              minSelections,
+              desc,
+              price,
+              pricingType,
+              optional,
+              multiSelect,
+              modifiers,
+            });
+
+            setValue(
+              "name",
+              isDuplicateModifierGroup ? generateUniqueName(name) : name
+            );
 
             setValue("minSelections", minSelections);
             setValue("maxSelections", maxSelections);
@@ -189,19 +223,17 @@ const AddModifierGroupForm = () => {
               "pricingType",
               selectedPriceType || PriceTypeEnum.FreeOfCharge
             );
-            const formateditemlist = modifiers.map(
-              (el: { id: string; name: string; price: number }) => ({
-                _id: el?.id,
-                name: el?.name ?? "",
-                price: el?.price ?? "",
-              })
+
+            // Set selected list
+            let selectedIds = modifiers.map((e) => e.id.toString());
+            let selected = masterList.filter((e) =>
+              selectedIds.includes(e._id.toString())
             );
+
             setMaxSelectionsCount(maxSelections);
             setMinSelectionsCount(minSelections);
-            setModifiersLength(formateditemlist.length || 0);
-            setSelectedItems(formateditemlist || []);
-            setTempSelectedItems(formateditemlist);
-            setprevItemsbfrEdit(formateditemlist);
+            setModifiersLength(selected.length || 0);
+            setSelectedList(selected);
           }
         } catch (error) {
           const errorMessage = extractErrorMessage(error);
@@ -214,11 +246,19 @@ const AddModifierGroupForm = () => {
     };
 
     fetchItemData();
-  }, [editModGroupId, setValue, setToastData]);
+  }, [editModGroupId, isEditModGroup, isDuplicateModifierGroup, masterList]);
+
+  // Helper Functions
+
+  useEffect(() => {
+    setModifiersLength(selectedList.length || 0);
+  }, [selectedList, watch("minSelections"), watch("maxSelections")]);
+
+  // Handler Functions
 
   const onSubmit = async (data: IFormInput) => {
     try {
-      setBtnLoading(true);
+      setActionLoading(true);
 
       if (!isDuplicateModifierGroup) {
         if (!isValidNameAlphabetic(data.name)) {
@@ -246,7 +286,7 @@ const AddModifierGroupForm = () => {
       if (data?.desc?.length <= 20 || data?.desc?.length >= 120) {
         setToastData({
           message:
-            "Modifier Group Description should be between 60 to 120 characters",
+            "Modifier Group Description should be between 20 to 120 characters",
           type: "error",
         });
         return;
@@ -258,14 +298,15 @@ const AddModifierGroupForm = () => {
       const parsedOptionalBoolean = data.optional ? true : false;
       const parsedMultiSelectBoolean = data.multiSelect ? true : false;
       parseFloat(data?.minSelections?.toString()) || 0;
-      const prevSelectedMenuIds = await prevItemsbfrEdit.map(
-        (item) => item._id
-      );
-      const selectedItemsIds = await selectedItems.map((item) => item._id);
 
-      const addedMenuIds = selectedItemsIds.filter(
-        (id) => !prevSelectedMenuIds.includes(id)
+      const prevSelectedMenuIds = modifierData?.modifiers?.map(
+        (item) => item.id
       );
+      const selectedItemsIds = selectedList.map((item) => item._id);
+      const isMenuAdded = selectedItemsIds.filter(
+        (id) => !prevSelectedMenuIds?.includes(id)
+      );
+
       if (parsedMaxSelection < parsedMinSelection) {
         setToastData({
           type: "error",
@@ -274,26 +315,7 @@ const AddModifierGroupForm = () => {
         return;
       }
 
-      if (selectedItems?.length < parsedMinSelection) {
-        setToastData({
-          type: "error",
-          message: `You need to add Minimum ${parsedMinSelection} Modifiers`,
-        });
-        return;
-      }
-
-      const addedMenuItems = selectedItems
-        .filter((item) => !prevSelectedMenuIds.includes(item._id))
-        .map((item) => ({
-          id: item._id,
-          price:
-            data.pricingType?.value === PriceTypeEnum.IndividualPrice
-              ? item.price
-              : 0,
-        }));
-
-      const isMenuAdded = addedMenuItems.length > 0;
-      setBtnLoading(true);
+      setActionLoading(true);
       if (selectedItemsIds.length === 0) {
         setToastData({
           type: "error",
@@ -322,24 +344,19 @@ const AddModifierGroupForm = () => {
       };
       let hasChanges = false;
 
-      if (data.name !== changesMenu?.name) {
+      if (data.name !== modifierData?.name) {
         updateInput.name = data.name;
         hasChanges = true;
       }
 
-      if (data.optional !== changesMenu?.optional) {
+      if (data.optional !== modifierData?.optional) {
         updateInput.optional = data.optional;
         hasChanges = true;
       }
-      if (data.multiSelect !== changesMenu?.multiSelect) {
+      if (data.multiSelect !== modifierData?.multiSelect) {
         updateInput.multiSelect = data.multiSelect;
         hasChanges = true;
       }
-
-      // if (data?.commonPrice !== changesMenu?.price) {
-      //   updateInput.price.value = parsedPriceCommon || 0;
-      //   hasChanges = true;
-      // }
 
       if (!isEditModGroup) {
         await sdk.addModifierGroup({
@@ -367,7 +384,7 @@ const AddModifierGroupForm = () => {
       } else {
         isMenuAdded &&
           (await sdk.addModifierToGroup({
-            modifierIds: addedMenuIds,
+            modifierIds: isMenuAdded,
             modifierGroupId: editModGroupId || "",
           }));
         await sdk.updateModifierGroup({
@@ -380,7 +397,7 @@ const AddModifierGroupForm = () => {
         //     modifierGroupId: editModGroupId || "",
         //   }));
       }
-      setBtnLoading(false);
+      setActionLoading(false);
       setisAddModifierGroupModalOpen(false);
       setrefreshMenuBuilderData(!refreshMenuBuilderData);
 
@@ -398,26 +415,19 @@ const AddModifierGroupForm = () => {
         message: errorMessage,
       });
     } finally {
-      setBtnLoading(false);
+      setActionLoading(false);
     }
   };
 
-  const handleAddItem = () => {
-    setisAddModifierModalOpen(true);
-  };
+  const handleAddModifiers = (idsList: string[]) => {
+    // Set selected list
+    if (masterList.length > 0) {
+      let newSelections = masterList.filter((e) =>
+        idsList.includes(e._id.toString())
+      );
 
-  const handleAddItems = () => {
-    setSelectedItems([]);
-    setSelectedItems(tempSelectedItems);
-    setIsModalOpen(false);
-  };
-
-  const handleItemClick = (item: any) => {
-    setTempSelectedItems((prevSelected) =>
-      prevSelected.some((selectedItem) => selectedItem._id === item._id)
-        ? prevSelected.filter((i) => i._id !== item._id)
-        : [...prevSelected, item]
-    );
+      setSelectedList((prev) => [...prev, ...newSelections]);
+    }
   };
 
   const handleEditItem = (id: string) => {
@@ -426,13 +436,55 @@ const AddModifierGroupForm = () => {
     setisEditMod(true);
   };
 
+  const handleMinCountChange = (count: number) => {
+    setValue("minSelections", count);
+    setMinSelectionsCount(count);
+  };
+
+  const handleMaxCountChange = (count: number) => {
+    setValue("maxSelections", count);
+    setMaxSelectionsCount(count);
+  };
+
+  const handleRemoveModifiers = async () => {
+    setSelectedList((prevSelected) =>
+      prevSelected.filter((item) => item._id !== modalStates.selectedId)
+    );
+
+    const isPresentInPrevItems = modifierData?.modifiers?.some(
+      (item) => item.id === modalStates.selectedId
+    );
+    if (isEditModGroup && isPresentInPrevItems) {
+      const res = await sdk.removeModifierFromGroup({
+        modifierGroupId: editModGroupId ?? "",
+        modifierId: modalStates.selectedId,
+      });
+      // if (res) {
+      //   setprevItemsbfrEdit((prevSelected) =>
+      //     prevSelected.filter((item) => item._id !== removingId)
+      //   );
+      // }
+    }
+    setModalStates((prev) => ({
+      ...prev,
+      showDeleteConfirmation: false,
+      selectedId: "",
+    }));
+    // modalStates.showDeleteConfirmation(false);
+  };
+
+  // Table Configs
+
   const renderActions = (rowData: { _id: string }) => (
     <div className="flex space-x-2 justify-center">
       <IoIosCloseCircleOutline
         className="text-red-400 text-lg cursor-pointer"
         onClick={() => {
-          setConfirmationRemoval(true);
-          setRemovingId(rowData?._id);
+          setModalStates((prev) => ({
+            ...prev,
+            showDeleteConfirmation: true,
+            selectedId: rowData._id,
+          }));
         }}
       />
       <MdArrowOutward
@@ -442,12 +494,7 @@ const AddModifierGroupForm = () => {
     </div>
   );
 
-  const data = selectedItems.map((item) => ({
-    ...item,
-    actions: renderActions(item),
-  }));
-
-  const headings =
+  const listHeadings =
     watch("pricingType")?.value === PriceTypeEnum.IndividualPrice
       ? [
           { title: "Price", dataKey: "price" },
@@ -455,7 +502,7 @@ const AddModifierGroupForm = () => {
         ]
       : [{ title: "Actions", dataKey: "name", render: renderActions }];
 
-  const headingsDropdown =
+  const masterListHeadings =
     watch("pricingType")?.value === PriceTypeEnum.IndividualPrice
       ? [
           { title: "Price", dataKey: "price" },
@@ -486,109 +533,6 @@ const AddModifierGroupForm = () => {
             ),
           },
         ];
-
-  const handleMinCountChange = (count: number) => {
-    setValue("minSelections", count);
-    setMinSelectionsCount(count);
-  };
-
-  const handleMaxCountChange = (count: number) => {
-    setValue("maxSelections", count);
-    setMaxSelectionsCount(count);
-  };
-
-  const handleRemoveModifiers = async () => {
-    setSelectedItems((prevSelected) =>
-      prevSelected.filter((item) => item._id !== remmovingId)
-    );
-
-    setTempSelectedItems((prevSelected) =>
-      prevSelected.filter((item) => item._id !== remmovingId)
-    );
-    const isPresentInPrevItems = prevItemsbfrEdit.some(
-      (item) => item._id === remmovingId
-    );
-    if (isEditModGroup && isPresentInPrevItems) {
-      const res = await sdk.removeModifierFromGroup({
-        modifierId: remmovingId,
-        modifierGroupId: editModGroupId || "",
-      });
-      if (res) {
-        setprevItemsbfrEdit((prevSelected) =>
-          prevSelected.filter((item) => item._id !== remmovingId)
-        );
-      }
-    }
-    setConfirmationRemoval(false);
-  };
-
-  useEffect(() => {
-    setModifiersLength(selectedItems.length || 0);
-  }, [selectedItems, watch("minSelections"), watch("maxSelections")]);
-
-  const handleAddClick = () => {
-    setIsModalOpen(true);
-  };
-  useEffect(() => {
-    if (selectedItems.length > 0) {
-      setModifiersOption((prevItemsOption) =>
-        prevItemsOption.filter(
-          (item) =>
-            !selectedItems.some((selectedItem) => selectedItem._id === item._id)
-        )
-      );
-    }
-  }, [isModalOpen, selectedItems, refreshMenuBuilderData]);
-  const handleSave = async (updatedData: DataItemFormAddTable[]) => {
-    const selectedItemsMap = new Map(
-      selectedItems.map((item) => [item._id, item])
-    );
-
-    const changedData: ChangeItem[] = updatedData.reduce(
-      (acc: ChangeItem[], item) => {
-        const selectedItem = selectedItemsMap.get(item._id);
-        if (selectedItem) {
-          // Check for changes in price or name
-          const changes: ChangeItem = { _id: item._id };
-          if (selectedItem.price !== item.price) {
-            changes.price = roundOffPrice(parseFloat(item.price.toString()));
-          }
-          if (selectedItem.name !== item.name) {
-            changes.name = item.name;
-          }
-          if (Object.keys(changes).length > 1) {
-            acc.push(changes);
-          }
-        }
-        return acc;
-      },
-      []
-    );
-
-    // Log the formatted data
-    console.log("Formatted Data:", changedData);
-
-    // Call the API with the formatted data
-    try {
-      const res = await sdk.bulkUpdateModifiers({ input: changedData });
-      if (res && res.bulkUpdateModifiers) {
-        // Update the state with the new data
-        setSelectedItems(updatedData as ItemsDropDownType[]);
-
-        // Show success toast
-        setToastData({
-          message: "Modifiers updated successfully",
-          type: "success",
-        });
-      }
-    } catch (error) {
-      // Show error toast
-      setToastData({
-        message: extractErrorMessage(error),
-        type: "error",
-      });
-    }
-  };
 
   return (
     <motion.div
@@ -767,15 +711,16 @@ const AddModifierGroupForm = () => {
 
           <div>
             <FormAddTable
-              data={data}
+              data={selectedList}
+              headings={listHeadings}
               isShowImage
-              headings={headings}
               title="Modifiers"
               emptyCaption="No Modifiers added,Add Now"
               emptyMessage="No Modifiers available"
               buttonText="Add Modifiers"
-              onAddClick={handleAddClick}
-              onSave={handleSave}
+              onAddClick={() =>
+                setModalStates((prev) => ({ ...prev, showAddNewModal: true }))
+              }
             />
             <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
               Modifiers allow customers to customize an item (eg. Pepperoni,No
@@ -784,7 +729,7 @@ const AddModifierGroupForm = () => {
           </div>
 
           <CButton
-            loading={btnLoading}
+            loading={actionLoading}
             variant={ButtonType.Primary}
             type="submit"
           >
@@ -800,32 +745,40 @@ const AddModifierGroupForm = () => {
 
           <AddFormDropdown
             title="Add Modifers"
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-            data={modifierssOption}
-            tempSelectedItems={tempSelectedItems}
-            addSelectedItemsButtonLabel="Add Selected Modifiers"
-            createNewItemButtonLabel="Create New Modifier"
-            handleItemClick={handleItemClick}
-            handleAddItems={handleAddItems}
-            headings={headingsDropdown}
-            renderActions={renderActions}
-            onClickCreatebtn={handleAddItem}
+            isOpen={modalStates.showAddNewModal}
+            onClose={() =>
+              setModalStates((prev) => ({ ...prev, showAddNewModal: false }))
+            }
+            data={masterList.filter(
+              (e) => !selectedList.map((el) => el._id).includes(e._id)
+            )}
+            addLabel="Add Selected Modifiers"
+            createLabel="Create New Modifier"
+            addHandler={handleAddModifiers}
+            headings={masterListHeadings}
+            createClickHandler={() => {
+              setisAddModifierModalOpen(true);
+            }}
           />
         </div>
       </form>
+
+      {/* REMOVING MODIFIERS MODAL */}
       <ReusableModal
-        isOpen={confirmationRemoval}
+        isOpen={modalStates.showDeleteConfirmation}
         onClose={() => {
-          setConfirmationRemoval(false);
-          setRemovingId("");
+          setModalStates((prev) => ({
+            ...prev,
+            showDeleteConfirmation: false,
+            selectedId: "",
+          }));
         }}
         title="Are you sure?"
         comments="By clicking yes the selected Modifier / Modifiers will be removed from this category. This action cannot be undone."
       >
         <div className="flex justify-end space-x-4">
           <CButton
-            loading={btnLoading}
+            loading={actionLoading}
             variant={ButtonType.Primary}
             onClick={() => handleRemoveModifiers()}
           >

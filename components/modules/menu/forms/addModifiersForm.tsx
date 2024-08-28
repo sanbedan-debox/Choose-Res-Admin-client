@@ -41,6 +41,7 @@ interface ItemOption {
 }
 
 const AddModifierForm = () => {
+  // Configs
   const {
     handleSubmit,
     formState: { errors },
@@ -49,13 +50,14 @@ const AddModifierForm = () => {
     watch,
     register,
   } = useForm<IFormInput>({ defaultValues: { preSelect: false } });
-  const [changesModifiers, setChangesModifiers] = useState<any | null>(null);
 
+  // Global States
   const {
     refreshMenuBuilderData,
     setrefreshMenuBuilderData,
     setisAddModifierModalOpen,
   } = useMenuOptionsStore();
+
   const {
     editModId,
     isEditMod,
@@ -64,17 +66,35 @@ const AddModifierForm = () => {
     setisDuplicateMods,
     isDuplicateMods,
   } = useModStore();
-  const [btnLoading, setBtnLoading] = useState(false);
+
   const { setToastData } = useGlobalStore();
+
+  // Modal States
+  const [showItemModal, setShowItemModal] = useState(false);
+
+  // Loading States
+  const [loading, setLoading] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
+
+  // Local States
+  const [modifierData, setModifierData] = useState<{
+    _id: string;
+    name: string;
+    desc: string;
+    price: number;
+    preSelect: boolean;
+  } | null>(null);
 
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const [isItemFromMenu, setIsItemFromMenu] = useState(false);
-  const [showItemModal, setShowItemModal] = useState(false);
   const [itemOptions, setItemOptions] = useState<ItemOption[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedItem, setSelectedItem] = useState<ItemOption | null>(null);
+  // Edit States
+  // API Callls
+  // Helper Functions
+  // Handler Functions
 
   // const [items, setItems] = useState([]);
 
@@ -115,12 +135,16 @@ const AddModifierForm = () => {
         const response = await sdk.getModifier({ id: editModId });
         if (response && response.getModifier) {
           const { name, desc, preSelect, isItem, price } = response.getModifier;
-          setChangesModifiers(response.getModifier);
-          setValue("name", name);
-          const nameDup = generateUniqueName(name);
-          if (isDuplicateMods) {
-            setValue("name", nameDup);
-          }
+          setModifierData({
+            _id: editModId,
+            name,
+            desc,
+            preSelect,
+            price,
+          });
+
+          setValue("name", isDuplicateMods ? generateUniqueName(name) : name);
+
           setValue("desc", desc);
           setValue("preSelect", preSelect);
           setValue("isItemFromMenu", isItem);
@@ -139,7 +163,6 @@ const AddModifierForm = () => {
 
   useEffect(() => {
     fetchItems();
-
     fetchModData();
   }, [editModId, setValue, setToastData]);
 
@@ -173,27 +196,27 @@ const AddModifierForm = () => {
     let updateInput: any = { _id: editModId || "" };
     let hasChanges = false;
 
-    if (data.name !== changesModifiers?.name) {
+    if (data.name !== modifierData?.name) {
       updateInput.name = data.name;
       hasChanges = true;
     }
-    if (data.desc !== changesModifiers?.desc) {
+    if (data.desc !== modifierData?.desc) {
       updateInput.desc = data.desc;
       hasChanges = true;
     }
 
-    if (data.price !== changesModifiers?.price) {
+    if (data.price !== modifierData?.price) {
       updateInput.price = parsedPrice;
       hasChanges = true;
     }
 
-    if (data.preSelect !== changesModifiers?.preSelect) {
+    if (data.preSelect !== modifierData?.preSelect) {
       updateInput.preSelect = data.preSelect;
       hasChanges = true;
     }
 
     try {
-      setBtnLoading(true);
+      setActionLoading(true);
       const imgUrl = await handleLogoUpload();
 
       if (!isEditMod) {
@@ -240,7 +263,7 @@ const AddModifierForm = () => {
         message: errorMessage,
       });
     } finally {
-      setBtnLoading(false);
+      setActionLoading(false);
     }
   };
 
@@ -486,7 +509,7 @@ const AddModifierForm = () => {
             )}
           </div>
           <CButton
-            loading={btnLoading}
+            loading={actionLoading}
             variant={ButtonType.Primary}
             type="submit"
             // className="px-6 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
@@ -532,7 +555,6 @@ const AddModifierForm = () => {
 
                     const selectedPrice = onlineOrderingPrice ?? item.price;
 
-                    setSelectedItem(item);
                     setValue("name", item.name);
                     setValue("price", selectedPrice);
                     setValue("desc", item.desc);

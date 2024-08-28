@@ -638,6 +638,8 @@ const AddMenuForm = () => {
         }}
         addHandler={handleAddCategoriesToMenu}
       />
+
+      {/* Removal Modall */}
       <ReusableModal
         isOpen={modalStates.showDeleteConfirmation}
         onClose={() => {

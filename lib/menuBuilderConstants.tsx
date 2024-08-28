@@ -1,4 +1,4 @@
-import { MenuTypeEnum } from "@/generated/graphql";
+import { MenuTypeEnum, PriceTypeEnum } from "@/generated/graphql";
 
 export const formatMenuType = (type: MenuTypeEnum) => {
   switch (type) {
@@ -23,4 +23,10 @@ export const menuTypeOptions: any[] = [
     value: MenuTypeEnum.Catering,
     label: formatMenuType(MenuTypeEnum.Catering),
   },
+];
+
+export const PricingTypeOptions: any[] = [
+  { value: PriceTypeEnum.FreeOfCharge, label: "Free of Charge" },
+  { value: PriceTypeEnum.IndividualPrice, label: "Individual Price" },
+  { value: PriceTypeEnum.SamePrice, label: "Same Price" },
 ];

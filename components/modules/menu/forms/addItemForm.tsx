@@ -44,12 +44,6 @@ interface IFormInput {
   } | null;
 }
 
-type ChangeItem = {
-  _id: string;
-  name?: string;
-  price?: number;
-};
-
 interface IOption {
   type: string;
   _id: string;
@@ -61,11 +55,6 @@ interface IOption {
 interface IFormSubCatInput {
   name: string;
   desc: string;
-}
-
-interface ItemsDropDownType {
-  _id: string;
-  name: string;
 }
 
 interface ListType {
@@ -165,12 +154,6 @@ const AddItemForm = () => {
 
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionloading] = useState(false);
-
-  const [itemsOption, setItemsOption] = useState<ItemsDropDownType[]>([]);
-
-  const [tempSelectedItems, setTempSelectedItems] = useState<
-    ItemsDropDownType[]
-  >([]);
 
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -410,8 +393,7 @@ const AddItemForm = () => {
                 (selectedItem) => selectedItem._id === item._id
               )
           );
-
-          setItemsOption(filteredItemsList);
+          setMasterList(filteredItemsList);
         }
       } catch (error) {
         const errorMessage = extractErrorMessage(error);
@@ -806,7 +788,7 @@ const AddItemForm = () => {
               onClick={() => {
                 setModalStates((prev) => ({
                   ...prev,
-                  showConfirmationModal: true,
+                  showDeleteConfirmation: true,
                   selectedId: rowData?._id,
                 }));
               }}
