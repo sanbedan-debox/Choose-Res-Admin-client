@@ -150,7 +150,7 @@ const CsvUploadForm = () => {
 
       const items: {
         category: string;
-        categoryDesc: string;
+        categoryDesc: string | null;
         subCategory: string | null;
         subCategoryDesc: string | null;
         itemName: string;
@@ -203,7 +203,7 @@ const CsvUploadForm = () => {
           issues.add("Category contains invalid characters.");
           rowError = true;
         }
-        if (invalidStringCellValue(categoryDesc.toString())) {
+        if (categoryDesc && invalidStringCellValue(categoryDesc.toString())) {
           issues.add("Category Description contains invalid characters.");
           rowError = true;
         }

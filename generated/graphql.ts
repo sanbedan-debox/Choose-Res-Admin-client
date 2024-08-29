@@ -44,7 +44,7 @@ export type AddAdminInput = {
 
 export type AddCategoryInput = {
   availability?: InputMaybe<Array<AvailabilityInput>>;
-  desc: Scalars['String']['input'];
+  desc?: InputMaybe<Scalars['String']['input']>;
   items?: InputMaybe<Array<Scalars['String']['input']>>;
   name: Scalars['String']['input'];
   status: StatusEnum;
@@ -81,7 +81,7 @@ export type AddEmailTemplateInput = {
 
 export type AddItemInput = {
   availability?: InputMaybe<Array<AvailabilityInput>>;
-  desc?: InputMaybe<Scalars['String']['input']>;
+  desc: Scalars['String']['input'];
   image?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
   options?: Array<OptionsInput>;
@@ -108,7 +108,7 @@ export type AddMenuInput = {
 };
 
 export type AddModifierGroupInput = {
-  desc: Scalars['String']['input'];
+  desc?: InputMaybe<Scalars['String']['input']>;
   maxSelections: Scalars['Float']['input'];
   minSelections: Scalars['Float']['input'];
   multiSelect: Scalars['Boolean']['input'];
@@ -119,7 +119,7 @@ export type AddModifierGroupInput = {
 };
 
 export type AddModifierInput = {
-  desc: Scalars['String']['input'];
+  desc?: InputMaybe<Scalars['String']['input']>;
   isItem: Scalars['Boolean']['input'];
   name: Scalars['String']['input'];
   preSelect: Scalars['Boolean']['input'];
@@ -138,7 +138,7 @@ export type AddStateInput = {
 };
 
 export type AddSubCategoryInput = {
-  desc: Scalars['String']['input'];
+  desc?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
 };
 
@@ -278,7 +278,7 @@ export type Category = {
   _id: Scalars['ID']['output'];
   availability?: Maybe<Array<Availability>>;
   createdAt: Scalars['DateTimeISO']['output'];
-  desc: Scalars['String']['output'];
+  desc?: Maybe<Scalars['String']['output']>;
   items: Array<ItemInfo>;
   menu?: Maybe<Array<Menu>>;
   name: Scalars['String']['output'];
@@ -299,9 +299,50 @@ export type CategoryInfo = {
   status: StatusEnum;
 };
 
+export type CloverCategories = {
+  __typename?: 'CloverCategories';
+  id: Scalars['String']['output'];
+  items: Array<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  status: Scalars['Boolean']['output'];
+};
+
 export type CloverConnectionInput = {
   authCode: Scalars['String']['input'];
   merchantId: Scalars['String']['input'];
+};
+
+export type CloverInventory = {
+  __typename?: 'CloverInventory';
+  categories: Array<CloverCategories>;
+  items: Array<CloverItems>;
+  modifierGroups: Array<CloverModifierGroups>;
+  modifiers: Array<CloverModifiers>;
+};
+
+export type CloverItems = {
+  __typename?: 'CloverItems';
+  id: Scalars['String']['output'];
+  modifierGroups: Array<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  price: Scalars['Float']['output'];
+  status: Scalars['Boolean']['output'];
+};
+
+export type CloverModifierGroups = {
+  __typename?: 'CloverModifierGroups';
+  id: Scalars['String']['output'];
+  maxRequired?: Maybe<Scalars['Float']['output']>;
+  minRequired?: Maybe<Scalars['Float']['output']>;
+  modifiers: Array<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+};
+
+export type CloverModifiers = {
+  __typename?: 'CloverModifiers';
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  price: Scalars['Float']['output'];
 };
 
 export type Config = {
@@ -585,7 +626,7 @@ export type ItemSubCategory = {
 };
 
 export type ItemSubCategoryInput = {
-  desc: Scalars['String']['input'];
+  desc?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
 };
@@ -641,7 +682,7 @@ export type Modifier = {
   __typename?: 'Modifier';
   _id: Scalars['ID']['output'];
   createdAt: Scalars['DateTimeISO']['output'];
-  desc: Scalars['String']['output'];
+  desc?: Maybe<Scalars['String']['output']>;
   isItem: Scalars['Boolean']['output'];
   modifierGroup?: Maybe<Array<ModifierGroup>>;
   name: Scalars['String']['output'];
@@ -657,7 +698,7 @@ export type ModifierGroup = {
   __typename?: 'ModifierGroup';
   _id: Scalars['ID']['output'];
   createdAt: Scalars['DateTimeISO']['output'];
-  desc: Scalars['String']['output'];
+  desc?: Maybe<Scalars['String']['output']>;
   item?: Maybe<Array<Item>>;
   maxSelections: Scalars['Float']['output'];
   minSelections: Scalars['Float']['output'];
@@ -684,7 +725,7 @@ export type ModifierGroupInfo = {
 export type ModifierInfo = {
   __typename?: 'ModifierInfo';
   _id: Modifier;
-  desc: Scalars['String']['output'];
+  desc?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
   isItem: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
@@ -1212,6 +1253,7 @@ export type Query = {
   deleteTeamMember: Scalars['Boolean']['output'];
   disable2FA: Scalars['Boolean']['output'];
   enable2FA: Scalars['String']['output'];
+  fetchCloverInventory: CloverInventory;
   getActiveCuisines: Array<Cuisine>;
   getActiveStates: Array<State>;
   getActiveTimezones: Array<Timezone>;
@@ -1250,9 +1292,9 @@ export type Query = {
   getUser?: Maybe<User>;
   getUsersForTarget: Scalars['Float']['output'];
   getWaitListUsers: Array<WaitListUser>;
+  isCloverConnected: Scalars['Boolean']['output'];
   me: Admin;
   meUser?: Maybe<User>;
-  pullCloverData: Scalars['Boolean']['output'];
   rejectUserDetails: Scalars['Boolean']['output'];
   restaurantDetails: Restaurant;
   restaurantOnboardingData: Restaurant;
@@ -1610,7 +1652,7 @@ export type SubCategory = {
   __typename?: 'SubCategory';
   _id: Scalars['ID']['output'];
   createdAt: Scalars['DateTimeISO']['output'];
-  desc: Scalars['String']['output'];
+  desc?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   restaurantId: Restaurant;
   updatedAt: Scalars['DateTimeISO']['output'];
@@ -1964,6 +2006,16 @@ export type GetAllIntegrationsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetAllIntegrationsQuery = { __typename?: 'Query', getAllIntegrations: Array<{ __typename?: 'Integration', _id: string, platform: IntegrationPlatformEnum, connectionStatus: IntegrationConnectionStatusEnum }> };
 
+export type FetchCloverInventoryQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type FetchCloverInventoryQuery = { __typename?: 'Query', fetchCloverInventory: { __typename?: 'CloverInventory', categories: Array<{ __typename?: 'CloverCategories', id: string, name: string, status: boolean, items: Array<string> }>, items: Array<{ __typename?: 'CloverItems', id: string, name: string, price: number, status: boolean, modifierGroups: Array<string> }>, modifierGroups: Array<{ __typename?: 'CloverModifierGroups', id: string, name: string, minRequired?: number | null, maxRequired?: number | null, modifiers: Array<string> }>, modifiers: Array<{ __typename?: 'CloverModifiers', id: string, name: string, price: number }> } };
+
+export type IsCloverConnectedQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type IsCloverConnectedQuery = { __typename?: 'Query', isCloverConnected: boolean };
+
 export type UserLogoutQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -2042,7 +2094,7 @@ export type AddItemsToCategoryMutation = { __typename?: 'Mutation', addItemsToCa
 export type GetCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCategoriesQuery = { __typename?: 'Query', getCategories: Array<{ __typename?: 'Category', _id: string, name: string, desc: string, status: StatusEnum, items: Array<{ __typename?: 'ItemInfo', name?: string | null, _id: { __typename?: 'Item', _id: string } }> }> };
+export type GetCategoriesQuery = { __typename?: 'Query', getCategories: Array<{ __typename?: 'Category', _id: string, name: string, desc?: string | null, status: StatusEnum, items: Array<{ __typename?: 'ItemInfo', name?: string | null, _id: { __typename?: 'Item', _id: string } }> }> };
 
 export type GetItemsForCategoryDropdownQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2061,7 +2113,7 @@ export type GetCategoryQueryVariables = Exact<{
 }>;
 
 
-export type GetCategoryQuery = { __typename?: 'Query', getCategory: { __typename?: 'Category', _id: string, name: string, desc: string, status: StatusEnum, createdAt: any, updatedAt: any, items: Array<{ __typename?: 'ItemInfo', id: string, name?: string | null, image?: string | null, price: number, status: StatusEnum, _id: { __typename?: 'Item', _id: string } }>, visibility: Array<{ __typename?: 'Visibility', menuType: MenuTypeEnum, status: StatusEnum }>, availability?: Array<{ __typename?: 'Availability', day: string, active: boolean, hours: Array<{ __typename?: 'Hours', start: any, end: any }> }> | null } };
+export type GetCategoryQuery = { __typename?: 'Query', getCategory: { __typename?: 'Category', _id: string, name: string, desc?: string | null, status: StatusEnum, createdAt: any, updatedAt: any, items: Array<{ __typename?: 'ItemInfo', id: string, name?: string | null, image?: string | null, price: number, status: StatusEnum, _id: { __typename?: 'Item', _id: string } }>, visibility: Array<{ __typename?: 'Visibility', menuType: MenuTypeEnum, status: StatusEnum }>, availability?: Array<{ __typename?: 'Availability', day: string, active: boolean, hours: Array<{ __typename?: 'Hours', start: any, end: any }> }> | null } };
 
 export type UpdateCategoryMutationVariables = Exact<{
   input: UpdateCategoryInput;
@@ -2272,7 +2324,7 @@ export type GetModifierGroupQueryVariables = Exact<{
 }>;
 
 
-export type GetModifierGroupQuery = { __typename?: 'Query', getModifierGroup: { __typename?: 'ModifierGroup', _id: string, name: string, price: number, desc: string, pricingType: PriceTypeEnum, optional: boolean, multiSelect: boolean, maxSelections: number, minSelections: number, modifiers: Array<{ __typename?: 'ModifierInfo', name: string, price: number, id: string }> } };
+export type GetModifierGroupQuery = { __typename?: 'Query', getModifierGroup: { __typename?: 'ModifierGroup', _id: string, name: string, price: number, desc?: string | null, pricingType: PriceTypeEnum, optional: boolean, multiSelect: boolean, maxSelections: number, minSelections: number, modifiers: Array<{ __typename?: 'ModifierInfo', name: string, price: number, id: string }> } };
 
 export type RemoveModifierFromGroupMutationVariables = Exact<{
   modifierGroupId: Scalars['String']['input'];
@@ -2321,7 +2373,7 @@ export type GetModifierQueryVariables = Exact<{
 }>;
 
 
-export type GetModifierQuery = { __typename?: 'Query', getModifier: { __typename?: 'Modifier', _id: string, desc: string, isItem: boolean, preSelect: boolean, name: string, price: number } };
+export type GetModifierQuery = { __typename?: 'Query', getModifier: { __typename?: 'Modifier', _id: string, desc?: string | null, isItem: boolean, preSelect: boolean, name: string, price: number } };
 
 export type UpdateModifierMutationVariables = Exact<{
   input: UpdateModifierInput;
@@ -2429,12 +2481,12 @@ export type GetSubCategoryQueryVariables = Exact<{
 }>;
 
 
-export type GetSubCategoryQuery = { __typename?: 'Query', getSubCategory: { __typename?: 'SubCategory', _id: string, name: string, desc: string } };
+export type GetSubCategoryQuery = { __typename?: 'Query', getSubCategory: { __typename?: 'SubCategory', _id: string, name: string, desc?: string | null } };
 
 export type GetSubCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetSubCategoriesQuery = { __typename?: 'Query', getSubCategories: Array<{ __typename?: 'SubCategory', _id: string, name: string, desc: string }> };
+export type GetSubCategoriesQuery = { __typename?: 'Query', getSubCategories: Array<{ __typename?: 'SubCategory', _id: string, name: string, desc?: string | null }> };
 
 export type AddSubCategoryMutationVariables = Exact<{
   input: AddSubCategoryInput;
@@ -2590,6 +2642,42 @@ export const GetAllIntegrationsDocument = gql`
     platform
     connectionStatus
   }
+}
+    `;
+export const FetchCloverInventoryDocument = gql`
+    query FetchCloverInventory {
+  fetchCloverInventory {
+    categories {
+      id
+      name
+      status
+      items
+    }
+    items {
+      id
+      name
+      price
+      status
+      modifierGroups
+    }
+    modifierGroups {
+      id
+      name
+      minRequired
+      maxRequired
+      modifiers
+    }
+    modifiers {
+      id
+      name
+      price
+    }
+  }
+}
+    `;
+export const IsCloverConnectedDocument = gql`
+    query IsCloverConnected {
+  isCloverConnected
 }
     `;
 export const UserLogoutDocument = gql`
@@ -3459,6 +3547,12 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     GetAllIntegrations(variables?: GetAllIntegrationsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetAllIntegrationsQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetAllIntegrationsQuery>(GetAllIntegrationsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'GetAllIntegrations', 'query', variables);
+    },
+    FetchCloverInventory(variables?: FetchCloverInventoryQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<FetchCloverInventoryQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<FetchCloverInventoryQuery>(FetchCloverInventoryDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'FetchCloverInventory', 'query', variables);
+    },
+    IsCloverConnected(variables?: IsCloverConnectedQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<IsCloverConnectedQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<IsCloverConnectedQuery>(IsCloverConnectedDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'IsCloverConnected', 'query', variables);
     },
     userLogout(variables?: UserLogoutQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UserLogoutQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<UserLogoutQuery>(UserLogoutDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'userLogout', 'query', variables);

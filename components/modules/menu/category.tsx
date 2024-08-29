@@ -29,27 +29,13 @@ const Categories: React.FC = () => {
       const response = await sdk.getCategories();
       if (response && response.getCategories) {
         setCats(
-          response.getCategories.map(
-            (el: {
-              desc: string;
-              name: string;
-              _id: string;
-              status: string;
-              items: {
-                name?: string | null;
-                _id: {
-                  __typename?: "Item";
-                  _id: string;
-                };
-              }[];
-            }) => ({
-              desc: el.desc,
-              items: el.items.length,
-              name: el.name,
-              _id: el._id,
-              status: el.status,
-            })
-          )
+          response.getCategories.map((el: any) => ({
+            desc: el.desc,
+            items: el.items.length,
+            name: el.name,
+            _id: el._id,
+            status: el.status,
+          }))
         );
       }
     } catch (error) {

@@ -13,3 +13,37 @@ query GetAllIntegrations {
     connectionStatus
   }
 }
+
+query FetchCloverInventory {
+  fetchCloverInventory {
+    categories {
+      id
+      name
+      status
+      items
+    }
+    items {
+      id
+      name
+      price
+      status
+      modifierGroups
+    }
+    modifierGroups {
+      id
+      name
+      minRequired
+      maxRequired
+      modifiers
+    }
+    modifiers {
+      id
+      name
+      price
+    }
+  }
+}
+
+query IsCloverConnected {
+  isCloverConnected
+}

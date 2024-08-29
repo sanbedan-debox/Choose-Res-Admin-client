@@ -384,13 +384,11 @@ const AddItemForm = () => {
         const data = await sdk.getSubCategories();
         if (data && data.getSubCategories) {
           setMainSubCategories(
-            data.getSubCategories.map(
-              (cat: { _id: string; desc: string; name: string }) => ({
-                _id: cat._id.toString(),
-                desc: cat.desc,
-                name: cat.name,
-              })
-            )
+            data.getSubCategories.map((cat: any) => ({
+              _id: cat._id.toString(),
+              name: cat.name,
+              desc: cat.desc,
+            }))
           );
           const formattedSubCategories = data.getSubCategories.map((cat) => ({
             value: cat._id,
@@ -412,23 +410,51 @@ const AddItemForm = () => {
   useEffect(() => {
     const fetch = async () => {
       try {
-        const items = await sdk.getModifierGroupsforItemsDropDown();
-        if (items && items.getModifierGroups) {
-          const formattedItemsList = items.getModifierGroups.map(
-            (item: { _id: string; name: string }) => ({
-              _id: item._id || "",
-              name: item?.name || "",
-            })
-          );
-          const filteredItemsList = formattedItemsList.filter(
-            (item) =>
-              !selectedList.some(
-                (selectedItem) => selectedItem._id === item._id
-              )
-          );
-          setMasterList(filteredItemsList);
-          console.log("Masters Fetched", filteredItemsList);
+        const response = await sdk.getModifierGroupsforItemsDropDown();
+        if (!response || !response.getModifierGroups) {
+          setToastData({
+            message:
+              "Something went wrong while fetching the menu details, please try again!",
+            type: "error",
+          });
+          return;
         }
+        const modifierGroups: ListType[] = response.getModifierGroups.map(
+          (el) => ({
+            _id: el._id.toString(),
+            name: el.name.toString(),
+          })
+        );
+        setMasterList(modifierGroups);
+
+        // Update selected list
+        let sl = [...selectedList];
+        for (let i = 0; i < modifierGroups.length; i++) {
+          const category = modifierGroups[i];
+          let idx = selectedList.findIndex((e) => e._id === category._id);
+          if (idx >= 0) {
+            sl[idx].name = category.name;
+          }
+        }
+        console.log("selected List", sl);
+        setSelectedList(sl);
+
+        // if (items && items.getModifierGroups) {
+        //   const formattedItemsList = items.getModifierGroups.map(
+        //     (item: { _id: string; name: string }) => ({
+        //       _id: item._id || "",
+        //       name: item?.name || "",
+        //     })
+        //   );
+        //   // const filteredItemsList = formattedItemsList.filter(
+        //   //   (item) =>
+        //   //     !selectedList.some(
+        //   //       (selectedItem) => selectedItem._id === item._id
+        //   //     )
+        //   // );
+        //   setMasterList(formattedItemsList);
+        //   console.log("Masters Fetched", formattedItemsList);
+        // }
       } catch (error) {
         const errorMessage = extractErrorMessage(error);
         setToastData({
@@ -520,13 +546,7 @@ const AddItemForm = () => {
           type: "error",
         });
       }
-      if (data?.desc?.length <= 20 || data?.desc?.length >= 120) {
-        setToastData({
-          message: "Item Description should be between 20 to 120 characters",
-          type: "error",
-        });
-        return;
-      }
+
       const statusSub = data.status ? StatusEnum.Active : StatusEnum.Inactive;
       const formattedAvailability = formatAvailability(availability);
       const parsedPrice = roundOffPrice(parseFloat(data.price.toString()));

@@ -200,7 +200,7 @@ const AddModifierGroupForm = () => {
               name,
               maxSelections,
               minSelections,
-              desc,
+              desc: desc ?? "",
               price,
               pricingType,
               optional,
@@ -287,14 +287,6 @@ const AddModifierGroupForm = () => {
         return;
       }
 
-      if (data?.desc?.length <= 20 || data?.desc?.length >= 120) {
-        setToastData({
-          message:
-            "Modifier Group Description should be between 20 to 120 characters",
-          type: "error",
-        });
-        return;
-      }
       const parsedMaxSelection =
         parseFloat(data?.maxSelections?.toString()) || 0;
       const parsedMinSelection =

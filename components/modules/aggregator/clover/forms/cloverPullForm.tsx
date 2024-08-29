@@ -1,143 +1,252 @@
+// import CButton from "@/components/common/button/button";
+// import { ButtonType } from "@/components/common/button/interface";
+// import FullPageModal from "@/components/common/modal/fullPageModal";
+// import { sdk } from "@/utils/graphqlClient";
+// import React, { useState } from "react";
+// import {
+//   useCloverCategoryStore,
+//   useCloverItemStore,
+//   useCloverModifierGroupStore,
+//   useCloverModifierStore,
+// } from "../../../../../store/cloverStores";
+// import CategoryTable from "../tables/categoryTable";
+// import ItemTable from "../tables/ItemTable";
+// import ModifierGroupTable from "../tables/modifierGroupTable";
+// import ModifierTable from "../tables/modifierTable";
+
+// const CloverPullForm: React.FC = () => {
+//   const [step, setStep] = useState(1);
+//   const [loading, setLoading] = useState(false);
+
+//   const { categories, setCategories } = useCloverCategoryStore();
+//   const { items, setItems } = useCloverItemStore();
+//   const { modifierGroups, setModifierGroups } = useCloverModifierGroupStore();
+//   const { modifiers, setModifiers } = useCloverModifierStore();
+
+//   const [isModalOpen, setIsModalOpen] = useState(false);
+//   const [activeSection, setActiveSection] = useState<
+//     "Category" | "Items" | "Modifier Groups" | "Modifiers"
+//   >("Category");
+
+//   const fetchData = async () => {
+//     setLoading(true);
+//     try {
+//       const response = await sdk.FetchCloverInventory();
+//       const { categories, items, modifiers, modifierGroups } =
+//         response.fetchCloverInventory;
+
+//       setCategories(categories.map((cat: any) => ({ ...cat })));
+//       setItems(
+//         items.map((item: any) => ({
+//           ...item,
+//           "Online Ordering": item.status,
+//           "Dine In": item.status,
+//           Catering: item.status,
+//           "Item Limit": 0,
+//           "Popular Item": false,
+//           "UpSell Item": false,
+//           IsVegan: false,
+//           HasNuts: false,
+//           IsGlutenFree: false,
+//           IsHalal: false,
+//           IsSpicy: false,
+//         }))
+//       );
+//       setModifierGroups(modifierGroups.map((group: any) => ({ ...group })));
+//       setModifiers(modifiers.map((mod: any) => ({ ...mod })));
+//       console.log(modifierGroups);
+//       console.log(items);
+//     } catch (error) {
+//       console.error("Error fetching data:", error);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const handleNextStep = () => {
+//     if (step === 1) {
+//       fetchData();
+//       setStep(2);
+//     }
+//   };
+
+//   const handleCloseModal = () => {
+//     setIsModalOpen(false);
+//   };
+
+//   return (
+//     <div className="space-y-8">
+//       {step === 1 && (
+//         <div>
+//           <div className="space-y-4">
+//             <iframe
+//               width="560"
+//               height="315"
+//               src="https://www.youtube.com/embed/YOUR_VIDEO_ID"
+//               title="YouTube video player"
+//               frameBorder="0"
+//               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+//               allowFullScreen
+//             ></iframe>
+//             <div className="text-gray-700">
+//               <p>Follow the guidelines to pull data from Clover.</p>
+//               <ul className="list-disc pl-5">
+//                 <li>Step 1: Instruction 1</li>
+//                 <li>Step 2: Instruction 2</li>
+//                 <li>Step 3: Instruction 3</li>
+//               </ul>
+//             </div>
+//           </div>
+//           <CButton variant={ButtonType.Primary} onClick={handleNextStep}>
+//             Next
+//           </CButton>
+//         </div>
+//       )}
+
+//       {step === 2 && (
+//         <div>
+//           {loading ? (
+//             <div className="flex justify-center items-center h-64">
+//               <div className="loader"></div>{" "}
+//               {/* Replace with your loading spinner */}
+//             </div>
+//           ) : (
+//             <div className="text-center">
+//               <p>Categories: {categories?.length || 0}</p>
+//               <p>Items: {items?.length || 0}</p>
+//               <p>Modifier Groups: {modifierGroups?.length || 0}</p>
+//               <p>Modifiers: {modifiers?.length || 0}</p>
+//               <CButton
+//                 variant={ButtonType.Primary}
+//                 onClick={() => setIsModalOpen(true)}
+//               >
+//                 Preview Data
+//               </CButton>
+//             </div>
+//           )}
+//         </div>
+//       )}
+
+//       <FullPageModal
+//         actionButtonLabel=""
+//         onActionButtonClick={() => {}}
+//         isOpen={isModalOpen}
+//         onClose={handleCloseModal}
+//         title="Preview Data"
+//       >
+//         <div className="space-y-4">
+//           <div className="flex justify-around">
+//             {["Category", "Items", "Modifier Groups", "Modifiers"].map(
+//               (section) => (
+//                 <button
+//                   key={section}
+//                   className={`${
+//                     activeSection === section
+//                       ? "text-blue-600"
+//                       : "text-gray-600"
+//                   }`}
+//                   onClick={() => setActiveSection(section as any)}
+//                 >
+//                   {section}
+//                 </button>
+//               )
+//             )}
+//           </div>
+
+//           {activeSection === "Category" && categories && <CategoryTable />}
+
+//           {activeSection === "Items" && items && <ItemTable />}
+
+//           {activeSection === "Modifier Groups" && modifierGroups && (
+//             <ModifierGroupTable />
+//           )}
+
+//           {activeSection === "Modifiers" && modifiers && <ModifierTable />}
+//         </div>
+//       </FullPageModal>
+//     </div>
+//   );
+// };
+
+// export default CloverPullForm;
+
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import FullPageModal from "@/components/common/modal/fullPageModal";
-import ReusableModal from "@/components/common/modal/modal";
+import { sdk } from "@/utils/graphqlClient";
 import React, { useState } from "react";
-import { FaSpinner } from "react-icons/fa";
 
-interface Item {
-  category: string;
-  categoryDesc: string;
-  subCategory: string;
-  subCategoryDesc: string;
-  itemName: string;
-  itemDesc: string;
-  price: number;
-  itemStatus: boolean;
-  onlineOrdering: boolean;
-  dineIn: boolean;
-  catering: boolean;
-  itemLimit: number;
-  popularItem: boolean;
-  upSellItem: boolean;
-  isVegan: boolean;
-  hasNuts: boolean;
-  isGlutenFree: boolean;
-  isHalal: boolean;
-  isSpicy: boolean;
-}
-
-const tableHeaders = [
-  "Category",
-  "Category Desc",
-  "Sub Category",
-  "Sub Category Desc",
-  "Item Name",
-  "Item Desc",
-  "Item Price",
-  "Item Status",
-  "Online Ordering",
-  "Dine In",
-  "Catering",
-  "Item Limit",
-  "Popular Item",
-  "Up Sell Item",
-  "Is Vegan",
-  "Has Nuts",
-  "Is Gluten Free",
-  "Is Halal",
-  "Is Spicy",
-];
+import {
+  useCloverCategoryStore,
+  useCloverItemStore,
+  useCloverModifierGroupStore,
+  useCloverModifierStore,
+} from "@/store/cloverStores";
+import CategoryTable from "../tables/categoryTable";
+import ItemTable from "../tables/ItemTable";
+import ModifierGroupTable from "../tables/modifierGroupTable";
+import ModifierTable from "../tables/modifierTable";
 
 const CloverPullForm: React.FC = () => {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<any>({
-    categories: [{ name: "Biriyani" }, { name: "Pizza" }],
-    subCategories: [
-      { category: "Biriyani", name: "Veg" },
-      { category: "Pizza", name: "Veg" },
-      { category: "Biriyani", name: "Non Veg" },
-    ],
-    items: [
-      {
-        category: "Biriyani",
-        categoryDesc:
-          "A traditional Indian dish made with layers of rice spices and various ingredients cooked slowly",
-        subCategory: "Veg",
-        subCategoryDesc:
-          "Delicious vegetarian dishes prepared with spices offering a variety of flavors",
-        itemName: "Paneer Biriyani",
-        itemDesc: "The best paneer biriyani in town rich in flavor",
-        price: 2190,
-        itemStatus: true,
-        onlineOrdering: true,
-        dineIn: false,
-        catering: false,
-        itemLimit: 100,
-        popularItem: true,
-        upSellItem: true,
-        isVegan: true,
-        hasNuts: false,
-        isGlutenFree: false,
-        isHalal: false,
-        isSpicy: false,
-      },
-    ],
-  });
+
+  const { categories, setCategories } = useCloverCategoryStore();
+  const { items, setItems } = useCloverItemStore();
+  const { modifierGroups, setModifierGroups } = useCloverModifierGroupStore();
+  const { modifiers, setModifiers } = useCloverModifierStore();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [editedItems, setEditedItems] = useState<Item[]>(data.items);
-  const [isPriceModalOpen, setIsPriceModalOpen] = useState(false);
-  const [priceMode, setPriceMode] = useState<"amount" | "percentage">("amount");
-  const [priceValue, setPriceValue] = useState<number>(0);
+  const [activeSection, setActiveSection] = useState<
+    "Category" | "Items" | "Modifier Groups" | "Modifiers"
+  >("Category");
 
-  const handleNextStep = async () => {
+  const fetchData = async () => {
     setLoading(true);
-    setStep(2);
-    setLoading(false);
-    setIsModalOpen(true);
+    try {
+      const response = await sdk.FetchCloverInventory();
+      const { categories, items, modifiers, modifierGroups } =
+        response.fetchCloverInventory;
+
+      setCategories(categories.map((cat: any) => ({ ...cat })));
+      setItems(
+        items.map((item: any) => ({
+          ...item,
+          "Online Ordering": item.status,
+          "Dine In": item.status,
+          Catering: item.status,
+          "Item Limit": 0,
+          "Popular Item": false,
+          "UpSell Item": false,
+          IsVegan: false,
+          HasNuts: false,
+          IsGlutenFree: false,
+          IsHalal: false,
+          IsSpicy: false,
+        }))
+      );
+      setModifierGroups(modifierGroups.map((group: any) => ({ ...group })));
+      setModifiers(modifiers.map((mod: any) => ({ ...mod })));
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleEditToggle = () => {
-    setIsEditMode(!isEditMode);
+  const handleNextStep = () => {
+    if (step === 1) {
+      fetchData();
+      setStep(2);
+    }
   };
 
-  const handleChange = (index: number, key: keyof Item, value: any) => {
-    const updatedItems = [...editedItems];
-    updatedItems[index] = { ...updatedItems[index], [key]: value };
-    setEditedItems(updatedItems);
-  };
-
-  const handleSave = () => {
-    setData({ ...data, items: editedItems });
-    setIsEditMode(false);
-  };
-
-  const handleCancel = () => {
-    setEditedItems(data.items);
-    setIsEditMode(false);
-  };
-
-  const handleManagePrice = () => {
-    setIsPriceModalOpen(true);
-  };
-
-  const handlePriceSave = () => {
-    const updatedItems = editedItems.map((item) => {
-      if (priceMode === "amount") {
-        return { ...item, price: item.price + priceValue };
-      } else {
-        return { ...item, price: item.price * (1 + priceValue / 100) };
-      }
-    });
-    setEditedItems(updatedItems);
-    setIsPriceModalOpen(false);
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
 
   return (
-    <div className="w-full">
-      {/* Step Indicator */}
+    <div className="w-full space-y-8">
       <div className="w-full flex justify-between items-center px-12 py-4 mb-5">
         <div
           className={`rounded-md w-8 h-8 flex items-center justify-center ${
@@ -158,12 +267,11 @@ const CloverPullForm: React.FC = () => {
         </div>
       </div>
 
-      {/* Step 1: Guidelines */}
       {step === 1 && (
-        <div className="flex flex-col space-y-10 text-center">
+        <div className="space-y-10 text-center">
           <div className="w-full mx-auto">
             <iframe
-              src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+              src="https://www.youtube.com/embed/YOUR_VIDEO_ID"
               title="YouTube video player"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -171,13 +279,17 @@ const CloverPullForm: React.FC = () => {
               className="w-full h-64"
             ></iframe>
           </div>
+
           <div className="text-left">
-            <h2 className="text-lg font-semibold">Guidelines</h2>
+            <h2 className="text-lg font-semibold">CSV Upload Rules</h2>
             <ul className="list-disc list-inside text-md">
-              <li>Follow the instructions in the video.</li>
-              <li>Click "Next" when you're ready to proceed.</li>
+              <li>The file must be in CSV format.</li>
+              <li>Ensure all required fields are filled.</li>
+              <li>Follow the template provided in the second step.</li>
+              <li>{`Don't keep additional fields.`}</li>
             </ul>
           </div>
+
           <div className="flex justify-end">
             <CButton
               loading={loading}
@@ -190,491 +302,100 @@ const CloverPullForm: React.FC = () => {
         </div>
       )}
 
-      {/* Step 2: Data Summary */}
       {step === 2 && (
-        <div className="flex flex-col space-y-10 text-center">
+        <div className="text-center space-y-6">
           {loading ? (
-            <FaSpinner className="animate-spin text-2xl text-primary" />
+            <div className="flex flex-col justify-center items-center h-64">
+              <div className="loader mb-4"></div>{" "}
+              {/* Replace with your loading spinner */}
+              <p className="text-lg font-semibold text-gray-700">
+                Fetching Clover Data...
+              </p>
+              <p className="text-gray-500">
+                Please wait while we retrieve the latest data from Clover.
+              </p>
+            </div>
           ) : (
-            <div>
-              <h2 className="text-lg font-semibold">Data Summary</h2>
-              <div className="mt-4">
-                <p>Categories: {data.categories.length}</p>
-                <p>Subcategories: {data.subCategories.length}</p>
-                <p>Items: {data.items.length}</p>
+            <>
+              <div className="space-y-3">
+                <h2 className="text-md font-bold text-gray-900">
+                  Data Fetched Successfully!
+                </h2>
+                <p className="text-sm text-gray-700">
+                  We have successfully retrieved the data from Clover. Here is a
+                  summary of the information:
+                </p>
+                <div className="bg-white rounded-lg p-6  ">
+                  <p className="text-md font-medium text-gray-800">
+                    Categories:{" "}
+                    <span className="font-bold">{categories?.length || 0}</span>
+                  </p>
+                  <p className="text-md font-medium text-gray-800">
+                    Items:{" "}
+                    <span className="font-bold">{items?.length || 0}</span>
+                  </p>
+                  <p className="text-md font-medium text-gray-800">
+                    Modifier Groups:{" "}
+                    <span className="font-bold">
+                      {modifierGroups?.length || 0}
+                    </span>
+                  </p>
+                  <p className="text-md font-medium text-gray-800">
+                    Modifiers:{" "}
+                    <span className="font-bold">{modifiers?.length || 0}</span>
+                  </p>
+                </div>
+                <p className="text-gray-600">
+                  You can now preview the data and make any necessary edits.
+                  Click on the button below to review the data.
+                </p>
               </div>
               <CButton
-                onClick={() => setIsModalOpen(true)}
                 variant={ButtonType.Primary}
+                onClick={() => setIsModalOpen(true)}
+                className="mt-4"
               >
-                View Details
+                Preview Data
               </CButton>
-            </div>
+            </>
           )}
         </div>
       )}
 
       <FullPageModal
+        actionButtonLabel=""
+        onActionButtonClick={() => {}}
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Data Preview"
-        actionButtonLabel={isEditMode ? "Save" : "Close"}
-        onActionButtonClick={
-          isEditMode ? handleSave : () => setIsModalOpen(false)
-        }
+        onClose={handleCloseModal}
+        title="Preview Data"
       >
-        <div className="flex justify-start mb-4">
-          {!isEditMode ? (
-            <>
-              <CButton onClick={handleEditToggle} variant={ButtonType.Primary}>
-                {"Edit"}
-              </CButton>
-              <CButton onClick={handleManagePrice} variant={ButtonType.Primary}>
-                Manage Price
-              </CButton>
-            </>
-          ) : (
-            <>
-              <CButton onClick={handleSave} variant={ButtonType.Primary}>
-                Save
-              </CButton>
-              <CButton
-                onClick={handleCancel}
-                variant={ButtonType.Outlined}
-                className="ml-2"
-              >
-                Cancel
-              </CButton>
-            </>
-          )}
-        </div>
-        {data.items.length > 0 ? (
-          <table className="min-w-full bg-white">
-            <thead>
-              <tr>
-                {tableHeaders.map((header) => (
-                  <th
-                    key={header}
-                    className="py-2 px-4 border-b border-gray-200 bg-gray-50 text-gray-600 text-sm font-semibold text-left whitespace-nowrap"
-                  >
-                    {header}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {editedItems.map((item: Item, index: number) => (
-                <tr key={index}>
-                  <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-700 whitespace-nowrap">
-                    {isEditMode ? (
-                      <input
-                        type="text"
-                        value={item.category}
-                        onChange={(e) =>
-                          handleChange(index, "category", e.target.value)
-                        }
-                        className="border border-gray-300 p-1 rounded"
-                      />
-                    ) : (
-                      item.category
-                    )}
-                  </td>
-                  <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-700 whitespace-nowrap">
-                    {isEditMode ? (
-                      <input
-                        type="text"
-                        value={item.categoryDesc}
-                        onChange={(e) =>
-                          handleChange(index, "categoryDesc", e.target.value)
-                        }
-                        className="border border-gray-300 p-1 rounded"
-                      />
-                    ) : (
-                      item.categoryDesc
-                    )}
-                  </td>
-                  <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-700 whitespace-nowrap">
-                    {isEditMode ? (
-                      <input
-                        type="text"
-                        value={item.subCategory}
-                        onChange={(e) =>
-                          handleChange(index, "subCategory", e.target.value)
-                        }
-                        className="border border-gray-300 p-1 rounded"
-                      />
-                    ) : (
-                      item.subCategory
-                    )}
-                  </td>
-                  <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-700 whitespace-nowrap">
-                    {isEditMode ? (
-                      <input
-                        type="text"
-                        value={item.subCategoryDesc}
-                        onChange={(e) =>
-                          handleChange(index, "subCategoryDesc", e.target.value)
-                        }
-                        className="border border-gray-300 p-1 rounded"
-                      />
-                    ) : (
-                      item.subCategoryDesc
-                    )}
-                  </td>
-                  <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-700 whitespace-nowrap">
-                    {isEditMode ? (
-                      <input
-                        type="text"
-                        value={item.itemName}
-                        onChange={(e) =>
-                          handleChange(index, "itemName", e.target.value)
-                        }
-                        className="border border-gray-300 p-1 rounded"
-                      />
-                    ) : (
-                      item.itemName
-                    )}
-                  </td>
-                  <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-700 whitespace-nowrap">
-                    {isEditMode ? (
-                      <input
-                        type="text"
-                        value={item.itemDesc}
-                        onChange={(e) =>
-                          handleChange(index, "itemDesc", e.target.value)
-                        }
-                        className="border border-gray-300 p-1 rounded"
-                      />
-                    ) : (
-                      item.itemDesc
-                    )}
-                  </td>
-                  <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-700 whitespace-nowrap">
-                    {isEditMode ? (
-                      <input
-                        type="number"
-                        value={item.price}
-                        onChange={(e) =>
-                          handleChange(index, "price", Number(e.target.value))
-                        }
-                        className="border border-gray-300 p-1 rounded"
-                      />
-                    ) : (
-                      item.price
-                    )}
-                  </td>
-                  <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-700 whitespace-nowrap">
-                    {isEditMode ? (
-                      <select
-                        value={item.itemStatus ? "Yes" : "No"}
-                        onChange={(e) =>
-                          handleChange(
-                            index,
-                            "itemStatus",
-                            e.target.value === "Yes"
-                          )
-                        }
-                        className="border border-gray-300 p-1 rounded"
-                      >
-                        <option value="Yes">Yes</option>
-                        <option value="No">No</option>
-                      </select>
-                    ) : item.itemStatus ? (
-                      "Yes"
-                    ) : (
-                      "No"
-                    )}
-                  </td>
-                  <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-700 whitespace-nowrap">
-                    {isEditMode ? (
-                      <select
-                        value={item.onlineOrdering ? "Yes" : "No"}
-                        onChange={(e) =>
-                          handleChange(
-                            index,
-                            "onlineOrdering",
-                            e.target.value === "Yes"
-                          )
-                        }
-                        className="border border-gray-300 p-1 rounded"
-                      >
-                        <option value="Yes">Yes</option>
-                        <option value="No">No</option>
-                      </select>
-                    ) : item.onlineOrdering ? (
-                      "Yes"
-                    ) : (
-                      "No"
-                    )}
-                  </td>
-                  <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-700 whitespace-nowrap">
-                    {isEditMode ? (
-                      <select
-                        value={item.dineIn ? "Yes" : "No"}
-                        onChange={(e) =>
-                          handleChange(
-                            index,
-                            "dineIn",
-                            e.target.value === "Yes"
-                          )
-                        }
-                        className="border border-gray-300 p-1 rounded"
-                      >
-                        <option value="Yes">Yes</option>
-                        <option value="No">No</option>
-                      </select>
-                    ) : item.dineIn ? (
-                      "Yes"
-                    ) : (
-                      "No"
-                    )}
-                  </td>
-                  <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-700 whitespace-nowrap">
-                    {isEditMode ? (
-                      <select
-                        value={item.catering ? "Yes" : "No"}
-                        onChange={(e) =>
-                          handleChange(
-                            index,
-                            "catering",
-                            e.target.value === "Yes"
-                          )
-                        }
-                        className="border border-gray-300 p-1 rounded"
-                      >
-                        <option value="Yes">Yes</option>
-                        <option value="No">No</option>
-                      </select>
-                    ) : item.catering ? (
-                      "Yes"
-                    ) : (
-                      "No"
-                    )}
-                  </td>
-                  <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-700 whitespace-nowrap">
-                    {isEditMode ? (
-                      <input
-                        type="number"
-                        value={item.itemLimit}
-                        onChange={(e) =>
-                          handleChange(
-                            index,
-                            "itemLimit",
-                            Number(e.target.value)
-                          )
-                        }
-                        className="border border-gray-300 p-1 rounded"
-                      />
-                    ) : (
-                      item.itemLimit
-                    )}
-                  </td>
-                  <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-700 whitespace-nowrap">
-                    {isEditMode ? (
-                      <select
-                        value={item.popularItem ? "Yes" : "No"}
-                        onChange={(e) =>
-                          handleChange(
-                            index,
-                            "popularItem",
-                            e.target.value === "Yes"
-                          )
-                        }
-                        className="border border-gray-300 p-1 rounded"
-                      >
-                        <option value="Yes">Yes</option>
-                        <option value="No">No</option>
-                      </select>
-                    ) : item.popularItem ? (
-                      "Yes"
-                    ) : (
-                      "No"
-                    )}
-                  </td>
-                  <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-700 whitespace-nowrap">
-                    {isEditMode ? (
-                      <select
-                        value={item.upSellItem ? "Yes" : "No"}
-                        onChange={(e) =>
-                          handleChange(
-                            index,
-                            "upSellItem",
-                            e.target.value === "Yes"
-                          )
-                        }
-                        className="border border-gray-300 p-1 rounded"
-                      >
-                        <option value="Yes">Yes</option>
-                        <option value="No">No</option>
-                      </select>
-                    ) : item.upSellItem ? (
-                      "Yes"
-                    ) : (
-                      "No"
-                    )}
-                  </td>
-                  <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-700 whitespace-nowrap">
-                    {isEditMode ? (
-                      <select
-                        value={item.isVegan ? "Yes" : "No"}
-                        onChange={(e) =>
-                          handleChange(
-                            index,
-                            "isVegan",
-                            e.target.value === "Yes"
-                          )
-                        }
-                        className="border border-gray-300 p-1 rounded"
-                      >
-                        <option value="Yes">Yes</option>
-                        <option value="No">No</option>
-                      </select>
-                    ) : item.isVegan ? (
-                      "Yes"
-                    ) : (
-                      "No"
-                    )}
-                  </td>
-                  <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-700 whitespace-nowrap">
-                    {isEditMode ? (
-                      <select
-                        value={item.hasNuts ? "Yes" : "No"}
-                        onChange={(e) =>
-                          handleChange(
-                            index,
-                            "hasNuts",
-                            e.target.value === "Yes"
-                          )
-                        }
-                        className="border border-gray-300 p-1 rounded"
-                      >
-                        <option value="Yes">Yes</option>
-                        <option value="No">No</option>
-                      </select>
-                    ) : item.hasNuts ? (
-                      "Yes"
-                    ) : (
-                      "No"
-                    )}
-                  </td>
-                  <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-700 whitespace-nowrap">
-                    {isEditMode ? (
-                      <select
-                        value={item.isGlutenFree ? "Yes" : "No"}
-                        onChange={(e) =>
-                          handleChange(
-                            index,
-                            "isGlutenFree",
-                            e.target.value === "Yes"
-                          )
-                        }
-                        className="border border-gray-300 p-1 rounded"
-                      >
-                        <option value="Yes">Yes</option>
-                        <option value="No">No</option>
-                      </select>
-                    ) : item.isGlutenFree ? (
-                      "Yes"
-                    ) : (
-                      "No"
-                    )}
-                  </td>
-                  <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-700 whitespace-nowrap">
-                    {isEditMode ? (
-                      <select
-                        value={item.isHalal ? "Yes" : "No"}
-                        onChange={(e) =>
-                          handleChange(
-                            index,
-                            "isHalal",
-                            e.target.value === "Yes"
-                          )
-                        }
-                        className="border border-gray-300 p-1 rounded"
-                      >
-                        <option value="Yes">Yes</option>
-                        <option value="No">No</option>
-                      </select>
-                    ) : item.isHalal ? (
-                      "Yes"
-                    ) : (
-                      "No"
-                    )}
-                  </td>
-                  <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-700 whitespace-nowrap">
-                    {isEditMode ? (
-                      <select
-                        value={item.isSpicy ? "Yes" : "No"}
-                        onChange={(e) =>
-                          handleChange(
-                            index,
-                            "isSpicy",
-                            e.target.value === "Yes"
-                          )
-                        }
-                        className="border border-gray-300 p-1 rounded"
-                      >
-                        <option value="Yes">Yes</option>
-                        <option value="No">No</option>
-                      </select>
-                    ) : item.isSpicy ? (
-                      "Yes"
-                    ) : (
-                      "No"
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <div>No data available</div>
-        )}
-      </FullPageModal>
-      <ReusableModal
-        isOpen={isPriceModalOpen}
-        onClose={() => setIsPriceModalOpen(false)}
-        title="Manage Price"
-      >
-        <div className="flex flex-col">
-          <div className="flex justify-between mb-4">
-            <button
-              onClick={() => setPriceMode("amount")}
-              className={`px-4 py-2 rounded ${
-                priceMode === "amount" ? "bg-primary text-white" : "bg-gray-200"
-              }`}
-            >
-              Increase by Amount
-            </button>
-            <button
-              onClick={() => setPriceMode("percentage")}
-              className={`px-4 py-2 rounded ${
-                priceMode === "percentage"
-                  ? "bg-primary text-white"
-                  : "bg-gray-200"
-              }`}
-            >
-              Increase by Percentage
-            </button>
+        <div className="space-y-4">
+          <div className="flex space-x-4 border-gray-200 pb-2">
+            {["Category", "Items", "Modifier Groups", "Modifiers"].map(
+              (section) => (
+                <button
+                  key={section}
+                  className={`px-4 py-2 text-sm font-semibold rounded-md ${
+                    activeSection === section
+                      ? "bg-blue-600 text-white border-b-2 border-blue-600"
+                      : "bg-gray-100 text-gray-600"
+                  } transition-colors duration-200 ease-in-out`}
+                  onClick={() => setActiveSection(section as any)}
+                >
+                  {section}
+                </button>
+              )
+            )}
           </div>
-          <input
-            type="number"
-            value={priceValue}
-            onChange={(e: any) => setPriceValue(Number(e.target.value))}
-            placeholder={
-              priceMode === "amount" ? "Enter amount" : "Enter percentage"
-            }
-            className="border border-gray-300 p-2 rounded"
-          />
-          <CButton
-            variant={ButtonType.Primary}
-            className="w-full"
-            onClick={handlePriceSave}
-          >
-            Save
-          </CButton>
+
+          {activeSection === "Category" && categories && <CategoryTable />}
+          {activeSection === "Items" && items && <ItemTable />}
+          {activeSection === "Modifier Groups" && modifierGroups && (
+            <ModifierGroupTable />
+          )}
+          {activeSection === "Modifiers" && modifiers && <ModifierTable />}
         </div>
-      </ReusableModal>
+      </FullPageModal>
     </div>
   );
 };

@@ -258,7 +258,7 @@ const AddCategoryForm = () => {
           isDuplicateCats ? generateUniqueName(category.name) : category.name
         );
 
-        setValue("description", category.desc);
+        setValue("description", category.desc ?? "");
 
         let selectedIds = category.items.map((e) => e._id._id.toString());
         let selected = masterList.filter((e) =>
@@ -274,7 +274,7 @@ const AddCategoryForm = () => {
         setCategoryData({
           _id: category._id,
           name: category.name,
-          description: category.desc,
+          description: category.desc ?? "",
           status: category.status,
           items: selected,
         });
@@ -318,15 +318,6 @@ const AddCategoryForm = () => {
         setToastData({
           message:
             "Please use only alphabets and numbers while adding or updating name.",
-          type: "error",
-        });
-        return;
-      }
-
-      if (data?.description?.length <= 20 || data?.description?.length >= 120) {
-        setToastData({
-          message:
-            "Modifier Description should be between 60 to 120 characters",
           type: "error",
         });
         return;

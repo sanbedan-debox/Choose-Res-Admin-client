@@ -102,14 +102,14 @@ const AddModifierForm = () => {
           setModifierData({
             _id: editModId,
             name,
-            desc,
+            desc: desc ?? "",
             preSelect,
             price,
           });
 
           setValue("name", isDuplicateMods ? generateUniqueName(name) : name);
 
-          setValue("desc", desc);
+          setValue("desc", desc ?? "");
           setValue("preSelect", preSelect);
           setValue("isItemFromMenu", isItem);
           setIsItemFromMenu(isItem);
@@ -180,13 +180,7 @@ const AddModifierForm = () => {
       });
       return;
     }
-    if (data?.desc?.length <= 20 || data?.desc?.length >= 120) {
-      setToastData({
-        message: "Modifier Desciprion should be between 60 to 120 characters",
-        type: "error",
-      });
-      return;
-    }
+
     const parsedPrice = roundOffPrice(parseFloat(data.price.toString()));
     let updateInput: {
       _id: string;

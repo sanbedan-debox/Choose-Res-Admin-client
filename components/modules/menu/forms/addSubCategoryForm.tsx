@@ -77,8 +77,12 @@ const AddSubCategoryForm = () => {
             if (isDuplicateSubCategory) {
               setValue("name", nameDup);
             }
-            setValue("desc", desc);
-            setSubCategoryData(response.getSubCategory);
+            setValue("desc", desc ?? "");
+            setSubCategoryData({
+              _id: editSubCategoryId,
+              name: isDuplicateSubCategory ? nameDup : name,
+              desc: desc ?? "",
+            });
           }
         } catch (error) {
           const errorMessage = extractErrorMessage(error);
@@ -107,14 +111,6 @@ const AddSubCategoryForm = () => {
         setToastData({
           message:
             "Please use only alphabets and numbers while adding or updating name.",
-          type: "error",
-        });
-        return;
-      }
-      if (data?.desc?.length <= 20 || data?.desc?.length >= 120) {
-        setToastData({
-          message:
-            "Modifier Description should be between 60 to 120 characters",
           type: "error",
         });
         return;
