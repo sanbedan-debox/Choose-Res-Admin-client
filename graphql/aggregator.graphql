@@ -44,6 +44,10 @@ query FetchCloverInventory {
   }
 }
 
-query IsCloverConnected {
+mutation saveCloverData($rowItems: [CloverRowItem!]!) {
+  saveCloverData(rowItems: $rowItems)
+}
+
+query isCloverConnected {
   isCloverConnected
 }

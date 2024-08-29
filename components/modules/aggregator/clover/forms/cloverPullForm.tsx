@@ -1,206 +1,42 @@
-// import CButton from "@/components/common/button/button";
-// import { ButtonType } from "@/components/common/button/interface";
-// import FullPageModal from "@/components/common/modal/fullPageModal";
-// import { sdk } from "@/utils/graphqlClient";
-// import React, { useState } from "react";
-// import {
-//   useCloverCategoryStore,
-//   useCloverItemStore,
-//   useCloverModifierGroupStore,
-//   useCloverModifierStore,
-// } from "../../../../../store/cloverStores";
-// import CategoryTable from "../tables/categoryTable";
-// import ItemTable from "../tables/ItemTable";
-// import ModifierGroupTable from "../tables/modifierGroupTable";
-// import ModifierTable from "../tables/modifierTable";
-
-// const CloverPullForm: React.FC = () => {
-//   const [step, setStep] = useState(1);
-//   const [loading, setLoading] = useState(false);
-
-//   const { categories, setCategories } = useCloverCategoryStore();
-//   const { items, setItems } = useCloverItemStore();
-//   const { modifierGroups, setModifierGroups } = useCloverModifierGroupStore();
-//   const { modifiers, setModifiers } = useCloverModifierStore();
-
-//   const [isModalOpen, setIsModalOpen] = useState(false);
-//   const [activeSection, setActiveSection] = useState<
-//     "Category" | "Items" | "Modifier Groups" | "Modifiers"
-//   >("Category");
-
-//   const fetchData = async () => {
-//     setLoading(true);
-//     try {
-//       const response = await sdk.FetchCloverInventory();
-//       const { categories, items, modifiers, modifierGroups } =
-//         response.fetchCloverInventory;
-
-//       setCategories(categories.map((cat: any) => ({ ...cat })));
-//       setItems(
-//         items.map((item: any) => ({
-//           ...item,
-//           "Online Ordering": item.status,
-//           "Dine In": item.status,
-//           Catering: item.status,
-//           "Item Limit": 0,
-//           "Popular Item": false,
-//           "UpSell Item": false,
-//           IsVegan: false,
-//           HasNuts: false,
-//           IsGlutenFree: false,
-//           IsHalal: false,
-//           IsSpicy: false,
-//         }))
-//       );
-//       setModifierGroups(modifierGroups.map((group: any) => ({ ...group })));
-//       setModifiers(modifiers.map((mod: any) => ({ ...mod })));
-//       console.log(modifierGroups);
-//       console.log(items);
-//     } catch (error) {
-//       console.error("Error fetching data:", error);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const handleNextStep = () => {
-//     if (step === 1) {
-//       fetchData();
-//       setStep(2);
-//     }
-//   };
-
-//   const handleCloseModal = () => {
-//     setIsModalOpen(false);
-//   };
-
-//   return (
-//     <div className="space-y-8">
-//       {step === 1 && (
-//         <div>
-//           <div className="space-y-4">
-//             <iframe
-//               width="560"
-//               height="315"
-//               src="https://www.youtube.com/embed/YOUR_VIDEO_ID"
-//               title="YouTube video player"
-//               frameBorder="0"
-//               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-//               allowFullScreen
-//             ></iframe>
-//             <div className="text-gray-700">
-//               <p>Follow the guidelines to pull data from Clover.</p>
-//               <ul className="list-disc pl-5">
-//                 <li>Step 1: Instruction 1</li>
-//                 <li>Step 2: Instruction 2</li>
-//                 <li>Step 3: Instruction 3</li>
-//               </ul>
-//             </div>
-//           </div>
-//           <CButton variant={ButtonType.Primary} onClick={handleNextStep}>
-//             Next
-//           </CButton>
-//         </div>
-//       )}
-
-//       {step === 2 && (
-//         <div>
-//           {loading ? (
-//             <div className="flex justify-center items-center h-64">
-//               <div className="loader"></div>{" "}
-//               {/* Replace with your loading spinner */}
-//             </div>
-//           ) : (
-//             <div className="text-center">
-//               <p>Categories: {categories?.length || 0}</p>
-//               <p>Items: {items?.length || 0}</p>
-//               <p>Modifier Groups: {modifierGroups?.length || 0}</p>
-//               <p>Modifiers: {modifiers?.length || 0}</p>
-//               <CButton
-//                 variant={ButtonType.Primary}
-//                 onClick={() => setIsModalOpen(true)}
-//               >
-//                 Preview Data
-//               </CButton>
-//             </div>
-//           )}
-//         </div>
-//       )}
-
-//       <FullPageModal
-//         actionButtonLabel=""
-//         onActionButtonClick={() => {}}
-//         isOpen={isModalOpen}
-//         onClose={handleCloseModal}
-//         title="Preview Data"
-//       >
-//         <div className="space-y-4">
-//           <div className="flex justify-around">
-//             {["Category", "Items", "Modifier Groups", "Modifiers"].map(
-//               (section) => (
-//                 <button
-//                   key={section}
-//                   className={`${
-//                     activeSection === section
-//                       ? "text-blue-600"
-//                       : "text-gray-600"
-//                   }`}
-//                   onClick={() => setActiveSection(section as any)}
-//                 >
-//                   {section}
-//                 </button>
-//               )
-//             )}
-//           </div>
-
-//           {activeSection === "Category" && categories && <CategoryTable />}
-
-//           {activeSection === "Items" && items && <ItemTable />}
-
-//           {activeSection === "Modifier Groups" && modifierGroups && (
-//             <ModifierGroupTable />
-//           )}
-
-//           {activeSection === "Modifiers" && modifiers && <ModifierTable />}
-//         </div>
-//       </FullPageModal>
-//     </div>
-//   );
-// };
-
-// export default CloverPullForm;
-
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import FullPageModal from "@/components/common/modal/fullPageModal";
 import { sdk } from "@/utils/graphqlClient";
 import React, { useState } from "react";
 
+import { CloverInventory, CloverRowItem } from "@/generated/graphql";
 import {
   useCloverCategoryStore,
   useCloverItemStore,
   useCloverModifierGroupStore,
   useCloverModifierStore,
 } from "@/store/cloverStores";
+import useGlobalStore from "@/store/global";
+import useMenuPageStore from "@/store/menuStore";
+import { extractErrorMessage } from "@/utils/utilFUncs";
 import CategoryTable from "../tables/categoryTable";
 import ItemTable from "../tables/ItemTable";
 import ModifierGroupTable from "../tables/modifierGroupTable";
 import ModifierTable from "../tables/modifierTable";
 
 const CloverPullForm: React.FC = () => {
-  const [step, setStep] = useState(1);
-  const [loading, setLoading] = useState(false);
-
+  // config
+  // Global States
   const { categories, setCategories } = useCloverCategoryStore();
   const { items, setItems } = useCloverItemStore();
   const { modifierGroups, setModifierGroups } = useCloverModifierGroupStore();
   const { modifiers, setModifiers } = useCloverModifierStore();
-
+  const { setToastData } = useGlobalStore();
+  const { setIsShowCloverModal } = useMenuPageStore();
+  // Local States
+  const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<
     "Category" | "Items" | "Modifier Groups" | "Modifiers"
   >("Category");
 
+  // API calls
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -234,6 +70,68 @@ const CloverPullForm: React.FC = () => {
     }
   };
 
+  // Helper Functions
+  const transformToClientItems = (
+    cloverInventory: CloverInventory
+  ): CloverRowItem[] => {
+    const { categories, items, modifierGroups, modifiers } = cloverInventory;
+
+    // Create maps for quick lookup
+    const categoriesMap = new Map(categories.map((cat) => [cat.id, cat]));
+    const modifierGroupsMap = new Map(
+      modifierGroups.map((group) => [group.id, group])
+    );
+    const modifiersMap = new Map(modifiers.map((mod) => [mod.id, mod]));
+
+    const clientItems: CloverRowItem[] = items.map((item) => {
+      // Find categories for the item
+      const itemCategories = Array.from(categoriesMap.values())
+        .filter((category) => category.items.includes(item.id))
+        .map((category) => ({
+          name: category.name,
+          status: category.status,
+        }));
+
+      // Find modifier groups for the item
+      const itemModifierGroups = item.modifierGroups
+        .map((groupId) => {
+          const group = modifierGroupsMap.get(groupId);
+          if (!group) return null; // Defensive check
+          const groupModifiers = group.modifiers
+            .map((modId) => {
+              const mod = modifiersMap.get(modId);
+              if (!mod) return null; // Defensive check
+              return {
+                name: mod.name,
+                price: mod.price,
+              };
+            })
+            .filter(Boolean); // Remove any nulls
+
+          return {
+            name: group.name,
+            minRequired: group.minRequired,
+            maxRequired: group.maxRequired,
+            modifiers: groupModifiers,
+          };
+        })
+        .filter(Boolean); // Remove any nulls
+
+      // Create ClientItem
+      return {
+        name: item.name,
+        price: item.price,
+        status: item.status,
+        categories: itemCategories,
+        modifierGroups: itemModifierGroups,
+      };
+    });
+
+    console.log(clientItems);
+    return [];
+  };
+
+  // Handler Functions
   const handleNextStep = () => {
     if (step === 1) {
       fetchData();
@@ -243,6 +141,32 @@ const CloverPullForm: React.FC = () => {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const clientItems = transformToClientItems({
+        categories,
+        items,
+        modifierGroups,
+        modifiers,
+      });
+      const res = await sdk.saveCloverData({
+        rowItems: clientItems,
+      });
+      if (res && res.saveCloverData) {
+        setToastData({
+          message: "Menu Saved Successfully",
+          type: "success",
+        });
+        setIsShowCloverModal(false);
+      }
+    } catch (error) {
+      setToastData({
+        message: extractErrorMessage(error),
+        type: "error",
+      });
+    }
   };
 
   return (
@@ -350,13 +274,26 @@ const CloverPullForm: React.FC = () => {
                   Click on the button below to review the data.
                 </p>
               </div>
-              <CButton
-                variant={ButtonType.Primary}
-                onClick={() => setIsModalOpen(true)}
-                className="mt-4"
-              >
-                Preview Data
-              </CButton>
+
+              <div className="flex space-x-4">
+                <CButton
+                  variant={ButtonType.Primary}
+                  onClick={() => setIsModalOpen(true)}
+                  className="mt-4"
+                >
+                  Preview Data
+                </CButton>
+                <CButton
+                  variant={ButtonType.Primary}
+                  onClick={() => {
+                    // Transform and save data when Save is clicked
+                    handleSubmit();
+                  }}
+                  className="mt-4"
+                >
+                  Save Data
+                </CButton>
+              </div>
             </>
           )}
         </div>

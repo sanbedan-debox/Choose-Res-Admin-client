@@ -9,6 +9,7 @@ import useGlobalStore from "@/store/global";
 import { sdk } from "@/utils/graphqlClient";
 import { hasAccess } from "@/utils/hasAccess";
 import { redirectPathFromStatus } from "@/utils/redirectPathFromStatus";
+import { extractErrorMessage } from "@/utils/utilFUncs";
 import { GetServerSideProps } from "next";
 import { useEffect, useState } from "react";
 import useMenuPageStore from "../../store/menuStore";
@@ -25,16 +26,33 @@ type UserRepo = {
 };
 
 const Menu: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
-  const { setSelectedMenu } = useGlobalStore();
-  // const { isCloverConnected } = useAuthStore();
-  const isCloverConnected = true;
-  const { isShowUploadCSV, setisShowUploadCSV } = useMenuPageStore();
-
-  const [isShowCloverModal, setIsShowCloverModal] = useState(false);
+  const { setSelectedMenu, setToastData } = useGlobalStore();
+  const [isCloverConnected, setIsCloverConnected] = useState<boolean>(false);
+  const {
+    isShowUploadCSV,
+    setisShowUploadCSV,
+    isShowCloverModal,
+    setIsShowCloverModal,
+  } = useMenuPageStore();
 
   useEffect(() => {
     setSelectedMenu("dashboard");
+    checkCloverConnection();
   }, [setSelectedMenu]);
+
+  const checkCloverConnection = async () => {
+    try {
+      const response = await sdk.isCloverConnected();
+      setIsCloverConnected(response.isCloverConnected);
+    } catch (error) {
+      setIsCloverConnected(false);
+      setToastData({
+        message: extractErrorMessage(error),
+        type: "error",
+      });
+      console.error("Error checking Clover connection:", error);
+    }
+  };
 
   return (
     <div className="w-full flex space-x-5">

@@ -345,6 +345,50 @@ export type CloverModifiers = {
   price: Scalars['Float']['output'];
 };
 
+export type CloverRowItem = {
+  categories?: Array<CloverRowItemCategory>;
+  desc: Scalars['String']['input'];
+  modifierGroups?: Array<CloverRowItemModifierGroup>;
+  name: Scalars['String']['input'];
+  options?: Array<CloverRowItemOptions>;
+  price: Scalars['Float']['input'];
+  priceOptions?: Array<CloverRowItemPriceOptions>;
+  status: Scalars['Boolean']['input'];
+  visibility?: Array<CloverRowItemVisibility>;
+};
+
+export type CloverRowItemCategory = {
+  name: Scalars['String']['input'];
+  status: Scalars['Boolean']['input'];
+};
+
+export type CloverRowItemModifier = {
+  name: Scalars['String']['input'];
+  price: Scalars['Float']['input'];
+};
+
+export type CloverRowItemModifierGroup = {
+  maxRequired?: Scalars['Float']['input'];
+  minRequired?: Scalars['Float']['input'];
+  modifiers?: Array<CloverRowItemModifier>;
+  name: Scalars['String']['input'];
+};
+
+export type CloverRowItemOptions = {
+  status: Scalars['Boolean']['input'];
+  type: ItemOptionsEnum;
+};
+
+export type CloverRowItemPriceOptions = {
+  menuType: MenuTypeEnum;
+  price: Scalars['Float']['input'];
+};
+
+export type CloverRowItemVisibility = {
+  menuType: MenuTypeEnum;
+  status: StatusEnum;
+};
+
 export type Config = {
   __typename?: 'Config';
   _id: Scalars['ID']['output'];
@@ -783,6 +827,7 @@ export type Mutation = {
   removeModifierGroupFromItem: Scalars['Boolean']['output'];
   removeRestaurantSubuser: Scalars['Boolean']['output'];
   restaurantOnboarding: Scalars['Boolean']['output'];
+  saveCloverData: Scalars['Boolean']['output'];
   sendTestEmails: Scalars['Boolean']['output'];
   tokensRefresh: Scalars['Boolean']['output'];
   updateBusinessDetails: Scalars['Boolean']['output'];
@@ -1047,6 +1092,11 @@ export type MutationRemoveRestaurantSubuserArgs = {
 
 export type MutationRestaurantOnboardingArgs = {
   input: RestaurantDetailsInput;
+};
+
+
+export type MutationSaveCloverDataArgs = {
+  rowItems: Array<CloverRowItem>;
 };
 
 
@@ -2011,6 +2061,13 @@ export type FetchCloverInventoryQueryVariables = Exact<{ [key: string]: never; }
 
 export type FetchCloverInventoryQuery = { __typename?: 'Query', fetchCloverInventory: { __typename?: 'CloverInventory', categories: Array<{ __typename?: 'CloverCategories', id: string, name: string, status: boolean, items: Array<string> }>, items: Array<{ __typename?: 'CloverItems', id: string, name: string, price: number, status: boolean, modifierGroups: Array<string> }>, modifierGroups: Array<{ __typename?: 'CloverModifierGroups', id: string, name: string, minRequired?: number | null, maxRequired?: number | null, modifiers: Array<string> }>, modifiers: Array<{ __typename?: 'CloverModifiers', id: string, name: string, price: number }> } };
 
+export type SaveCloverDataMutationVariables = Exact<{
+  rowItems: Array<CloverRowItem> | CloverRowItem;
+}>;
+
+
+export type SaveCloverDataMutation = { __typename?: 'Mutation', saveCloverData: boolean };
+
 export type IsCloverConnectedQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -2675,8 +2732,13 @@ export const FetchCloverInventoryDocument = gql`
   }
 }
     `;
+export const SaveCloverDataDocument = gql`
+    mutation saveCloverData($rowItems: [CloverRowItem!]!) {
+  saveCloverData(rowItems: $rowItems)
+}
+    `;
 export const IsCloverConnectedDocument = gql`
-    query IsCloverConnected {
+    query isCloverConnected {
   isCloverConnected
 }
     `;
@@ -3551,8 +3613,11 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     FetchCloverInventory(variables?: FetchCloverInventoryQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<FetchCloverInventoryQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<FetchCloverInventoryQuery>(FetchCloverInventoryDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'FetchCloverInventory', 'query', variables);
     },
-    IsCloverConnected(variables?: IsCloverConnectedQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<IsCloverConnectedQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<IsCloverConnectedQuery>(IsCloverConnectedDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'IsCloverConnected', 'query', variables);
+    saveCloverData(variables: SaveCloverDataMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<SaveCloverDataMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<SaveCloverDataMutation>(SaveCloverDataDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'saveCloverData', 'mutation', variables);
+    },
+    isCloverConnected(variables?: IsCloverConnectedQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<IsCloverConnectedQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<IsCloverConnectedQuery>(IsCloverConnectedDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'isCloverConnected', 'query', variables);
     },
     userLogout(variables?: UserLogoutQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UserLogoutQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<UserLogoutQuery>(UserLogoutDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'userLogout', 'query', variables);
