@@ -12,9 +12,6 @@ interface Item {
   price: number;
   modifierGroups: string[];
   status: boolean;
-  "Online Ordering": boolean;
-  "Dine In": boolean;
-  Catering: boolean;
   "Item Limit": number;
   "Popular Item": boolean;
   "UpSell Item": boolean;

@@ -40,7 +40,9 @@ const ModifierGroupTable: React.FC = () => {
         <tbody className="bg-white divide-y divide-gray-200">
           {modifierGroups?.map((group) => (
             <tr key={group.id}>
-              <td className="py-3 px-4 text-sm text-gray-500">{group.name}</td>
+              <td className="py-3 px-4 text-sm font-medium text-gray-900">
+                {group.name}
+              </td>
               <td className="py-3 px-4 text-sm text-gray-500">
                 {group.modifiers.length > 0
                   ? getModifierNamesByIds(group.modifiers)

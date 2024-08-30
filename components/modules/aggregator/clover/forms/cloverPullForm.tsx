@@ -48,9 +48,6 @@ const CloverPullForm: React.FC = () => {
       setItems(
         items.map((item: any) => ({
           ...item,
-          "Online Ordering": item.status,
-          "Dine In": item.status,
-          Catering: item.status,
           "Item Limit": 0,
           "Popular Item": false,
           "UpSell Item": false,
@@ -279,9 +276,9 @@ const CloverPullForm: React.FC = () => {
                 <CButton
                   variant={ButtonType.Primary}
                   onClick={() => setIsModalOpen(true)}
-                  className="mt-4"
+                  className="mt-4 w-full"
                 >
-                  Preview Data
+                  Preview/Edit Data
                 </CButton>
                 <CButton
                   variant={ButtonType.Primary}
@@ -289,7 +286,7 @@ const CloverPullForm: React.FC = () => {
                     // Transform and save data when Save is clicked
                     handleSubmit();
                   }}
-                  className="mt-4"
+                  className="mt-4 w-full"
                 >
                   Save Data
                 </CButton>
@@ -314,7 +311,7 @@ const CloverPullForm: React.FC = () => {
                   key={section}
                   className={`px-4 py-2 text-sm font-semibold rounded-md ${
                     activeSection === section
-                      ? "bg-blue-600 text-white border-b-2 border-blue-600"
+                      ? "bg-primary text-white border-b-2 border-primary"
                       : "bg-gray-100 text-gray-600"
                   } transition-colors duration-200 ease-in-out`}
                   onClick={() => setActiveSection(section as any)}

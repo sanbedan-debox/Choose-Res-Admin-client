@@ -35,15 +35,7 @@ const ItemTable: React.FC = () => {
             <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Status
             </th>
-            <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Online Ordering
-            </th>
-            <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Dine In
-            </th>
-            <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Catering
-            </th>
+
             <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Item Limit
             </th>
@@ -93,15 +85,7 @@ const ItemTable: React.FC = () => {
                   {item.status ? "Active" : "Inactive"}
                 </span>
               </td>
-              <td className="py-3 px-4 text-sm text-gray-500">
-                {item["Online Ordering"] ? "Yes" : "No"}
-              </td>
-              <td className="py-3 px-4 text-sm text-gray-500">
-                {item["Dine In"] ? "Yes" : "No"}
-              </td>
-              <td className="py-3 px-4 text-sm text-gray-500">
-                {item.Catering ? "Yes" : "No"}
-              </td>
+
               <td className="py-3 px-4 text-sm text-gray-500">
                 {item["Item Limit"]}
               </td>

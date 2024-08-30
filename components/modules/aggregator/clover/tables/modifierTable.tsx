@@ -20,7 +20,7 @@ const ModifierTable: React.FC = () => {
         <tbody className="bg-white divide-y divide-gray-200">
           {modifiers?.map((modifier) => (
             <tr key={modifier.id}>
-              <td className="py-3 px-4 text-sm text-gray-500">
+              <td className="py-3 px-4 text-sm font-medium text-gray-900">
                 {modifier.name}
               </td>
               <td className="py-3 px-4 text-sm text-gray-500">
