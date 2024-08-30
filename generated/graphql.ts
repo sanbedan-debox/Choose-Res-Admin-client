@@ -347,14 +347,11 @@ export type CloverModifiers = {
 
 export type CloverRowItem = {
   categories?: Array<CloverRowItemCategory>;
-  desc: Scalars['String']['input'];
   modifierGroups?: Array<CloverRowItemModifierGroup>;
   name: Scalars['String']['input'];
   options?: Array<CloverRowItemOptions>;
   price: Scalars['Float']['input'];
-  priceOptions?: Array<CloverRowItemPriceOptions>;
   status: Scalars['Boolean']['input'];
-  visibility?: Array<CloverRowItemVisibility>;
 };
 
 export type CloverRowItemCategory = {
@@ -377,16 +374,6 @@ export type CloverRowItemModifierGroup = {
 export type CloverRowItemOptions = {
   status: Scalars['Boolean']['input'];
   type: ItemOptionsEnum;
-};
-
-export type CloverRowItemPriceOptions = {
-  menuType: MenuTypeEnum;
-  price: Scalars['Float']['input'];
-};
-
-export type CloverRowItemVisibility = {
-  menuType: MenuTypeEnum;
-  status: StatusEnum;
 };
 
 export type Config = {
@@ -612,7 +599,7 @@ export type Item = {
   availability?: Maybe<Array<Availability>>;
   category?: Maybe<Array<Category>>;
   createdAt: Scalars['DateTimeISO']['output'];
-  desc: Scalars['String']['output'];
+  desc?: Maybe<Scalars['String']['output']>;
   image?: Maybe<Scalars['String']['output']>;
   modifierGroup: Array<ModifierGroupInfo>;
   name: Scalars['String']['output'];
@@ -2230,14 +2217,14 @@ export type ChangeItemStatusMutation = { __typename?: 'Mutation', changeItemStat
 export type GetItemsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetItemsQuery = { __typename?: 'Query', getItems: Array<{ __typename?: 'Item', _id: string, name: string, desc: string, status: StatusEnum, price: number, modifierGroup: Array<{ __typename?: 'ModifierGroupInfo', id: string, name: string }>, visibility: Array<{ __typename?: 'Visibility', menuType: MenuTypeEnum, status: StatusEnum }>, priceOptions: Array<{ __typename?: 'PriceOptions', price: number, menuType: MenuTypeEnum }> }> };
+export type GetItemsQuery = { __typename?: 'Query', getItems: Array<{ __typename?: 'Item', _id: string, name: string, desc?: string | null, status: StatusEnum, price: number, modifierGroup: Array<{ __typename?: 'ModifierGroupInfo', id: string, name: string }>, visibility: Array<{ __typename?: 'Visibility', menuType: MenuTypeEnum, status: StatusEnum }>, priceOptions: Array<{ __typename?: 'PriceOptions', price: number, menuType: MenuTypeEnum }> }> };
 
 export type GetItemQueryVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
 
 
-export type GetItemQuery = { __typename?: 'Query', getItem: { __typename?: 'Item', _id: string, name: string, desc: string, status: StatusEnum, image?: string | null, price: number, orderLimit?: number | null, createdAt: any, updatedAt: any, modifierGroup: Array<{ __typename?: 'ModifierGroupInfo', name: string, pricingType: PriceTypeEnum, id: string }>, options: Array<{ __typename?: 'Options', _id: string, type: ItemOptionsEnum, displayName: string, desc: string, status: boolean }>, availability?: Array<{ __typename?: 'Availability', day: string, active: boolean, hours: Array<{ __typename?: 'Hours', start: any, end: any }> }> | null, visibility: Array<{ __typename?: 'Visibility', menuType: MenuTypeEnum, status: StatusEnum }>, priceOptions: Array<{ __typename?: 'PriceOptions', menuType: MenuTypeEnum, price: number }>, subCategory?: { __typename?: 'ItemSubCategory', id?: string | null, name: string, desc: string } | null } };
+export type GetItemQuery = { __typename?: 'Query', getItem: { __typename?: 'Item', _id: string, name: string, desc?: string | null, status: StatusEnum, image?: string | null, price: number, orderLimit?: number | null, createdAt: any, updatedAt: any, modifierGroup: Array<{ __typename?: 'ModifierGroupInfo', name: string, pricingType: PriceTypeEnum, id: string }>, options: Array<{ __typename?: 'Options', _id: string, type: ItemOptionsEnum, displayName: string, desc: string, status: boolean }>, availability?: Array<{ __typename?: 'Availability', day: string, active: boolean, hours: Array<{ __typename?: 'Hours', start: any, end: any }> }> | null, visibility: Array<{ __typename?: 'Visibility', menuType: MenuTypeEnum, status: StatusEnum }>, priceOptions: Array<{ __typename?: 'PriceOptions', menuType: MenuTypeEnum, price: number }>, subCategory?: { __typename?: 'ItemSubCategory', id?: string | null, name: string, desc: string } | null } };
 
 export type AddItemMutationVariables = Exact<{
   input: AddItemInput;

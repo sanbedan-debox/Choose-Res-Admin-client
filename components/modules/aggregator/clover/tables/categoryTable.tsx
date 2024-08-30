@@ -3,6 +3,7 @@ import { ButtonType } from "@/components/common/button/interface";
 import ReusableModal from "@/components/common/modal/modal";
 import useGlobalStore from "@/store/global";
 import React, { useState } from "react";
+import Select from "react-select";
 import {
   useCloverCategoryStore,
   useCloverItemStore,
@@ -26,6 +27,13 @@ const CategoryTable: React.FC = () => {
   );
   const [value, setValue] = useState<number | "">("");
   const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
+  const [editMode, setEditMode] = useState(false);
+  const [editData, setEditData] = useState(
+    categories?.map((category) => ({
+      ...category,
+      status: category.status ? true : false,
+    })) ?? []
+  );
 
   // Helper Functions
   const getItemNamesByIds = (ids: string[]) => {
@@ -139,8 +147,46 @@ const CategoryTable: React.FC = () => {
   // Render
 
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full divide-y divide-gray-200 bg-white">
+    <div className="overflow-x-auto h-full">
+      <div className="flex justify-between mb-4">
+        {!editMode ? (
+          <CButton
+            variant={ButtonType.Outlined}
+            onClick={() => setEditMode(true)}
+          >
+            Bulk Edit
+          </CButton>
+        ) : (
+          <div className="flex space-x-4">
+            <CButton
+              variant={ButtonType.Primary}
+              onClick={() => {
+                // Validation
+                // Update Categories
+                setCategories(editData);
+                setEditMode(false);
+              }}
+            >
+              Save
+            </CButton>
+            <CButton
+              variant={ButtonType.Outlined}
+              onClick={() => {
+                setEditData(
+                  categories?.map((category) => ({
+                    ...category,
+                    status: category.status ? true : false,
+                  })) ?? []
+                );
+                setEditMode(false);
+              }}
+            >
+              Cancel
+            </CButton>
+          </div>
+        )}
+      </div>
+      <table className="min-w-full divide-y divide-gray-200 bg-white h-full">
         <thead className="bg-gray-100">
           <tr>
             <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -157,51 +203,106 @@ const CategoryTable: React.FC = () => {
             </th>
           </tr>
         </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {categories?.map((category) => (
-            <tr key={category.id}>
-              <td className="py-3 px-4 text-sm font-medium text-gray-900">
-                {category.name}
-              </td>
-              <td className="py-3 px-4 text-sm text-gray-500">
-                {getItemNamesByIds(category.items)}
-              </td>
-              <td className="py-3 px-4 text-sm text-gray-500">
-                <span
-                  className={`inline-flex px-2 text-xs font-semibold leading-5 rounded-full ${
-                    category.status
-                      ? "bg-green-100 text-green-800"
-                      : "bg-red-100 text-red-800"
-                  }`}
-                >
-                  {category.status ? "Active" : "Inactive"}
-                </span>
-              </td>
-              <td className=" px-4 text-sm text-gray-500">
-                {category.items.length > 0 && (
-                  <div className="flex space-x-4">
-                    <p
-                      className="text-primary cursor-pointer hover:underline"
-                      onClick={() => handleManageItemPrice(category.id)}
+        <tbody className="bg-white divide-y divide-gray-200 h-full">
+          {editMode
+            ? editData?.map((category) => (
+                <tr key={category.id}>
+                  <td className="py-3 px-4 text-sm">
+                    <input
+                      type="text"
+                      value={category.name}
+                      onChange={(e) =>
+                        setEditData((prev) =>
+                          prev.map((cat) =>
+                            cat.id === category.id
+                              ? { ...cat, name: e.target.value }
+                              : cat
+                          )
+                        )
+                      }
+                      className="input input-primary"
+                    />
+                  </td>
+                  <td className="py-3 px-4 text-sm text-gray-500">
+                    {category.items.length > 0
+                      ? getItemNamesByIds(category.items)
+                      : "None"}
+                  </td>
+
+                  <td className="py-3 px-4 text-sm">
+                    <Select
+                      options={[
+                        { value: true, label: "Active" },
+                        { value: false, label: "Inactive" },
+                      ]}
+                      value={
+                        category.status
+                          ? { value: true, label: "Active" }
+                          : { value: false, label: "Inactive" }
+                      }
+                      onChange={(option) =>
+                        setEditData((prev) =>
+                          prev.map((cat) =>
+                            cat.id === category.id
+                              ? { ...cat, status: option?.value === true }
+                              : cat
+                          )
+                        )
+                      }
+                      className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
+                      classNamePrefix="react-select"
+                    />
+                  </td>
+                  <td className="py-3 px-4 text-sm text-gray-500">
+                    {/* Keep other columns as is */}
+                  </td>
+                </tr>
+              ))
+            : categories?.map((category) => (
+                <tr key={category.id}>
+                  <td className="py-3 px-4 text-sm font-medium text-gray-900">
+                    {category.name}
+                  </td>
+                  <td className="py-3 px-4 text-sm text-gray-500">
+                    {getItemNamesByIds(category.items)}
+                  </td>
+                  <td className="py-3 px-4 text-sm text-gray-500">
+                    <span
+                      className={`inline-flex px-2 text-xs font-semibold leading-5 rounded-full ${
+                        category.status
+                          ? "bg-green-100 text-green-800"
+                          : "bg-red-100 text-red-800"
+                      }`}
                     >
-                      Manage Items Price
-                    </p>
-                    <p
-                      className="text-red-600 cursor-pointer hover:underline"
-                      onClick={() => handleDeleteCategory(category.id)}
-                    >
-                      Delete
-                    </p>
-                  </div>
-                )}
-              </td>
-            </tr>
-          ))}
+                      {category.status ? "Active" : "Inactive"}
+                    </span>
+                  </td>
+                  <td className=" px-4 text-sm text-gray-500">
+                    {category.items.length > 0 && (
+                      <div className="flex space-x-4">
+                        <p
+                          className="text-primary cursor-pointer hover:underline"
+                          onClick={() => handleManageItemPrice(category.id)}
+                        >
+                          Increase Items Price
+                        </p>
+                        <p
+                          className="text-red-600 cursor-pointer hover:underline"
+                          onClick={() => handleDeleteCategory(category.id)}
+                        >
+                          Delete
+                        </p>
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              ))}
+          {}
         </tbody>
       </table>
-      {/* Manage Price */}
+      {/* Increase Item Price */}
       <ReusableModal
-        title="Manage Item Price"
+        title="Increase Item Price"
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         width="md"

@@ -12,7 +12,6 @@ interface Item {
   price: number;
   modifierGroups: string[];
   status: boolean;
-  "Item Limit": number;
   "Popular Item": boolean;
   "UpSell Item": boolean;
   IsVegan: boolean;

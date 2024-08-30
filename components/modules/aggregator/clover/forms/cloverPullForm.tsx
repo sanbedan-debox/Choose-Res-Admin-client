@@ -4,7 +4,14 @@ import FullPageModal from "@/components/common/modal/fullPageModal";
 import { sdk } from "@/utils/graphqlClient";
 import React, { useState } from "react";
 
-import { CloverInventory, CloverRowItem } from "@/generated/graphql";
+import {
+  CloverInventory,
+  CloverRowItem,
+  CloverRowItemModifier,
+  CloverRowItemModifierGroup,
+  CloverRowItemOptions,
+  ItemOptionsEnum,
+} from "@/generated/graphql";
 import {
   useCloverCategoryStore,
   useCloverItemStore,
@@ -48,7 +55,7 @@ const CloverPullForm: React.FC = () => {
       setItems(
         items.map((item: any) => ({
           ...item,
-          "Item Limit": 0,
+
           "Popular Item": false,
           "UpSell Item": false,
           IsVegan: false,
@@ -68,6 +75,7 @@ const CloverPullForm: React.FC = () => {
   };
 
   // Helper Functions
+
   const transformToClientItems = (
     cloverInventory: CloverInventory
   ): CloverRowItem[] => {
@@ -103,16 +111,27 @@ const CloverPullForm: React.FC = () => {
                 price: mod.price,
               };
             })
-            .filter(Boolean); // Remove any nulls
+            .filter(Boolean) as CloverRowItemModifier[];
 
           return {
             name: group.name,
-            minRequired: group.minRequired,
-            maxRequired: group.maxRequired,
+            minRequired: group.minRequired ?? 0,
+            maxRequired: group.maxRequired ?? 1,
             modifiers: groupModifiers,
           };
         })
-        .filter(Boolean); // Remove any nulls
+        .filter(Boolean) as CloverRowItemModifierGroup[];
+
+      // Map item options to CloverRowItemOptions
+      const itemOptions: CloverRowItemOptions[] = [
+        { type: ItemOptionsEnum.PopularItem, status: item["Popular Item"] },
+        { type: ItemOptionsEnum.UpSellItem, status: item["UpSell Item"] },
+        { type: ItemOptionsEnum.IsVegan, status: item.IsVegan },
+        { type: ItemOptionsEnum.HasNuts, status: item.HasNuts },
+        { type: ItemOptionsEnum.IsGlutenFree, status: item.IsGlutenFree },
+        { type: ItemOptionsEnum.IsHalal, status: item.IsHalal },
+        { type: ItemOptionsEnum.IsSpicy, status: item.IsSpicy },
+      ];
 
       // Create ClientItem
       return {
@@ -121,11 +140,12 @@ const CloverPullForm: React.FC = () => {
         status: item.status,
         categories: itemCategories,
         modifierGroups: itemModifierGroups,
+        options: itemOptions,
       };
     });
 
     console.log(clientItems);
-    return [];
+    return clientItems;
   };
 
   // Handler Functions

@@ -218,92 +218,54 @@ const AddItemForm = () => {
     }[]
   >([]);
 
-  // API calls
-  const fetchItemData = async () => {
-    if (editItemId && (isEditItem || isDuplicateItem)) {
+  useEffect(() => {
+    const fetch = async () => {
       try {
-        const response = await sdk.getItem({ id: editItemId });
-        if (response && response.getItem) {
-          const {
-            name,
-            desc,
-            status,
-            price,
-            orderLimit,
-            visibility,
-            priceOptions,
-            availability,
-            image,
-            modifierGroup,
-            options,
-            subCategory,
-          } = response.getItem;
-
-          setItemData({
-            _id: editItemId ?? "",
-            name,
-            desc,
-            price,
-            status,
-            orderLimit: orderLimit ?? 0,
-            modifierGroup,
+        const response = await sdk.getModifierGroupsforItemsDropDown();
+        if (!response || !response.getModifierGroups) {
+          setToastData({
+            message:
+              "Something went wrong while fetching the menu details, please try again!",
+            type: "error",
           });
-
-          setValue("name", isDuplicateItem ? generateUniqueName(name) : name);
-          if (orderLimit) {
-            setValue("limit", orderLimit);
-          }
-          if (availability) {
-            const originalAvailability =
-              reverseFormatAvailability(availability);
-            setAvailability(originalAvailability);
-          }
-
-          setValue("desc", desc);
-          setValue("status", status === StatusEnum.Active ? true : false);
-          setValue("price", price);
-
-          setVisibilities(visibility);
-          setPricingOptions(priceOptions);
-
-          setPreviewUrl(image || "");
-          const formattedOptions: IOption[] = options.map(
-            (it: {
-              _id: string;
-              desc: string;
-              displayName: string;
-              status: boolean;
-              type: ItemOptionsEnum;
-            }) => ({
-              _id: it._id,
-              desc: it.desc,
-              displayName: it.displayName,
-              status: it.status,
-              type: it.type,
-            })
-          );
-          setOptions(formattedOptions);
-
-          if (subCategory !== null) {
-            setSelectedSubCategories({
-              desc: subCategory?.desc ?? "",
-              name: subCategory?.name ?? "",
-              id: subCategory?.id ?? null,
-            });
-            setValue("subCategory", {
-              label: subCategory?.name ?? "",
-              value: subCategory?.name ?? "",
-            });
-          }
-          let selectedIds = modifierGroup.map((e) => e.id.toString());
-          console.log("Selected", selectedIds);
-          console.log("Master List", masterList);
-          let selected = masterList.filter((e) =>
-            selectedIds.includes(e._id.toString())
-          );
-          console.log(selected);
-          setSelectedList(selected);
+          return;
         }
+        const modifierGroups: ListType[] = response.getModifierGroups.map(
+          (el) => ({
+            _id: el._id.toString(),
+            name: el.name.toString(),
+          })
+        );
+        setMasterList(modifierGroups);
+
+        // Update selected list
+        let sl = [...selectedList];
+        for (let i = 0; i < modifierGroups.length; i++) {
+          const category = modifierGroups[i];
+          let idx = sl.findIndex((e) => e._id === category._id);
+          if (idx >= 0) {
+            sl[idx].name = category.name;
+          }
+        }
+        console.log("selected List", sl);
+        setSelectedList(sl);
+
+        // if (items && items.getModifierGroups) {
+        //   const formattedItemsList = items.getModifierGroups.map(
+        //     (item: { _id: string; name: string }) => ({
+        //       _id: item._id || "",
+        //       name: item?.name || "",
+        //     })
+        //   );
+        //   // const filteredItemsList = formattedItemsList.filter(
+        //   //   (item) =>
+        //   //     !selectedList.some(
+        //   //       (selectedItem) => selectedItem._id === item._id
+        //   //     )
+        //   // );
+        //   setMasterList(formattedItemsList);
+        //   console.log("Masters Fetched", formattedItemsList);
+        // }
       } catch (error) {
         const errorMessage = extractErrorMessage(error);
         setToastData({
@@ -311,8 +273,9 @@ const AddItemForm = () => {
           message: errorMessage,
         });
       }
-    }
-  };
+    };
+    fetch();
+  }, [refreshMenuBuilderData]);
 
   const fetchMenuData = async () => {
     try {
@@ -352,11 +315,104 @@ const AddItemForm = () => {
   };
 
   useEffect(() => {
-    console.log("MastersList Changed", masterList);
-  }, [masterList]);
-
-  useEffect(() => {
     const fetchData = async () => {
+      const fetchItemData = async () => {
+        if (editItemId && (isEditItem || isDuplicateItem)) {
+          try {
+            const response = await sdk.getItem({ id: editItemId });
+            if (response && response.getItem) {
+              const {
+                name,
+                desc,
+                status,
+                price,
+                orderLimit,
+                visibility,
+                priceOptions,
+                availability,
+                image,
+                modifierGroup,
+                options,
+                subCategory,
+              } = response.getItem;
+
+              setItemData({
+                _id: editItemId ?? "",
+                name,
+                desc,
+                price,
+                status,
+                orderLimit: orderLimit ?? 0,
+                modifierGroup,
+              });
+
+              setValue(
+                "name",
+                isDuplicateItem ? generateUniqueName(name) : name
+              );
+              if (orderLimit) {
+                setValue("limit", orderLimit);
+              }
+              if (availability) {
+                const originalAvailability =
+                  reverseFormatAvailability(availability);
+                setAvailability(originalAvailability);
+              }
+
+              setValue("desc", desc);
+              setValue("status", status === StatusEnum.Active ? true : false);
+              setValue("price", price);
+
+              setVisibilities(visibility);
+              setPricingOptions(priceOptions);
+
+              setPreviewUrl(image || "");
+              const formattedOptions: IOption[] = options.map(
+                (it: {
+                  _id: string;
+                  desc: string;
+                  displayName: string;
+                  status: boolean;
+                  type: ItemOptionsEnum;
+                }) => ({
+                  _id: it._id,
+                  desc: it.desc,
+                  displayName: it.displayName,
+                  status: it.status,
+                  type: it.type,
+                })
+              );
+              setOptions(formattedOptions);
+
+              if (subCategory !== null) {
+                setSelectedSubCategories({
+                  desc: subCategory?.desc ?? "",
+                  name: subCategory?.name ?? "",
+                  id: subCategory?.id ?? null,
+                });
+                setValue("subCategory", {
+                  label: subCategory?.name ?? "",
+                  value: subCategory?.name ?? "",
+                });
+              }
+              let selectedIds = modifierGroup.map((e) => e.id.toString());
+              console.log(masterList);
+              let selected = masterList.filter((e) =>
+                selectedIds.includes(e._id.toString())
+              );
+              console.log("HHHH", selected);
+              setSelectedList(selected);
+            }
+          } catch (error) {
+            const errorMessage = extractErrorMessage(error);
+            setToastData({
+              type: "error",
+              message: errorMessage,
+            });
+          }
+        }
+      };
+
       try {
         await setRestroTimings();
 
@@ -375,8 +431,12 @@ const AddItemForm = () => {
       }
     };
 
+    if ((editItemId !== null || editItemId !== "") && masterList.length > 0) {
+      fetchData();
+    }
+
     fetchData(); // Call the async function
-  }, [editItemId, setValue, setToastData]);
+  }, [editItemId, setValue, setToastData, masterList]);
 
   useEffect(() => {
     const fetchSubCategories = async () => {
@@ -406,65 +466,6 @@ const AddItemForm = () => {
 
     fetchSubCategories();
   }, []);
-
-  useEffect(() => {
-    const fetch = async () => {
-      try {
-        const response = await sdk.getModifierGroupsforItemsDropDown();
-        if (!response || !response.getModifierGroups) {
-          setToastData({
-            message:
-              "Something went wrong while fetching the menu details, please try again!",
-            type: "error",
-          });
-          return;
-        }
-        const modifierGroups: ListType[] = response.getModifierGroups.map(
-          (el) => ({
-            _id: el._id.toString(),
-            name: el.name.toString(),
-          })
-        );
-        setMasterList(modifierGroups);
-
-        // Update selected list
-        let sl = [...selectedList];
-        for (let i = 0; i < modifierGroups.length; i++) {
-          const category = modifierGroups[i];
-          let idx = selectedList.findIndex((e) => e._id === category._id);
-          if (idx >= 0) {
-            sl[idx].name = category.name;
-          }
-        }
-        console.log("selected List", sl);
-        setSelectedList(sl);
-
-        // if (items && items.getModifierGroups) {
-        //   const formattedItemsList = items.getModifierGroups.map(
-        //     (item: { _id: string; name: string }) => ({
-        //       _id: item._id || "",
-        //       name: item?.name || "",
-        //     })
-        //   );
-        //   // const filteredItemsList = formattedItemsList.filter(
-        //   //   (item) =>
-        //   //     !selectedList.some(
-        //   //       (selectedItem) => selectedItem._id === item._id
-        //   //     )
-        //   // );
-        //   setMasterList(formattedItemsList);
-        //   console.log("Masters Fetched", formattedItemsList);
-        // }
-      } catch (error) {
-        const errorMessage = extractErrorMessage(error);
-        setToastData({
-          type: "error",
-          message: errorMessage,
-        });
-      }
-    };
-    fetch();
-  }, [refreshMenuBuilderData]);
 
   useEffect(() => {
     if (visibilities.length === 1) {
@@ -507,10 +508,6 @@ const AddItemForm = () => {
       }
     }
   }, [watch("price")]);
-
-  useEffect(() => {
-    setRestroTimings();
-  }, []);
 
   // Handler Functions
   const onSubmit = async (data: IFormInput) => {
@@ -614,8 +611,9 @@ const AddItemForm = () => {
       }
 
       const prevSelectedMenuIds = itemData?.modifierGroup?.map(
-        (item: any) => item._id
+        (item: any) => item.id
       );
+
       const selectedItemsIds = selectedList.map((item) => item._id);
       const isModAdded = selectedItemsIds.filter(
         (id) => !prevSelectedMenuIds?.includes(id)
