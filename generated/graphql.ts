@@ -737,7 +737,7 @@ export type ModifierGroup = {
   multiSelect: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
   optional: Scalars['Boolean']['output'];
-  price: Scalars['Float']['output'];
+  price?: Maybe<Scalars['Float']['output']>;
   pricingType: PriceTypeEnum;
   restaurantId: Restaurant;
   updatedAt: Scalars['DateTimeISO']['output'];
@@ -2368,7 +2368,7 @@ export type GetModifierGroupQueryVariables = Exact<{
 }>;
 
 
-export type GetModifierGroupQuery = { __typename?: 'Query', getModifierGroup: { __typename?: 'ModifierGroup', _id: string, name: string, price: number, desc?: string | null, pricingType: PriceTypeEnum, optional: boolean, multiSelect: boolean, maxSelections: number, minSelections: number, modifiers: Array<{ __typename?: 'ModifierInfo', name: string, price: number, id: string }> } };
+export type GetModifierGroupQuery = { __typename?: 'Query', getModifierGroup: { __typename?: 'ModifierGroup', _id: string, name: string, price?: number | null, desc?: string | null, pricingType: PriceTypeEnum, optional: boolean, multiSelect: boolean, maxSelections: number, minSelections: number, modifiers: Array<{ __typename?: 'ModifierInfo', name: string, price: number, id: string }> } };
 
 export type RemoveModifierFromGroupMutationVariables = Exact<{
   modifierGroupId: Scalars['String']['input'];

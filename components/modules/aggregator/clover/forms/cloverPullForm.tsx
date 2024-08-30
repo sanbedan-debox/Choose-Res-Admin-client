@@ -144,7 +144,6 @@ const CloverPullForm: React.FC = () => {
       };
     });
 
-    console.log(clientItems);
     return clientItems;
   };
 
@@ -162,7 +161,7 @@ const CloverPullForm: React.FC = () => {
 
   const handleSubmit = async () => {
     try {
-      const clientItems = transformToClientItems({
+      const clientItems = await transformToClientItems({
         categories,
         items,
         modifierGroups,

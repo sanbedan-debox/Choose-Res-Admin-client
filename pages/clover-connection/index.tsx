@@ -1,4 +1,5 @@
 import BlockerLayout from "@/components/layouts/blockerLayout";
+import useMenuPageStore from "@/store/menuStore";
 import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import { GetServerSideProps } from "next";
@@ -18,16 +19,17 @@ const CloverConnectionVerify: NextPageWithLayout = ({
   error,
 }: CloverConnectionVerifyProps) => {
   const [countdown, setCountdown] = useState<number>(3);
-
+  const { setIsShowCloverModal } = useMenuPageStore();
   useEffect(() => {
     if (redirectUrl) {
       const timer = setInterval(() => {
         setCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(timer);
-            if (redirectUrl) {
-              window.location.href = redirectUrl;
+            if (redirectUrl === "/menu") {
+              setIsShowCloverModal(true);
             }
+            window.location.href = redirectUrl;
             return 0;
           }
           return prev - 1;
