@@ -34,6 +34,50 @@ const CategoryTable: React.FC = () => {
       status: category.status ? true : false,
     })) ?? []
   );
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [filteredItems, setFilteredItems] = useState<Item[]>([]);
+
+  const handleManageItems = (category: Category) => {
+    setSelectedCategory(category?.id);
+    setSelectedItems(category.items); // Auto-select items in the category
+    setFilteredItems(items ?? []);
+    setIsModalOpen(true);
+  };
+  const handleCheckboxChange = (itemId: string) => {
+    setSelectedItems((prev) =>
+      prev.includes(itemId)
+        ? prev.filter((id) => id !== itemId)
+        : [...prev, itemId]
+    );
+  };
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const searchVal = event.target.value.toLowerCase().trim();
+    if (!items) {
+      return; // Early return if items is null or undefined
+    }
+    if (searchVal !== "") {
+      setFilteredItems(
+        items.filter((item) => item.name.toLowerCase().includes(searchVal))
+      );
+    } else {
+      setFilteredItems(items);
+    }
+  };
+
+  const updateCategoryItems = (categoryId: string, itemIds: string[]) => {
+    const updatedCategories = categories?.map((category) =>
+      category.id === categoryId ? { ...category, items: itemIds } : category
+    );
+    setCategories(updatedCategories ?? []);
+  };
+
+  const handleSave = () => {
+    if (selectedCategory) {
+      updateCategoryItems(selectedCategory, selectedItems);
+    }
+    setIsModalOpen(false);
+  };
 
   // Helper Functions
   const getItemNamesByIds = (ids: string[]) => {
@@ -278,22 +322,30 @@ const CategoryTable: React.FC = () => {
                     </span>
                   </td>
                   <td className=" px-4 text-sm text-gray-500">
-                    {category.items.length > 0 && (
-                      <div className="flex space-x-4">
-                        <p
-                          className="text-primary cursor-pointer hover:underline"
-                          onClick={() => handleManageItemPrice(category.id)}
-                        >
-                          Increase Items Price
-                        </p>
-                        <p
-                          className="text-red-600 cursor-pointer hover:underline"
-                          onClick={() => handleDeleteCategory(category.id)}
-                        >
-                          Delete
-                        </p>
-                      </div>
-                    )}
+                    <div className="flex space-x-4">
+                      <p
+                        className="text-primary cursor-pointer hover:underline"
+                        onClick={() => handleManageItems(category)}
+                      >
+                        Manage Items
+                      </p>
+                      <p
+                        className="text-red-600 cursor-pointer hover:underline"
+                        onClick={() => handleDeleteCategory(category.id)}
+                      >
+                        Delete
+                      </p>
+                      {category.items.length > 0 && (
+                        <div className="flex space-x-4">
+                          <p
+                            className="text-primary cursor-pointer hover:underline"
+                            onClick={() => handleManageItemPrice(category.id)}
+                          >
+                            Increase Items Price
+                          </p>
+                        </div>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -371,6 +423,47 @@ const CategoryTable: React.FC = () => {
               Confirm
             </CButton>
           </div>
+        </div>
+      </ReusableModal>
+      <ReusableModal
+        title="Manage Items"
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        width="md"
+      >
+        <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Search items..."
+            onChange={handleSearch}
+            className="input input-primary w-full"
+          />
+        </div>
+        <div className="flex-1 overflow-y-auto max-h-[400px]">
+          {filteredItems.length > 0 ? (
+            filteredItems.map((item) => (
+              <div
+                key={item.id}
+                className="flex items-center p-2 border-b border-gray-200 cursor-pointer"
+                onClick={() => handleCheckboxChange(item.id)}
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedItems.includes(item.id)}
+                  readOnly
+                  className="mr-3"
+                />
+                <span className="text-sm font-medium">{item.name}</span>
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-500 text-center">No Data Found</p>
+          )}
+        </div>
+        <div className="mt-6 flex justify-end">
+          <CButton variant={ButtonType.Primary} onClick={handleSave}>
+            Save
+          </CButton>
         </div>
       </ReusableModal>
     </div>

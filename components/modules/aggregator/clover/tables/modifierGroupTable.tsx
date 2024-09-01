@@ -1,5 +1,6 @@
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
+import ReusableModal from "@/components/common/modal/modal";
 import useGlobalStore from "@/store/global";
 import React, { useState } from "react";
 import {
@@ -16,6 +17,57 @@ const ModifierGroupTable: React.FC = () => {
       ...group,
     })) ?? []
   );
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedMods, setSelectedMods] = useState<string[]>([]);
+  const [filteredMods, setFilteredMods] = useState<Modifier[]>([]);
+  const [selectedModifierGroup, setSelectedModifierGroup] = useState<
+    string | null
+  >(null);
+
+  const handleManageMods = (modifierGroup: ModifierGroup) => {
+    setSelectedModifierGroup(modifierGroup.id);
+    setSelectedMods(modifierGroup.modifiers); // Auto-select items in the category
+    setFilteredMods(modifiers ?? []);
+    setIsModalOpen(true);
+  };
+  const handleCheckboxChange = (modId: string) => {
+    setSelectedMods((prev) =>
+      prev.includes(modId)
+        ? prev.filter((id) => id !== modId)
+        : [...prev, modId]
+    );
+  };
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const searchVal = event.target.value.toLowerCase().trim();
+    if (!modifiers) {
+      return; // Early return if items is null or undefined
+    }
+    if (searchVal !== "") {
+      setFilteredMods(
+        modifiers.filter((mods) => mods.name.toLowerCase().includes(searchVal))
+      );
+    } else {
+      setFilteredMods(modifiers);
+    }
+  };
+
+  const updateModifierGroupMods = (
+    modifierGroupId: string,
+    modsId: string[]
+  ) => {
+    const updatedModiferGroup = modifierGroups?.map((modgrp) =>
+      modgrp.id === modifierGroupId ? { ...modgrp, modifiers: modsId } : modgrp
+    );
+    setModifierGroups(updatedModiferGroup ?? []);
+  };
+
+  const handleSave = () => {
+    if (selectedModifierGroup) {
+      updateModifierGroupMods(selectedModifierGroup, selectedMods);
+    }
+    setIsModalOpen(false);
+  };
 
   const { setToastData } = useGlobalStore();
   // Function to get modifier names by ids
@@ -101,6 +153,9 @@ const ModifierGroupTable: React.FC = () => {
             <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Max Required
             </th>
+            <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Actions
+            </th>
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
@@ -178,10 +233,59 @@ const ModifierGroupTable: React.FC = () => {
                   <td className="py-3 px-4 text-sm text-gray-500">
                     {group.maxRequired}
                   </td>
+                  <td>
+                    <p
+                      className="text-primary cursor-pointer hover:underline"
+                      onClick={() => handleManageMods(group)}
+                    >
+                      Manage Items
+                    </p>
+                  </td>
                 </tr>
               ))}
         </tbody>
       </table>
+      <ReusableModal
+        title="Manage Modifiers"
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        width="md"
+      >
+        <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Search items..."
+            onChange={handleSearch}
+            className="input input-primary w-full"
+          />
+        </div>
+        <div className="flex-1 overflow-y-auto max-h-[400px]">
+          {filteredMods.length > 0 ? (
+            filteredMods.map((mods) => (
+              <div
+                key={mods.id}
+                className="flex items-center p-2 border-b border-gray-200 cursor-pointer"
+                onClick={() => handleCheckboxChange(mods.id)}
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedMods.includes(mods.id)}
+                  readOnly
+                  className="mr-3"
+                />
+                <span className="text-sm font-medium">{mods.name}</span>
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-500 text-center">No Data Found</p>
+          )}
+        </div>
+        <div className="mt-6 flex justify-end">
+          <CButton variant={ButtonType.Primary} onClick={handleSave}>
+            Save
+          </CButton>
+        </div>
+      </ReusableModal>
     </div>
   );
 };

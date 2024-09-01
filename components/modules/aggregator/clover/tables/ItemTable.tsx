@@ -10,13 +10,13 @@ import {
 } from "../../../../../store/cloverStores";
 
 const ItemTable: React.FC = () => {
+  // Config
+  // Global States
   const { items, setItems } = useCloverItemStore();
   const { modifierGroups } = useCloverModifierGroupStore();
-  const [editMode, setEditMode] = useState(false);
   const { setToastData } = useGlobalStore();
-  const [increaseBy, setIncreaseBy] = useState<"amount" | "percentage">(
-    "amount"
-  );
+  // Local States
+  const [editMode, setEditMode] = useState(false);
   const [increaseValue, setIncreaseValue] = useState<number>(0);
   const [editData, setEditData] = useState(
     items?.map((item) => ({
@@ -33,6 +33,63 @@ const ItemTable: React.FC = () => {
   );
   const [bulkPriceIncreaseModalOpen, setBulkPriceIncreaseModalOpen] =
     useState(false);
+
+  const [increaseBy, setIncreaseBy] = useState<"amount" | "percentage">(
+    "amount"
+  );
+
+  //Managing Modifier Groups States
+  const [isManageModModalOpen, setIsManageModModalOpen] = useState(false);
+  const [selectedMods, setSelectedMods] = useState<string[]>([]);
+  const [filteredMods, setFilteredMods] = useState<ModifierGroup[]>([]);
+  const [selectedItem, setSelectedItem] = useState<string | null>(null);
+
+  // Handler Functions
+
+  const handleManageItems = (item: Item) => {
+    setSelectedItem(item?.id);
+    setSelectedMods(item.modifierGroups); // Auto-select items in the category
+    setFilteredMods(modifierGroups ?? []);
+    setIsManageModModalOpen(true);
+  };
+
+  const handleCheckboxChange = (itemId: string) => {
+    setSelectedMods((prev) =>
+      prev.includes(itemId)
+        ? prev.filter((id) => id !== itemId)
+        : [...prev, itemId]
+    );
+  };
+
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const searchVal = event.target.value.toLowerCase().trim();
+    if (!items) {
+      return; // Early return if items is null or undefined
+    }
+    if (searchVal !== "") {
+      setFilteredMods(
+        (modifierGroups ?? []).filter((item) =>
+          item.name.toLowerCase().includes(searchVal)
+        )
+      );
+    } else {
+      setFilteredMods(modifierGroups ?? []);
+    }
+  };
+
+  const updateItemMods = (itemId: string, modIds: string[]) => {
+    const updatedModifiers = items?.map((item) =>
+      item.id === itemId ? { ...item, modifierGroups: modIds } : item
+    );
+    setItems(updatedModifiers ?? []);
+  };
+
+  const handleSave = () => {
+    if (selectedItem) {
+      updateItemMods(selectedItem, selectedMods);
+    }
+    setIsManageModModalOpen(false);
+  };
 
   // Function to get modifier group names by ids
   const getModifierGroupNamesByIds = (ids: string[]) => {
@@ -59,6 +116,7 @@ const ItemTable: React.FC = () => {
     setBulkPriceIncreaseModalOpen(false);
   };
 
+  // render
   return (
     <div className="overflow-x-auto">
       <div className="flex justify-between mb-4">
@@ -161,6 +219,9 @@ const ItemTable: React.FC = () => {
             </th>
             <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Is Spicy
+            </th>
+            <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Action
             </th>
           </tr>
         </thead>
@@ -445,6 +506,14 @@ const ItemTable: React.FC = () => {
                   <td className="py-3 px-4 text-sm text-gray-500">
                     {item.IsSpicy ? "Yes" : "No"}
                   </td>
+                  <td>
+                    <p
+                      className="text-primary cursor-pointer hover:underline"
+                      onClick={() => handleManageItems(item)}
+                    >
+                      Manage Items
+                    </p>
+                  </td>
                 </tr>
               ))}
         </tbody>
@@ -493,6 +562,47 @@ const ItemTable: React.FC = () => {
               handlePriceChange(increaseValue, increaseBy);
             }}
           >
+            Save
+          </CButton>
+        </div>
+      </ReusableModal>
+      <ReusableModal
+        title="Manage Items"
+        isOpen={isManageModModalOpen}
+        onClose={() => setIsManageModModalOpen(false)}
+        width="md"
+      >
+        <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Search items..."
+            onChange={handleSearch}
+            className="input input-primary w-full"
+          />
+        </div>
+        <div className="flex-1 overflow-y-auto max-h-[400px]">
+          {filteredMods.length > 0 ? (
+            filteredMods.map((item) => (
+              <div
+                key={item.id}
+                className="flex items-center p-2 border-b border-gray-200 cursor-pointer"
+                onClick={() => handleCheckboxChange(item.id)}
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedMods.includes(item.id)}
+                  readOnly
+                  className="mr-3"
+                />
+                <span className="text-sm font-medium">{item.name}</span>
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-500 text-center">No Data Found</p>
+          )}
+        </div>
+        <div className="mt-6 flex justify-end">
+          <CButton variant={ButtonType.Primary} onClick={handleSave}>
             Save
           </CButton>
         </div>

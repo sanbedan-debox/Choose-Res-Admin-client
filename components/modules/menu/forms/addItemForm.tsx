@@ -339,7 +339,7 @@ const AddItemForm = () => {
               setItemData({
                 _id: editItemId ?? "",
                 name,
-                desc,
+                desc: desc ?? "",
                 price,
                 status,
                 orderLimit: orderLimit ?? 0,
@@ -359,7 +359,7 @@ const AddItemForm = () => {
                 setAvailability(originalAvailability);
               }
 
-              setValue("desc", desc);
+              setValue("desc", desc??"");
               setValue("status", status === StatusEnum.Active ? true : false);
               setValue("price", price);
 
