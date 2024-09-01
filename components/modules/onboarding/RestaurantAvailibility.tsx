@@ -46,9 +46,7 @@ const RestaurantAvailability = () => {
     handleSubmit,
     formState: { errors },
     control,
-    watch,
     setValue,
-    getValues,
   } = useForm<IFormData>({
     defaultValues: {},
   });

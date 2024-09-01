@@ -64,7 +64,7 @@ const AddModifierGroupForm = () => {
     formState: { errors },
     control,
     setValue,
-    watch,
+    getValues,
     register,
   } = useForm<IFormInput>({
     defaultValues: {
@@ -201,7 +201,7 @@ const AddModifierGroupForm = () => {
               maxSelections,
               minSelections,
               desc: desc ?? "",
-              price,
+              price: price ?? 0,
               pricingType,
               optional,
               multiSelect,
@@ -258,7 +258,7 @@ const AddModifierGroupForm = () => {
 
   useEffect(() => {
     setModifiersLength(selectedList.length || 0);
-  }, [selectedList, watch("minSelections"), watch("maxSelections")]);
+  }, [selectedList, getValues("minSelections"), getValues("maxSelections")]);
 
   // Handler Functions
 
@@ -582,7 +582,7 @@ const AddModifierGroupForm = () => {
   );
 
   const listHeadings =
-    watch("pricingType")?.value === PriceTypeEnum.IndividualPrice
+    getValues("pricingType")?.value === PriceTypeEnum.IndividualPrice
       ? [
           { title: "Price", dataKey: "price" },
           { title: "Actions", dataKey: "name", render: renderActions },
@@ -590,7 +590,7 @@ const AddModifierGroupForm = () => {
       : [{ title: "Actions", dataKey: "name", render: renderActions }];
 
   const masterListHeadings =
-    watch("pricingType")?.value === PriceTypeEnum.IndividualPrice
+    getValues("pricingType")?.value === PriceTypeEnum.IndividualPrice
       ? [
           { title: "Price", dataKey: "price" },
           {
@@ -733,7 +733,7 @@ const AddModifierGroupForm = () => {
               </p>
             )}
           </div>
-          {watch("pricingType")?.value === PriceTypeEnum.SamePrice && (
+          {getValues("pricingType")?.value === PriceTypeEnum.SamePrice && (
             <div className="">
               <label
                 htmlFor="commonPrice"
@@ -763,8 +763,10 @@ const AddModifierGroupForm = () => {
               label="Optional"
               title="Optional"
               caption="If its checked ,you can use this modifer will become optional"
-              switchChecked={watch("optional")}
-              onSwitchChange={() => setValue("optional", !watch("optional"))}
+              switchChecked={getValues("optional")}
+              onSwitchChange={() =>
+                setValue("optional", !getValues("optional"))
+              }
             />
             <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
               Turn on if you want to make this modifiers optional
@@ -782,9 +784,9 @@ const AddModifierGroupForm = () => {
               label="multiselect"
               title="Multi-Select"
               caption="If its checked, customers can select any item more than once"
-              switchChecked={watch("multiSelect")}
+              switchChecked={getValues("multiSelect")}
               onSwitchChange={() =>
-                setValue("multiSelect", !watch("multiSelect"))
+                setValue("multiSelect", !getValues("multiSelect"))
               }
             />
             <p className="text-gray-500 text-xs mt-1 mx-1 text-start">

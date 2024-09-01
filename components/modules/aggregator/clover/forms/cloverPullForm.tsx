@@ -5,7 +5,9 @@ import { sdk } from "@/utils/graphqlClient";
 import React, { useState } from "react";
 
 import {
+  CloverCategories,
   CloverInventory,
+  CloverItems,
   CloverRowItem,
   CloverRowItemModifier,
   CloverRowItemModifierGroup,
@@ -123,14 +125,32 @@ const CloverPullForm: React.FC = () => {
         .filter(Boolean) as CloverRowItemModifierGroup[];
 
       // Map item options to CloverRowItemOptions
+      // const itemOptions: CloverRowItemOptions[] = [
+      //   { type: ItemOptionsEnum.PopularItem, status: item["Popular Item"] },
+      //   { type: ItemOptionsEnum.UpSellItem, status: item["UpSell Item"] },
+      //   { type: ItemOptionsEnum.IsVegan, status: item.IsVegan },
+      //   { type: ItemOptionsEnum.HasNuts, status: item.HasNuts },
+      //   { type: ItemOptionsEnum.IsGlutenFree, status: item.IsGlutenFree },
+      //   { type: ItemOptionsEnum.IsHalal, status: item.IsHalal },
+      //   { type: ItemOptionsEnum.IsSpicy, status: item.IsSpicy },
+      // ];
       const itemOptions: CloverRowItemOptions[] = [
-        { type: ItemOptionsEnum.PopularItem, status: item["Popular Item"] },
-        { type: ItemOptionsEnum.UpSellItem, status: item["UpSell Item"] },
-        { type: ItemOptionsEnum.IsVegan, status: item.IsVegan },
-        { type: ItemOptionsEnum.HasNuts, status: item.HasNuts },
-        { type: ItemOptionsEnum.IsGlutenFree, status: item.IsGlutenFree },
-        { type: ItemOptionsEnum.IsHalal, status: item.IsHalal },
-        { type: ItemOptionsEnum.IsSpicy, status: item.IsSpicy },
+        {
+          type: ItemOptionsEnum.PopularItem,
+          status: (item as any)["Popular Item"],
+        },
+        {
+          type: ItemOptionsEnum.UpSellItem,
+          status: (item as any)["UpSell Item"],
+        },
+        { type: ItemOptionsEnum.IsVegan, status: (item as any).IsVegan },
+        { type: ItemOptionsEnum.HasNuts, status: (item as any).HasNuts },
+        {
+          type: ItemOptionsEnum.IsGlutenFree,
+          status: (item as any).IsGlutenFree,
+        },
+        { type: ItemOptionsEnum.IsHalal, status: (item as any).IsHalal },
+        { type: ItemOptionsEnum.IsSpicy, status: (item as any).IsSpicy },
       ];
 
       // Create ClientItem
@@ -162,10 +182,10 @@ const CloverPullForm: React.FC = () => {
   const handleSubmit = async () => {
     try {
       const clientItems = await transformToClientItems({
-        categories,
-        items,
-        modifierGroups,
-        modifiers,
+        categories: categories as CloverCategories[],
+        items: items as CloverItems[],
+        modifierGroups: modifierGroups as ModifierGroup[],
+        modifiers: modifiers as Modifier[],
       });
       const res = await sdk.saveCloverData({
         rowItems: clientItems,

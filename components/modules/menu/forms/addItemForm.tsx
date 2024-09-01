@@ -89,9 +89,8 @@ const AddItemForm = () => {
     formState: { errors },
     control,
     setValue,
-    watch,
-    register,
     getValues,
+    register,
   } = useForm<IFormInput>({});
 
   const {
@@ -302,7 +301,7 @@ const AddItemForm = () => {
         setPricingOptions(
           Array.from(uniqueType).map((e) => ({
             menuType: e,
-            price: parseFloat(watch("price").toString()),
+            price: parseFloat(getValues("price").toString()),
           }))
         );
       }
@@ -359,7 +358,7 @@ const AddItemForm = () => {
                 setAvailability(originalAvailability);
               }
 
-              setValue("desc", desc??"");
+              setValue("desc", desc ?? "");
               setValue("status", status === StatusEnum.Active ? true : false);
               setValue("price", price);
 
@@ -471,11 +470,11 @@ const AddItemForm = () => {
     if (visibilities.length === 1) {
       const updatedVisibilities = visibilities.map((vib) => ({
         menuType: vib.menuType,
-        status: watch("status") ? StatusEnum.Active : StatusEnum.Inactive,
+        status: getValues("status") ? StatusEnum.Active : StatusEnum.Inactive,
       }));
       setVisibilities(updatedVisibilities);
     }
-  }, [watch("status")]);
+  }, [getValues("status")]);
 
   // Helper functions
   const setRestroTimings = async () => {
@@ -502,12 +501,12 @@ const AddItemForm = () => {
         setPricingOptions((prevPricingOptions) =>
           prevPricingOptions.map((option) => ({
             ...option,
-            price: parseFloat(watch("price").toString()),
+            price: parseFloat(getValues("price").toString()),
           }))
         );
       }
     }
-  }, [watch("price")]);
+  }, [getValues("price")]);
 
   // Handler Functions
   const onSubmit = async (data: IFormInput) => {
@@ -776,10 +775,10 @@ const AddItemForm = () => {
   };
 
   const handleConfirmation = async () => {
-    setValue("status", !watch("status"));
+    setValue("status", !getValues("status"));
     const updatedVisibilities = visibilities.map((vib) => ({
       menuType: vib.menuType,
-      status: watch("status") ? StatusEnum.Active : StatusEnum.Inactive,
+      status: getValues("status") ? StatusEnum.Active : StatusEnum.Inactive,
     }));
     setVisibilities(updatedVisibilities);
     setModalStates((prev) => ({
@@ -788,7 +787,7 @@ const AddItemForm = () => {
     }));
   };
   const handleRejection = async () => {
-    setValue("status", !watch("status"));
+    setValue("status", !getValues("status"));
     setModalStates((prev) => ({
       ...prev,
       showConfirmationModal: false,
@@ -972,7 +971,7 @@ const AddItemForm = () => {
     if (visibilities.length > 1) {
       setModalStates((prev) => ({ ...prev, showConfirmationModal: true }));
     } else {
-      setValue("status", !watch("status"));
+      setValue("status", !getValues("status"));
       const updatedVisibilities = visibilities.map((vib) => ({
         menuType: vib.menuType,
         status: StatusEnum.Inactive,
@@ -1206,8 +1205,7 @@ const AddItemForm = () => {
               label="Status"
               title="Status"
               caption="If its checked ,you can use this item in Categories and Menus"
-              switchChecked={watch("status")}
-              // onSwitchChange={() => setValue("status", !watch("status"))}
+              switchChecked={getValues("status")}
               onSwitchChange={() => handleToggleSwitch()}
             />
 

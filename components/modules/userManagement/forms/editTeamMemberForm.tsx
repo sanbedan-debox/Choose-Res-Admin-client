@@ -32,12 +32,13 @@ const EditTeamMemberForm: React.FC = () => {
     setIsEditTeamRole,
   } = useUserManagementStore();
 
-  const { register, handleSubmit, setValue, reset, watch } = useForm<FormData>({
-    defaultValues: {
-      role: "",
-      permissions: [],
-    },
-  });
+  const { register, handleSubmit, setValue, reset, getValues } =
+    useForm<FormData>({
+      defaultValues: {
+        role: "",
+        permissions: [],
+      },
+    });
 
   const [permissionsList, setPermissionsList] = useState<
     { id: string; type: PermissionTypeEnum; status: boolean }[]
@@ -119,7 +120,7 @@ const EditTeamMemberForm: React.FC = () => {
               classNamePrefix="react-select"
               placeholder="Select role"
               value={userRoleOptions.find(
-                (option) => option.value === watch("role")
+                (option) => option.value === getValues("role")
               )}
               onChange={(selectedOption) =>
                 setValue("role", (selectedOption as any)?.value)

@@ -71,7 +71,7 @@ const AddCategoryForm = () => {
     formState: { errors },
     register,
     setValue,
-    watch,
+    getValues,
     control,
   } = useForm<IFormInput>();
 
@@ -473,11 +473,11 @@ const AddCategoryForm = () => {
       const isAnyItemActive = selectedList.some(
         (item) => item.status === StatusEnum.Active
       );
-      if (watch("status") === true) {
-        setValue("status", !watch("status"));
+      if (getValues("status") === true) {
+        setValue("status", !getValues("status"));
       } else {
         if (isAnyItemActive) {
-          setValue("status", !watch("status"));
+          setValue("status", !getValues("status"));
           const updatedVisibilities = visibilities.map((vib) => ({
             menuType: vib.menuType,
             status: StatusEnum.Inactive,
@@ -505,17 +505,17 @@ const AddCategoryForm = () => {
     if (visibilities.length === 1) {
       const updatedVisibilities = visibilities.map((vib) => ({
         menuType: vib.menuType,
-        status: watch("status") ? StatusEnum.Active : StatusEnum.Inactive,
+        status: getValues("status") ? StatusEnum.Active : StatusEnum.Inactive,
       }));
       setVisibilities(updatedVisibilities);
     }
-  }, [watch("status")]);
+  }, [getValues("status")]);
 
   const handleConfirmation = async () => {
-    setValue("status", !watch("status"));
+    setValue("status", !getValues("status"));
     const updatedVisibilities = visibilities.map((vib) => ({
       menuType: vib.menuType,
-      status: watch("status") ? StatusEnum.Active : StatusEnum.Inactive,
+      status: getValues("status") ? StatusEnum.Active : StatusEnum.Inactive,
     }));
     setVisibilities(updatedVisibilities);
     setModalStates((prev) => ({
@@ -524,7 +524,7 @@ const AddCategoryForm = () => {
     }));
   };
   const handleRejection = async () => {
-    setValue("status", !watch("status"));
+    setValue("status", !getValues("status"));
     setModalStates((prev) => ({
       ...prev,
       showConfirmationModal: false,
@@ -765,8 +765,7 @@ const AddCategoryForm = () => {
             label="Status"
             title="Status"
             caption="If its checked ,you can use this item in Categories and Menus"
-            switchChecked={watch("status")}
-            // onSwitchChange={() => setValue("status", !watch("status"))}
+            switchChecked={getValues("status")}
             onSwitchChange={() => handleToggleSwitch()}
           />
 

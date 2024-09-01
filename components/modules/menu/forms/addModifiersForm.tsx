@@ -49,7 +49,7 @@ const AddModifierForm = () => {
     formState: { errors },
     control,
     setValue,
-    watch,
+    getValues,
     register,
   } = useForm<IFormInput>({ defaultValues: { preSelect: false } });
 
@@ -128,24 +128,13 @@ const AddModifierForm = () => {
   const fetchItems = async () => {
     try {
       const response = await sdk.getItems();
-      const formattedItems = response.getItems.map(
-        (item: {
-          _id: string;
-          name: string;
-          desc: string;
-          price: number;
-          priceOptions: {
-            price: number;
-            menuType: MenuTypeEnum;
-          }[];
-        }) => ({
-          _id: item._id,
-          name: item.name,
-          desc: item.desc,
-          price: item.price,
-          priceOptions: item.priceOptions,
-        })
-      );
+      const formattedItems = response.getItems.map((item: any) => ({
+        _id: item._id,
+        name: item.name,
+        desc: item.desc,
+        price: item.price,
+        priceOptions: item.priceOptions,
+      }));
       setItemOptions(formattedItems);
     } catch (error) {
       const errorMessage = extractErrorMessage(error);
@@ -383,8 +372,10 @@ const AddModifierForm = () => {
               label="Pre Select"
               title="Pre Select"
               caption="If its checked,Then Modifier will be preselected"
-              switchChecked={watch("preSelect")}
-              onSwitchChange={() => setValue("preSelect", !watch("preSelect"))}
+              switchChecked={getValues("preSelect")}
+              onSwitchChange={() =>
+                setValue("preSelect", !getValues("preSelect"))
+              }
             />
             <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
               Turn on if you want to make this modifiers optional
