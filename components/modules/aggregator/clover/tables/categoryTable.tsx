@@ -37,6 +37,8 @@ const CategoryTable: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [filteredItems, setFilteredItems] = useState<Item[]>([]);
+  const [confirmPriceChangeModalOpen, setConfirmPriceChangeModalOpen] =
+    useState(false);
 
   const handleManageItems = (category: Category) => {
     setSelectedCategory(category?.id);
@@ -72,11 +74,15 @@ const CategoryTable: React.FC = () => {
     setCategories(updatedCategories ?? []);
   };
 
-  const handleSave = () => {
+  const handleManageItemsSave = () => {
     if (selectedCategory) {
       updateCategoryItems(selectedCategory, selectedItems);
     }
     setIsModalOpen(false);
+  };
+
+  const handleSavePriceChange = () => {
+    setConfirmPriceChangeModalOpen(true);
   };
 
   // Helper Functions
@@ -308,7 +314,9 @@ const CategoryTable: React.FC = () => {
                     {category.name}
                   </td>
                   <td className="py-3 px-4 text-sm text-gray-500">
-                    {getItemNamesByIds(category.items)}
+                    {category.items.length > 0
+                      ? getItemNamesByIds(category.items)
+                      : "None"}
                   </td>
                   <td className="py-3 px-4 text-sm text-gray-500">
                     <span
@@ -393,7 +401,7 @@ const CategoryTable: React.FC = () => {
             <CButton
               className="w-full"
               variant={ButtonType.Primary}
-              onClick={handlePriceChange}
+              onClick={handleSavePriceChange}
             >
               Save
             </CButton>
@@ -461,9 +469,36 @@ const CategoryTable: React.FC = () => {
           )}
         </div>
         <div className="mt-6 flex justify-end">
-          <CButton variant={ButtonType.Primary} onClick={handleSave}>
+          <CButton variant={ButtonType.Primary} onClick={handleManageItemsSave}>
             Save
           </CButton>
+        </div>
+      </ReusableModal>
+
+      {/* Confirmation Price change */}
+      <ReusableModal
+        title="Confirm Price Change"
+        isOpen={confirmPriceChangeModalOpen}
+        onClose={() => setConfirmPriceChangeModalOpen(false)}
+        width="md"
+      >
+        <div className="space-y-6 mt-2">
+          <p>
+            Are you sure you want to update the prices of the items in this
+            category?
+          </p>
+          <div className="flex justify-end mt-4 space-x-4">
+            <CButton
+              className="w-full"
+              variant={ButtonType.Primary}
+              onClick={() => {
+                handlePriceChange();
+                setConfirmPriceChangeModalOpen(false);
+              }}
+            >
+              Yes
+            </CButton>
+          </div>
         </div>
       </ReusableModal>
     </div>

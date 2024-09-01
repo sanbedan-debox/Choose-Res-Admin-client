@@ -37,6 +37,8 @@ const ItemTable: React.FC = () => {
   const [increaseBy, setIncreaseBy] = useState<"amount" | "percentage">(
     "amount"
   );
+  const [confirmPriceChangeModalOpen, setConfirmPriceChangeModalOpen] =
+    useState(false);
 
   //Managing Modifier Groups States
   const [isManageModModalOpen, setIsManageModModalOpen] = useState(false);
@@ -559,7 +561,7 @@ const ItemTable: React.FC = () => {
                 setBulkPriceIncreaseModalOpen(false);
                 return;
               }
-              handlePriceChange(increaseValue, increaseBy);
+              setConfirmPriceChangeModalOpen(true);
             }}
           >
             Save
@@ -605,6 +607,30 @@ const ItemTable: React.FC = () => {
           <CButton variant={ButtonType.Primary} onClick={handleSave}>
             Save
           </CButton>
+        </div>
+      </ReusableModal>
+      {/* Confirmation Price change */}
+      <ReusableModal
+        title="Confirm Price Change"
+        isOpen={confirmPriceChangeModalOpen}
+        onClose={() => setConfirmPriceChangeModalOpen(false)}
+        width="md"
+      >
+        <div className="space-y-6 mt-2">
+          <p>Are you sure you want to update prices of all the items</p>
+          <div className="flex justify-end mt-4 space-x-4">
+            <CButton
+              className="w-full"
+              variant={ButtonType.Primary}
+              onClick={() => {
+                handlePriceChange(increaseValue, increaseBy);
+
+                setConfirmPriceChangeModalOpen(false);
+              }}
+            >
+              Yes
+            </CButton>
+          </div>
         </div>
       </ReusableModal>
     </div>

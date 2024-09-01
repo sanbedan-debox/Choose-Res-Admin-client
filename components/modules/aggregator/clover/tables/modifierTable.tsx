@@ -15,14 +15,20 @@ const ModifierTable: React.FC = () => {
     "amount"
   );
   const [value, setValue] = useState<number | "">("");
+  const [confirmPriceChangeModalOpen, setConfirmPriceChangeModalOpen] =
+    useState(false);
 
   const handlePriceIncrease = () => {
     const numericValue = typeof value === "number" ? value : 0;
 
     const updatedModifiers = editData.map((modifier) => {
       if (increaseBy === "amount") {
+        setValue("");
+
         return { ...modifier, price: (modifier.price ?? 0) + numericValue };
       }
+      setValue("");
+
       return {
         ...modifier,
         price: (modifier.price ?? 0) * (1 + numericValue / 100),
@@ -182,9 +188,34 @@ const ModifierTable: React.FC = () => {
             <CButton
               className="w-full"
               variant={ButtonType.Primary}
-              onClick={handlePriceIncrease}
+              onClick={() => {
+                setConfirmPriceChangeModalOpen(true);
+              }}
             >
               Save
+            </CButton>
+          </div>
+        </div>
+      </ReusableModal>
+      {/* Confirmation Price change */}
+      <ReusableModal
+        title="Confirm Price Change"
+        isOpen={confirmPriceChangeModalOpen}
+        onClose={() => setConfirmPriceChangeModalOpen(false)}
+        width="md"
+      >
+        <div className="space-y-6 mt-2">
+          <p>Are you sure you want to update the prices of the Modifiers</p>
+          <div className="flex justify-end mt-4 space-x-4">
+            <CButton
+              className="w-full"
+              variant={ButtonType.Primary}
+              onClick={() => {
+                handlePriceIncrease();
+                setConfirmPriceChangeModalOpen(false);
+              }}
+            >
+              Yes
             </CButton>
           </div>
         </div>
