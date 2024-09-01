@@ -452,16 +452,19 @@ const CategoryTable: React.FC = () => {
             filteredItems.map((item) => (
               <div
                 key={item.id}
-                className="flex items-center p-2 border-b border-gray-200 cursor-pointer"
+                className="flex justify-between items-center p-2 border-b border-gray-200 cursor-pointer"
                 onClick={() => handleCheckboxChange(item.id)}
               >
-                <input
-                  type="checkbox"
-                  checked={selectedItems.includes(item.id)}
-                  readOnly
-                  className="mr-3"
-                />
-                <span className="text-sm font-medium">{item.name}</span>
+                <div className="flex">
+                  <input
+                    type="checkbox"
+                    checked={selectedItems.includes(item.id)}
+                    readOnly
+                    className="mr-3"
+                  />
+                  <span className="text-sm font-medium">{item.name}</span>
+                </div>
+                <span className="text-sm ">{`$${item.price}`}</span>
               </div>
             ))
           ) : (

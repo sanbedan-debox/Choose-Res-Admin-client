@@ -238,7 +238,7 @@ const ModifierGroupTable: React.FC = () => {
                       className="text-primary cursor-pointer hover:underline"
                       onClick={() => handleManageMods(group)}
                     >
-                      Manage Items
+                      Manage Modifiers
                     </p>
                   </td>
                 </tr>
@@ -264,16 +264,19 @@ const ModifierGroupTable: React.FC = () => {
             filteredMods.map((mods) => (
               <div
                 key={mods.id}
-                className="flex items-center p-2 border-b border-gray-200 cursor-pointer"
+                className="flex justify-between items-center p-2 border-b border-gray-200 cursor-pointer"
                 onClick={() => handleCheckboxChange(mods.id)}
               >
-                <input
-                  type="checkbox"
-                  checked={selectedMods.includes(mods.id)}
-                  readOnly
-                  className="mr-3"
-                />
-                <span className="text-sm font-medium">{mods.name}</span>
+                <div className="flex">
+                  <input
+                    type="checkbox"
+                    checked={selectedMods.includes(mods.id)}
+                    readOnly
+                    className="mr-3"
+                  />
+                  <span className="text-sm font-medium">{mods.name}</span>
+                </div>
+                <span className="text-sm ">{`$${mods.price}`}</span>
               </div>
             ))
           ) : (

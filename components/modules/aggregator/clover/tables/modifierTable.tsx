@@ -141,7 +141,7 @@ const ModifierTable: React.FC = () => {
                     {modifier.name}
                   </td>
                   <td className="py-3 px-4 text-sm text-gray-500">
-                    ${modifier.price.toFixed(2)}
+                    {modifier.price.toFixed(2)}
                   </td>
                 </tr>
               ))}
