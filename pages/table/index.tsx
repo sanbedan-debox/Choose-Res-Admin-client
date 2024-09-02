@@ -1,6 +1,5 @@
 import MainLayout from "@/components/layouts/mainBodyLayout";
-import Loader from "@/components/loader";
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 type NextPageWithLayout = React.FC & {
   getLayout?: (page: React.ReactNode) => React.ReactNode;
