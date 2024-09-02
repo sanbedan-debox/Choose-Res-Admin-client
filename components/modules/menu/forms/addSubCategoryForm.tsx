@@ -38,8 +38,8 @@ const AddSubCategoryForm = () => {
   const {
     isEditSubCategory,
     editSubCategoryId,
-    setisDuplicateSubCategory,
-    setisEditSubCategory,
+    setIsDuplicateSubCategory,
+    setIsEditSubCategory,
     isDuplicateSubCategory,
   } = useSubCategoryStore();
 
@@ -147,8 +147,8 @@ const AddSubCategoryForm = () => {
 
       setActionLoading(false);
       setRefreshMenuBuilderData(!refreshMenuBuilderData);
-      setisDuplicateSubCategory(false);
-      setisEditSubCategory(false);
+      setIsDuplicateSubCategory(false);
+      setIsEditSubCategory(false);
 
       setisAddSubCategoryModalOpen(false);
     } catch (error) {

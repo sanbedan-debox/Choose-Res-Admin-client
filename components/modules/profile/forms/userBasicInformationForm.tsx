@@ -1,15 +1,15 @@
 import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
-import FullPageModal from "@/components/common/modal/fullPageModal";
+import ReusableModal from "@/components/common/modal/modal";
 import useAuthStore from "@/store/auth";
 import useGlobalStore from "@/store/global";
 import useProfileStore from "@/store/profile";
+import { useBasicProfileStore } from "@/store/profileBasicEditStore";
 import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import React, { useEffect, useState } from "react";
 import { FaExclamationTriangle } from "react-icons/fa";
 import { MdOutlineEdit } from "react-icons/md";
-import { useBasicProfileStore } from "../store/basicProfileInformation";
 
 const UserBasicInformationForm: React.FC = () => {
   const { firstName, lastName, email, phone } = useBasicProfileStore();
@@ -147,12 +147,10 @@ const UserBasicInformationForm: React.FC = () => {
         </div>
       </div>
 
-      <FullPageModal
+      <ReusableModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title={`Edit ${editField === "firstName" ? "First Name" : "Last Name"}`}
-        actionButtonLabel="Update"
-        onActionButtonClick={updateUserDetails}
       >
         <div className="space-y-4 max-w-4xl mx-auto">
           <div className="col-span-2">
@@ -180,7 +178,7 @@ const UserBasicInformationForm: React.FC = () => {
             </CButton>
           </div>
         </div>
-      </FullPageModal>
+      </ReusableModal>
     </div>
   );
 };

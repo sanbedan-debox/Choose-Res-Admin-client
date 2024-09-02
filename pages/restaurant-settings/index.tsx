@@ -37,7 +37,7 @@ const RestaurantSettings: NextPageWithLayout = () => {
     setAddressLine2,
     setAvailabilityHours,
     setBeverageCategory,
-    setbrandingLogo,
+    setBrandingLogo,
     setCity,
     setCords,
     setDineInCapacity,
@@ -64,7 +64,7 @@ const RestaurantSettings: NextPageWithLayout = () => {
         const response = await sdk.restaurantDetails();
         if (response && response.restaurantDetails) {
           const repo = response.restaurantDetails;
-          setbrandingLogo(repo?.brandingLogo as string);
+          setBrandingLogo(repo?.brandingLogo as string);
           setRestaurantName(repo?.name);
           setRestaurantType(repo?.type as RestaurantType);
           setRestaurantCategory(repo?.category as RestaurantCategory[]);

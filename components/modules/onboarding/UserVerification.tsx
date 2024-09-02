@@ -28,7 +28,7 @@ const UserVerification = () => {
 
   const {
     ein,
-    setein,
+    setEin,
     addressLine1,
     addressLine2,
     businessName,
@@ -151,7 +151,7 @@ const UserVerification = () => {
             className="input input-primary"
             placeholder="EIN"
             defaultValue={ein}
-            onChange={(e) => setein(e.target.value)}
+            onChange={(e) => setEin(e.target.value)}
           />
           <p className="text-gray-400 text-xs text-start mt-1">
             Enter your 9-digits EIN number in this format XX-XXXXXXX

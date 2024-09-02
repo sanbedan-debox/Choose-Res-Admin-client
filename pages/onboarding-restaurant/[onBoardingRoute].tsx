@@ -1,11 +1,11 @@
 import NotFound from "@/components/common/notFound/notFound";
 import OnboardingRestaurantLayout from "@/components/layouts/onboardingResLayout";
-import RestaurantAvailibility from "@/components/modules/onboarding/RestaurantAvailibility";
-import RestaurantBasicInformation from "@/components/modules/onboarding/RestaurantBasicInformation";
-import WelcomeRestaurantOnboarding from "@/components/modules/onboarding/WelcomeRestaurantOnboarding";
+import RestaurantAvailibility from "@/components/modules/onboarding/restaurantAvailibility";
 import { sdk } from "@/utils/graphqlClient";
 
-import RestaurantAdditionalInformation from "@/components/modules/onboarding/RestaurantAdditionalInfo";
+import RestaurantAdditionalInformation from "@/components/modules/onboarding/restaurantAdditionalInfo";
+import RestaurantBasicInformation from "@/components/modules/onboarding/restaurantBasicInformation";
+import WelcomeRestaurantOnboarding from "@/components/modules/onboarding/welcomeRestaurantOnboarding";
 import { MeatType } from "@/generated/graphql";
 import RestaurantOnboardingStore from "@/store/restaurantOnboarding";
 import { GetServerSideProps } from "next";
@@ -52,11 +52,11 @@ const OnboardingPage = ({ repo }: HomePageProps) => {
     setTimeZone,
     setTwitterLink,
     setAvailabilityHours,
-    setbrandingLogo,
+    setBrandingLogo,
   } = RestaurantOnboardingStore();
 
   useEffect(() => {
-    setbrandingLogo(repo?.brandingLogo);
+    setBrandingLogo(repo?.brandingLogo);
     setRestaurantName(repo?.name);
     setRestaurantType(repo?.type);
     setRestaurantCategory(repo?.category);
@@ -83,7 +83,7 @@ const OnboardingPage = ({ repo }: HomePageProps) => {
     });
     setTwitterLink(repo?.socialInfo?.twitter);
     setAvailabilityHours(repo?.availability);
-    setbrandingLogo(repo?.brandingLogo);
+    setBrandingLogo(repo?.brandingLogo);
   }, [
     repo,
     setRestaurantName,

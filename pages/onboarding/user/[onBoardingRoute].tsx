@@ -1,10 +1,10 @@
 import NotFound from "@/components/common/notFound/notFound";
 import OnboardingLayout from "@/components/layouts/onboardingUserLayout";
-import UserInfo from "@/components/modules/onboarding/UserInformation";
+import UserInfo from "@/components/modules/onboarding/userInformation";
+import UserLocation from "@/components/modules/onboarding/userLocation";
+import UserVerification from "@/components/modules/onboarding/userVerification";
+import Intro from "@/components/modules/onboarding/welcomeUser";
 
-import UserLocation from "@/components/modules/onboarding/UserLocation";
-import UserVerification from "@/components/modules/onboarding/UserVerification";
-import Intro from "@/components/modules/onboarding/WelcomeUser";
 import useOnboardingStore from "@/store/onboarding";
 import { sdk } from "@/utils/graphqlClient";
 import { GetServerSideProps } from "next";
@@ -31,19 +31,19 @@ const OnboardingPage = ({ repo }: HomePageProps) => {
     setPlace,
     setZipcode,
     setState,
-    setbusinessType,
-    setein,
-    setemployeeSize,
-    setbusinessName,
-    setestimatedRevenue,
+    setBusinessType,
+    setEin,
+    setEmployeeSize,
+    setBusinessName,
+    setEstimatedRevenue,
   } = useOnboardingStore();
 
   useEffect(() => {
-    setbusinessName(repo.businessName);
-    setbusinessType(repo.businessType);
-    setein(repo.ein);
-    setemployeeSize(repo.employeeSize);
-    setestimatedRevenue(repo.estimatedRevenue);
+    setBusinessName(repo.businessName);
+    setBusinessType(repo.businessType);
+    setEin(repo.ein);
+    setEmployeeSize(repo.employeeSize);
+    setEstimatedRevenue(repo.estimatedRevenue);
     setAddressLine1(repo.address?.addressLine1);
     setAddressLine2(repo.address?.addressLine2);
     setCity(repo.address?.city);
@@ -56,10 +56,10 @@ const OnboardingPage = ({ repo }: HomePageProps) => {
     });
   }, [
     repo,
-    setbusinessType,
-    setein,
-    setemployeeSize,
-    setestimatedRevenue,
+    setBusinessType,
+    setEin,
+    setEmployeeSize,
+    setEstimatedRevenue,
     setAddressLine1,
     setAddressLine2,
     setCity,

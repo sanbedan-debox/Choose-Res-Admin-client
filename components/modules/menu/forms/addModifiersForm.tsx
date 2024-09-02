@@ -51,6 +51,7 @@ const AddModifierForm = () => {
     setValue,
     getValues,
     register,
+    watch,
   } = useForm<IFormInput>({ defaultValues: { preSelect: false } });
 
   // Global States
@@ -373,9 +374,7 @@ const AddModifierForm = () => {
               title="Pre Select"
               caption="If its checked,Then Modifier will be preselected"
               switchChecked={getValues("preSelect")}
-              onSwitchChange={() =>
-                setValue("preSelect", !getValues("preSelect"))
-              }
+              onSwitchChange={() => setValue("preSelect", !watch("preSelect"))}
             />
             <p className="text-gray-500 text-xs mt-1 mx-1 text-start">
               Turn on if you want to make this modifiers optional

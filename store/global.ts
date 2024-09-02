@@ -19,8 +19,8 @@ type MenuState = {
   setSelectedMenu: (menu: string) => void;
   toastData: ToastData | null;
   setToastData: (data: ToastData | null) => void;
-  setisSidebarExpanded: (isExpanded: boolean) => void;
-  setisShowSetupPanel: (e: boolean) => void;
+  setIsSidebarExpanded: (isExpanded: boolean) => void;
+  setIsShowSetupPanel: (e: boolean) => void;
   setisVerificationToRestaurantAdd: (e: boolean) => void;
 };
 
@@ -36,9 +36,9 @@ const useGlobalStore = create<MenuState>((set) => ({
   setSelectedMenu: (menu: string) => set({ selectedMenu: menu }),
   toastData: null, // Default toast data
   setToastData: (data: ToastData | null) => set({ toastData: data }),
-  setisSidebarExpanded: (isExpanded: boolean) =>
+  setIsSidebarExpanded: (isExpanded: boolean) =>
     set({ isSidebarExpanded: isExpanded }),
-  setisShowSetupPanel: (e: boolean) =>
+  setIsShowSetupPanel: (e: boolean) =>
     set({ isShowSetupPanel: e }),
   setisVerificationToRestaurantAdd: (e: boolean) =>
     set({ isVerificationToRestaurantAdd: e }),

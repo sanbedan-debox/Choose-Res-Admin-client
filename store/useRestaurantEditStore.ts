@@ -16,7 +16,7 @@ type RestaurantEditForm = {
     restaurantName: string;
     setRestaurantName: (name: string) => void;
     brandingLogo: string;
-    setbrandingLogo: (name: string) => void;
+    setBrandingLogo: (name: string) => void;
     restaurantWebsite: string;
     setRestaurantWebsite: (website: string) => void;
     restaurantType: string;
@@ -70,7 +70,7 @@ const RestaurantEditStore = create<RestaurantEditForm>((set) => ({
     restaurantName: "",
     setRestaurantName: (name) => set({ restaurantName: name }),
     brandingLogo: "",
-    setbrandingLogo: (name) => set({ brandingLogo: name }),
+    setBrandingLogo: (name) => set({ brandingLogo: name }),
     restaurantWebsite: "",
     setRestaurantWebsite: (website) => set({ restaurantWebsite: website }),
     restaurantType: "",
@@ -125,7 +125,7 @@ const initialState: RestaurantEditForm = {
     restaurantName: "",
     setRestaurantName: (name) => { },
     brandingLogo: "",
-    setbrandingLogo: (logo) => { },
+    setBrandingLogo: (logo) => { },
     restaurantWebsite: "",
     setRestaurantWebsite: (website) => { },
     restaurantType: "",

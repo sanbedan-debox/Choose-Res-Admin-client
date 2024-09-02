@@ -54,7 +54,7 @@ const MenuPage = ({ repo }: { repo?: UserRepo }) => {
   } = useMenuOptionsStore();
   const { setEditModGroupId, setIsEditModGroup, setisDuplicateModifierGroup } =
     useModGroupStore();
-  const { seteditSubCategoryId, setisEditSubCategory } = useSubCategoryStore();
+  const { setEditSubCategoryId, setIsEditSubCategory } = useSubCategoryStore();
 
   const { setEditCatsId, setIsEditCats, setIsDuplicateCats } =
     useMenuCategoryStore();
@@ -74,8 +74,8 @@ const MenuPage = ({ repo }: { repo?: UserRepo }) => {
   const handleAddSubCategoryModalclose = () => {
     setisAddSubCategoryModalOpen(false);
     setRefreshMenuBuilderData(!refreshMenuBuilderData);
-    setisEditSubCategory(false);
-    seteditSubCategoryId(null);
+    setIsEditSubCategory(false);
+    setEditSubCategoryId(null);
   };
   const handleAddMenuCategoryClose = () => {
     setIsAddCategoryModalOpen(false);

@@ -36,6 +36,7 @@ const RestaurantBasicInformationEditForm: React.FC = () => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [btnLoading, setBtnLoading] = useState<boolean>(false);
   const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [showDineInCapacity, setShowDineInCapacity] = useState<boolean>(false);
 
   const {
     register,
@@ -56,6 +57,12 @@ const RestaurantBasicInformationEditForm: React.FC = () => {
 
   useEffect(() => {
     setPreviewUrl(brandingLogo);
+    if (
+      restaurantCategory.includes(RestaurantCategory.DineIn) ||
+      restaurantCategory.includes(RestaurantCategory.PremiumDineIn)
+    ) {
+      setShowDineInCapacity(true);
+    }
   }, []);
 
   const { setSelectedRestaurant } = useRestaurantsStore();
@@ -66,7 +73,8 @@ const RestaurantBasicInformationEditForm: React.FC = () => {
       const formattedWebsite = formatWebsiteUrlClickable(
         data.restaurantWebsite
       );
-      const imgUrl = await handleLogoUpload();
+
+      const imgUrl = logoFile || previewUrl ? await handleLogoUpload() : null;
       const updateInput: any = {};
       let HasChanges = false;
       if (restaurantName !== data.restaurantName) {
@@ -85,18 +93,17 @@ const RestaurantBasicInformationEditForm: React.FC = () => {
         JSON.stringify(restaurantCategory) !==
         JSON.stringify(data.restaurantCategory)
       ) {
-        updateInput.category = data.restaurantCategory || [];
-        HasChanges = true;
+        (updateInput.category = data.restaurantCategory.map(
+          (cat: any) => cat.value as RestaurantCategory
+        )),
+          (HasChanges = true);
       }
-      if (brandingLogo !== imgUrl && imgUrl && imgUrl.trim() !== "") {
+      console.log(brandingLogo, imgUrl);
+      if (brandingLogo !== imgUrl) {
         updateInput.brandingLogo = imgUrl;
         HasChanges = true;
       }
-      if (
-        (data.restaurantCategory.includes(RestaurantCategory.DineIn) ||
-          data.restaurantCategory.includes(RestaurantCategory.PremiumDineIn)) &&
-        dineInCapacity !== data.dineInCapacity
-      ) {
+      if (showDineInCapacity && dineInCapacity !== data.dineInCapacity) {
         updateInput.dineInCapacity =
           parseInt(data.dineInCapacity.toString()) || 0;
         HasChanges = true;
@@ -110,13 +117,16 @@ const RestaurantBasicInformationEditForm: React.FC = () => {
           setRestaurantName(data.restaurantName);
           setRestaurantWebsite(formattedWebsite);
           setRestaurantType(data.restaurantType);
-          setRestaurantCategory(data.restaurantCategory);
-          setDineInCapacity(
-            data.restaurantCategory.includes(RestaurantCategory.DineIn) ||
-              data.restaurantCategory.includes(RestaurantCategory.PremiumDineIn)
-              ? data.dineInCapacity || 0
-              : undefined
+
+          setRestaurantCategory(
+            data.restaurantCategory.map(
+              (cat: any) => cat.value as RestaurantCategory
+            )
           );
+          setDineInCapacity(
+            showDineInCapacity ? data.dineInCapacity || 0 : undefined
+          );
+          setPreviewUrl(imgUrl);
 
           setSelectedRestaurant(data.restaurantName);
           setToastData({
@@ -505,11 +515,20 @@ const RestaurantBasicInformationEditForm: React.FC = () => {
                         option.value as RestaurantCategory
                       )
                     )}
-                    onChange={(selectedOptions) =>
-                      field.onChange(
-                        selectedOptions.map((option) => option.value)
-                      )
-                    }
+                    onChange={(selected) => {
+                      field.onChange(selected);
+                      const selectedCategories = selected.map(
+                        (option) => option.value
+                      );
+                      setShowDineInCapacity(
+                        selectedCategories.includes(
+                          RestaurantCategory.DineIn
+                        ) ||
+                          selectedCategories.includes(
+                            RestaurantCategory.PremiumDineIn
+                          )
+                      );
+                    }}
                   />
                 )}
               />
@@ -554,8 +573,7 @@ const RestaurantBasicInformationEditForm: React.FC = () => {
               </div>
             ) : null} */}
 
-            {restaurantCategory.includes(RestaurantCategory.DineIn) ||
-            restaurantCategory.includes(RestaurantCategory.PremiumDineIn) ? (
+            {showDineInCapacity ? (
               <div className="col-span-2">
                 <label
                   htmlFor="dineInCapacity"
@@ -581,7 +599,7 @@ const RestaurantBasicInformationEditForm: React.FC = () => {
                       e.preventDefault();
                     }
                   }}
-                  onChange={(e) => setDineInCapacity(e.target.value)}
+                  onChange={(e) => setValue("dineInCapacity", e.target.value)}
                 />
               </div>
             ) : null}

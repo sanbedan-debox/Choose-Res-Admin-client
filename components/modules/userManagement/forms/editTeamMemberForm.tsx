@@ -6,7 +6,7 @@ import useGlobalStore from "@/store/global";
 import useUserManagementStore from "@/store/userManagement";
 import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Select from "react-select";
 
@@ -94,6 +94,40 @@ const EditTeamMemberForm: React.FC = () => {
           : permission
       )
     );
+  };
+  useEffect(() => {
+    getUser();
+  }, [isEditTeamMemberId]);
+  const getUser = async () => {
+    if (isEditTeamMemberId) {
+      try {
+        const res = await sdk.getUser({ id: isEditTeamMemberId });
+        const us = res.getUser;
+        if (res.getUser) {
+          const role = us?.role || "";
+          setValue("role", role);
+          console.log(us?.permissions);
+          setPermissionsList(
+            res.getUser.permissions.map((permission) => ({
+              id: permission.id,
+              type: permission.type,
+              status: permission.status,
+            }))
+          );
+
+          reset({
+            role: role,
+            permissions: us?.permissions.map((p) => ({
+              id: p.id,
+              status: p.status,
+              type: p.type,
+            })),
+          });
+        }
+      } catch (error) {
+        console.error("Failed to fetch user data", error);
+      }
+    }
   };
 
   return (

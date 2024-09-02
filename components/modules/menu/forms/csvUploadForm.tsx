@@ -292,19 +292,8 @@ const CsvUploadForm = () => {
           issues.add("Item Description must be between 40 and 160 characters.");
           rowError = true;
         }
-        if (invalidItemDescLimit(categoryDesc.toString())) {
-          issues.add(
-            "Category Description must be between 40 and 160 characters."
-          );
-          rowError = true;
-        }
-        if (invalidItemDescLimit(subCategoryDesc.toString())) {
-          issues.add(
-            "Sub Category Description must be between 40 and 160 characters."
-          );
-          rowError = true;
-        }
-
+      
+    
         // Sanitized data
         const categorySanitized = sanitizeCellValue(
           Category.toString(),

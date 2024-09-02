@@ -148,7 +148,8 @@ const RestaurantBasicInformation = () => {
       const formattedWebsite = formatWebsiteUrlClickable(
         data.restaurantWebsite
       );
-      const imgUrl = await handleLogoUpload();
+      // const imgUrl = await handleLogoUpload();
+      const imgUrl = previewUrl || logoFile ? await handleLogoUpload() : null;
 
       const input: {
         name: string;
@@ -163,6 +164,7 @@ const RestaurantBasicInformation = () => {
         website: formattedWebsite,
         type: data.restaurantType as RestaurantType,
         category: data.restaurantCategory || [],
+
         brandingLogo: imgUrl,
       };
       if (

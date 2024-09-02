@@ -67,7 +67,7 @@ const UserLocationForm: React.FC = () => {
     setZipcode,
   } = useProfileStore();
 
-  const { timezonesOptions, statesOptions } = useMasterStore();
+  const { statesOptions } = useMasterStore();
   const [isFullPageModalOpen, setIsFullPageModalOpen] = useState(false);
 
   useEffect(() => {
@@ -80,21 +80,41 @@ const UserLocationForm: React.FC = () => {
     control,
     setValue,
     formState: { errors },
+    reset,
   } = useForm({
     defaultValues: {
-      addressLine1: addressLine1 || "",
-      addressLine2: addressLine2 || "",
-      city: city || "",
-      state: state || "",
+      addressLine1: addressLine1,
+      addressLine2: addressLine2,
+      city: city,
+      state: state || null,
       zipcode: zipcode || "",
-      cords: cords || "",
-      place: place || "",
+      place: place || { label: "", value: "" },
     },
   });
+
+  useEffect(() => {
+    reset({
+      addressLine1,
+      addressLine2,
+      city,
+      state,
+      zipcode,
+      place: place || { label: "", value: "" },
+    });
+    setValue("addressLine1", addressLine1);
+    setValue("addressLine2", addressLine2);
+    setValue("city", city);
+    setValue("place", place);
+    formState.state = state;
+    setValue("state", state);
+  }, [addressLine1, addressLine2, city, state, zipcode, place, reset]);
+
   const handleInputChange = (field: keyof IFormInput, value: any) => {
     setFormState((prev) => ({ ...prev, [field]: value }));
   };
+
   const { setToastData } = useGlobalStore();
+
   const [formState, setFormState] = useState<IFormInput>({
     addressLine1,
     addressLine2,
@@ -103,12 +123,14 @@ const UserLocationForm: React.FC = () => {
     zipcode,
     location: { label: place?.displayName ?? "", value: place?.placeId ?? "" },
   });
+
   useEffect(() => {
     setSelectedPlace({
       label: place?.displayName,
       value: place?.placeId,
     });
   }, [place]);
+
   const onPlaceChange = async (option: PlacesType | null) => {
     setSelectedPlace(option);
     setFormState((prev) => ({
@@ -125,15 +147,15 @@ const UserLocationForm: React.FC = () => {
 
   const onSubmit = async (data: any) => {
     try {
-      const parseIntZip = parseInt(formState.zipcode.toString());
+      const parseIntZip = parseInt(data.zipcode.toString());
 
       const response = await sdk.updateBusinessDetails({
         input: {
           _id: id,
           address: {
-            addressLine1: formState.addressLine1,
-            addressLine2: formState.addressLine2 ? formState.addressLine2 : "",
-            city: formState.city,
+            addressLine1: data.addressLine1,
+            addressLine2: data.addressLine2 ? data.addressLine2 : "",
+            city: data.city,
             state: {
               stateId: formState.state?.id || "",
               stateName: formState.state?.value || "",
@@ -154,13 +176,16 @@ const UserLocationForm: React.FC = () => {
         setAddressLine1(data.addressLine1);
         setAddressLine2(data.addressLine2);
         setState({
-          id: data.state.id ?? "",
-          value: data.state.value ?? "",
+          id: formState.state?.id || "",
+          value: formState.state?.value || "",
         });
         setCity(data.city);
-        setZipcode(data.zipcode);
-        setCords([coords[0], coords[1]]);
-        setPlace(data.place);
+        setZipcode(parseIntZip);
+        setCords(coords);
+        setPlace({
+          displayName: selectedPlace?.label ?? "",
+          placeId: selectedPlace?.value ?? "",
+        });
 
         setIsFullPageModalOpen(false);
         setToastData({

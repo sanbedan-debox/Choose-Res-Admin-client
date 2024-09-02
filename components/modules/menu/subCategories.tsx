@@ -16,7 +16,7 @@ const SubCategories: React.FC = () => {
   const { setisAddSubCategoryModalOpen, refreshMenuBuilderData } =
     useMenuOptionsStore();
   const [tableLoading, setTableLoading] = useState(false);
-  const { setisEditSubCategory, seteditSubCategoryId } = useSubCategoryStore();
+  const { setIsEditSubCategory, setEditSubCategoryId } = useSubCategoryStore();
   const fetchCategories = async () => {
     try {
       setTableLoading(true);
@@ -46,8 +46,8 @@ const SubCategories: React.FC = () => {
   }, [refreshMenuBuilderData, setToastData]);
 
   const handleEditSubCategory = async (_id: string) => {
-    setisEditSubCategory(true);
-    seteditSubCategoryId(_id);
+    setIsEditSubCategory(true);
+    setEditSubCategoryId(_id);
     // try {
     //   const response = await sdk.getSubCategory({ id: _id });
     //   if (response && response.getSubCategory) {

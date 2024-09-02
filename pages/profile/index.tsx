@@ -5,10 +5,10 @@ import BusinessInformationForm from "@/components/modules/profile/forms/business
 import IdentityVerificationForm from "@/components/modules/profile/forms/identityVerificationForm";
 import LocationDetailsForm from "@/components/modules/profile/forms/locationDetailsForm";
 import UserBasicInformationForm from "@/components/modules/profile/forms/userBasicInformationForm";
-import { useBasicProfileStore } from "@/components/modules/profile/store/basicProfileInformation";
 import { PermissionTypeEnum, UserStatus } from "@/generated/graphql";
 import useGlobalStore from "@/store/global";
 import useProfileStore from "@/store/profile";
+import { useBasicProfileStore } from "@/store/profileBasicEditStore";
 import useUserStore from "@/store/user";
 import { sdk } from "@/utils/graphqlClient";
 import { hasAccess } from "@/utils/hasAccess";
@@ -40,12 +40,11 @@ const Profile: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
     setPlace,
     setZipcode,
     setState,
-    setbusinessName,
-    setbusinessType,
-    setein,
-    setemployeeSize,
-    setestablishedAt,
-    setestimatedRevenue,
+    setBusinessName,
+    setBusinessType,
+    setEin,
+    setEmployeeSize,
+    setEstimatedRevenue,
     setid,
   } = useProfileStore();
 
@@ -103,11 +102,11 @@ const Profile: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
           id: address?.state?.stateId || "",
           value: address?.state?.stateName || "",
         });
-        setbusinessName(businessName || "");
-        setbusinessType(businessType || "");
-        setein(ein || "");
-        setemployeeSize(employeeSize || "");
-        setestimatedRevenue(estimatedRevenue || "");
+        setBusinessName(businessName || "");
+        setBusinessType(businessType || "");
+        setEin(ein || "");
+        setEmployeeSize(employeeSize || "");
+        setEstimatedRevenue(estimatedRevenue || "");
         setLoading(false);
       } catch (error) {
         console.error("Error fetching business details:", error);

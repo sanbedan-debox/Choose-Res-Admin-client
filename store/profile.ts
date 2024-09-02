@@ -7,15 +7,14 @@ type ProfileStates = {
 
     // STEP 1
     businessType: string;
-    setbusinessType: (e: string) => void;
+    setBusinessType: (e: string) => void;
     businessName: string;
-    setbusinessName: (e: string) => void;
+    setBusinessName: (e: string) => void;
     estimatedRevenue: string;
-    setestimatedRevenue: (e: string) => void;
+    setEstimatedRevenue: (e: string) => void;
     employeeSize: string;
-    setemployeeSize: (e: string) => void;
-    establishedAt: Date | null;
-    setestablishedAt: (e: Date | null) => void;
+    setEmployeeSize: (e: string) => void;
+
     dob: Date | null;
     setdob: (e: Date | null) => void;
 
@@ -37,7 +36,7 @@ type ProfileStates = {
 
     //STEP 3
     ein: string;
-    setein: (location: string) => void;
+    setEin: (location: string) => void;
 };
 
 const useProfileStore = create<ProfileStates>((set) => ({
@@ -46,15 +45,14 @@ const useProfileStore = create<ProfileStates>((set) => ({
 
     // STEP 1
     businessType: "",
-    setbusinessType: (e: string) => set({ businessType: e }),
+    setBusinessType: (e: string) => set({ businessType: e }),
     businessName: "",
-    setbusinessName: (e: string) => set({ businessName: e }),
+    setBusinessName: (e: string) => set({ businessName: e }),
     estimatedRevenue: "",
-    setestimatedRevenue: (e: string) => set({ estimatedRevenue: e }),
+    setEstimatedRevenue: (e: string) => set({ estimatedRevenue: e }),
     employeeSize: "",
-    setemployeeSize: (e: string) => set({ employeeSize: e }),
-    establishedAt: null,
-    setestablishedAt: (e: Date | null) => set({ establishedAt: e }),
+    setEmployeeSize: (e: string) => set({ employeeSize: e }),
+
     dob: null,
     setdob: (e: Date | null) => set({ dob: e }),
 
@@ -76,7 +74,7 @@ const useProfileStore = create<ProfileStates>((set) => ({
 
     //STEP 3
     ein: "",
-    setein: (ein) => set({ ein }),
+    setEin: (ein) => set({ ein }),
 }));
 
 export default useProfileStore;

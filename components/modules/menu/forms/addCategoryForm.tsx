@@ -11,7 +11,6 @@ import {
   reverseFormatAvailability,
 } from "@/components/common/timingAvailibility/interface";
 import AvailabilityComponent from "@/components/common/timingAvailibility/timingAvailibility";
-import Loader from "@/components/loader";
 import {
   AvailabilityInput,
   MenuTypeEnum,
@@ -310,6 +309,16 @@ const AddCategoryForm = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const isAnyItemActive = selectedList.some(
+      (item) => item.status === StatusEnum.Active
+    );
+
+    if (!isAnyItemActive) {
+      setValue("status", false);
+    }
+  }, [selectedList]);
 
   const onSubmit = async (data: IFormInput) => {
     setActionLoading(true);
@@ -694,7 +703,7 @@ const AddCategoryForm = () => {
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.3 }}
     >
-      {loading && <Loader />}
+      {/* {loading && <Loader />} */}
       <form
         className="space-y-4 md:space-y-3 w-full "
         onSubmit={handleSubmit(onSubmit)}

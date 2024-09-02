@@ -10,7 +10,6 @@ import {
   reverseFormatAvailability,
 } from "@/components/common/timingAvailibility/interface";
 import AvailabilityComponent from "@/components/common/timingAvailibility/timingAvailibility";
-import Loader from "@/components/loader";
 import { AvailabilityInput, MenuTypeEnum } from "@/generated/graphql";
 import { initAvailability } from "@/lib/commonConstants";
 import { formatMenuType, menuTypeOptions } from "@/lib/menuBuilderConstants";
@@ -286,7 +285,7 @@ const AddMenuForm = () => {
             type: data.type.value as MenuTypeEnum,
             name: data.name,
             categories: selectedItemsIds,
-            taxRateId: taxRate?.id || "",
+            taxRateId: taxRate?.id || null,
             availability: formattedAvailability,
           },
         });
@@ -487,7 +486,7 @@ const AddMenuForm = () => {
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.3 }}
     >
-      {loading && <Loader />}
+      {/* {loading && <Loader />} */}
       <form
         className="space-y-4 md:space-y-3 w-full"
         onSubmit={handleSubmit(onSubmit)}

@@ -331,7 +331,7 @@ const Teams: NextPageWithLayout = ({ repo }: { repo?: UserRepo }) => {
         title="Edit Team Member"
         onClose={handleEditMemberModalClose}
       >
-        <div className="flex justify-center">
+        <div className="flex justify-center h-full">
           <EditTeamMemberForm />
         </div>
       </ReusableModal>

@@ -9,7 +9,7 @@ import {
   formatAvailability,
 } from "@/components/common/timingAvailibility/interface";
 import AvailabilityComponent from "@/components/common/timingAvailibility/timingAvailibility";
-import { Day } from "@/generated/graphql";
+import { initAvailability } from "@/lib/commonConstants";
 import useGlobalStore from "@/store/global";
 import useMasterStore from "@/store/masters";
 import useRestaurantEditStore from "@/store/useRestaurantEditStore";
@@ -52,15 +52,8 @@ const loadOptions = (
 
 const RestaurantEditAvailabilityForm: React.FC = () => {
   const [coords, setCoords] = useState<number[]>([]);
-  const [availability, setAvailability] = useState<Availability[]>([
-    { day: Day.Sunday, hours: [], active: false },
-    { day: Day.Monday, hours: [], active: false },
-    { day: Day.Tuesday, hours: [], active: false },
-    { day: Day.Wednesday, hours: [], active: false },
-    { day: Day.Thursday, hours: [], active: false },
-    { day: Day.Friday, hours: [], active: false },
-    { day: Day.Saturday, hours: [], active: false },
-  ]);
+  const [availability, setAvailability] =
+    useState<Availability[]>(initAvailability);
   const [selectedPlace, setSelectedPlace] = useState<PlacesType | null>(null);
   const debouncedLoadOptions = debounce(loadOptions, 800);
 
@@ -171,8 +164,8 @@ const RestaurantEditAvailabilityForm: React.FC = () => {
           },
           availability: formattedAvailability,
           timezone: {
-            timezoneId: data.timeZone?.id,
-            timezoneName: data.timeZone?.value,
+            timezoneId: formState.timeZone?.value,
+            timezoneName: formState.timeZone?.label,
           },
         },
       });
@@ -181,15 +174,23 @@ const RestaurantEditAvailabilityForm: React.FC = () => {
         setAddressLine1(data.addressLine1);
         setAddressLine2(data.addressLine2);
         setState({
-          id: data.state.id ?? "",
-          value: data.state.value ?? "",
+          id: formState.state?.id || "",
+          value: formState.state?.value || "",
         });
         setCity(data.city);
         setZipcode(data.zipcode);
-        setTimeZone(data.timeZone);
+        setTimeZone({
+          id: formState.timeZone?.value,
+          value: formState.timeZone?.label,
+        });
+
         setCords([coords[0], coords[1]]);
-        setAvailabilityHours(data.availability);
-        setPlace(data.place);
+        setAvailabilityHours(availability);
+
+        setPlace({
+          displayName: selectedPlace?.label ?? "",
+          placeId: selectedPlace?.value ?? "",
+        });
 
         setIsFullPageModalOpen(false);
         setToastData({

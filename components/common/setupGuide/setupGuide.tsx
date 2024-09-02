@@ -23,9 +23,9 @@
 //   const { firstName } = useAuthStore();
 //   const router = useRouter();
 
-//   const { setisShowSetupPanel } = useGlobalStore();
+//   const { setIsShowSetupPanel } = useGlobalStore();
 //   const handleShowSetup = () => {
-//     setisShowSetupPanel(false);
+//     setIsShowSetupPanel(false);
 //   };
 
 //   const months = [

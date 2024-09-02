@@ -29,7 +29,7 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
   const [copiedDayIndex, setCopiedDayIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    const firstFilledDayIndex = availability.findIndex(
+    const firstFilledDayIndex = availability?.findIndex(
       (day) => day.active && day.hours.length > 0
     );
     if (firstFilledDayIndex >= 0 && copiedDayIndex === null) {
@@ -135,7 +135,7 @@ const AvailabilityComponent: React.FC<AvailabilityComponentProps> = ({
       field: "start" | "end";
     }[] = [];
 
-    data.forEach((day, dayIndex) => {
+    data?.forEach((day, dayIndex) => {
       if (day.active) {
         day.hours.forEach((hour, hourIndex) => {
           if (moment(hour.start.value).isAfter(moment(hour.end.value))) {

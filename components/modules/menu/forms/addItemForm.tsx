@@ -11,7 +11,6 @@ import {
   reverseFormatAvailability,
 } from "@/components/common/timingAvailibility/interface";
 import AvailabilityComponent from "@/components/common/timingAvailibility/timingAvailibility";
-import Loader from "@/components/loader";
 import {
   AvailabilityInput,
   ItemOptionsEnum,
@@ -246,25 +245,7 @@ const AddItemForm = () => {
             sl[idx].name = category.name;
           }
         }
-        console.log("selected List", sl);
         setSelectedList(sl);
-
-        // if (items && items.getModifierGroups) {
-        //   const formattedItemsList = items.getModifierGroups.map(
-        //     (item: { _id: string; name: string }) => ({
-        //       _id: item._id || "",
-        //       name: item?.name || "",
-        //     })
-        //   );
-        //   // const filteredItemsList = formattedItemsList.filter(
-        //   //   (item) =>
-        //   //     !selectedList.some(
-        //   //       (selectedItem) => selectedItem._id === item._id
-        //   //     )
-        //   // );
-        //   setMasterList(formattedItemsList);
-        //   console.log("Masters Fetched", formattedItemsList);
-        // }
       } catch (error) {
         const errorMessage = extractErrorMessage(error);
         setToastData({
@@ -567,6 +548,7 @@ const AddItemForm = () => {
         }[];
         availability: AvailabilityInput[];
         name?: string;
+        image?: string;
         desc?: string;
         price?: number;
         orderLimit?: number;
@@ -581,7 +563,12 @@ const AddItemForm = () => {
         availability: formattedAvailability,
       };
       let hasChanges = false;
-      const imgUrl = await handleLogoUpload();
+
+      const imgUrl = previewUrl || logoFile ? await handleLogoUpload() : null;
+      if (data.image !== imgUrl) {
+        updateInput.image = imgUrl;
+        hasChanges = true;
+      }
 
       if (data.name !== itemData?.name) {
         updateInput.name = data.name;
@@ -620,13 +607,13 @@ const AddItemForm = () => {
 
       setActionloading(true);
       if (!isEditItem) {
-        const imgUrl = await handleLogoUpload();
+        const imgUrl = previewUrl || logoFile ? await handleLogoUpload() : "";
 
         await sdk.addItem({
           input: {
             name: data.name,
             desc: data.desc,
-            image: imgUrl,
+            image: imgUrl ?? "",
             price: parsedPrice,
             status: statusSub,
             orderLimit: parsedLimit,
@@ -762,6 +749,7 @@ const AddItemForm = () => {
 
       return cloudinaryUrl;
     }
+    return "";
   };
 
   const handleLogoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -988,7 +976,7 @@ const AddItemForm = () => {
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.3 }}
     >
-      {loading && <Loader />}
+      {/* {loading && <Loader />} */}
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="max-w-full mx-auto p-6 w-full bg-white rounded-md "
@@ -1398,7 +1386,7 @@ const AddItemForm = () => {
                 type="button"
                 className="text-sm text-primary flex items-center cursor-pointer"
                 onClick={async () => {
-                  setUseRestaurantTimings(!useRestaurantTimings);
+                  setRestroTimings();
                 }}
               >
                 <span className=" hover:underline">

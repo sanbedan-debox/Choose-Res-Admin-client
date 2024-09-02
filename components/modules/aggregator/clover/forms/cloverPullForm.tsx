@@ -22,6 +22,7 @@ import {
 } from "@/store/cloverStores";
 import useGlobalStore from "@/store/global";
 import useMenuPageStore from "@/store/menuStore";
+import { invalidStringCellValue } from "@/utils/csvHelper";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import CategoryTable from "../tables/categoryTable";
 import ItemTable from "../tables/ItemTable";
@@ -44,6 +45,7 @@ const CloverPullForm: React.FC = () => {
   const [activeSection, setActiveSection] = useState<
     "Category" | "Items" | "Modifier Groups" | "Modifiers"
   >("Category");
+  const [errors, setErrors] = useState<string[]>([]);
 
   // API calls
   const fetchData = async () => {
@@ -57,7 +59,6 @@ const CloverPullForm: React.FC = () => {
       setItems(
         items.map((item: any) => ({
           ...item,
-
           "Popular Item": false,
           "UpSell Item": false,
           IsVegan: false,
@@ -125,6 +126,7 @@ const CloverPullForm: React.FC = () => {
         .filter(Boolean) as CloverRowItemModifierGroup[];
 
       // Map item options to CloverRowItemOptions
+
       // const itemOptions: CloverRowItemOptions[] = [
       //   { type: ItemOptionsEnum.PopularItem, status: item["Popular Item"] },
       //   { type: ItemOptionsEnum.UpSellItem, status: item["UpSell Item"] },
@@ -187,6 +189,112 @@ const CloverPullForm: React.FC = () => {
         modifierGroups: modifierGroups as ModifierGroup[],
         modifiers: modifiers as Modifier[],
       });
+
+      // Validation of Each Row Items
+      for (let i = 0; i < clientItems.length; i++) {
+        const item = clientItems[i];
+
+        if (invalidStringCellValue(item.name)) {
+          setToastData({
+            message: `${item.name} item name is invalid, please try again!`,
+            type: "error",
+          });
+          return;
+        }
+        if (item.price <= 0) {
+          setToastData({
+            message: `Price cannot be less then or equal to zero for ${item.name}, please try again!`,
+            type: "error",
+          });
+          return;
+        }
+
+        // let isHalalPresent = false;
+        // let isVeganPresent = false;
+
+        // if (item.options && item.options.length > 0) {
+        //   const option: CloverRowItemOptions[] = item.options;
+        //   if (option.type === ItemOptionsEnum.IsHalal && option.status) {
+        //     isHalalPresent = true;
+        //   }
+        //   if (option.type === ItemOptionsEnum.IsVegan && option.status) {
+        //     isVeganPresent = true;
+        //   }
+        // }
+
+        // if (isHalalPresent && isVeganPresent) {
+        //   setToastData({
+        //     message: `${item.name} item cannot be halal and vegan at the same time, please try again!`,
+        //     type: "error",
+        //   });
+        //   return;
+        // }
+        if (item.categories && item.categories.length >= 0) {
+          for (let j = 0; j < item.categories.length; j++) {
+            const cate = item.categories[j];
+
+            // Check for basic validations
+            if (invalidStringCellValue(cate.name)) {
+              setToastData({
+                message: `${cate.name} category name is invalid, please try again!`,
+                type: "error",
+              });
+              return;
+            }
+          }
+
+          if (item.modifierGroups && item.modifierGroups.length > 0) {
+            for (let k = 0; k < item.modifierGroups.length; k++) {
+              const mg = item.modifierGroups[k];
+
+              // Check for basic validations
+              if (invalidStringCellValue(mg.name)) {
+                setToastData({
+                  message: `${mg.name} modifier group name is invalid, please try again!`,
+                  type: "error",
+                });
+                return;
+              }
+
+              if (mg.maxRequired && mg.minRequired) {
+                if (mg.minRequired > mg.maxRequired) {
+                  setToastData({
+                    message: `Min Required cannot be greater than Max Required for ${mg.name} modifier group!`,
+                    type: "error",
+                  });
+                  return;
+                }
+              }
+
+              // Modifier Checks
+              if (mg.modifiers) {
+                for (let l = 0; l < mg.modifiers.length; l++) {
+                  const modi = mg.modifiers[l];
+
+                  // Check for basic validations
+                  if (invalidStringCellValue(modi.name)) {
+                    setToastData({
+                      message: `${modi.name} modifier name is invalid, please try again!`,
+
+                      type: "error",
+                    });
+                    return;
+                  }
+
+                  if (modi.price < 0) {
+                    setToastData({
+                      message: `Price cannot be less then zero for ${modi.name} modifier, please try again!`,
+
+                      type: "error",
+                    });
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
       const res = await sdk.saveCloverData({
         rowItems: clientItems,
       });
@@ -267,7 +375,6 @@ const CloverPullForm: React.FC = () => {
           {loading ? (
             <div className="flex flex-col justify-center items-center h-64">
               <div className="loader mb-4"></div>{" "}
-              {/* Replace with your loading spinner */}
               <p className="text-lg font-semibold text-gray-700">
                 Fetching Clover Data...
               </p>
@@ -277,59 +384,62 @@ const CloverPullForm: React.FC = () => {
             </div>
           ) : (
             <>
-              <div className="space-y-3">
-                <h2 className="text-md font-bold text-gray-900">
-                  Data Fetched Successfully!
-                </h2>
-                <p className="text-sm text-gray-700">
-                  We have successfully retrieved the data from Clover. Here is a
-                  summary of the information:
-                </p>
-                <div className="bg-white rounded-lg p-6  ">
-                  <p className="text-md font-medium text-gray-800">
-                    Categories:{" "}
-                    <span className="font-bold">{categories?.length || 0}</span>
-                  </p>
-                  <p className="text-md font-medium text-gray-800">
-                    Items:{" "}
-                    <span className="font-bold">{items?.length || 0}</span>
-                  </p>
-                  <p className="text-md font-medium text-gray-800">
-                    Modifier Groups:{" "}
-                    <span className="font-bold">
-                      {modifierGroups?.length || 0}
-                    </span>
-                  </p>
-                  <p className="text-md font-medium text-gray-800">
-                    Modifiers:{" "}
-                    <span className="font-bold">{modifiers?.length || 0}</span>
-                  </p>
+              {errors.length > 0 ? (
+                <div>
+                  <h2 className="text-md font-bold text-red-600">
+                    Errors Occurred
+                  </h2>
+                  <ul className="list-disc list-inside text-sm text-red-700">
+                    {errors.map((error, index) => (
+                      <li key={index}>{error}</li>
+                    ))}
+                  </ul>
+                  <CButton
+                    variant={ButtonType.Primary}
+                    onClick={() => setErrors([])}
+                    className="mt-4 w-full"
+                  >
+                    Close
+                  </CButton>
                 </div>
-                <p className="text-gray-600">
-                  You can now preview the data and make any necessary edits.
-                  Click on the button below to review the data.
-                </p>
-              </div>
+              ) : (
+                <div className="space-y-3">
+                  <h2 className="text-md font-bold text-gray-900">
+                    Data Fetched Successfully!
+                  </h2>
+                  <p className="text-sm text-gray-700 text-start">
+                    We have successfully retrieved the data from Clover. Here is
+                    a summary of the information:
+                  </p>
 
-              <div className="flex space-x-4">
-                <CButton
-                  variant={ButtonType.Primary}
-                  onClick={() => setIsModalOpen(true)}
-                  className="mt-4 w-full"
-                >
-                  Preview/Edit Data
-                </CButton>
-                <CButton
-                  variant={ButtonType.Primary}
-                  onClick={() => {
-                    // Transform and save data when Save is clicked
-                    handleSubmit();
-                  }}
-                  className="mt-4 w-full"
-                >
-                  Save Data
-                </CButton>
-              </div>
+                  <div className="border rounded-lg p-4 shadow-md text-start">
+                    <h3 className="text-lg font-semibold mb-2">Summary</h3>
+                    <p>Categories: {categories?.length ?? 0}</p>
+                    <p>Items: {items?.length ?? 0}</p>
+                    <p>Modifier Groups: {modifierGroups?.length ?? 0}</p>
+                    <p>Modifiers: {modifiers?.length ?? 0}</p>
+                  </div>
+
+                  <div className="flex space-x-4">
+                    <CButton
+                      variant={ButtonType.Primary}
+                      onClick={() => setIsModalOpen(true)}
+                      className="mt-4 w-full"
+                    >
+                      Preview/Edit Data
+                    </CButton>
+                    <CButton
+                      variant={ButtonType.Primary}
+                      onClick={() => {
+                        handleSubmit();
+                      }}
+                      className="mt-4 w-full"
+                    >
+                      Save Data
+                    </CButton>
+                  </div>
+                </div>
+              )}
             </>
           )}
         </div>

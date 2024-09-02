@@ -67,11 +67,11 @@ const BusinessInformationForm: React.FC = () => {
     businessName,
     employeeSize,
     estimatedRevenue,
-    setbusinessType,
-    setbusinessName,
-    setemployeeSize,
+    setBusinessType,
+    setBusinessName,
+    setEmployeeSize,
     id,
-    setestimatedRevenue,
+    setEstimatedRevenue,
   } = useProfileStore();
 
   const [initialBType, setInitialBType] = useState<string>();
@@ -286,7 +286,7 @@ const BusinessInformationForm: React.FC = () => {
                   }))
                   .find((option) => option.value === employeeSize)}
                 onChange={(option) => {
-                  setemployeeSize(option?.value || "");
+                  setEmployeeSize(option?.value || "");
                   handleFormChange();
                 }}
                 className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
@@ -320,7 +320,7 @@ const BusinessInformationForm: React.FC = () => {
                   }))
                   .find((option) => option.value === estimatedRevenue)}
                 onChange={(option) => {
-                  setestimatedRevenue(option?.value || "");
+                  setEstimatedRevenue(option?.value || "");
                   handleFormChange();
                 }}
                 className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"

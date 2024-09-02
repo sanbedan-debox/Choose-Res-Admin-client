@@ -15,7 +15,8 @@ import Navbar from "../navbar/navbar";
 import Sidebar from "../navigation/sidebar";
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [initialFormValues, setInitialFormValues] = useState({
+  // Configs
+  const [initialTaxRateNotAddedFormStates] = useState({
     name: "",
     salesTax: "",
     default: false,
@@ -23,7 +24,12 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isSaveButtonEnabled, setIsSaveButtonEnabled] = useState(false);
   const [buttonTitle, setButtonTitle] = useState("Add");
   const [isButtonVisible, setIsButtonVisible] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [existingTaxRateId, setExistingTaxRateId] = useState<string | null>(
+    null
+  );
 
+  // Global and Local States
   const { control, handleSubmit, getValues, setValue } = useForm({
     defaultValues: {
       name: "",
@@ -32,6 +38,26 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     },
   });
 
+  const { isShowTaxSettings, setIsShowTaxSettings } = useGlobalStore();
+  const {
+    setRestaurants,
+    setSelectedRestaurant,
+    setSelectedRestaurantTaxRateId,
+    setSelectedRestaurantId,
+  } = useRestaurantsStore();
+  const { setTaxRate, taxRate } = useAuthStore();
+  const { setMasterStates, setMasterTimezones } = useMasterStore();
+  const {
+    setEmail,
+    setFirstName,
+    setLastName,
+    setPhone,
+    setStatus,
+    setUserId,
+  } = useAuthStore();
+  const { setToastData } = useGlobalStore();
+
+  // Use Effect
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -42,72 +68,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
     fetchData();
   }, []);
-  const { isShowTaxSettings, setIsShowTaxSettings } = useGlobalStore();
 
-  const {
-    setRestaurants,
-    setSelectedRestaurant,
-    setSelectedRestaurantTaxRateId,
-    selectedRestaurantId,
-    setSelectedRestaurantId,
-  } = useRestaurantsStore();
-  const [loading, setLoading] = useState(true);
-  const handleCloseTaxSettings = () => {
-    setIsShowTaxSettings(false);
-  };
-
-  const { setTaxRate, taxRate } = useAuthStore();
-
-  const [existingTaxRateId, setExistingTaxRateId] = useState<string | null>(
-    null
-  );
-
-  const onSubmit = async (data: {
-    name: string;
-    salesTax: string;
-    default: boolean;
-  }) => {
-    try {
-      const currentFormValues = getValues();
-      const changedData: any = {
-        _id: existingTaxRateId,
-        name: currentFormValues.name,
-        salesTax: parseFloat(currentFormValues.salesTax),
-      };
-      const hasChanges = Object.keys(changedData).length > 1;
-
-      if (existingTaxRateId && hasChanges) {
-        await sdk.updateTaxRate({
-          input: changedData,
-        });
-        setToastData({
-          message: "Tax rate updated successfully",
-          type: "success",
-        });
-      } else if (!existingTaxRateId) {
-        setButtonTitle("add");
-        const taxRateInput = {
-          name: data.name,
-          salesTax: parseFloat(data.salesTax),
-        };
-
-        const taxRateResponse = await sdk.addTaxRate({ input: taxRateInput });
-        setSelectedRestaurantTaxRateId(taxRateResponse?.addTaxRate);
-
-        setToastData({
-          message: "Tax rate added successfully",
-          type: "success",
-        });
-      }
-      fetchUserRestaurants();
-      setIsShowTaxSettings(false);
-    } catch (error) {
-      console.error("Error submitting tax rate:", error);
-      setToastData({ message: extractErrorMessage(error), type: "error" });
-    }
-  };
-
-  const { setMasterStates, setMasterTimezones } = useMasterStore();
   useEffect(() => {
     const fetch = async () => {
       try {
@@ -150,15 +111,58 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     fetch();
   }, [setMasterStates, setMasterTimezones]);
 
-  const {
-    setEmail,
-    setFirstName,
-    setLastName,
-    setPhone,
-    setStatus,
-    setUserId,
-    firstName,
-  } = useAuthStore();
+  // Handler Functions
+  const handleCloseTaxSettings = () => {
+    setIsShowTaxSettings(false);
+  };
+
+  const onSubmit = async (data: {
+    name: string;
+    salesTax: string;
+    default: boolean;
+  }) => {
+    try {
+      const currentFormValues = getValues();
+      const changedData: {
+        _id: string;
+        name?: string;
+        salesTax?: number;
+      } = {
+        _id: existingTaxRateId ?? "",
+        name: currentFormValues.name,
+        salesTax: parseFloat(currentFormValues.salesTax),
+      };
+      const hasChanges = Object.keys(changedData).length > 1;
+
+      if (existingTaxRateId && hasChanges) {
+        await sdk.updateTaxRate({ input: changedData });
+        setToastData({
+          message: "Tax rate updated successfully",
+          type: "success",
+        });
+      } else if (!existingTaxRateId) {
+        setButtonTitle("Add");
+        const taxRateInput = {
+          name: data.name,
+          salesTax: parseFloat(data.salesTax),
+        };
+
+        const taxRateResponse = await sdk.addTaxRate({ input: taxRateInput });
+        setSelectedRestaurantTaxRateId(taxRateResponse?.addTaxRate);
+
+        setToastData({
+          message: "Tax rate added successfully",
+          type: "success",
+        });
+      }
+      fetchUserRestaurants();
+      setIsShowTaxSettings(false);
+    } catch (error) {
+      console.error("Error submitting tax rate:", error);
+      setToastData({ message: extractErrorMessage(error), type: "error" });
+    }
+  };
+
   const fetchUserDetails = async () => {
     try {
       const response = await sdk.MeUser();
@@ -224,8 +228,8 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
               setSelectedRestaurantTaxRateId(existingTaxRate._id);
               setIsSaveButtonEnabled(false);
-              setExistingTaxRateId(existingTaxRate._id);
               setIsButtonVisible(false);
+              setExistingTaxRateId(existingTaxRate._id);
             } else {
               setIsSaveButtonEnabled(true);
               setExistingTaxRateId(null);
@@ -258,35 +262,28 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             }
           }
         } catch (error) {
-          await sdk.setRestaurantIdAsCookie({
-            id: formattedRestaurant[0]?.id,
-          });
+          await sdk.setRestaurantIdAsCookie({ id: formattedRestaurant[0]?.id });
           setSelectedRestaurant(formattedRestaurant[0]?.name || "");
         }
       }
     } catch (error) {
       console.error("Failed to fetch restaurant users:", error);
-    } finally {
     }
   };
-
-  const { setToastData } = useGlobalStore();
 
   const handleInputChange = () => {
     const currentFormValues = getValues();
     const hasChanges =
-      currentFormValues.name !== initialFormValues.name ||
-      currentFormValues.salesTax !== initialFormValues.salesTax ||
-      currentFormValues.default !== initialFormValues.default;
+      currentFormValues.name !== initialTaxRateNotAddedFormStates.name ||
+      currentFormValues.salesTax !==
+        initialTaxRateNotAddedFormStates.salesTax ||
+      currentFormValues.default !== initialTaxRateNotAddedFormStates.default;
     if (taxRate) {
       setIsSaveButtonEnabled(hasChanges);
-
       setButtonTitle("Update");
-
       setIsButtonVisible(true);
     }
   };
-
   return (
     <>
       {loading ? (

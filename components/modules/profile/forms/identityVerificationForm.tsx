@@ -2,12 +2,12 @@ import CButton from "@/components/common/button/button";
 import { ButtonType } from "@/components/common/button/interface";
 import ReusableModal from "@/components/common/modal/modal";
 import useGlobalStore from "@/store/global";
+import { useBasicProfileStore } from "@/store/profileBasicEditStore";
 import { sdk } from "@/utils/graphqlClient";
 import { extractErrorMessage } from "@/utils/utilFUncs";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { useBasicProfileStore } from "../store/basicProfileInformation";
 
 const IdentityVerificationForm: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);

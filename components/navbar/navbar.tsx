@@ -25,7 +25,7 @@ const Navbar: React.FC = () => {
   const { firstName } = useAuthStore();
   const { restaurants, selectedRestaurant } = useRestaurantsStore();
   const { reset } = RestaurantOnboardingStore();
-  const { isSidebarExpanded, setisSidebarExpanded, setToastData } =
+  const { isSidebarExpanded, setIsSidebarExpanded, setToastData } =
     useGlobalStore();
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [canAddRestaurant, setCanAddRestaurant] = useState(false);
@@ -33,7 +33,7 @@ const Navbar: React.FC = () => {
     useState(false);
   const router = useRouter();
   const toggleSidebar = () => {
-    setisSidebarExpanded(!isSidebarExpanded);
+    setIsSidebarExpanded(!isSidebarExpanded);
   };
 
   const profileDropdownRef = useRef<HTMLDivElement>(null);

@@ -84,13 +84,13 @@ const UserInfo = () => {
 
   const {
     businessType,
-    setbusinessType,
+    setBusinessType,
     businessName,
-    setbusinessName,
+    setBusinessName,
     employeeSize,
-    setemployeeSize,
+    setEmployeeSize,
     estimatedRevenue,
-    setestimatedRevenue,
+    setEstimatedRevenue,
 
     dob,
     setdob,
@@ -212,7 +212,7 @@ const UserInfo = () => {
                 )}
                 onChange={(option) => {
                   setValue("businessType", option?.value || "");
-                  setbusinessType(option?.value || "");
+                  setBusinessType(option?.value || "");
                 }}
                 className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
                 classNamePrefix="react-select"
@@ -245,7 +245,7 @@ const UserInfo = () => {
             id="businessName"
             className="input input-primary"
             placeholder="Enter your business name"
-            onChange={(e) => setbusinessName(e.target.value)}
+            onChange={(e) => setBusinessName(e.target.value)}
           />
           {errors.businessName && (
             <p className="text-red-500 text-sm text-start">
@@ -282,7 +282,7 @@ const UserInfo = () => {
                 )}
                 onChange={(option) => {
                   setValue("employees", option?.value || "");
-                  setemployeeSize(option?.value || "");
+                  setEmployeeSize(option?.value || "");
                 }}
                 className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
                 classNamePrefix="react-select"
@@ -324,7 +324,7 @@ const UserInfo = () => {
                 )}
                 onChange={(option) => {
                   setValue("revenue", option?.value || "");
-                  setestimatedRevenue(option?.value || "");
+                  setEstimatedRevenue(option?.value || "");
                 }}
                 className="mt-1 text-sm rounded-lg w-full focus:outline-none text-left"
                 classNamePrefix="react-select"
